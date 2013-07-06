@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="editors_feed" type="id">Editors</item>
+    <item name="my_video" type="id">My Video</item>
+    <item name="subscriptions" type="id">Subscriptions</item>
+</resources>

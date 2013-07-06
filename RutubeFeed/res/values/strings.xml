@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ACTIVITY_ENTRY_NAME</string>
+    <string name="thumbnail">Thumbnail</string>
+    <string name="faled_to_load_data">network error</string>
+    <string name="refresh">Refresh</string>
+    <string name="upload">Upload</string>
+    <string name="from_gallery">From gallery</string>
+    <string name="from_camera">From camera</string>
+    <string name="login">Login</string>
+    <string name="select_video">Select video</string>
 </resources>

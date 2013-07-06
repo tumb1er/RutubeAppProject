@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:padding="10dp">
+
+    <ImageView
+        android:id="@+id/thumbnailImageView"
+        android:layout_weight="1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="100dp"
+        android:adjustViewBounds="true"
+        android:layout_marginLeft="-1dp"
+        android:layout_marginRight="-1dp"
+        android:contentDescription="@string/thumbnail"
+        android:scaleType="fitXY"/>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#cccccc"
+        >
+
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_above="@id/thumbnailImageView"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/videoInfoLayout"
+            android:background="#ffffffff"
+            android:paddingBottom="0dp"
+            android:paddingRight="10dp"
+            android:paddingTop="10dp"
+            android:paddingLeft="10dp">
+
+            <TextView
+                android:id="@+id/titleTextView"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18dp"
+                android:text=""
+                android:textStyle="bold"
+                android:textColor="@android:color/primary_text_light_nodisable"></TextView>
+
+            <TextView
+                android:id="@+id/createdTextView"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textSize="10dp"
+                android:text=""
+                android:textColor="@android:color/secondary_text_light"></TextView>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/comment_line_right">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/imageView"
+                    android:focusable="false"
+                    android:src="@drawable/comment_line"
+                    android:layout_gravity="left"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:paddingTop="10dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/avatarImageView"
+                    android:minWidth="50px"
+                    android:maxHeight="50dp"
+                    android:maxWidth="50dp"
+                    android:scaleType="matrix"/>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:paddingBottom="10dp">
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:text="New Text"
+                        android:id="@+id/authorTextView"
+                        android:textColor="#000"
+                        android:textSize="12dp"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:text="New Text"
+                        android:id="@+id/descriptionTextView"
+                        android:textColor="#000"
+                        android:textSize="12dp"
+                        android:textIsSelectable="false"/>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_below="@id/videoInfoLayout"
+            android:layout_width="fill_parent"
+            android:layout_height="10dp"
+            android:background="@drawable/card_shadow"
+            android:id="@+id/cardShadow">
+        </View>
+
+        <View
+            android:layout_below="@id/videoInfoLayout"
+            android:layout_width="fill_parent"
+            android:layout_height="5dp"
+            android:background="@drawable/card_footer"
+            android:id="@+id/cardFooter">
+        </View>
+    </RelativeLayout>
+</LinearLayout>
