@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">RutubeApp</string>
+    <string name="app_name">Rutube</string>
+    <string name="title">Title</string>
+    <string name="visibility">Visibility</string>
+    <string name="category">Category</string>
+    <string name="save">Save</string>
+    <string name="stop">Stop</string>
+    <string name="video_private">Private</string>
+    <string name="video_public">Public</string>
+    <string name="select_category"/>
+    <string name="upload_done">Video uploaded successfully</string>
+    <string name="completed">Completed</string>
 </resources>
