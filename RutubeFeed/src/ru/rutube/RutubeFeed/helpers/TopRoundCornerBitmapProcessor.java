@@ -1,42 +1,32 @@
 package ru.rutube.RutubeFeed.helpers;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.util.Log;
 import android.widget.ImageView;
-import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
-import com.nostra13.universalimageloader.utils.L;
-
-import android.graphics.*;
 
 /**
- * Created with IntelliJ IDEA.
- * User: tumbler
- * Date: 12.04.13
- * Time: 9:50
- * To change this template use File | Settings | File Templates.
+ * Created by tumbler on 06.07.13.
  */
-public class TopRoundedBitmapDisplayer extends RoundedBitmapDisplayer {
-    private int roundPixels;
-    public TopRoundedBitmapDisplayer(int roundPixels) {
-        super(roundPixels);
-        this.roundPixels = roundPixels;
+public class TopRoundCornerBitmapProcessor implements BitmapProcessor {
+    private static final String LOG_TAG = TopRoundCornerBitmapProcessor.class.getName();
+    private final int mRoundPixels;
+
+    public TopRoundCornerBitmapProcessor(int roundPixels) {
+        this.mRoundPixels = roundPixels;
     }
 
     @Override
-    public Bitmap display(Bitmap bitmap, ImageView imageView) {
-        Bitmap roundedBitmap = roundCorners(bitmap, imageView, roundPixels);
-        imageView.setImageBitmap(roundedBitmap);
-        return roundedBitmap;
+    public Bitmap process(Bitmap bitmap, ImageView imageView) {
+        return roundCorners(bitmap, imageView, mRoundPixels);
     }
 
-    /**
-     * Process incoming {@linkplain Bitmap} to make rounded corners according to target {@link android.widget.ImageView}.<br />
-     * This method <b>doesn't display</b> result bitmap in {@link android.widget.ImageView}
-     *
-     * @param bitmap Incoming Bitmap to process
-     * @param imageView Target {@link android.widget.ImageView} to display bitmap in
-     * @param roundPixels
-     * @return Result bitmap with rounded corners
-     */
-    public static Bitmap roundCorners(Bitmap bitmap, ImageView imageView, int roundPixels) {
+    private static Bitmap roundCorners(Bitmap bitmap, ImageView imageView, int roundPixels) {
         Bitmap roundBitmap;
 
         int bw = bitmap.getWidth();
@@ -126,7 +116,7 @@ public class TopRoundedBitmapDisplayer extends RoundedBitmapDisplayer {
         try {
             roundBitmap = getRoundedCornerBitmap(bitmap, roundPixels, srcRect, destRect, width, height);
         } catch (OutOfMemoryError e) {
-            L.e(e, "Can't create bitmap with rounded corners. Not enough memory.");
+            Log.e(LOG_TAG, "Can't create bitmap with rounded corners. Not enough memory.");
             roundBitmap = bitmap;
         }
 

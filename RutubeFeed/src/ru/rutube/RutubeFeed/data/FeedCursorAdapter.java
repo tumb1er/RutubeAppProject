@@ -2,20 +2,22 @@ package ru.rutube.RutubeFeed.data;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.support.v4.widget.SimpleCursorAdapter;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
+
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
+import com.android.volley.toolbox.Volley;
+
 import ru.rutube.RutubeAPI.content.FeedContract;
+import ru.rutube.RutubeAPI.tools.BitmapLruCache;
 import ru.rutube.RutubeFeed.R;
-import ru.rutube.RutubeFeed.helpers.TopRoundedBitmapDisplayer;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -32,12 +34,10 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     protected static final SimpleDateFormat sqlDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     protected static final SimpleDateFormat reprDateFormat = new SimpleDateFormat("d L y");
     private static final String LOG_TAG = FeedCursorAdapter.class.getName();
-    protected BitmapDisplayer displayer;
     protected ImageLoader imageLoader;
     protected static int item_layout_id = R.layout.feed_item;
-    protected static DisplayImageOptions thumbnailDisplayOptions;
-    protected static DisplayImageOptions avatarDisplayOptions;
     private Context context;
+    private RequestQueue mRequestQueue;
 
     public interface LoadMoreListener
     {
@@ -96,10 +96,10 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
             tv.setText(description);
             tv = (TextView) view.findViewById(R.id.authorTextView);
             tv.setText(authorName);
-            ImageView iv = (ImageView) view.findViewById(R.id.thumbnailImageView);
-            imageLoader.displayImage(thumbnailUri, iv);
-            iv = (ImageView) view.findViewById(R.id.avatarImageView);
-            imageLoader.displayImage(avatarUri, iv, avatarDisplayOptions);
+            NetworkImageView iv = (NetworkImageView) view.findViewById(R.id.thumbnailImageView);
+            iv.setImageURI(Uri.parse(thumbnailUri));
+            iv = (NetworkImageView) view.findViewById(R.id.avatarImageView);
+            iv.setImageURI(Uri.parse(avatarUri));
 
 
         } catch (IllegalArgumentException e) {
@@ -128,24 +128,8 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     }
 
     protected void initImageLoader(Context context) {
-        displayer = new TopRoundedBitmapDisplayer(10);
-        thumbnailDisplayOptions = new DisplayImageOptions.Builder()
-                .cacheInMemory()
-                .cacheOnDisc()
-                .displayer(displayer)
-                .showStubImage(R.drawable.stub)
-                .build();
-        avatarDisplayOptions = new DisplayImageOptions.Builder()
-                .cacheInMemory()
-                .cacheOnDisc()
-                .build();
-
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
-                .defaultDisplayImageOptions(thumbnailDisplayOptions)
-                .enableLogging()
-                .build();
-        imageLoader = ImageLoader.getInstance();
-        imageLoader.init(config);
+        mRequestQueue = Volley.newRequestQueue(context);
+        imageLoader = new ImageLoader(mRequestQueue, new BitmapLruCache());
     }
 
     @Override

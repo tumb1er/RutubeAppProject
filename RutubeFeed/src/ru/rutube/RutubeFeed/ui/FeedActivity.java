@@ -1,15 +1,11 @@
 package ru.rutube.RutubeFeed.ui;
 
+import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeFeed.R;
 
 /**
@@ -19,7 +15,7 @@ import ru.rutube.RutubeFeed.R;
  * Time: 12:04
  * To change this template use File | Settings | File Templates.
  */
-public class FeedActivity extends SherlockFragmentActivity {
+public class FeedActivity extends Activity {
     private static final String LOG_TAG = FeedActivity.class.getName();
     protected Uri feedUri;
     protected static final int R_FEED_MENU = R.menu.feed_menu;
@@ -44,7 +40,7 @@ public class FeedActivity extends SherlockFragmentActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R_FEED_MENU, menu);
+        getMenuInflater().inflate(R_FEED_MENU, menu);
         return super.onCreateOptionsMenu(menu);
     }
 

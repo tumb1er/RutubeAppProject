@@ -2,38 +2,40 @@ package ru.rutube.RutubeFeed.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Fragment;
+import android.app.LoaderManager;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.support.v4.widget.CursorAdapter;
 import android.util.Log;
 import android.view.*;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.AbsListView;
+import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
-import android.widget.ListView;
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
+
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpClientStack;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.huewu.pla.lib.MultiColumnListView;
 import com.huewu.pla.lib.internal.PLA_AdapterView;
+
+import ru.rutube.RutubeAPI.HttpTransport;
 import ru.rutube.RutubeAPI.content.ContentMatcher;
 import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.models.Constants;
-import ru.rutube.RutubeAPI.requests.RequestFactory;
-import ru.rutube.RutubeAPI.requests.RutubeRequestManager;
+import ru.rutube.RutubeAPI.models.Feed;
+import ru.rutube.RutubeAPI.requests.RequestListener;
 import ru.rutube.RutubeFeed.R;
-import com.foxykeep.datadroid.requestmanager.Request;
 import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
-import ru.rutube.RutubeFeed.helpers.TopRoundedBitmapDisplayer;
 import ru.rutube.RutubePlayer.ui.PlayerActivity;
 
 /**
@@ -43,8 +45,7 @@ import ru.rutube.RutubePlayer.ui.PlayerActivity;
  * Time: 12:56
  * To change this template use File | Settings | File Templates.
  */
-//public class FeedFragment extends SherlockListFragment {
-public class FeedFragment extends SherlockFragment {
+public class FeedFragment extends Fragment {
     private static final int LOADER_ID = 1;
     private static final String LOG_TAG = FeedFragment.class.getName();
     private static final String[] PROJECTION = {
@@ -65,8 +66,8 @@ public class FeedFragment extends SherlockFragment {
     private Uri feedUri;
     private Uri contentUri;
     private MultiColumnListView sgView;
-
-    private RutubeRequestManager requestManager;
+    private RequestQueue mRequestQueue;
+    private Feed mFeed;
 
     private ListAdapter getListAdapter() {
         return sgView.getAdapter();
@@ -122,94 +123,59 @@ public class FeedFragment extends SherlockFragment {
         }
     };
 
-    private RutubeRequestManager.RequestListener requestListener = new RutubeRequestManager.RequestListener() {
+//
+//    private AbsListView.OnScrollListener onScrollListener = new AbsListView.OnScrollListener() {
+//        @Override
+//        public void onScrollStateChanged(AbsListView absListView, int i) {
+//
+//        }
+//
+//        @Override
+//        public void onScroll(AbsListView absListView, int firstVisible, int visibleCount, int totalCount) {
+//            boolean loadMore = /* maybe add a padding */
+//                    firstVisible + visibleCount >= totalCount - perPage / 2;
+//
+//            Log.d(LOG_TAG, String.format("OnScroll: %d + %d >= %d - %d", firstVisible, visibleCount, totalCount, perPage / 2));
+//            if (loadMore) {
+//                int new_page = (totalCount + perPage) / perPage;
+//                Log.d(LOG_TAG, "new page: " + String.valueOf(new_page));
+//                if (!loading) {
+//                    Log.d(LOG_TAG, "Load more");
+//                    loadPage(new_page);
+//                }
+//
+//            }
+//        }
+//    };
 
-        @Override
-        public void onRequestFinished(Request request, Bundle resultData) {
-            //listView.onRefreshComplete();
-            Log.d(LOG_TAG, "onRequestFinished");
-            if (sgView.getAdapter().getCount() == 0)
-                getActivity().getContentResolver().notifyChange((Uri)request.getParcelable(Constants.Params.CONTENT_URI), null);
-            perPage = resultData.getInt(Constants.Result.PER_PAGE);
-            doneRefreshing();
-            loading = false;
+//    //@Override
+//    public void onListItemClick(ListView l, View v, int position, long id) {
+//        Cursor c = (Cursor) getListAdapter().getItem(position);
+//        int videoIdIndex = c.getColumnIndex(FeedContract.FeedColumns._ID);
+//        String videoId = c.getString(videoIdIndex);
+//        Log.d(getClass().getName(), "Clicked " + videoId);
+//        Intent intent = new Intent(getActivity(), PlayerActivity.class);
+//        Uri uri = Uri.parse(getActivity().getString(R.string.base_uri))
+//                .buildUpon()
+//                .appendPath("video")
+//                .appendPath(videoId).build();
+//        intent.setData(uri);
+//        startActivity(intent);
+//    }
+    private void showError() {
+        Activity activity = getActivity();
+        if (activity != null)
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.
+                    setTitle(android.R.string.dialog_alert_title).
+                    setMessage(getString(R.string.faled_to_load_data)).
+                    create().
+                    show();
         }
-
-        void showError() {
-            //listView.onRefreshComplete();
-            Activity activity = getActivity();
-            if (activity != null)
-            {
-                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-                builder.
-                        setTitle(android.R.string.dialog_alert_title).
-                        setMessage(getString(R.string.faled_to_load_data)).
-                        create().
-                        show();
-            }
-            doneRefreshing();
-            loading = false;
-        }
-
-        @Override
-        public void onRequestDataError(Request request) {
-            Log.e(LOG_TAG, "onRequestDataError");
-            showError();
-        }
-
-        @Override
-        public void onRequestCustomError(Request request, Bundle resultData) {
-            Log.e(LOG_TAG, "onRequestCustomError");
-            showError();
-        }
-
-        @Override
-        public void onRequestConnectionError(Request request, int statusCode) {
-            Log.e(LOG_TAG, "onRequestConnectionError");
-            showError();
-        }
-
-    };
-
-    private AbsListView.OnScrollListener onScrollListener = new AbsListView.OnScrollListener() {
-        @Override
-        public void onScrollStateChanged(AbsListView absListView, int i) {
-
-        }
-
-        @Override
-        public void onScroll(AbsListView absListView, int firstVisible, int visibleCount, int totalCount) {
-            boolean loadMore = /* maybe add a padding */
-                    firstVisible + visibleCount >= totalCount - perPage / 2;
-
-            Log.d(LOG_TAG, String.format("OnScroll: %d + %d >= %d - %d", firstVisible, visibleCount, totalCount, perPage / 2));
-            if (loadMore) {
-                int new_page = (totalCount + perPage) / perPage;
-                Log.d(LOG_TAG, "new page: " + String.valueOf(new_page));
-                if (!loading) {
-                    Log.d(LOG_TAG, "Load more");
-                    loadPage(new_page);
-                }
-
-            }
-        }
-    };
-
-    //@Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        Cursor c = (Cursor) getListAdapter().getItem(position);
-        int videoIdIndex = c.getColumnIndex(FeedContract.FeedColumns._ID);
-        String videoId = c.getString(videoIdIndex);
-        Log.d(getClass().getName(), "Clicked " + videoId);
-        Intent intent = new Intent(getActivity(), PlayerActivity.class);
-        Uri uri = Uri.parse(getActivity().getString(R.string.base_uri))
-                .buildUpon()
-                .appendPath("video")
-                .appendPath(videoId).build();
-        intent.setData(uri);
-        startActivity(intent);
+        doneRefreshing();
+        loading = false;
     }
-
     private FeedCursorAdapter.LoadMoreListener loadMoreListener = new FeedCursorAdapter.LoadMoreListener(){
 
         @Override
@@ -223,27 +189,49 @@ public class FeedFragment extends SherlockFragment {
         loading = true;
         setRefreshing();
         Log.d(LOG_TAG, "Started loading page: " + feedUri.toString() + "; " + String.valueOf(contentUri));
-        Request updateRequest = RequestFactory.getFeedRequest(page, feedUri, contentUri);
-        requestManager.execute(updateRequest, requestListener);
+        JsonObjectRequest request = mFeed.getFeedRequest(page);
+        mRequestQueue.add(request);
+    }
+
+    private RequestListener mLoadPageRequestListener = new RequestListener() {
+        @Override
+        public void onResult(int tag, Bundle result) {
+            Log.d(LOG_TAG, "onRequestFinished");
+            if (sgView.getAdapter().getCount() == 0)
+                getActivity().getContentResolver().notifyChange(contentUri, null);
+            perPage = result.getInt(Constants.Result.PER_PAGE);
+            doneRefreshing();
+            loading = false;
+        }
+
+        @Override
+        public void onVolleyError(VolleyError error) {
+            showError();
+        }
+
+        @Override
+        public void onRequestError(int tag, RequestError error) {
+            showError();
+        }
+    };
+
+    private void init() {
+        // TODO: remove after transfer to DRF-2.3
+        mRequestQueue = Volley.newRequestQueue(getActivity(),
+                new HttpClientStack(HttpTransport.getHttpClient()));
+        initFeedUri();
+        initContentUri();
+        mFeed = new Feed(null, feedUri.toString(), getActivity(), mLoadPageRequestListener);
+
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Log.d(LOG_TAG, "onActivityCreated");
+        init();
         setHasOptionsMenu(true);
-        requestManager = RutubeRequestManager.from(getActivity());
         perPage = 20;
-        Bundle args = getArguments();
-        if (args != null)
-            feedUri = args.getParcelable(Constants.Params.FEED_URI);
-        if (feedUri == null)
-            feedUri = getActivity().getIntent().getData();
-        contentMatcher = ContentMatcher.from(getActivity());
-        Log.d(LOG_TAG, "Feed Uri:" + String.valueOf(feedUri));
-        Log.d(LOG_TAG, "SIS: " + String.valueOf(savedInstanceState));
-        contentUri = contentMatcher.getContentUri(feedUri);
-        Log.d(LOG_TAG, "CUri: " + String.valueOf(contentUri));
         FeedCursorAdapter adapter = new FeedCursorAdapter(getActivity(),
                 R.layout.feed_item,
                 null,
@@ -257,20 +245,35 @@ public class FeedFragment extends SherlockFragment {
         loadPage(1);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
-        int menu_id = item.getItemId();
-        if (menu_id == R.id.menu_refresh) {
-            loadPage(1);
-        }
-        if (menu_id == R.id.menu_upload_gallery) {
-            selectVideo();
-        }
-        if (menu_id == R.id.menu_upload_shoot) {
-            shootVideo();
-        }
-        return super.onOptionsItemSelected(item);
+    private void initContentUri() {
+        contentMatcher = ContentMatcher.from(getActivity());
+        contentUri = contentMatcher.getContentUri(feedUri);
+        Log.d(LOG_TAG, "CUri: " + String.valueOf(contentUri));
     }
+
+    private void initFeedUri() {
+        Bundle args = getArguments();
+        if (args != null)
+            feedUri = args.getParcelable(Constants.Params.FEED_URI);
+        if (feedUri == null)
+            feedUri = getActivity().getIntent().getData();
+        Log.d(LOG_TAG, "Feed Uri:" + String.valueOf(feedUri));
+    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
+//        int menu_id = item.getItemId();
+//        if (menu_id == R.id.menu_refresh) {
+//            loadPage(1);
+//        }
+//        if (menu_id == R.id.menu_upload_gallery) {
+//            selectVideo();
+//        }
+//        if (menu_id == R.id.menu_upload_shoot) {
+//            shootVideo();
+//        }
+//        return super.onOptionsItemSelected(item);
+//    }
 
     private void shootVideo() {
         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);

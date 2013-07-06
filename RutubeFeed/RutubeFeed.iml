@@ -16,6 +16,10 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="RutubeAPI" />
+    <orderEntry type="module" module-name="volley" />
+    <orderEntry type="module" module-name="PinterestLikeAdapterView" scope="PROVIDED" />
+    <orderEntry type="module" module-name="RutubePlayer" />
   </component>
 </module>
 
