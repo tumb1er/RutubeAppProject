@@ -1,21 +1,28 @@
 package ru.rutube.RutubePlayer.ui;
 
+import android.app.AlertDialog;
+import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import com.foxykeep.datadroid.requestmanager.Request;
-import com.foxykeep.datadroid.requestmanager.RequestManager;
-import io.vov.vitamio.widget.MediaController;
-import io.vov.vitamio.widget.VideoView;
+import android.widget.MediaController;
+import android.widget.VideoView;
+
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpClientStack;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import ru.rutube.RutubeAPI.HttpTransport;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeAPI.models.Trackinfo;
-import ru.rutube.RutubeAPI.requests.RequestFactory;
-import ru.rutube.RutubeAPI.requests.RutubeRequestManager;
+import ru.rutube.RutubeAPI.models.Video;
+import ru.rutube.RutubeAPI.requests.RequestListener;
 import ru.rutube.RutubePlayer.R;
 
 import java.util.List;
@@ -29,19 +36,19 @@ import java.util.List;
  */
 public class PlayerFragment extends Fragment {
     private final String LOG_TAG = getClass().getName();
-    private RutubeRequestManager requestManager;
     private Uri streamUri;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        requestManager = RutubeRequestManager.from(this.getActivity());
-    }
+    private RequestQueue mRequestQueue;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         preparePlayback();
+    }
+
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        init();
     }
 
     @Override
@@ -56,9 +63,43 @@ public class PlayerFragment extends Fragment {
         startPlayback();
     }
 
-    /**
-     * разбирает входные данные, инициирует запросы к rutube.ru
-     */
+    private void init() {
+        // TODO: remove after transfer to DRF-2.3
+        mRequestQueue = Volley.newRequestQueue(getActivity(),
+                new HttpClientStack(HttpTransport.getHttpClient()));
+
+    }
+
+    private void showError() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.
+                setTitle(android.R.string.dialog_alert_title).
+                setMessage(getString(R.string.faled_to_load_data)).
+                create().
+                show();
+
+    }
+
+    protected RequestListener mTrackInfoRequestListener = new RequestListener() {
+        @Override
+        public void onResult(int tag, Bundle result) {
+            Trackinfo trackInfo = result.getParcelable(Constants.Result.TRACKINFO);
+            streamUri = trackInfo.getBalancerUrl();
+            startPlayback();
+        }
+
+        @Override
+        public void onVolleyError(VolleyError error) {
+            showError();
+        }
+
+        @Override
+        public void onRequestError(int tag, RequestError error) {
+            showError();
+        }
+    };
+
+
     private void preparePlayback() {
         Intent intent = getActivity().getIntent();
         Uri uri = intent.getData();
@@ -67,9 +108,9 @@ public class PlayerFragment extends Fragment {
             final List<String> segments = uri.getPathSegments();
             if (segments.size() == 2) {
                 String videoId = segments.get(1);
-                Request request = RequestFactory.getTrackInfoRequest(videoId);
-                Log.d(LOG_TAG, "Executing TI request for" + videoId);
-                        requestManager.execute(request, requestListener);
+                Video video = new Video(videoId, getActivity(), mTrackInfoRequestListener);
+                JsonObjectRequest request = video.getTrackInfoRequest();
+                mRequestQueue.add(request);
             } else {
                 Log.d(LOG_TAG, "Incorrect Uri");
             }
@@ -87,32 +128,5 @@ public class PlayerFragment extends Fragment {
         } catch (NullPointerException e) {
             Log.d(LOG_TAG, "Not ready yet");
         }
-
     }
-
-    RequestManager.RequestListener requestListener = new RequestManager.RequestListener() {
-        @Override
-        public void onRequestFinished(Request request, Bundle resultData) {
-            Trackinfo trackinfo = resultData.getParcelable(Constants.Result.TRACKINFO);
-            streamUri = trackinfo.getBalancerUrl();
-            startPlayback();
-        }
-
-        @Override
-        public void onRequestConnectionError(Request request, int statusCode) {
-            //To change body of implemented methods use File | Settings | File Templates.
-            Log.e(LOG_TAG, "error");
-        }
-
-        @Override
-        public void onRequestDataError(Request request) {
-            Log.e(LOG_TAG, "error");
-        }
-
-        @Override
-        public void onRequestCustomError(Request request, Bundle resultData) {
-            Log.e(LOG_TAG, "error");
-        }
-    };
-
 }

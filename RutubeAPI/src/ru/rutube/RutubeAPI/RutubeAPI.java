@@ -18,5 +18,15 @@ public class RutubeAPI {
         return resultUri.toString();
     }
 
+    public static String getUrl(Context context, String path) {
+        assert context != null;
+        Uri baseUri = Uri.parse(context.getString(R.string.base_uri));
+        Uri resultUri = baseUri.buildUpon()
+                .appendEncodedPath(path)
+                .build();
+        assert resultUri != null;
+        return resultUri.toString();
+    }
+
 
 }

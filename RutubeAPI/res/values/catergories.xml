@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="category_entries">
+        <item>Auto and moto</item>
+        <item>Films and series</item>
+        <item>Music</item>
+        <item>Adult multfilms</item>
+        <item>News and events</item>
+        <item>Animals</item>
+        <item>Travel and nature</item>
+        <item>Private ads</item>
+        <item>Human and society</item>
+        <item>Sport</item>
+        <item>Education</item>
+        <item>Erotics</item>
+        <item>Humor</item>
+        <item>PC games</item>
+        <item>Hobby</item>
+        <item>Anime</item>
+        <item>Kids multfilms</item>
+        <item>Tvshow</item>
+        <item>Health and beauty</item>
+        <item>Tech and internet</item>
+    </string-array>
+    <string-array name="category_values">
+        <item>auto_moto</item>
+        <item>films_series</item>
+        <item>music</item>
+        <item>adult_multfilms</item>
+        <item>news_events</item>
+        <item>animals</item>
+        <item>travel_nature</item>
+        <item>private_ads</item>
+        <item>human_society</item>
+        <item>sport</item>
+        <item>education</item>
+        <item>erotics</item>
+        <item>humor</item>
+        <item>pc_games</item>
+        <item>hobby</item>
+        <item>anime</item>
+        <item>kids_multfilms</item>
+        <item>tvshow</item>
+        <item>health_beauty</item>
+        <item>tech_internet</item>
+    </string-array>
+</resources>

@@ -1,14 +1,13 @@
 package ru.rutube.RutubePlayer.ui;
 
+import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.view.Window;
 import android.view.WindowManager;
-import io.vov.vitamio.Vitamio;
 import ru.rutube.RutubePlayer.R;
 
-public class PlayerActivity extends FragmentActivity {
+public class PlayerActivity extends Activity {
     /**
      * Called when the activity is first created.
      */
@@ -19,7 +18,6 @@ public class PlayerActivity extends FragmentActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        Vitamio.initialize(this);
         setContentView(R.layout.player_activity);
     }
 }

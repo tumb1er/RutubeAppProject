@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="base_uri">http://rutube.ru</string>
+    <string name="uploader_uri">http://u.rutube.ru</string>
+    <string name="trackinfo_uri">api/play/trackinfo/%s/</string>
+    <string name="editors_uri">api/video/editors/</string>
+    <string name="my_video_uri">api/video/person/</string>
+    <string name="subscription_uri">api/subscription/video/</string>
+    <string name="video_uri">api/video/%s/</string>
+    <string name="token_uri">api/accounts/token_auth/</string>
+    <string name="login_uri">api/accounts/login/</string>
+    <string name="upload_session_uri">api/uploader/upload_session/</string>
+    <string name="upload_uri">upload/%s</string>
+</resources>

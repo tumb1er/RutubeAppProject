@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">RutubePlayer</string>
+    <string name="faled_to_load_data">Failed to load data</string>
 </resources>
