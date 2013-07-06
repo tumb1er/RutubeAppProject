@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">RutubeAPI</string>
+    <string name="app_name">ACTIVITY_ENTRY_NAME</string>
+    <string name="now">Just now</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="days_ago_24">%d days ago</string>
+    <string name="days_ago_59">%d days ago</string>
+    <string name="week_ago">%d week ago</string>
+    <string name="weeks_ago">%d weeks ago</string>
 </resources>

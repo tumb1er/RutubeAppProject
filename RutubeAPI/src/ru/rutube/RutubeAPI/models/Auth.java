@@ -2,7 +2,7 @@ package ru.rutube.RutubeAPI.models;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import com.foxykeep.datadroid.network.NetworkConnection;
+// import com.foxykeep.datadroid.network.NetworkConnection;
 
 import java.util.HashMap;
 
@@ -48,17 +48,17 @@ public class Auth {
         editor.putString(USER_TOKEN, token);
         editor.commit();
     }
-
-    public HashMap<String, String> setToken(NetworkConnection connection) {
-        String token = getToken();
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Authorization", String.format("token %s", token));
-        String cookie = getCookie();
-        if (cookie!=null)
-            headers.put("Cookie", String.format("sessionid=%s", cookie));
-        connection.setHeaderList(headers);
-        return headers;
-    }
+//    TODO: удалить вместе с DataDroid
+//    public HashMap<String, String> setToken(NetworkConnection connection) {
+//        String token = getToken();
+//        HashMap<String, String> headers = new HashMap<String, String>();
+//        headers.put("Authorization", String.format("token %s", token));
+//        String cookie = getCookie();
+//        if (cookie!=null)
+//            headers.put("Cookie", String.format("sessionid=%s", cookie));
+//        connection.setHeaderList(headers);
+//        return headers;
+//    }
 
     public void saveCookie(String cookie) {
         SharedPreferences prefs = context.getSharedPreferences(USER_DETAILS, Context.MODE_PRIVATE);
