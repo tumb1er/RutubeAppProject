@@ -1,0 +1,3 @@
+[submodule "RutubeAPI/libs/volley"]
+	path = RutubeAPI/libs/volley
+	url = https://android.googlesource.com/platform/frameworks/volley
