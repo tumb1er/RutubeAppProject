@@ -4,17 +4,64 @@
           android:versionCode="1"
           android:versionName="1.0">
 
-    <uses-sdk android:minSdkVersion="11"/>
+    <uses-sdk
+        android:minSdkVersion="11"
+        android:targetSdkVersion="17"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
-            android:label="@string/app_name"
-            android:icon="@drawable/ic_launcher">
+        android:label="@string/app_name"
+        android:icon="@drawable/logo_48">
         <activity
-                android:name="StartActivity"
-                android:label="@string/app_name">
+            android:name=".ui.StartActivity"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity
+            android:name="ru.rutube.RutubePlayer.ui.PlayerActivity"
+            android:label="@string/app_name">
+                <intent-filter>
+                    <action android:name="android.intent.action.VIEW" />
+                    <category android:name="android.intent.category.DEFAULT" />
+                    <category android:name="android.intent.category.BROWSABLE" />
+                    <data android:scheme="http"
+                          android:host="rutube.ru"
+                          android:pathPrefix="/video/" />
+                </intent-filter>
+        </activity>
+        <activity
+            android:name="ru.rutube.RutubeFeed.ui.FeedActivity"
+            android:label="@string/app_name">
+        </activity>
+        <activity android:name=".ui.LoginActivity">
+            <intent-filter android:label="@string/app_name">
+                <action android:name="ru.rutube.api.login_required"/>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <!--<activity android:name=".ui.UploadActivity">-->
+            <!--<intent-filter android:label="@string/app_name">-->
+                <!--<action android:name="ru.rutube.api.upload"/>-->
+                <!--<category android:name="android.intent.category.DEFAULT" />-->
+                <!--<data android:mimeType="video/*"/>-->
+            <!--</intent-filter>-->
+            <!--<intent-filter android:label="@string/app_name">-->
+                <!--<action android:name="android.intent.action.SEND" />-->
+                <!--<data android:mimeType="video/*" />-->
+                <!--<category android:name="android.intent.category.DEFAULT" />-->
+            <!--</intent-filter>-->
+            <!--<intent-filter>-->
+                <!--<action android:name="ru.rutube.api.upload.progress" />-->
+            <!--</intent-filter>-->
+        <!--</activity>-->
+
+        <!--<service android:name="ru.rutube.RutubeAPI.requests.RutubeRestService"/>-->
+        <provider
+            android:name="ru.rutube.RutubeAPI.content.FeedContentProvider"
+            android:authorities="ru.rutube.RutubeAPI.content.FeedContentProvider"
+            />
     </application>
-</manifest>
+
+</manifest> 

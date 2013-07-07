@@ -2,6 +2,7 @@ package ru.rutube.RutubeApp.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockFragment;
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpClientStack;
@@ -24,6 +24,7 @@ import java.util.List;
 
 import ru.rutube.RutubeAPI.HttpTransport;
 import ru.rutube.RutubeAPI.models.Auth;
+import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeAPI.models.User;
 import ru.rutube.RutubeAPI.requests.RequestListener;
 import ru.rutube.RutubeApp.R;
@@ -35,7 +36,7 @@ import ru.rutube.RutubeApp.R;
  * Time: 9:07
  * To change this template use File | Settings | File Templates.
  */
-public class LoginFragment extends SherlockFragment {
+public class LoginFragment extends Fragment {
 
     private Button mLoginButton;
 
@@ -48,7 +49,6 @@ public class LoginFragment extends SherlockFragment {
 
     private RequestQueue mRequestQueue;
     private User mUser;
-    private int mLoginStage;
 
     protected View.OnClickListener loginButtonListener = new View.OnClickListener() {
 
@@ -63,9 +63,8 @@ public class LoginFragment extends SherlockFragment {
     };
 
     private void runLoginRequests(String email, String password) {
-        mLoginStage = 0;
-        mRequestQueue.add(mUser.getTokenRequest(email, password));
-        mRequestQueue.add(mUser.getLoginRequest(email, password));
+        mRequestQueue.add(mUser.getTokenRequest(email, password, getActivity(),
+                userRequestListener));
     }
 
     void showError() {
@@ -81,38 +80,11 @@ public class LoginFragment extends SherlockFragment {
 
     protected RequestListener userRequestListener = new RequestListener() {
 
-        private Cookie getCookie(CookieStore cs, String cookieName) {
-            // TODO: remove after transfer to DRF-2.3
-            Cookie ret = null;
-
-            List<Cookie> l = cs.getCookies();
-            for (Cookie c : l) {
-                if (c.getName().equals(cookieName)) {
-                    ret = c;
-                    break;
-                }
-            }
-
-            return ret;
-        }
-
         @Override
         public void onResult(int tag, Bundle result) {
-            // TODO: remove after full transfer to DRF-2.3
-            if (tag == User.LOGIN_RESULT) {
-                CookieStore cookieStore = HttpTransport.getHttpClient().getCookieStore();
-                String authCookie = getCookie(cookieStore, "sessionid").getValue();
-                Log.d(LOG_TAG, "auth cookie: " + String.valueOf(authCookie));
-                mUser.saveCookie(authCookie);
-            }
-
-            if (tag == User.TOKEN_RESULT || tag == User.LOGIN_RESULT) {
-                mLoginStage += 1;
-                if (mLoginStage >= 2) {
-                    ((LoginListener)getActivity()).onLoginResult(Activity.RESULT_OK);
-                }
-            }
-
+            String token = result.getString(Constants.Result.TOKEN);
+            User.saveToken(getActivity(), token);
+            ((LoginListener)getActivity()).onLoginResult(Activity.RESULT_OK);
         }
 
         @Override
@@ -132,15 +104,11 @@ public class LoginFragment extends SherlockFragment {
     }
 
     private void init() {
-        mUser = new User(getActivity(), userRequestListener);
+        mUser = new User(User.getToken(getActivity()));
 
         // TODO: remove after transfer to DRF-2.3
         mRequestQueue = Volley.newRequestQueue(getActivity(),
                 new HttpClientStack(HttpTransport.getHttpClient()));
-        String auth_cookie = mUser.getAuthCookie();
-        if (auth_cookie!= null) {
-            setAuthCookie(auth_cookie);
-        }
     }
 
     private void setAuthCookie(String auth_cookie) {

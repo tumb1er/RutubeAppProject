@@ -1,7 +1,7 @@
 package ru.rutube.RutubeApp.ui;
 
+import android.app.Activity;
 import android.os.Bundle;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import ru.rutube.RutubeApp.R;
 
 /**
@@ -11,7 +11,7 @@ import ru.rutube.RutubeApp.R;
  * Time: 22:06
  * To change this template use File | Settings | File Templates.
  */
-public class LoginActivity extends SherlockFragmentActivity implements LoginFragment.LoginListener {
+public class LoginActivity extends Activity implements LoginFragment.LoginListener {
 
 
     @Override

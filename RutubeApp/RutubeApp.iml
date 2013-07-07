@@ -24,6 +24,10 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module" module-name="RutubeAPI" />
+    <orderEntry type="module" module-name="RutubeFeed" exported="" />
+    <orderEntry type="module" module-name="RutubePlayer" />
+    <orderEntry type="module" module-name="volley" />
   </component>
 </module>
 
