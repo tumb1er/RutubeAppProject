@@ -97,9 +97,9 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
             tv = (TextView) view.findViewById(R.id.authorTextView);
             tv.setText(authorName);
             NetworkImageView iv = (NetworkImageView) view.findViewById(R.id.thumbnailImageView);
-            iv.setImageURI(Uri.parse(thumbnailUri));
+            iv.setImageUrl(thumbnailUri, imageLoader);
             iv = (NetworkImageView) view.findViewById(R.id.avatarImageView);
-            iv.setImageURI(Uri.parse(avatarUri));
+            iv.setImageUrl(avatarUri, imageLoader);
 
 
         } catch (IllegalArgumentException e) {

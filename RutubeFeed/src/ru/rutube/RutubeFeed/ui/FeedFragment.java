@@ -190,7 +190,7 @@ public class FeedFragment extends Fragment {
         loading = true;
         setRefreshing();
         Log.d(LOG_TAG, "Started loading page: " + feedUri.toString() + "; " + String.valueOf(contentUri));
-        JsonObjectRequest request = mFeed.getFeedRequest(page);
+        JsonObjectRequest request = mFeed.getFeedRequest(page, getActivity(), mLoadPageRequestListener);
         mRequestQueue.add(request);
     }
 
@@ -222,8 +222,7 @@ public class FeedFragment extends Fragment {
                 new HttpClientStack(HttpTransport.getHttpClient()));
         initFeedUri();
         initContentUri();
-        mFeed = new Feed(null, feedUri.toString(), getActivity(), mLoadPageRequestListener);
-
+        mFeed = new Feed(null, feedUri, contentUri);
     }
 
     @Override
