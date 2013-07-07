@@ -3,6 +3,7 @@ package ru.rutube.RutubeFeed.ui;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.ListFragment;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -46,7 +47,7 @@ import ru.rutube.RutubePlayer.ui.PlayerActivity;
  * Time: 12:56
  * To change this template use File | Settings | File Templates.
  */
-public class FeedFragment extends Fragment {
+public class FeedFragment extends ListFragment {
     private static final int LOADER_ID = 1;
     private static final String LOG_TAG = FeedFragment.class.getName();
     private static final String[] PROJECTION = {
@@ -70,10 +71,10 @@ public class FeedFragment extends Fragment {
     private RequestQueue mRequestQueue;
     private Feed mFeed;
 
-    private ListAdapter getListAdapter() {
+    public ListAdapter getListAdapter() {
         return sgView.getAdapter();
     }
-    private void setListAdapter(ListAdapter adapter) {
+    public void setListAdapter(ListAdapter adapter) {
         sgView.setAdapter(adapter);
     }
     private LoaderManager.LoaderCallbacks<Cursor> loaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
@@ -149,20 +150,20 @@ public class FeedFragment extends Fragment {
 //        }
 //    };
 
-//    //@Override
-//    public void onListItemClick(ListView l, View v, int position, long id) {
-//        Cursor c = (Cursor) getListAdapter().getItem(position);
-//        int videoIdIndex = c.getColumnIndex(FeedContract.FeedColumns._ID);
-//        String videoId = c.getString(videoIdIndex);
-//        Log.d(getClass().getName(), "Clicked " + videoId);
-//        Intent intent = new Intent(getActivity(), PlayerActivity.class);
-//        Uri uri = Uri.parse(getActivity().getString(R.string.base_uri))
-//                .buildUpon()
-//                .appendPath("video")
-//                .appendPath(videoId).build();
-//        intent.setData(uri);
-//        startActivity(intent);
-//    }
+    //@Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        Cursor c = (Cursor) getListAdapter().getItem(position);
+        int videoIdIndex = c.getColumnIndex(FeedContract.FeedColumns._ID);
+        String videoId = c.getString(videoIdIndex);
+        Log.d(getClass().getName(), "Clicked " + videoId);
+        Intent intent = new Intent(getActivity(), PlayerActivity.class);
+        Uri uri = Uri.parse(getActivity().getString(R.string.base_uri))
+                .buildUpon()
+                .appendPath("video")
+                .appendPath(videoId).build();
+        intent.setData(uri);
+        startActivity(intent);
+    }
     private void showError() {
         Activity activity = getActivity();
         if (activity != null)

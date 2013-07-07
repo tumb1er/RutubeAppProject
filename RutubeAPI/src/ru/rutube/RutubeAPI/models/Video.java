@@ -111,9 +111,8 @@ public class Video {
     public JsonObjectRequest getTrackInfoRequest(Context context, RequestListener listener) {
         String trackInfoPath = String.format(context.getString(R.string.trackinfo_uri), mVideoId);
         String trackInfoUri = RutubeAPI.getUrl(context, trackInfoPath);
-        JSONObject requestData = new JSONObject();
         JsonObjectRequest request = new JsonObjectRequest(trackInfoUri,
-                requestData, getTrackInfoListener(listener), getErrorListener(listener));
+                null, getTrackInfoListener(listener), getErrorListener(listener));
         request.setShouldCache(true);
         return request;
     }
