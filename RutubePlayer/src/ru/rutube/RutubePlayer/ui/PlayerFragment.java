@@ -108,8 +108,9 @@ public class PlayerFragment extends Fragment {
             final List<String> segments = uri.getPathSegments();
             if (segments.size() == 2) {
                 String videoId = segments.get(1);
-                Video video = new Video(videoId, getActivity(), mTrackInfoRequestListener);
-                JsonObjectRequest request = video.getTrackInfoRequest();
+                Video video = new Video(videoId);
+                JsonObjectRequest request = video.getTrackInfoRequest(getActivity(),
+                        mTrackInfoRequestListener);
                 mRequestQueue.add(request);
             } else {
                 Log.d(LOG_TAG, "Incorrect Uri");
