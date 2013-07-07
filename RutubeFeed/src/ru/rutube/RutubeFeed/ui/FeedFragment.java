@@ -19,6 +19,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
+import android.widget.ListView;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
@@ -59,13 +60,13 @@ public class FeedFragment extends Fragment {
     };
     protected static final int SELECT_VIDEO_REQUEST = 0;
     protected static final int SHOOT_VIDEO_REQUEST = 1;
-    private ContentMatcher contentMatcher;
     private MenuItem refreshItem;
     private boolean loading;
     private int perPage;
     private Uri feedUri;
     private Uri contentUri;
-    private MultiColumnListView sgView;
+//    private MultiColumnListView sgView;
+    private ListView sgView;
     private RequestQueue mRequestQueue;
     private Feed mFeed;
 
@@ -246,7 +247,7 @@ public class FeedFragment extends Fragment {
     }
 
     private void initContentUri() {
-        contentMatcher = ContentMatcher.from(getActivity());
+        ContentMatcher contentMatcher = ContentMatcher.from(getActivity());
         contentUri = contentMatcher.getContentUri(feedUri);
         Log.d(LOG_TAG, "CUri: " + String.valueOf(contentUri));
     }
@@ -342,8 +343,9 @@ public class FeedFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
         Log.d(LOG_TAG, "onCreateView");
-        sgView = (MultiColumnListView)inflater.inflate(R.layout.feed_fragment, container, false);
-        sgView.setOnItemClickListener(onItemClickListener);
+//        sgView = (MultiColumnListView)inflater.inflate(R.layout.feed_fragment, container, false);
+//        sgView.setOnItemClickListener(onItemClickListener);
+        sgView = (ListView)inflater.inflate(R.layout.feed_fragment, container, false);
         return sgView;
     }
 
