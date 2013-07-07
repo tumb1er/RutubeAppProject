@@ -18,6 +18,7 @@ import com.android.volley.toolbox.Volley;
 import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.tools.BitmapLruCache;
 import ru.rutube.RutubeFeed.R;
+import ru.rutube.RutubeFeed.views.ThumbnailView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -60,7 +61,10 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         Log.d(getClass().getName(), "new view");
-        return inflater.inflate(item_layout_id, null);
+        View view = inflater.inflate(item_layout_id, null);
+        ThumbnailView thumbnailView = (ThumbnailView)view.findViewById(R.id.thumbnailImageView);
+        thumbnailView.setDefaultImageResId(R.drawable.stub);
+        return view;
     }
 
     @Override

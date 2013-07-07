@@ -28,6 +28,9 @@ public class TopRoundCornerBitmapProcessor implements BitmapProcessor {
 
     private static Bitmap roundCorners(Bitmap bitmap, ImageView imageView, int roundPixels) {
         Bitmap roundBitmap;
+        if (bitmap == null) {
+            return bitmap;
+        }
 
         int bw = bitmap.getWidth();
         int bh = bitmap.getHeight();

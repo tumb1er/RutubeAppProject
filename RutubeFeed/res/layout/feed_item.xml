@@ -5,7 +5,7 @@
               android:layout_height="wrap_content"
               android:padding="10dp">
 
-    <com.android.volley.toolbox.NetworkImageView
+    <ru.rutube.RutubeFeed.views.ThumbnailView
             android:id="@+id/thumbnailImageView"
             android:layout_weight="1"
             android:layout_width="fill_parent"
@@ -74,7 +74,7 @@
                     android:layout_height="fill_parent"
                     android:paddingTop="10dp">
 
-                <com.android.volley.toolbox.NetworkImageView
+                <ru.rutube.RutubeFeed.views.ThumbnailView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/avatarImageView"
