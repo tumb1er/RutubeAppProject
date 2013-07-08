@@ -23,8 +23,6 @@ import ru.rutube.RutubeAPI.requests.Requests;
  */
 public class User {
     public static final String USER_DETAILS = "userdetails";
-    public static final int TOKEN_RESULT = 1;
-    public static final int LOGIN_RESULT = 2;
     protected static final String TOKEN = "token";
     protected static final String USERNAME = "username";
     protected static final String PASSWORD = "password";
@@ -49,25 +47,15 @@ public class User {
                     String token = parseToken(response);
                     Bundle bundle = new Bundle();
                     bundle.putString(Constants.Result.TOKEN, token);
-                    requestListener.onResult(TOKEN_RESULT, bundle);
+                    requestListener.onResult(Requests.TOKEN, bundle);
                 } catch (JSONException e) {
                     RequestListener.RequestError error = new RequestListener.RequestError(e.getMessage());
-                    requestListener.onRequestError(TOKEN_RESULT, error);
+                    requestListener.onRequestError(Requests.TOKEN, error);
                 }
             }
         };
     }
-    Response.Listener<JSONObject> getLoginListener(final RequestListener requestListener)
-    {
-        return new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                Log.d(LOG_TAG, "onLoginResponse");
-                Bundle bundle = new Bundle();
-                requestListener.onResult(LOGIN_RESULT, bundle);
-            }
-        };
-    }
+
     Response.ErrorListener getErrorListener(final RequestListener requestListener)
     {
         return new Response.ErrorListener() {
@@ -77,13 +65,6 @@ public class User {
             }
         };
     }
-
-//    public void saveCookie(String cookie) {
-//        SharedPreferences prefs = mContext.getSharedPreferences(USER_DETAILS, Context.MODE_PRIVATE);
-//        SharedPreferences.Editor editor = prefs.edit();
-//        editor.putString(AUTH_COOKIE, cookie);
-//        editor.commit();
-//    }
 
     protected String parseToken(JSONObject data) throws JSONException {
         Log.d(LOG_TAG, "Result: " + data.toString());
@@ -101,11 +82,6 @@ public class User {
         SharedPreferences prefs = context.getSharedPreferences(USER_DETAILS, Context.MODE_PRIVATE);
         return prefs.getString(TOKEN, null);
     }
-
-//    public String getAuthCookie() {
-//        SharedPreferences prefs = mContext.getSharedPreferences(USER_DETAILS, Context.MODE_PRIVATE);
-//        return prefs.getString(AUTH_COOKIE, null);
-//    }
 
     public String getToken() {
         return mToken;
@@ -128,21 +104,6 @@ public class User {
         request.setTag(Requests.TOKEN);
         return request;
     }
-
-//    public JsonObjectRequest getLoginRequest(String email, String password) {
-//        String loginUri = RutubeAPI.getUrl(mContext, R.string.login_uri);
-//        JSONObject requestData = new JSONObject();
-//        try {
-//            requestData.put(EMAIL, email);
-//            requestData.put(PASSWORD, password);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, loginUri,
-//                requestData, loginListener, vollerErrorListener);
-//        request.setShouldCache(false);
-//        return request;
-//    }
 
     public boolean isAuthenticated() {
        return (mToken != null);
