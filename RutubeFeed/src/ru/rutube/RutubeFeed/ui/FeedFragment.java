@@ -27,8 +27,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpClientStack;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.huewu.pla.lib.MultiColumnListView;
-import com.huewu.pla.lib.internal.PLA_AdapterView;
+//import com.huewu.pla.lib.MultiColumnListView;
+//import com.huewu.pla.lib.internal.PLA_AdapterView;
 
 import ru.rutube.RutubeAPI.HttpTransport;
 import ru.rutube.RutubeAPI.content.ContentMatcher;
@@ -108,22 +108,22 @@ public class FeedFragment extends ListFragment {
         }
     };
 
-    private PLA_AdapterView.OnItemClickListener onItemClickListener = new PLA_AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(PLA_AdapterView<?> parent, View view, int position, long id) {
-            Cursor c = (Cursor) getListAdapter().getItem(position);
-            int videoIdIndex = c.getColumnIndex(FeedContract.FeedColumns._ID);
-            String videoId = c.getString(videoIdIndex);
-            Log.d(getClass().getName(), "Clicked " + videoId);
-            Intent intent = new Intent(getActivity(), PlayerActivity.class);
-            Uri uri = Uri.parse(getActivity().getString(R.string.base_uri))
-                    .buildUpon()
-                    .appendPath("video")
-                    .appendPath(videoId).build();
-            intent.setData(uri);
-            startActivity(intent);
-        }
-    };
+//    private PLA_AdapterView.OnItemClickListener onItemClickListener = new PLA_AdapterView.OnItemClickListener() {
+//        @Override
+//        public void onItemClick(PLA_AdapterView<?> parent, View view, int position, long id) {
+//            Cursor c = (Cursor) getListAdapter().getItem(position);
+//            int videoIdIndex = c.getColumnIndex(FeedContract.FeedColumns._ID);
+//            String videoId = c.getString(videoIdIndex);
+//            Log.d(getClass().getName(), "Clicked " + videoId);
+//            Intent intent = new Intent(getActivity(), PlayerActivity.class);
+//            Uri uri = Uri.parse(getActivity().getString(R.string.base_uri))
+//                    .buildUpon()
+//                    .appendPath("video")
+//                    .appendPath(videoId).build();
+//            intent.setData(uri);
+//            startActivity(intent);
+//        }
+//    };
 
 //
 //    private AbsListView.OnScrollListener onScrollListener = new AbsListView.OnScrollListener() {
