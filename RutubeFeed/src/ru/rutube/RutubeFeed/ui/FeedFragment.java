@@ -2,7 +2,6 @@ package ru.rutube.RutubeFeed.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.app.ListFragment;
 import android.app.LoaderManager;
 import android.content.Context;
@@ -224,9 +223,7 @@ public class FeedFragment extends ListFragment {
                 new HttpClientStack(HttpTransport.getHttpClient()));
         initFeedUri();
         initContentUri();
-        String token = User.getToken(getActivity());
-        Log.d(LOG_TAG, "Token: " + String.valueOf(token));
-        mFeed = new Feed(new User(token), feedUri, contentUri);
+        mFeed = new Feed(User.load(getActivity()), feedUri, contentUri);
     }
 
     @Override

@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import ru.rutube.RutubeAPI.models.Auth;
+
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubeFeed.ui.FeedActivity;
@@ -24,7 +24,6 @@ public class StartActivity extends FeedActivity implements LoginFragment.LoginLi
     private static final String TAB_SUBSCRIPTIONS = "subscription";
     private static final String TAB_LOGIN = "login";
     private String selectedTab;
-    private Auth auth;
     private HashMap<String, ActionBar.Tab> tabs = new HashMap<String, ActionBar.Tab>();
     private HashMap<String, Fragment> fragments = new HashMap<String, Fragment>();
 
@@ -36,7 +35,6 @@ public class StartActivity extends FeedActivity implements LoginFragment.LoginLi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         //layoutRedId = R.layout.start_activity;
-        auth = Auth.from(this);
         getIntent().setData(buildFeedUri(R.string.editors_uri));
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null)
@@ -88,15 +86,6 @@ public class StartActivity extends FeedActivity implements LoginFragment.LoginLi
         selectedTab = (String)tag;
         if (tag.equals(TAB_EDITORS)) {
             id = R.string.editors_uri;
-        } else if (!auth.checkLoginState()) {
-
-            selectedTab = TAB_LOGIN;
-            Fragment loginFragment = fragments.get(selectedTab);
-            if (loginFragment == null) {
-             loginFragment = new LoginFragment();
-                fragments.put(selectedTab, loginFragment);
-            }
-            return loginFragment;
         }
         if (tag.equals(TAB_MY_VIDEO)) {
             id = R.string.my_video_uri;
