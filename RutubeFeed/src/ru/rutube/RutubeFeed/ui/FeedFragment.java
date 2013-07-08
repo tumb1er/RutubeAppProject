@@ -37,6 +37,7 @@ import ru.rutube.RutubeAPI.models.Feed;
 import ru.rutube.RutubeAPI.models.User;
 import ru.rutube.RutubeAPI.requests.RequestListener;
 import ru.rutube.RutubeFeed.R;
+import ru.rutube.RutubeFeed.ctrl.FeedController;
 import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
 import ru.rutube.RutubePlayer.ui.PlayerActivity;
 
@@ -47,28 +48,13 @@ import ru.rutube.RutubePlayer.ui.PlayerActivity;
  * Time: 12:56
  * To change this template use File | Settings | File Templates.
  */
-public class FeedFragment extends ListFragment {
-    private static final int LOADER_ID = 1;
+public class FeedFragment extends ListFragment implements FeedController.FeedView {
     private static final String LOG_TAG = FeedFragment.class.getName();
-    private static final String[] PROJECTION = {
-            FeedContract.FeedColumns._ID,
-            FeedContract.FeedColumns.TITLE,
-            FeedContract.FeedColumns.DESCRIPTION,
-            FeedContract.FeedColumns.CREATED,
-            FeedContract.FeedColumns.THUMBNAIL_URI,
-            FeedContract.FeedColumns.AUTHOR_NAME,
-            FeedContract.FeedColumns.AVATAR_URI
-    };
-    protected static final int SELECT_VIDEO_REQUEST = 0;
-    protected static final int SHOOT_VIDEO_REQUEST = 1;
     private MenuItem refreshItem;
-    private boolean loading;
-    private int perPage;
     private Uri feedUri;
 //    private MultiColumnListView sgView;
     private ListView sgView;
-    private RequestQueue mRequestQueue;
-    private Feed mFeed;
+    private FeedController mController;
 
     public ListAdapter getListAdapter() {
         return sgView.getAdapter();
@@ -76,35 +62,7 @@ public class FeedFragment extends ListFragment {
     public void setListAdapter(ListAdapter adapter) {
         sgView.setAdapter(adapter);
     }
-    private LoaderManager.LoaderCallbacks<Cursor> loaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
 
-        @Override
-        public Loader<Cursor> onCreateLoader(int loaderId, Bundle arg1) {
-            return new CursorLoader(
-                    getActivity(),
-                    mFeed.getContentUri(),
-                    PROJECTION,
-                    null,
-                    null,
-                    null
-            );
-        }
-
-        @Override
-        public void onLoadFinished(Loader<Cursor> arg0, Cursor cursor) {
-            Log.d(LOG_TAG, "onLoadFinished " + String.valueOf(cursor.getCount()));
-            ((CursorAdapter) getListAdapter()).swapCursor(cursor);
-            if (cursor.getCount() < perPage) {
-                Log.d(LOG_TAG, "load more from olf");
-                loadPage((cursor.getCount() + perPage) / perPage);
-            }
-        }
-
-        @Override
-        public void onLoaderReset(Loader<Cursor> arg0) {
-            ((CursorAdapter) getListAdapter()).swapCursor(null);
-        }
-    };
 
 //    private PLA_AdapterView.OnItemClickListener onItemClickListener = new PLA_AdapterView.OnItemClickListener() {
 //        @Override
@@ -162,7 +120,8 @@ public class FeedFragment extends ListFragment {
         intent.setData(uri);
         startActivity(intent);
     }
-    private void showError() {
+
+    public void showError() {
         Activity activity = getActivity();
         if (activity != null)
         {
@@ -174,72 +133,26 @@ public class FeedFragment extends ListFragment {
                     show();
         }
         doneRefreshing();
-        loading = false;
     }
-    private FeedCursorAdapter.LoadMoreListener loadMoreListener = new FeedCursorAdapter.LoadMoreListener(){
-
-        @Override
-        public void onLoadMore() {
-            ListAdapter adapter = getListAdapter();
-            loadPage((adapter.getCount() + perPage) / perPage);
-        }
-    };
-
-    private void loadPage(int page) {
-        loading = true;
-        setRefreshing();
-        JsonObjectRequest request = mFeed.getFeedRequest(page, getActivity(), mLoadPageRequestListener);
-        mRequestQueue.add(request);
-    }
-
-    private RequestListener mLoadPageRequestListener = new RequestListener() {
-        @Override
-        public void onResult(int tag, Bundle result) {
-            Log.d(LOG_TAG, "onRequestFinished");
-            if (sgView.getAdapter().getCount() == 0)
-                getActivity().getContentResolver().notifyChange(mFeed.getContentUri(), null);
-            perPage = result.getInt(Constants.Result.PER_PAGE);
-            doneRefreshing();
-            loading = false;
-        }
-
-        @Override
-        public void onVolleyError(VolleyError error) {
-            showError();
-        }
-
-        @Override
-        public void onRequestError(int tag, RequestError error) {
-            showError();
-        }
-    };
 
     private void init() {
-        // TODO: remove after transfer to DRF-2.3
-        mRequestQueue = Volley.newRequestQueue(getActivity(),
-                new HttpClientStack(HttpTransport.getHttpClient()));
         initFeedUri();
-        mFeed = new Feed(feedUri, getActivity());
+        mController = new FeedController(feedUri);
+        mController.attach(getActivity(), this);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mController.detach();
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Log.d(LOG_TAG, "onActivityCreated");
-        init();
         setHasOptionsMenu(true);
-        perPage = 20;
-        FeedCursorAdapter adapter = new FeedCursorAdapter(getActivity(),
-                R.layout.feed_item,
-                null,
-                new String[]{FeedContract.FeedColumns.TITLE, FeedContract.FeedColumns.THUMBNAIL_URI},
-                new int[]{R.id.titleTextView, R.id.thumbnailImageView},
-                0);
-        adapter.setLoadMoreListener(loadMoreListener);
-        setListAdapter(adapter);
-        getLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks);
-        //getListView().setOnScrollListener(onScrollListener);
-        loadPage(1);
+        init();
     }
 
     private void initFeedUri() {
@@ -250,54 +163,6 @@ public class FeedFragment extends ListFragment {
             feedUri = getActivity().getIntent().getData();
         Log.d(LOG_TAG, "Feed Uri:" + String.valueOf(feedUri));
     }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
-//        int menu_id = item.getItemId();
-//        if (menu_id == R.id.menu_refresh) {
-//            loadPage(1);
-//        }
-//        if (menu_id == R.id.menu_upload_gallery) {
-//            selectVideo();
-//        }
-//        if (menu_id == R.id.menu_upload_shoot) {
-//            shootVideo();
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
-
-    private void shootVideo() {
-        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-        startActivityForResult(intent, SHOOT_VIDEO_REQUEST);
-    }
-
-    private void selectVideo() {
-        Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-        i.setType("video/*");
-        startActivityForResult(Intent.createChooser(i, getString(R.string.select_video)), SELECT_VIDEO_REQUEST);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case SELECT_VIDEO_REQUEST:
-                uploadVideo(data.getData());
-                break;
-            case SHOOT_VIDEO_REQUEST:
-                if (resultCode == Activity.RESULT_OK)
-                    uploadVideo(data.getData());
-                break;
-            default:
-                break;
-        }
-    }
-
-    private void uploadVideo(Uri videoUri) {
-        String uploadIntentAction = "ru.rutube.api.upload";
-        Intent intent = new Intent(uploadIntentAction);
-        intent.setData(videoUri);
-        getActivity().startActivity(intent);
-    }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
@@ -306,21 +171,25 @@ public class FeedFragment extends ListFragment {
         super.onPrepareOptionsMenu(menu);
     }
 
-    private void setRefreshing() {
+    public void setRefreshing() {
         if (refreshItem == null) {
             Log.d(LOG_TAG, "empty refresh item");
             return;
         }
-        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        Activity activity = getActivity();
+        if (activity == null)
+            return;
+        LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         ImageView iv = (ImageView) inflater.inflate(R.layout.refresh_btn, null);
-
-        Animation rotation = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate_icon);
+        assert iv != null;
+        Animation rotation = AnimationUtils.loadAnimation(activity, R.anim.rotate_icon);
+        assert rotation != null;
         rotation.setRepeatCount(Animation.INFINITE);
         iv.startAnimation(rotation);
         refreshItem.setActionView(iv);
     }
 
-    private void doneRefreshing() {
+    public void doneRefreshing() {
         if (refreshItem == null)
             return;
         View actionView = refreshItem.getActionView();
