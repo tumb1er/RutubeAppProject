@@ -65,7 +65,6 @@ public class FeedFragment extends ListFragment {
     private boolean loading;
     private int perPage;
     private Uri feedUri;
-    private Uri contentUri;
 //    private MultiColumnListView sgView;
     private ListView sgView;
     private RequestQueue mRequestQueue;
@@ -81,10 +80,9 @@ public class FeedFragment extends ListFragment {
 
         @Override
         public Loader<Cursor> onCreateLoader(int loaderId, Bundle arg1) {
-            Log.d(LOG_TAG, "onCreateLoader: " + contentUri.toString());
             return new CursorLoader(
                     getActivity(),
-                    contentUri,
+                    mFeed.getContentUri(),
                     PROJECTION,
                     null,
                     null,
@@ -190,7 +188,6 @@ public class FeedFragment extends ListFragment {
     private void loadPage(int page) {
         loading = true;
         setRefreshing();
-        Log.d(LOG_TAG, "Started loading page: " + feedUri.toString() + "; " + String.valueOf(contentUri));
         JsonObjectRequest request = mFeed.getFeedRequest(page, getActivity(), mLoadPageRequestListener);
         mRequestQueue.add(request);
     }
@@ -200,7 +197,7 @@ public class FeedFragment extends ListFragment {
         public void onResult(int tag, Bundle result) {
             Log.d(LOG_TAG, "onRequestFinished");
             if (sgView.getAdapter().getCount() == 0)
-                getActivity().getContentResolver().notifyChange(contentUri, null);
+                getActivity().getContentResolver().notifyChange(mFeed.getContentUri(), null);
             perPage = result.getInt(Constants.Result.PER_PAGE);
             doneRefreshing();
             loading = false;
@@ -222,8 +219,7 @@ public class FeedFragment extends ListFragment {
         mRequestQueue = Volley.newRequestQueue(getActivity(),
                 new HttpClientStack(HttpTransport.getHttpClient()));
         initFeedUri();
-        initContentUri();
-        mFeed = new Feed(User.load(getActivity()), feedUri, contentUri);
+        mFeed = new Feed(feedUri, getActivity());
     }
 
     @Override
@@ -244,12 +240,6 @@ public class FeedFragment extends ListFragment {
         getLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks);
         //getListView().setOnScrollListener(onScrollListener);
         loadPage(1);
-    }
-
-    private void initContentUri() {
-        ContentMatcher contentMatcher = ContentMatcher.from(getActivity());
-        contentUri = contentMatcher.getContentUri(feedUri);
-        Log.d(LOG_TAG, "CUri: " + String.valueOf(contentUri));
     }
 
     private void initFeedUri() {

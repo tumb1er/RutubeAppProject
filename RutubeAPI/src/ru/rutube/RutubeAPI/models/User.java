@@ -47,6 +47,16 @@ public class User {
     }
 
     /**
+     * Загружает токен из файла настроек приложения
+     * @param context контекст для доступа к файлу настроек
+     * @return токен авторизации
+     */
+    public static String loadToken(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(USER_DETAILS, Context.MODE_PRIVATE);
+        return prefs.getString(TOKEN, null);
+    }
+
+    /**
      * Сохраняет данные авторизации в файле настроек приложения
      * @param context контекст для доступа к файлу настроек
      * @param token токен авторизации
@@ -129,16 +139,6 @@ public class User {
     protected String parseToken(JSONObject data) throws JSONException {
         Log.d(LOG_TAG, "Result: " + data.toString());
         return data.getString(TOKEN);
-    }
-
-    /**
-     * Загружает токен из файла настроек приложения
-     * @param context контекст для доступа к файлу настроек
-     * @return токен авторизации
-     */
-    private static String loadToken(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences(USER_DETAILS, Context.MODE_PRIVATE);
-        return prefs.getString(TOKEN, null);
     }
 
     /**
