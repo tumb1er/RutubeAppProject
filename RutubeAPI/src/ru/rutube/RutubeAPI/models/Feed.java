@@ -31,7 +31,6 @@ import ru.rutube.RutubeAPI.requests.Requests;
 public class Feed<FeedItemT extends FeedItem> {
     protected static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static final String LOG_TAG = Feed.class.getName();
-    private static final int FEED_RESULT = 0;
     private final User mUser;
     private final String mFeedUrl;
     private int mPerPage;
@@ -51,10 +50,10 @@ public class Feed<FeedItemT extends FeedItem> {
             public void onResponse(JSONObject response) {
                 try {
                     Bundle bundle = parseFeedPage(context, response);
-                    requestListener.onResult(FEED_RESULT, bundle);
+                    requestListener.onResult(Requests.FEED_PAGE, bundle);
                 } catch (JSONException e) {
                     RequestListener.RequestError error = new RequestListener.RequestError(e.getMessage());
-                    requestListener.onRequestError(FEED_RESULT, error);
+                    requestListener.onRequestError(Requests.FEED_PAGE, error);
                 }
             }
         };

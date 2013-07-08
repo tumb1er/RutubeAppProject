@@ -26,8 +26,6 @@ import ru.rutube.RutubeAPI.requests.Requests;
  */
 public class Video {
     public final static SimpleDateFormat dtf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-    public static final int VIDEO_RESULT = 1; // TODO: GET /api/video/<id>/
-    public static final int TRACK_INFO_RESUILT = 2;
 
     private static final String LOG_TAG = Video.class.getName();
     private static final String JSON_CREATED = "created_ts";
@@ -83,13 +81,13 @@ public class Video {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    Trackinfo ti = parseTrackInfo(response);
+                    TrackInfo ti = parseTrackInfo(response);
                     Bundle bundle = new Bundle();
                     bundle.putParcelable(Constants.Result.TRACKINFO, ti);
-                    requestListener.onResult(TRACK_INFO_RESUILT, bundle);
+                    requestListener.onResult(Requests.TRACK_INFO, bundle);
                 } catch (JSONException e) {
                     RequestListener.RequestError error = new RequestListener.RequestError(e.getMessage());
-                    requestListener.onRequestError(TRACK_INFO_RESUILT, error);
+                    requestListener.onRequestError(Requests.TRACK_INFO, error);
                 }
             }
         };
@@ -104,9 +102,9 @@ public class Video {
         };
     }
 
-    protected Trackinfo parseTrackInfo(JSONObject data) throws JSONException {
+    protected TrackInfo parseTrackInfo(JSONObject data) throws JSONException {
         Log.d(LOG_TAG, "Result: " + data.toString());
-        return Trackinfo.fromJSON(data);
+        return TrackInfo.fromJSON(data);
     }
 
     public JsonObjectRequest getTrackInfoRequest(Context context, RequestListener listener) {
