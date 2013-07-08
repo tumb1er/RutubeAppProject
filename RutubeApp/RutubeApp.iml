@@ -27,7 +27,7 @@
     <orderEntry type="module" module-name="RutubeAPI" />
     <orderEntry type="module" module-name="RutubeFeed" exported="" />
     <orderEntry type="module" module-name="RutubePlayer" />
-    <orderEntry type="module" module-name="volley" />
+    <orderEntry type="module" module-name="volley" scope="PROVIDED" />
     <orderEntry type="module" module-name="RutubeAPI" />
     <orderEntry type="module" module-name="RutubeFeed" />
   </component>

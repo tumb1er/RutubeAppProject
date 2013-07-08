@@ -106,6 +106,10 @@ public class User {
 //        return prefs.getString(AUTH_COOKIE, null);
 //    }
 
+    public String getToken() {
+        return mToken;
+    }
+
     public JsonObjectRequest getTokenRequest(String email, String password, Context context,
                                              RequestListener requestListener) {
         String loginUri = RutubeAPI.getUrl(context, R.string.token_uri);

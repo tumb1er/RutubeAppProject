@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat;
 import ru.rutube.RutubeAPI.R;
 import ru.rutube.RutubeAPI.RutubeAPI;
 import ru.rutube.RutubeAPI.content.FeedContract;
+import ru.rutube.RutubeAPI.requests.AuthJsonObjectRequest;
 import ru.rutube.RutubeAPI.requests.RequestListener;
 
 /**
@@ -111,9 +112,9 @@ public class Feed<FeedItemT extends FeedItem> {
 
     public JsonObjectRequest getFeedRequest(int page, Context context, RequestListener requestListener) {
         String fullUrl = String.format("%s?page=%d", mFeedUrl, page);
-        JsonObjectRequest request = new JsonObjectRequest(fullUrl, null,
+        JsonObjectRequest request = new AuthJsonObjectRequest(fullUrl, null,
                 getFeedPageListener(context, requestListener),
-                getErrorListener(requestListener));
+                getErrorListener(requestListener), mUser.getToken());
         request.setShouldCache(true);
         return request;
     }

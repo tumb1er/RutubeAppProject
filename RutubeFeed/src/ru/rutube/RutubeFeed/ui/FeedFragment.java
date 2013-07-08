@@ -35,6 +35,7 @@ import ru.rutube.RutubeAPI.content.ContentMatcher;
 import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeAPI.models.Feed;
+import ru.rutube.RutubeAPI.models.User;
 import ru.rutube.RutubeAPI.requests.RequestListener;
 import ru.rutube.RutubeFeed.R;
 import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
@@ -223,7 +224,9 @@ public class FeedFragment extends ListFragment {
                 new HttpClientStack(HttpTransport.getHttpClient()));
         initFeedUri();
         initContentUri();
-        mFeed = new Feed(null, feedUri, contentUri);
+        String token = User.getToken(getActivity());
+        Log.d(LOG_TAG, "Token: " + String.valueOf(token));
+        mFeed = new Feed(new User(token), feedUri, contentUri);
     }
 
     @Override
