@@ -16,12 +16,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 
 import ru.rutube.RutubeAPI.R;
 import ru.rutube.RutubeAPI.RutubeAPI;
 import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.requests.AuthJsonObjectRequest;
 import ru.rutube.RutubeAPI.requests.RequestListener;
+import ru.rutube.RutubeAPI.requests.Requests;
 
 /**
  * Created by tumbler on 22.06.13.
@@ -32,7 +34,6 @@ public class Feed<FeedItemT extends FeedItem> {
     private static final int FEED_RESULT = 0;
     private final User mUser;
     private final String mFeedUrl;
-    private int mLastPage;
     private int mPerPage;
     private Uri mContentUri;
 
@@ -40,12 +41,7 @@ public class Feed<FeedItemT extends FeedItem> {
         mUser = user;
         mFeedUrl = feedUrl.toString();
         mContentUri = contentUri;
-        init();
-    }
-
-    private void init() {
-        this.mLastPage = 0;
-        this.mPerPage = 0;
+        mPerPage = 0;
     }
 
     Response.Listener<JSONObject> getFeedPageListener(final Context context, final RequestListener requestListener)
@@ -67,8 +63,8 @@ public class Feed<FeedItemT extends FeedItem> {
     protected Bundle parseFeedPage(Context context, JSONObject response) throws JSONException {
         Bundle bundle = new Bundle();
         JSONArray data = response.getJSONArray("results");
-        int perPage = response.getInt("per_page");
-        bundle.putInt(Constants.Result.PER_PAGE, perPage);
+        mPerPage = response.getInt("per_page");
+        bundle.putInt(Constants.Result.PER_PAGE, mPerPage);
         ContentValues[] feedItems = new ContentValues[data.length()];
         for (int i = 0; i < data.length(); ++i) {
             ContentValues row = new ContentValues();
@@ -88,7 +84,7 @@ public class Feed<FeedItemT extends FeedItem> {
             }
             feedItems[i] = row;
         }
-        Log.d(LOG_TAG, "Inserting items: " + String.valueOf(feedItems));
+        Log.d(LOG_TAG, "Inserting items: " + Arrays.toString(feedItems));
         try {
             context.getContentResolver().bulkInsert(mContentUri, feedItems);
         } catch (Exception e) {
@@ -116,6 +112,7 @@ public class Feed<FeedItemT extends FeedItem> {
                 getFeedPageListener(context, requestListener),
                 getErrorListener(requestListener), mUser.getToken());
         request.setShouldCache(true);
+        request.setTag(Requests.FEED_PAGE);
         return request;
     }
 }

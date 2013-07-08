@@ -19,6 +19,7 @@ import java.util.Date;
 import ru.rutube.RutubeAPI.R;
 import ru.rutube.RutubeAPI.RutubeAPI;
 import ru.rutube.RutubeAPI.requests.RequestListener;
+import ru.rutube.RutubeAPI.requests.Requests;
 
 /**
  * Created by tumbler on 16.06.13.
@@ -114,6 +115,7 @@ public class Video {
         JsonObjectRequest request = new JsonObjectRequest(trackInfoUri,
                 null, getTrackInfoListener(listener), getErrorListener(listener));
         request.setShouldCache(true);
+        request.setTag(Requests.TRACK_INFO);
         return request;
     }
 

@@ -16,6 +16,7 @@ import org.json.JSONObject;
 import ru.rutube.RutubeAPI.R;
 import ru.rutube.RutubeAPI.RutubeAPI;
 import ru.rutube.RutubeAPI.requests.RequestListener;
+import ru.rutube.RutubeAPI.requests.Requests;
 
 /**
  * Created by tumbler on 16.06.13.
@@ -124,6 +125,7 @@ public class User {
                 requestData, getTokenListener(requestListener),
                 getErrorListener(requestListener));
         request.setShouldCache(true);
+        request.setTag(Requests.TOKEN);
         return request;
     }
 
