@@ -2,3 +2,15 @@ Android клиента для сайта rutube.ru
 ===================================
 http://rutube.ru
 
+
+Старт разработки
+----------------
+
+Для получения git externals необходимо выполнить
+
+    git submodule init
+    git submodule update
+
+Также необходимо импортировать сторонние проекты:
+
+1. RutubeAPI/libs/volley

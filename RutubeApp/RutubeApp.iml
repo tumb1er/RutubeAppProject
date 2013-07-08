@@ -13,7 +13,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/gen" isTestSource="false" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="Android 4.2.2" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library">
       <library>
@@ -28,6 +28,8 @@
     <orderEntry type="module" module-name="RutubeFeed" exported="" />
     <orderEntry type="module" module-name="RutubePlayer" />
     <orderEntry type="module" module-name="volley" />
+    <orderEntry type="module" module-name="RutubeAPI" />
+    <orderEntry type="module" module-name="RutubeFeed" />
   </component>
 </module>
 
