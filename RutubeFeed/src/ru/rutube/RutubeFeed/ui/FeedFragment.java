@@ -63,62 +63,20 @@ public class FeedFragment extends ListFragment implements FeedController.FeedVie
         sgView.setAdapter(adapter);
     }
 
-
-//    private PLA_AdapterView.OnItemClickListener onItemClickListener = new PLA_AdapterView.OnItemClickListener() {
-//        @Override
-//        public void onItemClick(PLA_AdapterView<?> parent, View view, int position, long id) {
-//            Cursor c = (Cursor) getListAdapter().getItem(position);
-//            int videoIdIndex = c.getColumnIndex(FeedContract.FeedColumns._ID);
-//            String videoId = c.getString(videoIdIndex);
-//            Log.d(getClass().getName(), "Clicked " + videoId);
-//            Intent intent = new Intent(getActivity(), PlayerActivity.class);
-//            Uri uri = Uri.parse(getActivity().getString(R.string.base_uri))
-//                    .buildUpon()
-//                    .appendPath("video")
-//                    .appendPath(videoId).build();
-//            intent.setData(uri);
-//            startActivity(intent);
-//        }
-//    };
-
-//
-//    private AbsListView.OnScrollListener onScrollListener = new AbsListView.OnScrollListener() {
-//        @Override
-//        public void onScrollStateChanged(AbsListView absListView, int i) {
-//
-//        }
-//
-//        @Override
-//        public void onScroll(AbsListView absListView, int firstVisible, int visibleCount, int totalCount) {
-//            boolean loadMore = /* maybe add a padding */
-//                    firstVisible + visibleCount >= totalCount - perPage / 2;
-//
-//            Log.d(LOG_TAG, String.format("OnScroll: %d + %d >= %d - %d", firstVisible, visibleCount, totalCount, perPage / 2));
-//            if (loadMore) {
-//                int new_page = (totalCount + perPage) / perPage;
-//                Log.d(LOG_TAG, "new page: " + String.valueOf(new_page));
-//                if (!loading) {
-//                    Log.d(LOG_TAG, "Load more");
-//                    loadPage(new_page);
-//                }
-//
-//            }
-//        }
-//    };
-
-    //@Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        Cursor c = (Cursor) getListAdapter().getItem(position);
-        int videoIdIndex = c.getColumnIndex(FeedContract.FeedColumns._ID);
-        String videoId = c.getString(videoIdIndex);
-        Log.d(getClass().getName(), "Clicked " + videoId);
-        Intent intent = new Intent(getActivity(), PlayerActivity.class);
-        Uri uri = Uri.parse(getActivity().getString(R.string.base_uri))
-                .buildUpon()
-                .appendPath("video")
-                .appendPath(videoId).build();
+    @Override
+    public void openPlayer(Uri uri) {
+        Activity activity = getActivity();
+        assert activity != null;
+        // TODO: перевести на intent-filter
+        Intent intent = new Intent(activity, PlayerActivity.class);
         intent.setData(uri);
         startActivity(intent);
+    }
+
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        mController.onListItemClick(position);
     }
 
     public void showError() {
@@ -159,8 +117,11 @@ public class FeedFragment extends ListFragment implements FeedController.FeedVie
         Bundle args = getArguments();
         if (args != null)
             feedUri = args.getParcelable(Constants.Params.FEED_URI);
-        if (feedUri == null)
-            feedUri = getActivity().getIntent().getData();
+        if (feedUri == null) {
+            Activity activity = getActivity();
+            assert activity != null;
+            feedUri = activity.getIntent().getData();
+        }
         Log.d(LOG_TAG, "Feed Uri:" + String.valueOf(feedUri));
     }
 

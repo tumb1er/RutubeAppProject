@@ -24,6 +24,7 @@ import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeAPI.models.Feed;
 import ru.rutube.RutubeAPI.requests.RequestListener;
+import ru.rutube.RutubeAPI.requests.Requests;
 import ru.rutube.RutubeFeed.R;
 import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
 
@@ -31,9 +32,10 @@ import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
  * Created by tumbler on 08.07.13.
  */
 public class FeedController implements Parcelable {
-    private final Uri mFeedUri;
-    private static final int LOADER_ID = 1;
 
+    /**
+     * Контракт пользовательского интерфейса
+     */
     public interface FeedView {
         public ListAdapter getListAdapter();
         public void setListAdapter(ListAdapter adapter);
@@ -41,7 +43,10 @@ public class FeedController implements Parcelable {
         public void doneRefreshing();
         public void showError();
         public LoaderManager getLoaderManager();
+        public void openPlayer(Uri uri);
     }
+
+    private static final int LOADER_ID = 1;
     private static final String LOG_TAG = FeedController.class.getName();
     private static final String[] PROJECTION = {
             FeedContract.FeedColumns._ID,
@@ -53,12 +58,13 @@ public class FeedController implements Parcelable {
             FeedContract.FeedColumns.AVATAR_URI
     };
 
+    private Uri mFeedUri;
     private Feed mFeed;
     private Context mContext;
     private FeedView mView;
     private int mPerPage = 10;
     private RequestQueue mRequestQueue;
-    private boolean mLoading = false;
+    private int mLoading = 0;
     private boolean mAttached = false;
 
 
@@ -68,6 +74,28 @@ public class FeedController implements Parcelable {
         mFeedUri = feedUri;
     }
 
+    /**
+     * По клику на элементе ленты открывает плеер
+     * @param position индекс выбранного элемента
+     */
+    public void onListItemClick(int position) {
+        Cursor c = (Cursor) mView.getListAdapter().getItem(position);
+        int videoIdIndex = c.getColumnIndex(FeedContract.FeedColumns._ID);
+        String videoId = c.getString(videoIdIndex);
+        Uri uri = Uri.parse(mContext.getString(R.string.base_uri))
+                .buildUpon()
+                .appendPath("video")
+                .appendPath(videoId).build();
+
+        mView.openPlayer(uri);
+    }
+
+    /**
+     * Присоединяется к контексту и пользовательскому интерфейсу,
+     * инициализирует объекты, зависящие от активити.
+     * @param context экземпляр активити
+     * @param view пользовательский интерфейс
+     */
     public void attach(Context context, FeedView view) {
         assert mContext == null;
         assert mView == null;
@@ -80,11 +108,54 @@ public class FeedController implements Parcelable {
         FeedCursorAdapter adapter = prepareFeedCursorAdapter();
         mView.getLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks);
         mView.setListAdapter(adapter);
-        loadPage(1);
-        Log.d(LOG_TAG, "Attached!");
         mAttached = true;
+        loadPage(1);
     }
 
+    /**
+     * Отсоединяется от останавливаемой активити
+     */
+    public  void detach() {
+        mContext = null;
+        mView = null;
+        mRequestQueue.cancelAll(Requests.FEED_PAGE);
+        mRequestQueue = null;
+        mAttached = false;
+    }
+
+    // Реализация Parcelable
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeParcelable(mFeedUri, i);
+    }
+
+    public static FeedController fromParcel(Parcel in) {
+        Uri feedUri = in.readParcelable(Uri.class.getClassLoader());
+        return new FeedController(feedUri);
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public static final Parcelable.Creator<FeedController> CREATOR
+            = new Parcelable.Creator<FeedController>() {
+        public FeedController createFromParcel(Parcel in) {
+            return FeedController.fromParcel(in);
+        }
+
+        public FeedController[] newArray(int size) {
+            return new FeedController[size];
+        }
+    };
+
+    /**
+     * Настраивает адаптер данных
+     * @return
+     */
     private FeedCursorAdapter prepareFeedCursorAdapter() {
         FeedCursorAdapter adapter = new FeedCursorAdapter(mContext,
                 R.layout.feed_item,
@@ -96,13 +167,10 @@ public class FeedController implements Parcelable {
         return adapter;
     }
 
-    public  void detach() {
-        mContext = null;
-        mView = null;
-        mRequestQueue = null;
-        mAttached = false;
-    }
 
+    /**
+     * Обрабатывает события "нужно загрузить следующую страницу", приходящие от адаптера
+     */
     private FeedCursorAdapter.LoadMoreListener loadMoreListener = new FeedCursorAdapter.LoadMoreListener(){
 
         @Override
@@ -112,17 +180,20 @@ public class FeedController implements Parcelable {
         }
     };
 
+    /**
+     * Обработчик ответа от API ленты
+     */
     private RequestListener mLoadPageRequestListener = new RequestListener() {
         @Override
         public void onResult(int tag, Bundle result) {
-            Log.d(LOG_TAG, "onRequestFinished");
             if (!mAttached)
                 return;
             if (mView.getListAdapter().getCount() == 0)
                 mContext.getContentResolver().notifyChange(mFeed.getContentUri(), null);
             mPerPage = result.getInt(Constants.Result.PER_PAGE);
-            mView.doneRefreshing();
-            mLoading = false;
+            if (mLoading > 0) mLoading -= 1;
+            if (mLoading == 0)
+                mView.doneRefreshing();
         }
 
         @Override
@@ -136,6 +207,9 @@ public class FeedController implements Parcelable {
         }
     };
 
+    /**
+     * Обработчик запросов к БД
+     */
     private LoaderManager.LoaderCallbacks<Cursor> loaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
 
         @Override
@@ -166,22 +240,16 @@ public class FeedController implements Parcelable {
         }
     };
 
+    /**
+     * Запрашивает страницу API ленты
+     * @param page номер страницы с 1
+     */
     private void loadPage(int page) {
-        mLoading = true;
-        mView.setRefreshing();
+        if (mLoading == 0)
+            mView.setRefreshing();
+        mLoading += 1;
         JsonObjectRequest request = mFeed.getFeedRequest(page, mContext, mLoadPageRequestListener);
         mRequestQueue.add(request);
     }
 
-
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-
-    }
 }
