@@ -17,13 +17,9 @@ import com.android.volley.toolbox.HttpClientStack;
 import com.android.volley.toolbox.Volley;
 
 import org.apache.http.client.CookieStore;
-import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.cookie.BasicClientCookie;
 
-import java.util.List;
-
 import ru.rutube.RutubeAPI.HttpTransport;
-import ru.rutube.RutubeAPI.models.Auth;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeAPI.models.User;
 import ru.rutube.RutubeAPI.requests.RequestListener;

@@ -7,8 +7,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import ru.rutube.RutubeAPI.models.Auth;
+
 import ru.rutube.RutubeAPI.models.Constants;
+import ru.rutube.RutubeAPI.models.User;
 import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubeFeed.ui.FeedActivity;
 import ru.rutube.RutubeFeed.ui.FeedFragment;
@@ -24,9 +25,9 @@ public class StartActivity extends FeedActivity implements LoginFragment.LoginLi
     private static final String TAB_SUBSCRIPTIONS = "subscription";
     private static final String TAB_LOGIN = "login";
     private String selectedTab;
-    private Auth auth;
     private HashMap<String, ActionBar.Tab> tabs = new HashMap<String, ActionBar.Tab>();
     private HashMap<String, Fragment> fragments = new HashMap<String, Fragment>();
+    private User mUser;
 
     @Override
     public void setContentView(int layoutResId) {
@@ -36,7 +37,7 @@ public class StartActivity extends FeedActivity implements LoginFragment.LoginLi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         //layoutRedId = R.layout.start_activity;
-        auth = Auth.from(this);
+        mUser = new User(User.getToken(this));
         getIntent().setData(buildFeedUri(R.string.editors_uri));
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null)
@@ -88,7 +89,7 @@ public class StartActivity extends FeedActivity implements LoginFragment.LoginLi
         selectedTab = (String)tag;
         if (tag.equals(TAB_EDITORS)) {
             id = R.string.editors_uri;
-        } else if (!auth.checkLoginState()) {
+        } else if (!mUser.isAuthenticated()) {
 
             selectedTab = TAB_LOGIN;
             Fragment loginFragment = fragments.get(selectedTab);

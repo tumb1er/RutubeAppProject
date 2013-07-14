@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.UriMatcher;
 import android.net.Uri;
 import android.util.Log;
+
 import ru.rutube.RutubeAPI.R;
 
 import java.util.HashMap;
@@ -37,6 +38,7 @@ public class ContentMatcher {
     public Uri getContentUri(Uri rutube_uri) {
         Log.d(LOG_TAG, "Matching " + rutube_uri.toString());
         String path = rutube_uri.getPath();
+        assert path != null;
         if (!path.endsWith("/"))
             path += "/";
         if (!path.startsWith("/"))
