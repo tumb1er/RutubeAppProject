@@ -20,7 +20,7 @@ import com.android.volley.toolbox.Volley;
 
 import ru.rutube.RutubeAPI.HttpTransport;
 import ru.rutube.RutubeAPI.models.Constants;
-import ru.rutube.RutubeAPI.models.Trackinfo;
+import ru.rutube.RutubeAPI.models.TrackInfo;
 import ru.rutube.RutubeAPI.models.Video;
 import ru.rutube.RutubeAPI.requests.RequestListener;
 import ru.rutube.RutubePlayer.R;
@@ -83,7 +83,7 @@ public class PlayerFragment extends Fragment {
     protected RequestListener mTrackInfoRequestListener = new RequestListener() {
         @Override
         public void onResult(int tag, Bundle result) {
-            Trackinfo trackInfo = result.getParcelable(Constants.Result.TRACKINFO);
+            TrackInfo trackInfo = result.getParcelable(Constants.Result.TRACKINFO);
             streamUri = trackInfo.getBalancerUrl();
             startPlayback();
         }

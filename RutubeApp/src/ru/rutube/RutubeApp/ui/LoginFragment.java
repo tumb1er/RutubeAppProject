@@ -100,7 +100,7 @@ public class LoginFragment extends Fragment {
     }
 
     private void init() {
-        mUser = new User(User.getToken(getActivity()));
+        mUser = User.load(getActivity());
 
         // TODO: remove after transfer to DRF-2.3
         mRequestQueue = Volley.newRequestQueue(getActivity(),
