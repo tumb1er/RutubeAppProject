@@ -4,6 +4,9 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
+
+import com.android.volley.VolleyLog;
 
 import java.util.HashMap;
 
@@ -18,6 +21,8 @@ public class MainPageController implements Parcelable {
     private static final String TAB_EDITORS = "editors";
     private static final String TAB_MY_VIDEO = "my_video";
     private static final String TAB_SUBSCRIPTIONS = "subscription";
+    private static final String LOG_TAG = MainPageController.class.getName();
+
     private HashMap<String, Uri> feedUriMap;
 
     public interface MainPageView {
@@ -25,6 +30,8 @@ public class MainPageController implements Parcelable {
         void selectTab(String tag);
 
         void showFeedFragment(String tag, Uri feedUri);
+
+        void showLoginDialog();
     }
 
     private Context mContext = null;
@@ -32,13 +39,24 @@ public class MainPageController implements Parcelable {
     private User mUser = null;
     private boolean mAttached = false;
     private String mSelectedTab;
+    private String mAfterLoginTab;
+    private boolean mTabsInited;
 
     public MainPageController() {
-        mSelectedTab = TAB_EDITORS;
+        this(TAB_EDITORS);
     }
 
     public MainPageController(String selectedTab) {
         mSelectedTab = selectedTab;
+        mAfterLoginTab = null;
+        mTabsInited = false;
+    }
+
+    public void loginSuccessful() {
+        mUser = User.load(mContext);
+        Uri feedUri = feedUriMap.get(mAfterLoginTab);
+        mSelectedTab = mAfterLoginTab;
+        mView.showFeedFragment(mAfterLoginTab, feedUri);
     }
 
     public void attach(Context context, MainPageView view) {
@@ -66,24 +84,37 @@ public class MainPageController implements Parcelable {
 
     public void initTabs() {
         assert mAttached;
+        // После добавления вкладки она автоматически делается активной, поэтому опускаем
+        // флажок, разрешающий обработку события смены активной вкладки.
+        mTabsInited = false;
         mView.addFeedTab(mContext.getString(ru.rutube.RutubeFeed.R.id.editors_feed), TAB_EDITORS);
         mView.addFeedTab(mContext.getString(ru.rutube.RutubeFeed.R.id.my_video), TAB_MY_VIDEO);
         mView.addFeedTab(mContext.getString(ru.rutube.RutubeFeed.R.id.subscriptions), TAB_SUBSCRIPTIONS);
+        mTabsInited = true;
+        Log.d(LOG_TAG, "selecting tab" + mSelectedTab);
         mView.selectTab(mSelectedTab);
+        mView.showFeedFragment(mSelectedTab, feedUriMap.get(mSelectedTab));
     }
 
 
     public void onTabSelected(String tag) {
+        if (!mTabsInited) {
+            Log.d(LOG_TAG, "skip onTabSelected");
+            return;
+        }
         if (tag != TAB_EDITORS && !mUser.isAuthenticated()) {
+            mAfterLoginTab = tag;
             showLoginDialog();
             return;
         }
         Uri feedUri = feedUriMap.get(tag);
+        mSelectedTab = tag;
+        Log.d(LOG_TAG, "Show fragment " + tag);
         mView.showFeedFragment(tag, feedUri);
     }
 
     private void showLoginDialog() {
-
+        mView.showLoginDialog();
     }
 
     @Override
@@ -99,6 +130,7 @@ public class MainPageController implements Parcelable {
 
     public static MainPageController fromParcel(Parcel in) {
         String selectedTab = in.readString();
+        Log.d(LOG_TAG, "From parcel: " + selectedTab);
         return new MainPageController(selectedTab);
     }
 

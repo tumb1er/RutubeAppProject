@@ -73,7 +73,6 @@ public class FeedFragment extends ListFragment implements FeedController.FeedVie
         startActivity(intent);
     }
 
-
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         mController.onListItemClick(position);

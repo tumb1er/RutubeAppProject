@@ -8,11 +8,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubeApp.ctrl.MainPageController;
-import ru.rutube.RutubeFeed.ui.FeedActivity;
 import ru.rutube.RutubeFeed.ui.FeedFragment;
 
 import java.util.HashMap;
@@ -40,6 +41,16 @@ public class StartActivity extends Activity implements MainPageController.MainPa
         initTabs();
     }
 
+    @Override
+    public void onAttachFragment(Fragment fragment) {
+        // После вызова super.onCreate из сохраненного состояния автоматически восстанавливается
+        // последний фрагмент.
+        super.onAttachFragment(fragment);
+        if (mFragmentMap.get(fragment.getTag()) == null)
+            mFragmentMap.put(fragment.getTag(), fragment);
+        mCurrentFragment = fragment;
+    }
+
     /**
      * Проксирует обработку выбора вкладки в контроллер, попутно запоминая текущую транзакцию
      * фрагмента для использования в обратном вызове
@@ -65,6 +76,12 @@ public class StartActivity extends Activity implements MainPageController.MainPa
 
     }
 
+    public void showLoginDialog() {
+        Intent intent = new Intent("ru.rutube.api.login_required");
+        Log.d(LOG_TAG, "Login activity started");
+        startActivityForResult(intent, LOGIN_REQUEST_CODE);
+    }
+
     /**
      * Делает активной вкладку с тегом
      * @param tag
@@ -85,8 +102,8 @@ public class StartActivity extends Activity implements MainPageController.MainPa
         tab.setText(title);
         tab.setTabListener(this);
         tab.setTag(tag);
-        actionBar.addTab(tab);
         mTabMap.put(tag, tab);
+        actionBar.addTab(tab);
     }
 
     /**
@@ -95,39 +112,14 @@ public class StartActivity extends Activity implements MainPageController.MainPa
      * @param feedUri uri ленты
      */
     public void showFeedFragment(String tag, Uri feedUri) {
-        // ищем фрагмент в локальном кэше
-        Fragment fragment = mFragmentMap.get(tag);
-        Boolean isNewFragment = false;
-        // не нашли, конструируем новый фрагмент с feedUri
-        if (fragment == null) {
-            fragment = createFeedFragment(feedUri);
-            // добавляем в кэш
-            isNewFragment = true;
-            mFragmentMap.put(tag, fragment);
-        }
-
         // Транзакция может уже быть открыта, если метод вызывается в обработчике таб-навигации,
         if (mFragmentTransaction != null){
-            // Скрываем старый фрагмент
-            if (mCurrentFragment != null){
-                mFragmentTransaction.hide(mCurrentFragment);
-            }
-            // Добавляем или показываем новый фрагмент
-            if (isNewFragment)
-            {
-                mFragmentTransaction.add(R.id.feed_fragment_container, fragment);
-            }
-            else {
-                mFragmentTransaction.show(fragment);
-            }
-        }
-        else {
-            // Заменяем заглушку на новый фрагмент
+            replaceFragmentInTransaction(mFragmentTransaction, tag, feedUri);
+        } else {
             FragmentTransaction ft = getFragmentManager().beginTransaction();
-            ft.replace(R.id.feed_fragment_container, fragment, tag);
+            replaceFragmentInTransaction(ft, tag, feedUri);
             ft.commit();
         }
-        mCurrentFragment = fragment;
     }
 
     @Override
@@ -140,9 +132,10 @@ public class StartActivity extends Activity implements MainPageController.MainPa
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(LOG_TAG, "onActivityResult");
         if (requestCode == LOGIN_REQUEST_CODE && resultCode == RESULT_OK) {
-            //processCurrentTab();
-            // TODO: обработка процесса авторизации
+            Log.d(LOG_TAG, "loginSuccessful");
+            mController.loginSuccessful();
         } else {
+            Log.d(LOG_TAG, "smth strange");
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
@@ -152,12 +145,35 @@ public class StartActivity extends Activity implements MainPageController.MainPa
      */
     private void initTabs() {
         Log.d(LOG_TAG, "initTabs");
-        getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        ActionBar actionBar = getActionBar();
+        assert actionBar != null;
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         mController.initTabs();
         Log.d(LOG_TAG, "initTabs done");
 
     }
 
+    /**
+     * Заменяет фрагмент ленты в UI рассчитывая на нахождение в контексте транзакции фрагмента.
+     */
+    private void replaceFragmentInTransaction(FragmentTransaction ft, String tag, Uri feedUri) {
+        // ищем фрагмент в локальном кэше
+        Fragment fragment = mFragmentMap.get(tag);
+        // не нашли, конструируем новый фрагмент с feedUri
+        if (fragment == null) {
+            fragment = createFeedFragment(feedUri);
+            // добавляем в кэш
+            mFragmentMap.put(tag, fragment);
+        }
+
+        if (mCurrentFragment != null){
+            if (mCurrentFragment.equals(fragment))
+                return;
+            ft.remove(mCurrentFragment);
+        }
+        ft.add(R.id.feed_fragment_container, fragment, tag);
+        mCurrentFragment = fragment;
+    }
     /**
      * Конструирует новый фрагмент с лентой
      * @param feedUri uri ленты
