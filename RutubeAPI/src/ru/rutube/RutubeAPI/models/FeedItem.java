@@ -1,6 +1,8 @@
 package ru.rutube.RutubeAPI.models;
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -12,6 +14,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import ru.rutube.RutubeAPI.R;
+import ru.rutube.RutubeAPI.RutubeAPI;
 import ru.rutube.RutubeAPI.content.FeedContract;
 
 /**
@@ -187,6 +191,29 @@ public class FeedItem implements Parcelable {
             row.put(FeedContract.FeedColumns.AUTHOR_NAME, author.getName());
             row.put(FeedContract.FeedColumns.AVATAR_URI, author.getAvatarUrl().toString());
         }
+
+    }
+
+    public Uri getVideoUri(Context context) {
+        String url = String.format(RutubeAPI.getUrl(context, R.string.video_page_uri), videoId);
+        return Uri.parse(url);
+    }
+
+    public static FeedItem fromCursor(Cursor c) {
+        String videoId = c.getString(c.getColumnIndex(FeedContract.FeedColumns._ID));
+        String title = c.getString(c.getColumnIndex(FeedContract.FeedColumns.TITLE));
+        String description = c.getString(c.getColumnIndex(FeedContract.FeedColumns.DESCRIPTION));
+        Date created = null;
+        try {
+            created = sSqlDateTimeFormat.parse(c.getString(c.getColumnIndex(FeedContract.FeedColumns.CREATED)));
+        } catch (ParseException ignored) {}
+        Uri thumbnailUri = Uri.parse(c.getString(c.getColumnIndex(FeedContract.FeedColumns.THUMBNAIL_URI)));
+        int authorId = c.getInt(c.getColumnIndex(FeedContract.FeedColumns.AUTHOR_ID));
+        Author author = null;
+        if (authorId > 0) {
+             author = Author.fromCursor(c);
+        }
+        return new FeedItem(title, description, created, thumbnailUri, videoId, author);
 
     }
 }

@@ -34,25 +34,33 @@ public class Video {
     private static final String JSON_DESCIPTION = "description";
     private static final String JSON_THUMBNAIL_URL = "thumbnail_url";
     private static final String JSON_VIDEO_ID = "id";
+    private static final String JSON_VIDEO_URL = "video_url";
+    public static final String URI_SIGNATURE = "p";
     private String mVideoId;
     private String mTitle;
     private String mDescription;
     private Date mCreated;
     private Uri mThumbnailUri;
     private Author mAuthor;
+    private String mSignature;
 
 
     public Video(String videoId) {
-        this(videoId, null, null, null, null, null);
+        this(videoId, null, null, null, null, null, null);
     }
 
-    protected Video(String videoId, String title, String description, Date created, Uri thumbnailUri, Author author){
+    public Video(String videoId, String signature) {
+        this(videoId, signature, null, null, null, null, null);
+    }
+
+    protected Video(String videoId, String signature, String title, String description, Date created, Uri thumbnailUri, Author author){
         this.mVideoId = videoId;
         this.mTitle = title;
         this.mDescription = description;
         this.mCreated = created;
         this.mThumbnailUri = thumbnailUri;
         this.mAuthor = author;
+        this.mSignature = signature;
     }
     private static Date parseDate(String data) {
         try {
@@ -73,7 +81,9 @@ public class Video {
         Uri thumbnailUri = Uri.parse(data.getString(JSON_THUMBNAIL_URL));
         String videoId = data.getString(JSON_VIDEO_ID);
         Log.d(FeedItem.class.getName(), "Created item: " + videoId + " " + String.valueOf(created));
-        return new Video(videoId, title, description, created, thumbnailUri, author);
+        Uri videoUri = Uri.parse(data.getString(JSON_VIDEO_URL));
+        return new Video(videoId, videoUri.getQueryParameter(URI_SIGNATURE), title, description,
+                created, thumbnailUri, author);
     }
 
     protected Response.Listener<JSONObject> getTrackInfoListener(final RequestListener requestListener) {
@@ -110,10 +120,13 @@ public class Video {
     public JsonObjectRequest getTrackInfoRequest(Context context, RequestListener listener) {
         String trackInfoPath = String.format(context.getString(R.string.trackinfo_uri), mVideoId);
         String trackInfoUri = RutubeAPI.getUrl(context, trackInfoPath);
+        if (mSignature != null)
+            trackInfoUri += String.format("?p=%s", mSignature);
         JsonObjectRequest request = new JsonObjectRequest(trackInfoUri,
                 null, getTrackInfoListener(listener), getErrorListener(listener));
         request.setShouldCache(true);
         request.setTag(Requests.TRACK_INFO);
+        Log.d(LOG_TAG, "Trackinfo URL: " + trackInfoUri);
         return request;
     }
 

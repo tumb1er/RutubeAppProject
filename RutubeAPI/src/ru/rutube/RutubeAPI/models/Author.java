@@ -1,10 +1,13 @@
 package ru.rutube.RutubeAPI.models;
 
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import ru.rutube.RutubeAPI.content.FeedContract;
 
 /**
  * Created with IntelliJ IDEA.
@@ -76,5 +79,12 @@ public class Author implements Parcelable {
         parcel.writeParcelable(avatarUrl, i);
         parcel.writeInt(id);
         parcel.writeString(name);
+    }
+
+    public static Author fromCursor(Cursor c) {
+        int authorID = c.getInt(c.getColumnIndex(FeedContract.FeedColumns.AUTHOR_ID));
+        String authorName = c.getString(c.getColumnIndex(FeedContract.FeedColumns.AUTHOR_NAME));
+        Uri avatarUri = Uri.parse(c.getString(c.getColumnIndex(FeedContract.FeedColumns.AVATAR_URI)));
+        return new Author(avatarUri, authorID, authorName);
     }
 }

@@ -19,10 +19,16 @@ import com.android.volley.toolbox.HttpClientStack;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import ru.rutube.RutubeAPI.HttpTransport;
+import ru.rutube.RutubeAPI.content.FeedContentProvider;
 import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeAPI.models.Feed;
+import ru.rutube.RutubeAPI.models.FeedItem;
 import ru.rutube.RutubeAPI.requests.RequestListener;
 import ru.rutube.RutubeAPI.requests.Requests;
 import ru.rutube.RutubeFeed.R;
@@ -48,16 +54,6 @@ public class FeedController implements Parcelable {
 
     private static final int LOADER_ID = 1;
     private static final String LOG_TAG = FeedController.class.getName();
-    private static final String[] PROJECTION = {
-            FeedContract.FeedColumns._ID,
-            FeedContract.FeedColumns.TITLE,
-            FeedContract.FeedColumns.DESCRIPTION,
-            FeedContract.FeedColumns.CREATED,
-            FeedContract.FeedColumns.THUMBNAIL_URI,
-            FeedContract.FeedColumns.AUTHOR_NAME,
-            FeedContract.FeedColumns.AVATAR_URI
-    };
-
     private Uri mFeedUri;
     private Feed mFeed;
     private Context mContext;
@@ -74,18 +70,15 @@ public class FeedController implements Parcelable {
         mFeedUri = feedUri;
     }
 
+
     /**
      * По клику на элементе ленты открывает плеер
      * @param position индекс выбранного элемента
      */
     public void onListItemClick(int position) {
         Cursor c = (Cursor) mView.getListAdapter().getItem(position);
-        int videoIdIndex = c.getColumnIndex(FeedContract.FeedColumns._ID);
-        String videoId = c.getString(videoIdIndex);
-        Uri uri = Uri.parse(mContext.getString(R.string.base_uri))
-                .buildUpon()
-                .appendPath("video")
-                .appendPath(videoId).build();
+        FeedItem item = Feed.loadFeedItem(mContext, c, mFeedUri);
+        Uri uri = item.getVideoUri(mContext);
 
         mView.openPlayer(uri);
     }
@@ -217,7 +210,7 @@ public class FeedController implements Parcelable {
             return new CursorLoader(
                     mContext,
                     mFeed.getContentUri(),
-                    PROJECTION,
+                    FeedContentProvider.getProjection(mFeed.getContentUri()),
                     null,
                     null,
                     null

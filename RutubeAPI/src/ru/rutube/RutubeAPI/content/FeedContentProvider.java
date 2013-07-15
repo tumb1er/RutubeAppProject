@@ -211,6 +211,20 @@ public class FeedContentProvider extends ContentProvider {
     }
 
     private void checkColumns(HashSet<String> requestedColumns, int uriType) {
+        String[] columnList = getProjection(uriType);
+
+        HashSet<String> availableColumns = new HashSet<String>(Arrays.asList(columnList));
+        if (!availableColumns.containsAll(requestedColumns)) {
+            throw new IllegalArgumentException("Unknown columns in projection");
+        }
+
+    }
+
+    public static String[] getProjection(Uri contentUri) {
+        int uriType = sUriMatcher.match(contentUri);
+        return getProjection(uriType);
+    }
+    public static String[] getProjection(int uriType) {
         String[] available = {
                 FeedContract.FeedColumns._ID,
                 FeedContract.FeedColumns.TITLE,
@@ -225,12 +239,8 @@ public class FeedContentProvider extends ContentProvider {
         ArrayList<String> columnList = new ArrayList<String>(Arrays.asList(available));
         if (uriType == MY_VIDEO || uriType == MY_VIDEO_FEEDITEM)
             columnList.add(FeedContract.MyVideo.SIGNATURE);
-
-        HashSet<String> availableColumns = new HashSet<String>(columnList);
-        if (!availableColumns.containsAll(requestedColumns)) {
-            throw new IllegalArgumentException("Unknown columns in projection");
-        }
-
+        String[] result = new String[columnList.size()];
+        return columnList.toArray(result);
     }
 
     private void checkColumns(String[] values, int uriType) {

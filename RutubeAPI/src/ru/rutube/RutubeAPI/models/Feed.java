@@ -2,6 +2,7 @@ package ru.rutube.RutubeAPI.models;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -39,11 +40,15 @@ public class Feed<FeedItemT extends FeedItem> {
      */
     public Feed(Uri feedUri, Context context) {
         String token = User.loadToken(context);
-        ContentMatcher contentMatcher = ContentMatcher.from(context);
-        Uri contentUri = contentMatcher.getContentUri(feedUri);
+        Uri contentUri = getContentUri(feedUri, context);
         mToken = token;
         mFeedUri = feedUri;
         mContentUri = contentUri;
+    }
+
+    private static Uri getContentUri(Uri feedUri, Context context) {
+        ContentMatcher contentMatcher = ContentMatcher.from(context);
+        return contentMatcher.getContentUri(feedUri);
     }
 
     /**
@@ -154,5 +159,15 @@ public class Feed<FeedItemT extends FeedItem> {
                 requestListener.onVolleyError(error);
             }
         };
+    }
+
+    public static FeedItem loadFeedItem(Context context, Cursor c, Uri feedUri) {
+        Uri contentUri = getContentUri(feedUri, context);
+        if (contentUri.equals(FeedContract.MyVideo.CONTENT_URI))
+            return MyVideoFeedItem.fromCursor(c);
+        return FeedItem.fromCursor(c);
+
+
+
     }
 }

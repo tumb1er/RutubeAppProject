@@ -1,6 +1,8 @@
 package ru.rutube.RutubeAPI.models;
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Parcel;
 
@@ -9,6 +11,8 @@ import org.json.JSONObject;
 
 import java.util.Date;
 
+import ru.rutube.RutubeAPI.R;
+import ru.rutube.RutubeAPI.RutubeAPI;
 import ru.rutube.RutubeAPI.content.FeedContract;
 
 /**
@@ -47,11 +51,32 @@ public class MyVideoFeedItem extends FeedItem {
         return new MyVideoFeedItem(item, signature);
     }
 
+    public static MyVideoFeedItem fromCursor(Cursor c) {
+        FeedItem item = FeedItem.fromCursor(c);
+        String signature = c.getString(c.getColumnIndex(FeedContract.MyVideo.SIGNATURE));
+        return new MyVideoFeedItem(item, signature);
+    }
+
+    public Uri getVideoUri(Context context) {
+        String url;
+        if (mSignature == null){
+            url = String.format(RutubeAPI.getUrl(context, R.string.video_page_uri),
+                getVideoId());
+            return Uri.parse(url);
+        } else {
+            url = String.format(RutubeAPI.getUrl(context, R.string.video_private_uri),
+                    getVideoId());
+            return Uri.parse(url).buildUpon().appendQueryParameter(URI_SIGNATURE, mSignature).build();
+        }
+    }
+
     @Override
     public void fillRow(ContentValues row) {
         super.fillRow(row);
         row.put(FeedContract.MyVideo.SIGNATURE, mSignature);
     }
+
+
 
     public String getSignature() {
         return mSignature;
