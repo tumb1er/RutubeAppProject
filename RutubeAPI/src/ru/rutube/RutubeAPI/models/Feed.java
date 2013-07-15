@@ -27,7 +27,6 @@ import ru.rutube.RutubeAPI.requests.Requests;
  * Created by tumbler on 22.06.13.
  */
 public class Feed<FeedItemT extends FeedItem> {
-    protected static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static final String LOG_TAG = Feed.class.getName();
     private final String mToken;
     private final Uri mFeedUri;
@@ -84,7 +83,7 @@ public class Feed<FeedItemT extends FeedItem> {
         ContentValues[] feedItems = new ContentValues[data.length()];
         for (int i = 0; i < data.length(); ++i) {
             JSONObject data_item = data.getJSONObject(i);
-            FeedItem item = FeedItemT.fromJSON(data_item);
+            FeedItem item = constructFeedItem(data_item);
             ContentValues row = fillRow(item);
             feedItems[i] = row;
         }
@@ -101,6 +100,14 @@ public class Feed<FeedItemT extends FeedItem> {
 
     }
 
+    private FeedItem constructFeedItem(JSONObject data_item) throws JSONException {
+        if (mContentUri.equals(FeedContract.MyVideo.CONTENT_URI)) {
+            Log.d(LOG_TAG, "Overriding FeedItem class, return MyVideoFeedItem");
+            return MyVideoFeedItem.fromJSON(data_item);
+        }
+        return FeedItem.fromJSON(data_item);
+    }
+
     /**
      * Сохраняет запись из ленты в БД
      * @param item запись ленты
@@ -108,20 +115,7 @@ public class Feed<FeedItemT extends FeedItem> {
      */
     protected ContentValues fillRow(FeedItem item) {
         ContentValues row = new ContentValues();
-
-        row.put(FeedContract.FeedColumns._ID, item.getVideoId());
-        row.put(FeedContract.FeedColumns.TITLE, item.getTitle());
-        row.put(FeedContract.FeedColumns.DESCRIPTION, item.getDescription());
-        row.put(FeedContract.FeedColumns.CREATED, sdf.format(item.getCreated()));
-        row.put(FeedContract.FeedColumns.THUMBNAIL_URI, item.getThumbnailUri().toString());
-
-        Author author = item.getAuthor();
-        if (author != null) {
-            row.put(FeedContract.FeedColumns.AUTHOR_ID, author.getId());
-            row.put(FeedContract.FeedColumns.AUTHOR_NAME, author.getName());
-            row.put(FeedContract.FeedColumns.AVATAR_URI, author.getAvatarUrl().toString());
-        }
-
+        item.fillRow(row);
         return row;
     }
 

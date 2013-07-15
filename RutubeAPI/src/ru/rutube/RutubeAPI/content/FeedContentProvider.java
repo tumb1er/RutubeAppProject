@@ -60,11 +60,11 @@ public class FeedContentProvider extends ContentProvider {
         // Using SQLiteQueryBuilder instead of query() method
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
 
-        // Check if the caller has requested a column which does not exists
-        checkColumns(projection);
 
 
         int uriType = sUriMatcher.match(uri);
+        // Check if the caller has requested a column which does not exists
+        checkColumns(projection, uriType);
         switch (uriType) {
             case EDITORS:
                 queryBuilder.setTables(FeedContract.Editors.CONTENT_PATH);
@@ -152,9 +152,9 @@ public class FeedContentProvider extends ContentProvider {
             Log.d(LOG_TAG, "empty bulk insert");
             return 0;
         }
-        checkColumns(values[0]);
         String table;
         int uriType = sUriMatcher.match(uri);
+        checkColumns(values[0], uriType);
 
         switch (uriType) {
             case EDITORS:
@@ -199,19 +199,20 @@ public class FeedContentProvider extends ContentProvider {
         return 0;
     }
 
-    private void checkColumns(ContentValues values) {
+    private void checkColumns(ContentValues values, int uriType) {
         // ContentValues.keySet in 2.3 just stops the whole thread without exception
         if (values != null) {
             HashSet<String> requestedColumns = new HashSet<String>();
             for (Map.Entry<String, Object> entry : values.valueSet()) {
                 requestedColumns.add(entry.getKey());
             }
-            checkColumns(requestedColumns);
+            checkColumns(requestedColumns, uriType);
         }
     }
 
-    private void checkColumns(HashSet<String> requestedColumns) {
-        String[] available = {FeedContract.FeedColumns._ID,
+    private void checkColumns(HashSet<String> requestedColumns, int uriType) {
+        String[] available = {
+                FeedContract.FeedColumns._ID,
                 FeedContract.FeedColumns.TITLE,
                 FeedContract.FeedColumns.DESCRIPTION,
                 FeedContract.FeedColumns.CREATED,
@@ -220,22 +221,27 @@ public class FeedContentProvider extends ContentProvider {
                 FeedContract.FeedColumns.AUTHOR_NAME,
                 FeedContract.FeedColumns.AVATAR_URI
         };
-        HashSet<String> availableColumns = new HashSet<String>(Arrays.asList(available));
+
+        ArrayList<String> columnList = new ArrayList<String>(Arrays.asList(available));
+        if (uriType == MY_VIDEO || uriType == MY_VIDEO_FEEDITEM)
+            columnList.add(FeedContract.MyVideo.SIGNATURE);
+
+        HashSet<String> availableColumns = new HashSet<String>(columnList);
         if (!availableColumns.containsAll(requestedColumns)) {
             throw new IllegalArgumentException("Unknown columns in projection");
         }
 
     }
 
-    private void checkColumns(String[] values) {
+    private void checkColumns(String[] values, int uriType) {
         HashSet<String> requestedColumns = new HashSet<String>();
         if (values != null) {
             Collections.addAll(requestedColumns, values);
-            checkColumns(requestedColumns);
+            checkColumns(requestedColumns, uriType);
         }
     }
 
-    private static final String FEED_COLUMNS_SQL = "(" +
+    private static final String FEED_COLUMNS_SQL =
             " _id VARCHAR(32) PRIMARY KEY," +
             " title VARCHAR(255)," +
             " description VARCHAR(1024)," +
@@ -243,27 +249,30 @@ public class FeedContentProvider extends ContentProvider {
             " created DATETIME," +
             " author_id INTEGER NULL," +
             " author_name VARCHAR(120)," +
-            " avatar_url VARCHAR(255)" +
-            ")";
+            " avatar_url VARCHAR(255)";
+
+    private static final String MY_VIDEO_COLUMNS_SQL =
+            FEED_COLUMNS_SQL + "," +
+                    " signature VARCHAR(30) NULL";
     private static final String SQL_CREATE_VIDEO_EDITORS = "CREATE TABLE " +
-            FeedContract.Editors.CONTENT_PATH + " " +
-            FEED_COLUMNS_SQL;
+            FeedContract.Editors.CONTENT_PATH + " (" +
+            FEED_COLUMNS_SQL + ")";
 
     private static final String SQL_CREATE_VIDEO_MY_VIDEO = "CREATE TABLE " +
-            FeedContract.MyVideo.CONTENT_PATH + " " +
-            FEED_COLUMNS_SQL;
+            FeedContract.MyVideo.CONTENT_PATH + " (" +
+            MY_VIDEO_COLUMNS_SQL + ")";
 
     private static final String SQL_CREATE_VIDEO_SUBSCRIPTION = "CREATE TABLE " +
-            FeedContract.Subscriptions.CONTENT_PATH + " " +
-            FEED_COLUMNS_SQL;
+            FeedContract.Subscriptions.CONTENT_PATH + " (" +
+            FEED_COLUMNS_SQL + ")";
 
     protected static final class MainDatabaseHelper extends SQLiteOpenHelper {
 
 
-        /*
-                 * Instantiates an open helper for the provider's SQLite data repository
-                 * Do not do database creation and upgrade here.
-                 */
+        /**
+         * Instantiates an open helper for the provider's SQLite data repository
+         * Do not do database creation and upgrade here.
+         */
         MainDatabaseHelper(Context context) {
             super(context, DBNAME, null, 1);
         }

@@ -1,5 +1,6 @@
 package ru.rutube.RutubeAPI.models;
 
+import android.content.ContentValues;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -11,6 +12,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import ru.rutube.RutubeAPI.content.FeedContract;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Сергей
@@ -19,7 +22,8 @@ import java.util.Date;
  * To change this template use File | Settings | File Templates.
  */
 public class FeedItem implements Parcelable {
-    public final static SimpleDateFormat dtf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    public final static SimpleDateFormat sJsonDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    public static final SimpleDateFormat sSqlDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     protected static final String JSON_TITLE = "title";
     protected static final String JSON_DESCIPTION = "description";
     protected static final String JSON_CREATED = "created_ts";
@@ -49,7 +53,7 @@ public class FeedItem implements Parcelable {
         String description = parcel.readString();
         Date created;
         try {
-            created = dtf.parse(parcel.readString());
+            created = sJsonDateTimeFormat.parse(parcel.readString());
         } catch (ParseException e) {
             created = new Date(0);
         } catch (NullPointerException e) {
@@ -78,7 +82,7 @@ public class FeedItem implements Parcelable {
             date = data.optString(JSON_CREATED);
         try {
             Log.d(FeedItem.class.getName(), "created: " + date);
-            return dtf.parse(date);
+            return sJsonDateTimeFormat.parse(date);
         } catch (ParseException e) {
             return new Date(0);
         } catch (NullPointerException e) {
@@ -140,7 +144,7 @@ public class FeedItem implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(getTitle());
         parcel.writeString(getDescription());
-        parcel.writeString(dtf.format(getCreated()));
+        parcel.writeString(sJsonDateTimeFormat.format(getCreated()));
         parcel.writeParcelable(getThumbnailUri(), i);
         parcel.writeString(getVideoId());
         if (author != null) {
@@ -169,5 +173,20 @@ public class FeedItem implements Parcelable {
 
     public String getVideoId() {
         return videoId;
+    }
+
+    public void fillRow(ContentValues row) {
+        row.put(FeedContract.FeedColumns._ID, videoId);
+        row.put(FeedContract.FeedColumns.TITLE, title);
+        row.put(FeedContract.FeedColumns.DESCRIPTION, description);
+        row.put(FeedContract.FeedColumns.CREATED, sSqlDateTimeFormat.format(created));
+        row.put(FeedContract.FeedColumns.THUMBNAIL_URI, thumbnailUri.toString());
+
+        if (author != null) {
+            row.put(FeedContract.FeedColumns.AUTHOR_ID, author.getId());
+            row.put(FeedContract.FeedColumns.AUTHOR_NAME, author.getName());
+            row.put(FeedContract.FeedColumns.AVATAR_URI, author.getAvatarUrl().toString());
+        }
+
     }
 }

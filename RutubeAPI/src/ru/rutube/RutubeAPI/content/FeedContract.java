@@ -36,6 +36,8 @@ public final class FeedContract {
         public static final String CONTENT_PATH = "my_video";
         public static final Uri CONTENT_URI = Uri.withAppendedPath(FEED_URI, CONTENT_PATH);
         public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd." + FEED + "." + CONTENT_PATH;
+
+        public static final String SIGNATURE = "signature";
     }
 
     public static final class Subscriptions implements BaseColumns, FeedColumns {
