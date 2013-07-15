@@ -37,6 +37,9 @@ public class MainPageController implements Parcelable {
         mSelectedTab = TAB_EDITORS;
     }
 
+    public MainPageController(String selectedTab) {
+        mSelectedTab = selectedTab;
+    }
 
     public void attach(Context context, MainPageView view) {
         assert mContext == null;
@@ -91,11 +94,12 @@ public class MainPageController implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-
+        parcel.writeString(mSelectedTab);
     }
 
     public static MainPageController fromParcel(Parcel in) {
-        return new MainPageController();
+        String selectedTab = in.readString();
+        return new MainPageController(selectedTab);
     }
 
     @SuppressWarnings("UnusedDeclaration")

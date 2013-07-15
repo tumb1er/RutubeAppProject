@@ -136,6 +136,17 @@ public class StartActivity extends Activity implements MainPageController.MainPa
         outState.putParcelable(CONTROLLER, mController);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(LOG_TAG, "onActivityResult");
+        if (requestCode == LOGIN_REQUEST_CODE && resultCode == RESULT_OK) {
+            //processCurrentTab();
+            // TODO: обработка процесса авторизации
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
     /**
      * Настраивает таб-навигацию
      */
@@ -160,16 +171,7 @@ public class StartActivity extends Activity implements MainPageController.MainPa
         return fragment;
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(LOG_TAG, "onActivityResult");
-        if (requestCode == LOGIN_REQUEST_CODE && resultCode == RESULT_OK) {
-            //processCurrentTab();
-            // TODO: обработка процесса авторизации
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
+    // TODO: обработка ссылок
 
 //    @Override
 //    public void onLoginResult(int result) {
