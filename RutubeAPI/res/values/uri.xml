@@ -13,4 +13,6 @@
     <string name="login_uri">api/accounts/login/</string>
     <string name="upload_session_uri">api/uploader/upload_session/</string>
     <string name="upload_uri">upload/%s</string>
+    <string name="playoptions_uri">api/play/options/%s/</string>
+    <string name="referer">http://android.rutube.ru/</string>
 </resources>

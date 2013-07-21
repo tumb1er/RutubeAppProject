@@ -1,5 +1,6 @@
 package ru.rutube.RutubePlayer.ui;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Intent;
@@ -23,6 +24,7 @@ import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeAPI.models.TrackInfo;
 import ru.rutube.RutubeAPI.models.Video;
 import ru.rutube.RutubeAPI.requests.RequestListener;
+import ru.rutube.RutubeAPI.requests.Requests;
 import ru.rutube.RutubePlayer.R;
 
 import java.util.List;
@@ -39,6 +41,7 @@ public class PlayerFragment extends Fragment {
     private Uri streamUri;
 
     private RequestQueue mRequestQueue;
+    private volatile int mPlayRequestStage;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -60,6 +63,7 @@ public class PlayerFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        // TODO: задваивается старт проигрывания
         startPlayback();
     }
 
@@ -71,7 +75,10 @@ public class PlayerFragment extends Fragment {
     }
 
     private void showError() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        Activity activity = getActivity();
+        if (activity == null)
+            return;
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.
                 setTitle(android.R.string.dialog_alert_title).
                 setMessage(getString(R.string.faled_to_load_data)).
@@ -81,24 +88,44 @@ public class PlayerFragment extends Fragment {
     }
 
     protected RequestListener mTrackInfoRequestListener = new RequestListener() {
+
         @Override
         public void onResult(int tag, Bundle result) {
-            TrackInfo trackInfo = result.getParcelable(Constants.Result.TRACKINFO);
-            streamUri = trackInfo.getBalancerUrl();
-            startPlayback();
+            Log.d(LOG_TAG, "Received result for " + String.valueOf(tag));
+            if (tag == Requests.TRACK_INFO) {
+                TrackInfo trackInfo = result.getParcelable(Constants.Result.TRACKINFO);
+                assert trackInfo != null;
+                streamUri = trackInfo.getBalancerUrl();
+                mPlayRequestStage++;
+            }
+            if (tag == Requests.PLAY_OPTIONS) {
+                Boolean allowed = result.getBoolean(Constants.Result.ACL_ALLOWED);
+                if (!allowed) {
+                    Log.w(LOG_TAG, "Playback not allowed");
+                    showError();
+                    return;
+                }
+                mPlayRequestStage++;
+            }
+            if (mPlayRequestStage == 2) {
+                Log.d(LOG_TAG, "OK, playing");
+                startPlayback();
+            } else
+                Log.d(LOG_TAG, "Not ready yet");
         }
 
         @Override
         public void onVolleyError(VolleyError error) {
+            Log.e(LOG_TAG, error.toString());
             showError();
         }
 
         @Override
         public void onRequestError(int tag, RequestError error) {
+            Log.e(LOG_TAG, error.toString());
             showError();
         }
     };
-
 
     private void preparePlayback() {
         Intent intent = getActivity().getIntent();
@@ -110,21 +137,26 @@ public class PlayerFragment extends Fragment {
             if (segments.size() == 2) {
                 String videoId = segments.get(1);
                 Video video = new Video(videoId);
-                JsonObjectRequest request = video.getTrackInfoRequest(getActivity(),
-                        mTrackInfoRequestListener);
-                mRequestQueue.add(request);
+                startPlayRequests(video);
             } else if (segments.size() == 3) {
                 String videoId = segments.get(2);
                 String signature = uri.getQueryParameter("p");
                 Video video = new Video(videoId, signature);
-                JsonObjectRequest request = video.getTrackInfoRequest(getActivity(),
-                        mTrackInfoRequestListener);
-                mRequestQueue.add(request);
-
+                startPlayRequests(video);
             } else {
                 Log.d(LOG_TAG, "Incorrect Uri");
             }
         }
+    }
+
+    private void startPlayRequests(Video video) {
+        mPlayRequestStage = 0;
+        JsonObjectRequest request = video.getTrackInfoRequest(getActivity(),
+                mTrackInfoRequestListener);
+        mRequestQueue.add(request);
+        request = video.getPlayOptionsRequest(getActivity(),
+                mTrackInfoRequestListener);
+        mRequestQueue.add(request);
     }
 
     private void startPlayback() {

@@ -35,7 +35,9 @@ public class Video {
     private static final String JSON_THUMBNAIL_URL = "thumbnail_url";
     private static final String JSON_VIDEO_ID = "id";
     private static final String JSON_VIDEO_URL = "video_url";
-    public static final String URI_SIGNATURE = "p";
+    private static final String URI_SIGNATURE = "p";
+    private static final String JSON_ACL_ACCESS = "acl_access";
+    private static final String JSON_ALLOWED = "allowed";
     private String mVideoId;
     private String mTitle;
     private String mDescription;
@@ -103,6 +105,28 @@ public class Video {
         };
     }
 
+    protected  Response.Listener<JSONObject> getPlayOptionsListener(final RequestListener requestListener) {
+        return new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    Boolean allowed = parseAllowed(response);
+                    Bundle bundle = new Bundle();
+                    bundle.putBoolean(Constants.Result.ACL_ALLOWED, allowed);
+                    requestListener.onResult(Requests.PLAY_OPTIONS, bundle);
+                }  catch (JSONException e) {
+                    RequestListener.RequestError error = new RequestListener.RequestError(e.getMessage());
+                    requestListener.onRequestError(Requests.PLAY_OPTIONS, error);
+                }
+            }
+        };
+    }
+
+    private Boolean parseAllowed(JSONObject response) throws JSONException {
+        JSONObject acl = response.getJSONObject(JSON_ACL_ACCESS);
+        return acl.optBoolean(JSON_ALLOWED, false);
+    }
+
     protected Response.ErrorListener getErrorListener(final RequestListener requestListener){
         return new Response.ErrorListener() {
             @Override
@@ -127,6 +151,21 @@ public class Video {
         request.setShouldCache(true);
         request.setTag(Requests.TRACK_INFO);
         Log.d(LOG_TAG, "Trackinfo URL: " + trackInfoUri);
+        return request;
+    }
+
+    public JsonObjectRequest getPlayOptionsRequest(Context context, RequestListener listener) {
+        String playOptionsPath = String.format(context.getString(R.string.playoptions_uri), mVideoId);
+        String playOptionsUrl = RutubeAPI.getUrl(context, playOptionsPath);
+        Uri uri = Uri.parse(playOptionsUrl).buildUpon()
+                .appendQueryParameter("referer", context.getString(R.string.referer))
+                .build();
+        assert uri != null;
+        JsonObjectRequest request = new JsonObjectRequest(uri.toString(),
+                null, getPlayOptionsListener(listener), getErrorListener(listener));
+        request.setShouldCache(true);
+        request.setTag(Requests.PLAY_OPTIONS);
+        Log.d(LOG_TAG, "Play Options URL: " + uri.toString());
         return request;
     }
 

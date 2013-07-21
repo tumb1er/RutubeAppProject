@@ -14,6 +14,7 @@ public final class Constants {
         public static final String TOKEN = "ru.rutube.api.login.token";
         public static final String PROGRESS = "ru.rutube.api.upload.progress";
         public static final String AUTH_COOKIE = "ru.rutube.api.login.cookie";
+        public static final String ACL_ALLOWED = "ru.rutube.api.acl.allowed";
     }
 
     public final class Params {

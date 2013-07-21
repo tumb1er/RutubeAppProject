@@ -72,6 +72,7 @@ public class FeedController implements Parcelable {
      * @param position индекс выбранного элемента
      */
     public void onListItemClick(int position) {
+        Log.d(LOG_TAG, "onListItemClick");
         Cursor c = (Cursor) mView.getListAdapter().getItem(position);
         FeedItem item = Feed.loadFeedItem(mContext, c, mFeedUri);
         Uri uri = item.getVideoUri(mContext);
