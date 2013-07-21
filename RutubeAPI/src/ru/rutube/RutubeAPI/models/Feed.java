@@ -110,6 +110,10 @@ public class Feed<FeedItemT extends FeedItem> {
             Log.d(LOG_TAG, "Overriding FeedItem class, return MyVideoFeedItem");
             return MyVideoFeedItem.fromJSON(data_item);
         }
+        if (mContentUri.equals(FeedContract.Editors.CONTENT_URI)) {
+            Log.d(LOG_TAG, "Overriding FeedItem class, return EditorsFeedItem");
+            return EditorsFeedItem.fromJSON(data_item);
+        }
         return FeedItem.fromJSON(data_item);
     }
 
