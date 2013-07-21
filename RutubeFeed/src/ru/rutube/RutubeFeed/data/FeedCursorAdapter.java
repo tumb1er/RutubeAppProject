@@ -3,6 +3,7 @@ package ru.rutube.RutubeFeed.data;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -97,7 +98,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
             if (created != null)
                 tv.setText(getCreatedText(created));
             tv = (TextView) view.findViewById(R.id.descriptionTextView);
-            tv.setText(description);
+            tv.setText(Html.fromHtml(description));
             tv = (TextView) view.findViewById(R.id.authorTextView);
             tv.setText(authorName);
             NetworkImageView iv = (NetworkImageView) view.findViewById(R.id.thumbnailImageView);
