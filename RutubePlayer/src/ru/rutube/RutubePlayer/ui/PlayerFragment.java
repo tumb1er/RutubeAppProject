@@ -42,6 +42,8 @@ public class PlayerFragment extends Fragment {
 
     private RequestQueue mRequestQueue;
     private volatile int mPlayRequestStage;
+    private boolean mViewCounted = false;
+    private Video mVideo;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -136,13 +138,13 @@ public class PlayerFragment extends Fragment {
             Log.d(LOG_TAG, "Segments " + String.valueOf(segments));
             if (segments.size() == 2) {
                 String videoId = segments.get(1);
-                Video video = new Video(videoId);
-                startPlayRequests(video);
+                mVideo = new Video(videoId);
+                startPlayRequests(mVideo);
             } else if (segments.size() == 3) {
                 String videoId = segments.get(2);
                 String signature = uri.getQueryParameter("p");
-                Video video = new Video(videoId, signature);
-                startPlayRequests(video);
+                mVideo = new Video(videoId, signature);
+                startPlayRequests(mVideo);
             } else {
                 Log.d(LOG_TAG, "Incorrect Uri");
             }
@@ -167,6 +169,14 @@ public class PlayerFragment extends Fragment {
             vv.setVideoURI(streamUri);
             vv.setPadding(10, 0, 0, 0);
             vv.start();
+            Log.d(LOG_TAG, "started, counting yast");
+            if (!mViewCounted) {
+                Log.d(LOG_TAG, "mVideo: " + String.valueOf(mVideo));
+                JsonObjectRequest request = mVideo.getYastRequest(getActivity());
+                mRequestQueue.add(request);
+                mViewCounted = true;
+                Log.d(LOG_TAG, "yast viewed");
+            }
         } catch (NullPointerException e) {
             Log.d(LOG_TAG, "Not ready yet");
         }

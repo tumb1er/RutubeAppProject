@@ -45,6 +45,7 @@ public class Video {
     private Uri mThumbnailUri;
     private Author mAuthor;
     private String mSignature;
+    private TrackInfo mTrackInfo;
 
 
     public Video(String videoId) {
@@ -93,9 +94,9 @@ public class Video {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    TrackInfo ti = parseTrackInfo(response);
+                    mTrackInfo = parseTrackInfo(response);
                     Bundle bundle = new Bundle();
-                    bundle.putParcelable(Constants.Result.TRACKINFO, ti);
+                    bundle.putParcelable(Constants.Result.TRACKINFO, mTrackInfo);
                     requestListener.onResult(Requests.TRACK_INFO, bundle);
                 } catch (JSONException e) {
                     RequestListener.RequestError error = new RequestListener.RequestError(e.getMessage());
@@ -118,6 +119,15 @@ public class Video {
                     RequestListener.RequestError error = new RequestListener.RequestError(e.getMessage());
                     requestListener.onRequestError(Requests.PLAY_OPTIONS, error);
                 }
+            }
+        };
+    }
+
+    protected  Response.Listener<JSONObject> getYastListener() {
+        return new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
             }
         };
     }
@@ -167,6 +177,17 @@ public class Video {
         request.setTag(Requests.PLAY_OPTIONS);
         Log.d(LOG_TAG, "Play Options URL: " + uri.toString());
         return request;
+    }
+
+    public JsonObjectRequest getYastRequest(Context context) {
+        assert mTrackInfo != null;
+        String yastUrl = String.format(context.getString(R.string.yastUri), mTrackInfo.getTrackId());
+        Uri uri = Uri.parse(yastUrl).buildUpon()
+                .appendQueryParameter("referer", context.getString(R.string.referer))
+                .build();
+        assert uri != null;
+        Log.d(LOG_TAG, "Yast request: " + uri.toString());
+        return new JsonObjectRequest(uri.toString(), null, getYastListener(), null);
     }
 
     public String getVideoId() {

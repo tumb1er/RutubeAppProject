@@ -16,20 +16,25 @@ import org.json.JSONObject;
 public class TrackInfo implements Parcelable {
     public static final String VIDEO_BALANCER = "video_balancer";
     public static final String STREAM_TYPE_M3U8 = "m3u8";
-    private Uri balancerUrl;
+    private static final String JSON_TRACK_ID = "track_id";
+    private Uri mBalancerUrl;
+    private int mTrackId;
 
-    public TrackInfo(Uri balancerUrl) {
-        this.balancerUrl = balancerUrl;
+    public TrackInfo(Uri balancerUrl, int trackId) {
+        this.mBalancerUrl = balancerUrl;
+        this.mTrackId = trackId;
     }
 
     public static TrackInfo fromParcel(Parcel parcel) {
         Uri balancerUrl = parcel.readParcelable(Uri.class.getClassLoader());
-        return new TrackInfo(balancerUrl);
+        int trackId = parcel.readInt();
+        return new TrackInfo(balancerUrl, trackId);
     }
 
     public static TrackInfo fromJSON(JSONObject data) throws JSONException {
         JSONObject balancer = data.getJSONObject(VIDEO_BALANCER);
-        return new TrackInfo(Uri.parse(balancer.getString(STREAM_TYPE_M3U8)));
+        int trackId = data.getInt(JSON_TRACK_ID);
+        return new TrackInfo(Uri.parse(balancer.getString(STREAM_TYPE_M3U8)), trackId);
     }
 
     // Parcelable implementation
@@ -52,10 +57,15 @@ public class TrackInfo implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeParcelable(balancerUrl, i);
+        parcel.writeParcelable(mBalancerUrl, i);
+        parcel.writeInt(mTrackId);
     }
 
     public Uri getBalancerUrl() {
-        return balancerUrl;
+        return mBalancerUrl;
+    }
+
+    public int getTrackId(){
+        return mTrackId;
     }
 }
