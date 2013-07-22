@@ -19,6 +19,7 @@
     <orderEntry type="module" module-name="volley" />
     <orderEntry type="module" module-name="RutubeAPI" />
     <orderEntry type="module" module-name="RutubePlayer" />
+    <orderEntry type="library" name="android-support-v4" level="project" />
   </component>
 </module>
 

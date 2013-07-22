@@ -3,42 +3,22 @@ package ru.rutube.RutubeFeed.ui;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListFragment;
-import android.app.LoaderManager;
 import android.content.Context;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.*;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpClientStack;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-//import com.huewu.pla.lib.MultiColumnListView;
-//import com.huewu.pla.lib.internal.PLA_AdapterView;
-
-import ru.rutube.RutubeAPI.HttpTransport;
-import ru.rutube.RutubeAPI.content.ContentMatcher;
-import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.models.Constants;
-import ru.rutube.RutubeAPI.models.Feed;
-import ru.rutube.RutubeAPI.models.User;
-import ru.rutube.RutubeAPI.requests.RequestListener;
 import ru.rutube.RutubeFeed.R;
 import ru.rutube.RutubeFeed.ctrl.FeedController;
-import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
+import ru.rutube.RutubePlayer.ui.FragmentPlayer;
 import ru.rutube.RutubePlayer.ui.PlayerActivity;
 
 /**
@@ -52,7 +32,6 @@ public class FeedFragment extends ListFragment implements FeedController.FeedVie
     private static final String LOG_TAG = FeedFragment.class.getName();
     private MenuItem refreshItem;
     private Uri feedUri;
-//    private MultiColumnListView sgView;
     private ListView sgView;
     private FeedController mController;
 
@@ -162,8 +141,6 @@ public class FeedFragment extends ListFragment implements FeedController.FeedVie
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
         Log.d(LOG_TAG, "onCreateView");
-//        sgView = (MultiColumnListView)inflater.inflate(R.layout.feed_fragment, container, false);
-//        sgView.setOnItemClickListener(onItemClickListener);
         sgView = (ListView)inflater.inflate(R.layout.feed_fragment, container, false);
         return sgView;
     }
