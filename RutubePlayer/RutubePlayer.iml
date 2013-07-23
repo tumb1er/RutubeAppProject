@@ -18,6 +18,8 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="RutubeAPI" />
     <orderEntry type="module" module-name="volley" />
+    <orderEntry type="library" name="android-support-v4" level="project" />
+    <orderEntry type="module" module-name="VitamioBundle" />
   </component>
 </module>
 

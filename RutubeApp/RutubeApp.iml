@@ -29,6 +29,7 @@
     <orderEntry type="module" module-name="RutubeFeed" />
     <orderEntry type="module" module-name="RutubePlayer" />
     <orderEntry type="module" module-name="PinterestLikeAdapterView" />
+    <orderEntry type="module" module-name="VitamioBundle" />
   </component>
 </module>
 

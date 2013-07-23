@@ -1,14 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:background="#000000"
+              android:orientation="vertical" >
 
-    <fragment
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:name="ru.rutube.RutubePlayer.ui.PlayerFragment"
-        android:id="@+id/fragment"
-        android:layout_gravity="center"/>
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+        <io.vov.vitamio.widget.CenterLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical" >
+
+            <io.vov.vitamio.widget.VideoView
+                    android:id="@+id/surface_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true" />
+        </io.vov.vitamio.widget.CenterLayout>
+        <RelativeLayout
+                android:id="@+id/adLayout"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_alignParentBottom="true"
+
+                >
+        </RelativeLayout>
+
+        <ProgressBar
+                android:id="@+id/load"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:visibility="visible" />
+
+        <TextView
+                android:id="@+id/empty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:text="@string/text_no_item"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:visibility="visible" />
+
+    </RelativeLayout>
+
 </LinearLayout>
