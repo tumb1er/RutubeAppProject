@@ -35,13 +35,13 @@ public class PlayerActivity extends FragmentActivity implements OnCompletionList
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.player_activity);
-
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
+        setContentView(R.layout.player_activity);
+        
         if (!LibsChecker.checkVitamioLibs(this))
             return;
 
