@@ -27,7 +27,8 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.provider.BaseColumns;
-import com.yixia.zi.utils.Log;
+
+import io.vov.vitamio.utils.Log;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

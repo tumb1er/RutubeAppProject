@@ -19,8 +19,9 @@ package io.vov.vitamio.provider;
 
 import android.net.Uri;
 import android.os.Environment;
-import com.yixia.zi.utils.Log;
+
 import io.vov.vitamio.provider.MediaStore.Video;
+import io.vov.vitamio.utils.Log;
 
 import java.io.File;
 import java.io.IOException;

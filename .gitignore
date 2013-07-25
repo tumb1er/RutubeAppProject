@@ -1,4 +1,5 @@
 RutubeApp/out/
+out/
 
 # files for the dex VM
 *.dex

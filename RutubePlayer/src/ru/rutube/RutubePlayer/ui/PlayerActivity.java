@@ -41,13 +41,14 @@ public class PlayerActivity extends FragmentActivity implements OnCompletionList
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         setContentView(R.layout.player_activity);
-        
+
         if (!LibsChecker.checkVitamioLibs(this))
             return;
 
         initializePlayer();
 
         ServiceVideoImpl serviceVideo = new ServiceVideoImpl(this) {
+
             @Override
             public void onResult(Uri streamUri) {
                 mVideoView.setVideoURI(streamUri);
