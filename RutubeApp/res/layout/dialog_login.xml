@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="fill_parent"
+              android:padding="4dp">
+
+    <ImageView
+            android:id="@+id/btnClear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:layout_gravity="right|center_vertical"
+            android:src="@drawable/ic_action_clear_light"/>
+
+    <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"
+            android:id="@+id/email"
+            android:autoText="false"
+            android:lines="1"
+            android:linksClickable="false"
+            android:hint="E-mail"/>
+
+    <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:hint="Пароль"
+            android:ems="10"
+            android:id="@+id/password"/>
+
+</LinearLayout>
