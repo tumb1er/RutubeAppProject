@@ -34,9 +34,15 @@ public class PlayerController implements Parcelable, RequestListener {
 
     }
 
+    public static int STATE_NEW = 0;
+    public static int STATE_READY = 1;
+    public static int STATE_PLAYING = 2;
+    public static int STATE_COMPLETED = 3;
+
     private static final String LOG_TAG = PlayerController.class.getName();
     private Uri mVideoUri;
     private Video mVideo;
+    private int mState;
 
     private RequestQueue mRequestQueue;
     private volatile int mPlayRequestStage;
@@ -67,6 +73,7 @@ public class PlayerController implements Parcelable, RequestListener {
         }
         if (mPlayRequestStage == 2) {
             Log.d(LOG_TAG, "OK, playing");
+            mState = STATE_READY;
             startPlayback();
         } else
             Log.d(LOG_TAG, "Not ready yet");
@@ -74,6 +81,7 @@ public class PlayerController implements Parcelable, RequestListener {
     }
 
     private void startPlayback() {
+        mState = STATE_PLAYING;
         mView.startPlayback();
         JsonObjectRequest request = mVideo.getYastRequest(mContext);
         mRequestQueue.add(request);
@@ -96,6 +104,16 @@ public class PlayerController implements Parcelable, RequestListener {
         mContext = null;
         mView = null;
         mVideoUri = videoUri;
+        mState = STATE_NEW;
+    }
+
+    protected PlayerController(Uri videoUri, int state) {
+        this(videoUri);
+        mState = state;
+    }
+
+    public void onCompletion() {
+        mState = STATE_COMPLETED;
     }
 
     /**
@@ -135,11 +153,13 @@ public class PlayerController implements Parcelable, RequestListener {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeParcelable(mVideoUri, i);
+        parcel.writeInt(mState);
     }
 
     public static PlayerController fromParcel(Parcel in) {
         Uri feedUri = in.readParcelable(Uri.class.getClassLoader());
-        return new PlayerController(feedUri);
+        int state = in.readInt();
+        return new PlayerController(feedUri, state);
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -177,6 +197,10 @@ public class PlayerController implements Parcelable, RequestListener {
     }
 
     private void startPlayRequests(Video video) {
+        if (mState != STATE_NEW) {
+            Log.d(LOG_TAG, String.format("Can't start play requests in state %d", mState));
+            return;
+        }
         mPlayRequestStage = 0;
         JsonObjectRequest request = video.getTrackInfoRequest(mContext, this);
         mRequestQueue.add(request);

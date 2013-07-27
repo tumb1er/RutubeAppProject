@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -37,7 +38,8 @@ import java.util.List;
  * Time: 20:14
  * To change this template use File | Settings | File Templates.
  */
-public class PlayerFragment extends Fragment implements PlayerController.PlayerView {
+public class PlayerFragment extends Fragment implements PlayerController.PlayerView, MediaPlayer.OnCompletionListener {
+    private static final String CONTROLLER = "controller";
     private final String LOG_TAG = getClass().getName();
     private PlayerController mController;
     private VideoView mVideoView;
@@ -46,7 +48,7 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Log.d(LOG_TAG, "onActivityCreated");
-        init();
+        init(savedInstanceState);
         mController.requestStream();
     }
 
@@ -62,13 +64,25 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         mController.detach();
     }
 
-    private void init() {
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(CONTROLLER, mController);
+    }
+
+    private void init(Bundle savedInstanceState) {
         Activity activity = getActivity();
         assert activity != null;
         Intent intent = activity.getIntent();
         Uri uri = intent.getData();
         initVideoView();
-        mController = new PlayerController(uri);
+        mController = null;
+        if (savedInstanceState != null) {
+            mController = savedInstanceState.getParcelable(CONTROLLER);
+        }
+        if (mController == null) {
+            mController = new PlayerController(uri);
+        }
         mController.attach(activity, this);
     }
 
@@ -76,8 +90,10 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         View view = getView();
         assert view != null;
         mVideoView =(VideoView) view.findViewById(R.id.video_view);
-        mVideoView.setMediaController(new MediaController(getActivity()));
+        MediaController mMediaController = new MediaController(getActivity());
+        mVideoView.setMediaController(mMediaController);
         mVideoView.setPadding(10, 0, 0, 0);
+        mVideoView.setOnCompletionListener(this);
     }
 
     @Override
@@ -103,5 +119,10 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
     public void startPlayback() {
         Log.d(LOG_TAG, "Trying to start playback");
         mVideoView.start();
+    }
+
+    @Override
+    public void onCompletion(MediaPlayer mediaPlayer) {
+        mController.onCompletion();
     }
 }
