@@ -67,8 +67,7 @@ public class FeedFragment extends ListFragment implements FeedController.FeedVie
     public void openPlayer(Uri uri) {
         Activity activity = getActivity();
         assert activity != null;
-        // TODO: перевести на intent-filter
-        Intent intent = new Intent(activity, PlayerActivity.class);
+        Intent intent = new Intent("ru.rutube.player.play");
         intent.setData(uri);
         Log.d(LOG_TAG, "Starting player");
         startActivityForResult(intent, 0);
