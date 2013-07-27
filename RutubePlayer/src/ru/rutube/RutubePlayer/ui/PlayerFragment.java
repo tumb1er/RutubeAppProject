@@ -26,6 +26,7 @@ import ru.rutube.RutubeAPI.models.Video;
 import ru.rutube.RutubeAPI.requests.RequestListener;
 import ru.rutube.RutubeAPI.requests.Requests;
 import ru.rutube.RutubePlayer.R;
+import ru.rutube.RutubePlayer.ctrl.PlayerController;
 
 import java.util.List;
 
@@ -36,24 +37,16 @@ import java.util.List;
  * Time: 20:14
  * To change this template use File | Settings | File Templates.
  */
-public class PlayerFragment extends Fragment {
+public class PlayerFragment extends Fragment implements PlayerController.PlayerView {
     private final String LOG_TAG = getClass().getName();
-    private Uri streamUri;
-
-    private RequestQueue mRequestQueue;
-    private volatile int mPlayRequestStage;
-    private boolean mViewCounted = false;
-    private Video mVideo;
+    private PlayerController mController;
+    private VideoView mVideoView;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        preparePlayback();
-    }
-
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         init();
+        mController.requestStream();
     }
 
     @Override
@@ -63,20 +56,35 @@ public class PlayerFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        // TODO: задваивается старт проигрывания
-        startPlayback();
+    public void onDetach() {
+        super.onDetach();
+        mController.detach();
     }
 
     private void init() {
-        // TODO: remove after transfer to DRF-2.3
-        mRequestQueue = Volley.newRequestQueue(getActivity(),
-                new HttpClientStack(HttpTransport.getHttpClient()));
-
+        Activity activity = getActivity();
+        assert activity != null;
+        Intent intent = activity.getIntent();
+        Uri uri = intent.getData();
+        initVideoView();
+        mController = new PlayerController(uri);
+        mController.attach(activity, this);
     }
 
-    private void showError() {
+    private void initVideoView() {
+        View view = getView();
+        assert view != null;
+        mVideoView =(VideoView) view.findViewById(R.id.video_view);
+        mVideoView.setMediaController(new MediaController(getActivity()));
+        mVideoView.setPadding(10, 0, 0, 0);
+    }
+
+    @Override
+    public void setStreamUri(Uri uri) {
+        mVideoView.setVideoURI(uri);
+    }
+
+    public void showError() {
         Activity activity = getActivity();
         if (activity == null)
             return;
@@ -89,96 +97,8 @@ public class PlayerFragment extends Fragment {
 
     }
 
-    protected RequestListener mTrackInfoRequestListener = new RequestListener() {
-
-        @Override
-        public void onResult(int tag, Bundle result) {
-            Log.d(LOG_TAG, "Received result for " + String.valueOf(tag));
-            if (tag == Requests.TRACK_INFO) {
-                TrackInfo trackInfo = result.getParcelable(Constants.Result.TRACKINFO);
-                assert trackInfo != null;
-                streamUri = trackInfo.getBalancerUrl();
-                mPlayRequestStage++;
-            }
-            if (tag == Requests.PLAY_OPTIONS) {
-                Boolean allowed = result.getBoolean(Constants.Result.ACL_ALLOWED);
-                if (!allowed) {
-                    Log.w(LOG_TAG, "Playback not allowed");
-                    showError();
-                    return;
-                }
-                mPlayRequestStage++;
-            }
-            if (mPlayRequestStage == 2) {
-                Log.d(LOG_TAG, "OK, playing");
-                startPlayback();
-            } else
-                Log.d(LOG_TAG, "Not ready yet");
-        }
-
-        @Override
-        public void onVolleyError(VolleyError error) {
-            Log.e(LOG_TAG, error.toString());
-            showError();
-        }
-
-        @Override
-        public void onRequestError(int tag, RequestError error) {
-            Log.e(LOG_TAG, error.toString());
-            showError();
-        }
-    };
-
-    private void preparePlayback() {
-        Intent intent = getActivity().getIntent();
-        Uri uri = intent.getData();
-        Log.d(LOG_TAG, "Got Uri: " + String.valueOf(uri));
-        if (uri != null) {
-            final List<String> segments = uri.getPathSegments();
-            Log.d(LOG_TAG, "Segments " + String.valueOf(segments));
-            if (segments.size() == 2) {
-                String videoId = segments.get(1);
-                mVideo = new Video(videoId);
-                startPlayRequests(mVideo);
-            } else if (segments.size() == 3) {
-                String videoId = segments.get(2);
-                String signature = uri.getQueryParameter("p");
-                mVideo = new Video(videoId, signature);
-                startPlayRequests(mVideo);
-            } else {
-                Log.d(LOG_TAG, "Incorrect Uri");
-            }
-        }
-    }
-
-    private void startPlayRequests(Video video) {
-        mPlayRequestStage = 0;
-        JsonObjectRequest request = video.getTrackInfoRequest(getActivity(),
-                mTrackInfoRequestListener);
-        mRequestQueue.add(request);
-        request = video.getPlayOptionsRequest(getActivity(),
-                mTrackInfoRequestListener);
-        mRequestQueue.add(request);
-    }
-
-    private void startPlayback() {
-        try {
-            Log.d(LOG_TAG, "Trying to start playback");
-            VideoView vv = (VideoView) getView().findViewById(R.id.video_view);
-            vv.setMediaController(new MediaController(getActivity()));
-            vv.setVideoURI(streamUri);
-            vv.setPadding(10, 0, 0, 0);
-            vv.start();
-            Log.d(LOG_TAG, "started, counting yast");
-            if (!mViewCounted) {
-                Log.d(LOG_TAG, "mVideo: " + String.valueOf(mVideo));
-                JsonObjectRequest request = mVideo.getYastRequest(getActivity());
-                mRequestQueue.add(request);
-                mViewCounted = true;
-                Log.d(LOG_TAG, "yast viewed");
-            }
-        } catch (NullPointerException e) {
-            Log.d(LOG_TAG, "Not ready yet");
-        }
+    public void startPlayback() {
+        Log.d(LOG_TAG, "Trying to start playback");
+        mVideoView.start();
     }
 }
