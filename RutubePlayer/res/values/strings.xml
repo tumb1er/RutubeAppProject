@@ -2,5 +2,4 @@
 <resources>
     <string name="app_name">RutubePlayer</string>
     <string name="faled_to_load_data">Failed to load data</string>
-    <string name="text_no_item">No item available.</string>
 </resources>
