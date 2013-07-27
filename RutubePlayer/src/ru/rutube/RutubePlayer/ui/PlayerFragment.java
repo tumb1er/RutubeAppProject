@@ -45,6 +45,7 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        Log.d(LOG_TAG, "onActivityCreated");
         init();
         mController.requestStream();
     }
@@ -81,6 +82,8 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
 
     @Override
     public void setStreamUri(Uri uri) {
+        Log.d(LOG_TAG, "setStreamUri " + uri.toString());
+        assert mVideoView != null;
         mVideoView.setVideoURI(uri);
     }
 

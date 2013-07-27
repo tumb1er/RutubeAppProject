@@ -50,7 +50,10 @@ public class PlayerController implements Parcelable, RequestListener {
         if (tag == Requests.TRACK_INFO) {
             TrackInfo trackInfo = result.getParcelable(Constants.Result.TRACKINFO);
             assert trackInfo != null;
-            mView.setStreamUri(trackInfo.getBalancerUrl());
+            Uri balancerUrl = trackInfo.getBalancerUrl();
+            assert mView != null;
+            Log.d(LOG_TAG, String.valueOf(mView) + String.valueOf(balancerUrl));
+            mView.setStreamUri(balancerUrl);
             mPlayRequestStage++;
         }
         if (tag == Requests.PLAY_OPTIONS) {

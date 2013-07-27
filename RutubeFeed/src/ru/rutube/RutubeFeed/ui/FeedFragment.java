@@ -70,7 +70,9 @@ public class FeedFragment extends ListFragment implements FeedController.FeedVie
         // TODO: перевести на intent-filter
         Intent intent = new Intent(activity, PlayerActivity.class);
         intent.setData(uri);
-        startActivity(intent);
+        Log.d(LOG_TAG, "Starting player");
+        startActivityForResult(intent, 0);
+        Log.d(LOG_TAG, "Player started");
     }
 
     @Override
