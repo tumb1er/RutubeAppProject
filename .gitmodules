@@ -4,3 +4,6 @@
 [submodule "RutubeApp/libs/PinterestLikeAdapterView"]
 	path = RutubeApp/libs/PinterestLikeAdapterView
 	url = https://github.com/huewu/PinterestLikeAdapterView
+[submodule "RutubeApp/libs/VitamioBundle"]
+	path = RutubeApp/libs/VitamioBundle
+	url = https://github.com/yixia/VitamioBundle.git

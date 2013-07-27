@@ -181,6 +181,8 @@ public class Video {
 
     public JsonObjectRequest getYastRequest(Context context) {
         assert mTrackInfo != null;
+        assert context != null;
+        Log.d(LOG_TAG, "Context: " + String.valueOf(context) + " TI: " + String.valueOf(mTrackInfo));
         String yastUrl = String.format(context.getString(R.string.yastUri), mTrackInfo.getTrackId());
         Uri uri = Uri.parse(yastUrl).buildUpon()
                 .appendQueryParameter("referer", context.getString(R.string.referer))

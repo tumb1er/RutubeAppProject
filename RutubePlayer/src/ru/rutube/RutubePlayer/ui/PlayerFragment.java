@@ -38,11 +38,15 @@ import java.util.List;
  * Time: 20:14
  * To change this template use File | Settings | File Templates.
  */
-public class PlayerFragment extends Fragment implements PlayerController.PlayerView, MediaPlayer.OnCompletionListener {
+public class PlayerFragment extends Fragment
+        implements PlayerController.PlayerView, MediaPlayer.OnCompletionListener,
+            MediaPlayer.OnPreparedListener {
     private static final String CONTROLLER = "controller";
     private final String LOG_TAG = getClass().getName();
-    private PlayerController mController;
-    private VideoView mVideoView;
+    protected PlayerController mController;
+    protected VideoView mVideoView;
+    protected Uri mStreamUri;
+    protected Boolean mVideoViewInited;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -71,6 +75,8 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
     }
 
     private void init(Bundle savedInstanceState) {
+        mVideoViewInited = false;
+        mStreamUri = null;
         Activity activity = getActivity();
         assert activity != null;
         Intent intent = activity.getIntent();
@@ -86,7 +92,7 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         mController.attach(activity, this);
     }
 
-    private void initVideoView() {
+    protected void initVideoView() {
         View view = getView();
         assert view != null;
         mVideoView =(VideoView) view.findViewById(R.id.video_view);
@@ -99,7 +105,11 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
     @Override
     public void setStreamUri(Uri uri) {
         Log.d(LOG_TAG, "setStreamUri " + uri.toString());
-        assert mVideoView != null;
+        setVideoUri(uri);
+        mStreamUri = uri;
+    }
+
+    public void setVideoUri(Uri uri) {
         mVideoView.setVideoURI(uri);
     }
 
@@ -118,11 +128,28 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
 
     public void startPlayback() {
         Log.d(LOG_TAG, "Trying to start playback");
+        Log.d(LOG_TAG, "Launch control: inited: "
+                + String.valueOf(mVideoViewInited) + " uri: " + String.valueOf(mStreamUri));
+        if (mVideoViewInited && mStreamUri !=null)
+        {
+            Log.d(LOG_TAG, "Start!");
+            startVideoPlayback();
+        }
+    }
+
+    public void startVideoPlayback() {
         mVideoView.start();
     }
 
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
         mController.onCompletion();
+    }
+
+    @Override
+    public void onPrepared(MediaPlayer mediaPlayer) {
+        mVideoViewInited = true;
+        startPlayback();
+
     }
 }

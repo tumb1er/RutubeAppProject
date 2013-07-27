@@ -175,6 +175,7 @@ public class PlayerController implements Parcelable, RequestListener {
     };
 
     public void requestStream() {
+        assert mAttached;
         Log.d(LOG_TAG, "Got Uri: " + String.valueOf(mVideoUri));
         if (mVideoUri != null) {
             final List<String> segments = mVideoUri.getPathSegments();
