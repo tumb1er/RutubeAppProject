@@ -38,9 +38,8 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 import com.yixia.vitamio.library.R;
-
-import io.vov.vitamio.utils.Log;
-import io.vov.vitamio.utils.StringUtils;
+import com.yixia.zi.utils.Log;
+import com.yixia.zi.utils.StringUtils;
 
 /**
  * A view containing controls for a MediaPlayer. Typically contains the buttons

@@ -36,6 +36,7 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 
 import com.yixia.vitamio.library.R;
+import com.yixia.zi.utils.Log;
 
 import io.vov.vitamio.MediaPlayer;
 import io.vov.vitamio.MediaPlayer.OnBufferingUpdateListener;
@@ -47,9 +48,7 @@ import io.vov.vitamio.MediaPlayer.OnSeekCompleteListener;
 import io.vov.vitamio.MediaPlayer.OnTimedTextListener;
 import io.vov.vitamio.MediaPlayer.OnVideoSizeChangedListener;
 import io.vov.vitamio.MediaPlayer.TrackInfo;
-import io.vov.vitamio.Metadata;
 import io.vov.vitamio.Vitamio;
-import io.vov.vitamio.utils.Log;
 
 import java.io.IOException;
 import java.util.List;
@@ -94,20 +93,6 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
       Log.d("onPrepared");
       mCurrentState = STATE_PREPARED;
       mTargetState = STATE_PLAYING;
-      
-      // Get the capabilities of the player for this stream
-      Metadata data = mp.getMetadata();
-
-      if (data != null) {
-          mCanPause = !data.has(Metadata.PAUSE_AVAILABLE)
-                  || data.getBoolean(Metadata.PAUSE_AVAILABLE);
-          mCanSeekBack = !data.has(Metadata.SEEK_BACKWARD_AVAILABLE)
-                  || data.getBoolean(Metadata.SEEK_BACKWARD_AVAILABLE);
-          mCanSeekForward = !data.has(Metadata.SEEK_FORWARD_AVAILABLE)
-                  || data.getBoolean(Metadata.SEEK_FORWARD_AVAILABLE);
-      } else {
-          mCanPause = mCanSeekBack = mCanSeekForward = true;
-      }
 
       if (mOnPreparedListener != null)
         mOnPreparedListener.onPrepared(mMediaPlayer);
@@ -196,10 +181,10 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
   private OnInfoListener mOnInfoListener;
   private OnBufferingUpdateListener mOnBufferingUpdateListener;
   private int mCurrentBufferPercentage;
-  private long mSeekWhenPrepared; // recording the seek position while preparing
-  private boolean mCanPause;
-  private boolean mCanSeekBack;
-  private boolean mCanSeekForward;
+  private long mSeekWhenPrepared;
+  private boolean mCanPause = true;
+  private boolean mCanSeekBack = true;
+  private boolean mCanSeekForward = true;
   private Context mContext;
   private OnCompletionListener mCompletionListener = new OnCompletionListener() {
     public void onCompletion(MediaPlayer mp) {
@@ -292,7 +277,6 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
 
   public VideoView(Context context, AttributeSet attrs) {
     this(context, attrs, 0);
-    initVideoView(context);
   }
 
   public VideoView(Context context, AttributeSet attrs, int defStyle) {
@@ -515,18 +499,9 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
           mMediaController.hide();
         }
         return true;
-      } else if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY) {
-        if (!mMediaPlayer.isPlaying()) {
-            start();
-            mMediaController.hide();
-        }
-        return true;
-      } else if (keyCode == KeyEvent.KEYCODE_MEDIA_STOP || keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE) {
-      	if (mMediaPlayer.isPlaying()) {
-          pause();
-          mMediaController.show();
-      	}
-      	return true;
+      } else if (keyCode == KeyEvent.KEYCODE_MEDIA_STOP && mMediaPlayer.isPlaying()) {
+        pause();
+        mMediaController.show();
       } else {
         toggleMediaControlsVisiblity();
       }

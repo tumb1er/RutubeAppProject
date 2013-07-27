@@ -1,6 +1,7 @@
 apply plugin: 'android-library'
 
 dependencies {
+    compile project(':ZI')
 }
 
 android {

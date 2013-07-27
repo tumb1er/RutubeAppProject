@@ -26,12 +26,11 @@ import android.database.SQLException;
 import android.net.Uri;
 import android.os.RemoteException;
 import android.text.TextUtils;
-
+import com.yixia.zi.utils.FileUtils;
+import com.yixia.zi.utils.Log;
+import com.yixia.zi.utils.StringUtils;
 import io.vov.vitamio.provider.MediaStore;
 import io.vov.vitamio.provider.MediaStore.Video;
-import io.vov.vitamio.utils.ContextUtils;
-import io.vov.vitamio.utils.FileUtils;
-import io.vov.vitamio.utils.Log;
 
 import java.io.File;
 import java.util.HashMap;
@@ -144,8 +143,8 @@ public class MediaScanner {
       long prescan = System.currentTimeMillis();
 
       for (int i = 0; i < directories.length; i++) {
-        if (!TextUtils.isEmpty(directories[i])) {
-          directories[i] = ContextUtils.fixLastSlash(directories[i]);
+        if (!StringUtils.isBlank(directories[i])) {
+          directories[i] = StringUtils.fixLastSlash(directories[i]);
           processDirectory(directories[i], MediaFile.sFileExtensions);
         }
       }
@@ -352,7 +351,7 @@ public class MediaScanner {
       } else if (name.equalsIgnoreCase("artist")) {
         mArtist = value.trim();
       } else if (name.equalsIgnoreCase("albumartist")) {
-        if (TextUtils.isEmpty(mArtist))
+        if (StringUtils.isBlank(mArtist))
           mArtist = value.trim();
       } else if (name.equalsIgnoreCase("album")) {
         mAlbum = value.trim();
@@ -406,7 +405,7 @@ public class MediaScanner {
 
       ContentValues values = toValues();
       String title = values.getAsString(MediaStore.MediaColumns.TITLE);
-      if (TextUtils.isEmpty(title)) {
+      if (StringUtils.isBlank(title)) {
         title = values.getAsString(MediaStore.MediaColumns.DATA);
         int lastSlash = title.lastIndexOf('/');
         if (lastSlash >= 0) {

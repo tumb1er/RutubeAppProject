@@ -19,11 +19,10 @@ package io.vov.vitamio;
 import android.content.Context;
 
 import com.yixia.vitamio.library.R;
-
-import io.vov.vitamio.utils.CPU;
-import io.vov.vitamio.utils.ContextUtils;
-import io.vov.vitamio.utils.IOUtils;
-import io.vov.vitamio.utils.Log;
+import com.yixia.zi.utils.CPU;
+import com.yixia.zi.utils.ContextUtils;
+import com.yixia.zi.utils.IOUtils;
+import com.yixia.zi.utils.Log;
 
 import java.io.BufferedInputStream;
 import java.io.File;

@@ -37,8 +37,8 @@ import android.util.SparseArray;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 
-import io.vov.vitamio.utils.FileUtils;
-import io.vov.vitamio.utils.Log;
+import com.yixia.zi.utils.FileUtils;
+import com.yixia.zi.utils.Log;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
@@ -96,7 +96,7 @@ public class MediaPlayer {
   public static final int VIDEOQUALITY_LOW = -16;
   public static final int VIDEOQUALITY_MEDIUM = 0;
   public static final int VIDEOQUALITY_HIGH = 16;
-
+  
   public static final int VIDEOCHROMA_RGB565 = 0;
   public static final int VIDEOCHROMA_RGBA = 1;
   /**
@@ -120,7 +120,6 @@ public class MediaPlayer {
   private static final int MEDIA_ERROR = 100;
   private static final int MEDIA_INFO = 200;
   private static final int MEDIA_CACHE = 300;
-  private static final int MEDIA_HW_ERROR = 400;
   private static final int MEDIA_TIMED_TEXT = 1000;
   private static final int MEDIA_CACHING_UPDATE = 2000;
   private static final String MEDIA_CACHING_SEGMENTS = "caching_segment";
@@ -371,6 +370,11 @@ public class MediaPlayer {
     }
     setDataSource(context, uri, headerBuffer == null ? null : headerBuffer.toString());
     return;
+  }
+
+  private void onHWRenderFailed() {
+    if (mOnHWRenderFailedListener != null)
+      mOnHWRenderFailedListener.onFailed();
   }
 
   public void setOnHWRenderFailedListener(OnHWRenderFailedListener l) {
@@ -634,8 +638,6 @@ public class MediaPlayer {
     mOnErrorListener = null;
     mOnInfoListener = null;
     mOnVideoSizeChangedListener = null;
-    mOnCachingUpdateListener = null;
-    mOnHWRenderFailedListener = null;
     _release();
     closeFD();
   }
@@ -953,7 +955,7 @@ public class MediaPlayer {
    *                </ul>
    */
   public native void setVideoQuality(int quality);
-
+  
   /**
    * Set the Video Chroma quality when play video, default is VIDEOCHROMA_RGB565
    * You can set on after {@link #prepareAsync()}.
@@ -963,7 +965,7 @@ public class MediaPlayer {
    *                </ul>
    */
   public native void setVideoChroma(int chroma);
-
+  
   /**
    * Set if should deinterlace the video picture
    *
@@ -1415,10 +1417,6 @@ public class MediaPlayer {
           return;
         case MEDIA_NOP:
           return;
-        case MEDIA_HW_ERROR:
-        	if (mOnHWRenderFailedListener != null)
-        		mOnHWRenderFailedListener.onFailed();
-        	return;
         default:
           Log.e("Unknown message type " + msg.what);
           return;
