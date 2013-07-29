@@ -73,6 +73,22 @@ public class FeedFragment extends ListFragment implements FeedController.FeedVie
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if(id == R.id.menu_refresh){
+                refreshFeed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+
+    }
+
+    protected void refreshFeed() {
+        mController.refresh();
+
+    }
+
+    @Override
     public void openPlayer(Uri uri) {
         Activity activity = getActivity();
         assert activity != null;

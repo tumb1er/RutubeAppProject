@@ -66,6 +66,13 @@ public class FeedController implements Parcelable {
         mFeedUri = feedUri;
     }
 
+    /**
+     * Получает последние обновления ленты
+     */
+    public void refresh() {
+        Log.d(LOG_TAG, "Refreshing");
+        loadPage(1);
+    }
 
     /**
      * По клику на элементе ленты открывает плеер
