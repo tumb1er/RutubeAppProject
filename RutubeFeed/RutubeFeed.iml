@@ -16,8 +16,8 @@
     </content>
     <orderEntry type="jdk" jdkName="Android 4.2.2" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="volley" />
     <orderEntry type="module" module-name="RutubeAPI" />
+    <orderEntry type="module" module-name="volley" scope="PROVIDED" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
