@@ -1,4 +1,4 @@
-package ru.rutube.RutubeApp.ui;
+package ru.rutube.RutubeApp.ui.player;
 
 import android.util.Log;
 

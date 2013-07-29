@@ -21,7 +21,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="ru.rutube.RutubeApp.ui.VitamioPlayerActivity"
+            android:name=".ui.player.VitamioPlayerActivity"
             android:label="@string/app_name">
                 <intent-filter>
                     <action android:name="android.intent.action.VIEW" />

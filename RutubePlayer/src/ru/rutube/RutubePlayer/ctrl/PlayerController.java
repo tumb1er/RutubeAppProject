@@ -37,6 +37,7 @@ public class PlayerController implements Parcelable, RequestListener {
          */
         public void setStreamUri(Uri uri);
 
+        public void setVideoTitle(String title);
         /**
          * Отображает сообщение об ошибке
          */
@@ -80,8 +81,10 @@ public class PlayerController implements Parcelable, RequestListener {
             TrackInfo trackInfo = result.getParcelable(Constants.Result.TRACKINFO);
             assert trackInfo != null;
             assert mView != null;
-            Uri balancerUrl = trackInfo.getBalancerUrl();
-            mView.setStreamUri(balancerUrl);
+
+            mView.setStreamUri(trackInfo.getBalancerUrl());
+            mView.setVideoTitle(trackInfo.getTitle());
+
             mPlayRequestStage++;
         }
         if (tag == Requests.PLAY_OPTIONS) {

@@ -1,4 +1,4 @@
-package ru.rutube.RutubeApp.ui;
+package ru.rutube.RutubeApp.ui.player;
 
 import android.app.Activity;
 import android.net.Uri;
@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import io.vov.vitamio.LibsChecker;
 import io.vov.vitamio.MediaPlayer;
-import io.vov.vitamio.widget.MediaController;
 import io.vov.vitamio.widget.VideoView;
 import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubePlayer.ui.PlayerFragment;
@@ -33,6 +32,7 @@ public class VitamioPlayerFragment extends PlayerFragment
     private ProgressBar mLoadProgressBar;
     private TextView mEmptyTextView;
     private VideoView mVideoView;
+    private VitamioMediaController vitamioMediaController;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -48,8 +48,9 @@ public class VitamioPlayerFragment extends PlayerFragment
         assert view != null;
         mLoadProgressBar = (ProgressBar) view.findViewById(R.id.load);
         mEmptyTextView = (TextView) view.findViewById(R.id.empty);
+        vitamioMediaController = new VitamioMediaController(activity);
         mVideoView = (VideoView) view.findViewById(R.id.surface_view);
-        mVideoView.setMediaController(new MediaController(activity));
+        mVideoView.setMediaController(vitamioMediaController);
         mVideoView.setOnCompletionListener(this);
         mVideoView.setOnPreparedListener(this);
         mVideoView.setOnErrorListener(this);
@@ -70,6 +71,11 @@ public class VitamioPlayerFragment extends PlayerFragment
     @Override
     public void setVideoUri(Uri uri) {
         mVideoView.setVideoURI(uri);
+    }
+
+    @Override
+    public void setVideoTitle(String title) {
+        vitamioMediaController.setFileName(title);
     }
 
     @Override

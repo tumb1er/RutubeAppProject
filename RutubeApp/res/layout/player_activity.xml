@@ -8,7 +8,7 @@
     <fragment
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:name="ru.rutube.RutubeApp.ui.VitamioPlayerFragment"
+        android:name="ru.rutube.RutubeApp.ui.player.VitamioPlayerFragment"
         android:id="@+id/fragment"
         android:layout_gravity="center"/>
 </LinearLayout>

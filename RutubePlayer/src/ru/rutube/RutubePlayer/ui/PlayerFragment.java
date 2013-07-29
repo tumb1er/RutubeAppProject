@@ -136,6 +136,11 @@ public class PlayerFragment extends Fragment
         mVideoView.setVideoURI(uri);
     }
 
+    @Override
+    public void setVideoTitle(String title) {
+
+    }
+
     /**
      * Начинает воспроизведение видео
      */
