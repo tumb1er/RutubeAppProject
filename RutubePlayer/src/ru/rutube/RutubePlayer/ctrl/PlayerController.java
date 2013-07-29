@@ -27,9 +27,24 @@ import ru.rutube.RutubeAPI.requests.Requests;
  */
 public class PlayerController implements Parcelable, RequestListener {
 
+    /**
+     * Интерфейс для представления плеера
+     */
     public interface PlayerView{
+        /**
+         * Задает Uri видеопотока видеоэлементу
+         * @param uri Uri видеопотока
+         */
         public void setStreamUri(Uri uri);
+
+        /**
+         * Отображает сообщение об ошибке
+         */
         public void showError();
+
+        /**
+         * Начинает воспроизведение видео
+         */
         public void startPlayback();
 
     }
@@ -50,15 +65,22 @@ public class PlayerController implements Parcelable, RequestListener {
     private PlayerView mView;
     private Context mContext;
 
+    /**
+     * Обработка результатов запросов к API.
+     * Ждет выполнения запросов TRACK_INFO и PLAY_OPTIONS, после завершения обоих запросов
+     * начинает проигрывание видео.
+     * @param tag тег запроса
+     * @param result данные
+     *
+     */
     @Override
     public void onResult(int tag, Bundle result) {
         Log.d(LOG_TAG, "Received result for " + String.valueOf(tag));
         if (tag == Requests.TRACK_INFO) {
             TrackInfo trackInfo = result.getParcelable(Constants.Result.TRACKINFO);
             assert trackInfo != null;
-            Uri balancerUrl = trackInfo.getBalancerUrl();
             assert mView != null;
-            Log.d(LOG_TAG, String.valueOf(mView) + String.valueOf(balancerUrl));
+            Uri balancerUrl = trackInfo.getBalancerUrl();
             mView.setStreamUri(balancerUrl);
             mPlayRequestStage++;
         }
@@ -78,13 +100,6 @@ public class PlayerController implements Parcelable, RequestListener {
         } else
             Log.d(LOG_TAG, "Not ready yet");
 
-    }
-
-    private void startPlayback() {
-        mState = STATE_PLAYING;
-        mView.startPlayback();
-        JsonObjectRequest request = mVideo.getYastRequest(mContext);
-        mRequestQueue.add(request);
     }
 
     @Override
@@ -112,6 +127,9 @@ public class PlayerController implements Parcelable, RequestListener {
         mState = state;
     }
 
+    /**
+     * Обрабатывает событие окончания воспроизведения видео
+     */
     public void onCompletion() {
         mState = STATE_COMPLETED;
     }
@@ -174,6 +192,10 @@ public class PlayerController implements Parcelable, RequestListener {
         }
     };
 
+    /**
+     * Разбирает Uri видео, получает ID video и запускает цепочку запросов к API,
+     * необходимых для начала проигрывания
+     */
     public void requestStream() {
         assert mAttached;
         Log.d(LOG_TAG, "Got Uri: " + String.valueOf(mVideoUri));
@@ -197,6 +219,21 @@ public class PlayerController implements Parcelable, RequestListener {
 
     }
 
+    /**
+     * Обрабатывает процесс старта воспроизведения: создает запрос к yast.rutube.ru
+     * и командует плееру начать просмотр
+     */
+    private void startPlayback() {
+        mState = STATE_PLAYING;
+        mView.startPlayback();
+        JsonObjectRequest request = mVideo.getYastRequest(mContext);
+        mRequestQueue.add(request);
+    }
+
+    /**
+     * Выполняет цепочку запросов к API rutube необходимых для проигрывания видео.
+     * @param video объект видео, которое надо воспроизвести.
+     */
     private void startPlayRequests(Video video) {
         if (mState != STATE_NEW) {
             Log.d(LOG_TAG, String.format("Can't start play requests in state %d", mState));

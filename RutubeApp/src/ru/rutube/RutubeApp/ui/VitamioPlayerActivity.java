@@ -8,7 +8,14 @@ import ru.rutube.RutubePlayer.ui.PlayerActivity;
 /**
  * Created by tumbler on 27.07.13.
  */
+
+
+/**
+ * Наследует PlayerActivity, переопределяя через layout фрагмент на VitamioPlayerFragment
+ */
 public class VitamioPlayerActivity extends PlayerActivity {
+
+
     @Override
     public void setContentView(int layoutResID) {
         Log.d(getClass().getName(), "Vitamio!");

@@ -14,22 +14,8 @@ import android.view.ViewGroup;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpClientStack;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-
-import ru.rutube.RutubeAPI.HttpTransport;
-import ru.rutube.RutubeAPI.models.Constants;
-import ru.rutube.RutubeAPI.models.TrackInfo;
-import ru.rutube.RutubeAPI.models.Video;
-import ru.rutube.RutubeAPI.requests.RequestListener;
-import ru.rutube.RutubeAPI.requests.Requests;
 import ru.rutube.RutubePlayer.R;
 import ru.rutube.RutubePlayer.ctrl.PlayerController;
-
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,7 +26,7 @@ import java.util.List;
  */
 public class PlayerFragment extends Fragment
         implements PlayerController.PlayerView, MediaPlayer.OnCompletionListener,
-            MediaPlayer.OnPreparedListener {
+        MediaPlayer.OnPreparedListener {
     private static final String CONTROLLER = "controller";
     private final String LOG_TAG = getClass().getName();
     protected PlayerController mController;
@@ -74,7 +60,95 @@ public class PlayerFragment extends Fragment
         outState.putParcelable(CONTROLLER, mController);
     }
 
+    @Override
+    public void onCompletion(MediaPlayer mediaPlayer) {
+        mController.onCompletion();
+    }
+
+    @Override
+    public void onPrepared(MediaPlayer mediaPlayer) {
+        mVideoViewInited = true;
+        startPlayback();
+
+    }
+
+    /**
+     * Сохраняет Uri видеопотока
+     * @param uri ссылка на видеопоток (например, http://.../name.m3u8)
+     */
+    @Override
+    public void setStreamUri(Uri uri) {
+        Log.d(LOG_TAG, "setStreamUri " + uri.toString());
+        setVideoUri(uri);
+        mStreamUri = uri;
+    }
+
+    @Override
+    public void showError() {
+        Activity activity = getActivity();
+        if (activity == null)
+            return;
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.
+                setTitle(android.R.string.dialog_alert_title).
+                setMessage(getString(R.string.faled_to_load_data)).
+                create().
+                show();
+    }
+
+    /**
+     * Проверяет возможность и стартует воспроизведение видео.
+     *
+     * Возможность воспроизвести видео зависит от двух факторов:
+     * 1. Проинициализирован видеоэлемент (mVideoViewInited)
+     * 2. Получен Uri видеопотока (mStreamUri)
+     * Если оба условия выполнены, начинается собственно воспроизведение (startVideoPlayback)
+     */
+    @Override
+    public void startPlayback() {
+        Log.d(LOG_TAG, "Trying to start playback");
+        Log.d(LOG_TAG, "Launch control: inited: "
+                + String.valueOf(mVideoViewInited) + " uri: " + String.valueOf(mStreamUri));
+        if (mVideoViewInited && mStreamUri != null) {
+            Log.d(LOG_TAG, "Start!");
+            startVideoPlayback();
+        }
+    }
+
+    /**
+     * Инициализация видеоэлемента
+     */
+    protected void initVideoView() {
+        View view = getView();
+        assert view != null;
+        mVideoView = (VideoView) view.findViewById(R.id.video_view);
+        MediaController mMediaController = new MediaController(getActivity());
+        mVideoView.setMediaController(mMediaController);
+        mVideoView.setPadding(10, 0, 0, 0);
+        mVideoView.setOnCompletionListener(this);
+    }
+
+    /**
+     * Задание Uri видеопотока для видеоэлемента
+     * @param uri Uri видеопотока
+     */
+    protected void setVideoUri(Uri uri) {
+        mVideoView.setVideoURI(uri);
+    }
+
+    /**
+     * Начинает воспроизведение видео
+     */
+    protected void startVideoPlayback() {
+        mVideoView.start();
+    }
+
+    /**
+     * Инициализация логики плеера
+     * @param savedInstanceState сохраненное состояние активити
+     */
     private void init(Bundle savedInstanceState) {
+        // TODO: восстановление mStreamUri из сохраненного состояния
         mVideoViewInited = false;
         mStreamUri = null;
         Activity activity = getActivity();
@@ -90,66 +164,5 @@ public class PlayerFragment extends Fragment
             mController = new PlayerController(uri);
         }
         mController.attach(activity, this);
-    }
-
-    protected void initVideoView() {
-        View view = getView();
-        assert view != null;
-        mVideoView =(VideoView) view.findViewById(R.id.video_view);
-        MediaController mMediaController = new MediaController(getActivity());
-        mVideoView.setMediaController(mMediaController);
-        mVideoView.setPadding(10, 0, 0, 0);
-        mVideoView.setOnCompletionListener(this);
-    }
-
-    @Override
-    public void setStreamUri(Uri uri) {
-        Log.d(LOG_TAG, "setStreamUri " + uri.toString());
-        setVideoUri(uri);
-        mStreamUri = uri;
-    }
-
-    public void setVideoUri(Uri uri) {
-        mVideoView.setVideoURI(uri);
-    }
-
-    public void showError() {
-        Activity activity = getActivity();
-        if (activity == null)
-            return;
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.
-                setTitle(android.R.string.dialog_alert_title).
-                setMessage(getString(R.string.faled_to_load_data)).
-                create().
-                show();
-
-    }
-
-    public void startPlayback() {
-        Log.d(LOG_TAG, "Trying to start playback");
-        Log.d(LOG_TAG, "Launch control: inited: "
-                + String.valueOf(mVideoViewInited) + " uri: " + String.valueOf(mStreamUri));
-        if (mVideoViewInited && mStreamUri !=null)
-        {
-            Log.d(LOG_TAG, "Start!");
-            startVideoPlayback();
-        }
-    }
-
-    public void startVideoPlayback() {
-        mVideoView.start();
-    }
-
-    @Override
-    public void onCompletion(MediaPlayer mediaPlayer) {
-        mController.onCompletion();
-    }
-
-    @Override
-    public void onPrepared(MediaPlayer mediaPlayer) {
-        mVideoViewInited = true;
-        startPlayback();
-
     }
 }

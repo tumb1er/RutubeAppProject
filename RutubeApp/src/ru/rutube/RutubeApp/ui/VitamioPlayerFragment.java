@@ -20,9 +20,14 @@ import ru.rutube.RutubePlayer.ui.PlayerFragment;
 /**
  * Created by tumbler on 27.07.13.
  */
+
+
+/**
+ * Переопределяет PlayerFragment для интеграции VitamioBundle
+ * и vitamio.widget.VideoView в частности.
+ */
 public class VitamioPlayerFragment extends PlayerFragment
         implements MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener {
-
 
     private static final String LOG_TAG = VitamioPlayerFragment.class.getName();
     private ProgressBar mLoadProgressBar;
