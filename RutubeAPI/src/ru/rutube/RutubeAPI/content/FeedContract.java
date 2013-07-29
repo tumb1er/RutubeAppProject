@@ -14,6 +14,7 @@ public final class FeedContract {
     public static final String FEED = FeedContentProvider.AUTHORITY;
 
     public static final Uri FEED_URI = Uri.parse("content://" + FEED);
+    public static final String VND = "vnd.android.cursor.dir/vnd.";
 
     public interface FeedColumns {
         public static final String _ID = "_id";
@@ -29,13 +30,13 @@ public final class FeedContract {
     public static final class Editors implements BaseColumns, FeedColumns {
         public static final String CONTENT_PATH = "editors";
         public static final Uri CONTENT_URI = Uri.withAppendedPath(FEED_URI, CONTENT_PATH);
-        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd." + FEED + "." + CONTENT_PATH;
+        public static final String CONTENT_TYPE = VND + FEED + "." + CONTENT_PATH;
     }
 
     public static final class MyVideo implements BaseColumns, FeedColumns {
         public static final String CONTENT_PATH = "my_video";
         public static final Uri CONTENT_URI = Uri.withAppendedPath(FEED_URI, CONTENT_PATH);
-        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd." + FEED + "." + CONTENT_PATH;
+        public static final String CONTENT_TYPE = VND + FEED + "." + CONTENT_PATH;
 
         public static final String SIGNATURE = "signature";
     }
@@ -43,6 +44,25 @@ public final class FeedContract {
     public static final class Subscriptions implements BaseColumns, FeedColumns {
         public static final String CONTENT_PATH = "subscriptions";
         public static final Uri CONTENT_URI = Uri.withAppendedPath(FEED_URI, CONTENT_PATH);
-        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd." + FEED + "." + CONTENT_PATH;
+        public static final String CONTENT_TYPE = VND + FEED + "." + CONTENT_PATH;
+    }
+
+    public static final class SearchResults implements BaseColumns, FeedColumns {
+        public static final String CONTENT_PATH = "search_results";
+        public static final Uri CONTENT_URI = Uri.withAppendedPath(FEED_URI, CONTENT_PATH);
+        public static final String CONTENT_TYPE = VND + FEED + "." + CONTENT_PATH;
+
+        public static final String QUERY_ID = "query_id";
+        public static final String POSITION = "position";
+    }
+
+    public static final class SearchQuery implements BaseColumns {
+        public static final String CONTENT_PATH = "search_query";
+        public static final Uri CONTENT_URI = Uri.withAppendedPath(FEED_URI, CONTENT_PATH);
+        public static final String CONTENT_TYPE = VND + FEED + "." + CONTENT_PATH;
+
+        public static final String QUERY = "query";
+        public static final String UPDATED = "updated";
+
     }
 }

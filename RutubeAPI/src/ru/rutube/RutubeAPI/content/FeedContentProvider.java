@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.provider.BaseColumns;
 import android.util.Log;
 
 import java.util.*;
@@ -30,6 +31,10 @@ public class FeedContentProvider extends ContentProvider {
     private static final int MY_VIDEO_FEEDITEM = 4;
     private static final int SUBSCRIPTION = 5;
     private static final int SUBSCRIPTION_FEEDITEM = 6;
+    private static final int SEARCH_RESULTS = 7;
+    private static final int SEARCH_RESULTS_FEEDITEM = 8;
+    private static final int SEARCH_QUERY = 9;
+    private static final int SEARCH_QUERY_ITEM = 10;
     private static final String LOG_TAG = FeedContentProvider.class.getName();
 
     public static final String AUTHORITY = FeedContentProvider.class.getName();
@@ -41,6 +46,10 @@ public class FeedContentProvider extends ContentProvider {
         sUriMatcher.addURI(AUTHORITY, FeedContract.MyVideo.CONTENT_PATH + "/#", MY_VIDEO_FEEDITEM);
         sUriMatcher.addURI(AUTHORITY, FeedContract.Subscriptions.CONTENT_PATH, SUBSCRIPTION);
         sUriMatcher.addURI(AUTHORITY, FeedContract.Subscriptions.CONTENT_PATH + "/#", SUBSCRIPTION_FEEDITEM);
+        sUriMatcher.addURI(AUTHORITY, FeedContract.SearchResults.CONTENT_PATH + "/#", SEARCH_RESULTS);
+        sUriMatcher.addURI(AUTHORITY, FeedContract.SearchResults.CONTENT_PATH + "/#/#", SEARCH_RESULTS_FEEDITEM);
+        sUriMatcher.addURI(AUTHORITY, FeedContract.SearchQuery.CONTENT_PATH, SEARCH_QUERY);
+        sUriMatcher.addURI(AUTHORITY, FeedContract.SearchQuery.CONTENT_PATH + "/#", SEARCH_QUERY_ITEM);
     }
 
     private MainDatabaseHelper dbHelper;
@@ -90,6 +99,27 @@ public class FeedContentProvider extends ContentProvider {
                 queryBuilder.appendWhere(FeedContract.FeedColumns._ID + "="
                         + uri.getLastPathSegment());
                 break;
+            case SEARCH_RESULTS:
+                queryBuilder.setTables(FeedContract.SearchResults.CONTENT_PATH);
+                List<String> pathSegments = uri.getPathSegments();
+                assert pathSegments != null;
+                String queryId = pathSegments.get(2);
+                assert queryId != null;
+                queryBuilder.appendWhere(FeedContract.SearchResults.QUERY_ID + "="
+                        + queryId);
+            case SEARCH_RESULTS_FEEDITEM:
+                queryBuilder.setTables(FeedContract.SearchResults.CONTENT_PATH);
+                queryBuilder.appendWhere(FeedContract.FeedColumns._ID + "="
+                        + uri.getLastPathSegment());
+                break;
+            case SEARCH_QUERY:
+                queryBuilder.setTables(FeedContract.SearchQuery.CONTENT_PATH);
+                break;
+            case SEARCH_QUERY_ITEM:
+                queryBuilder.setTables(FeedContract.SearchQuery.CONTENT_PATH);
+                queryBuilder.appendWhere(BaseColumns._ID + "="
+                        + uri.getLastPathSegment());
+                break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
@@ -118,6 +148,10 @@ public class FeedContentProvider extends ContentProvider {
                 return FeedContract.MyVideo.CONTENT_TYPE;
             case SUBSCRIPTION:
                 return FeedContract.Subscriptions.CONTENT_TYPE;
+            case SEARCH_RESULTS:
+                return FeedContract.SearchResults.CONTENT_TYPE;
+            case SEARCH_QUERY:
+                return FeedContract.SearchQuery.CONTENT_TYPE;
             default:
                 return null;
         }
@@ -137,11 +171,24 @@ public class FeedContentProvider extends ContentProvider {
             case SUBSCRIPTION:
                 sqlDB.replace(FeedContract.Subscriptions.CONTENT_PATH, null, contentValues);
                 break;
+            case SEARCH_RESULTS:
+                sqlDB.replace(FeedContract.SearchResults.CONTENT_PATH, null, contentValues);
+            case SEARCH_QUERY:
+                sqlDB.replace(FeedContract.SearchQuery.CONTENT_PATH, null, contentValues);
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
         getContext().getContentResolver().notifyChange(uri, null);
-        return Uri.withAppendedPath(FeedContract.Editors.CONTENT_URI, "/" + contentValues.getAsString(FeedContract.FeedColumns._ID));
+
+        switch (uriType) {
+            case SEARCH_RESULTS:
+                return Uri.withAppendedPath(FeedContract.Editors.CONTENT_URI,
+                    "/" + contentValues.getAsString(FeedContract.SearchResults.QUERY_ID) +
+                    "/" + contentValues.getAsString(FeedContract.FeedColumns._ID));
+            default:
+                return Uri.withAppendedPath(FeedContract.Editors.CONTENT_URI,
+                        "/" + contentValues.getAsString(FeedContract.FeedColumns._ID));
+        }
     }
 
     @Override
@@ -165,6 +212,12 @@ public class FeedContentProvider extends ContentProvider {
                 break;
             case SUBSCRIPTION:
                 table = FeedContract.Subscriptions.CONTENT_PATH;
+                break;
+            case SEARCH_RESULTS:
+                table = FeedContract.SearchResults.CONTENT_PATH;
+                break;
+            case SEARCH_QUERY:
+                table = FeedContract.SearchQuery.CONTENT_PATH;
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
@@ -225,6 +278,13 @@ public class FeedContentProvider extends ContentProvider {
         return getProjection(uriType);
     }
     public static String[] getProjection(int uriType) {
+        if (uriType == SEARCH_QUERY || uriType == SEARCH_QUERY_ITEM) {
+            return new String[]{
+                    BaseColumns._ID,
+                    FeedContract.SearchQuery.QUERY,
+                    FeedContract.SearchQuery.UPDATED
+            };
+        }
         String[] available = {
                 FeedContract.FeedColumns._ID,
                 FeedContract.FeedColumns.TITLE,
@@ -239,6 +299,11 @@ public class FeedContentProvider extends ContentProvider {
         ArrayList<String> columnList = new ArrayList<String>(Arrays.asList(available));
         if (uriType == MY_VIDEO || uriType == MY_VIDEO_FEEDITEM)
             columnList.add(FeedContract.MyVideo.SIGNATURE);
+        if (uriType == SEARCH_RESULTS || uriType == SEARCH_RESULTS_FEEDITEM) {
+            columnList.add(FeedContract.SearchResults.QUERY_ID);
+            columnList.add(FeedContract.SearchResults.POSITION);
+        }
+
         String[] result = new String[columnList.size()];
         return columnList.toArray(result);
     }
@@ -250,6 +315,11 @@ public class FeedContentProvider extends ContentProvider {
             checkColumns(requestedColumns, uriType);
         }
     }
+
+    private static final String SEARCH_QUERY_COLUMNS_SQL =
+            " _id INTEGER PRIMARY KEY AUTOINCREMENT," +
+            " query VARCHAR(100)," +
+            " updated DATETIME";
 
     private static final String FEED_COLUMNS_SQL =
             " _id VARCHAR(32) PRIMARY KEY," +
@@ -264,6 +334,12 @@ public class FeedContentProvider extends ContentProvider {
     private static final String MY_VIDEO_COLUMNS_SQL =
             FEED_COLUMNS_SQL + "," +
                     " signature VARCHAR(30) NULL";
+
+    private static final String SEARCH_RESULTS_COLUMNS_SQL =
+            FEED_COLUMNS_SQL + "," +
+                    " query_id INTEGER NOT NULL," +
+                    " position INTEGER NOT NULL";
+
     private static final String SQL_CREATE_VIDEO_EDITORS = "CREATE TABLE " +
             FeedContract.Editors.CONTENT_PATH + " (" +
             FEED_COLUMNS_SQL + ")";
@@ -275,6 +351,14 @@ public class FeedContentProvider extends ContentProvider {
     private static final String SQL_CREATE_VIDEO_SUBSCRIPTION = "CREATE TABLE " +
             FeedContract.Subscriptions.CONTENT_PATH + " (" +
             FEED_COLUMNS_SQL + ")";
+
+    private static final String SQL_CREATE_SEARCH_RESULTS = "CREATE TABLE " +
+            FeedContract.SearchResults.CONTENT_PATH + " (" +
+            SEARCH_RESULTS_COLUMNS_SQL + ")";
+
+    private static final String SQL_CREATE_SEARCH_QUERY = "CREATE TABLE" +
+            FeedContract.SearchQuery.CONTENT_PATH + " (" +
+            SEARCH_QUERY_COLUMNS_SQL + ")";
 
     protected static final class MainDatabaseHelper extends SQLiteOpenHelper {
 
@@ -292,6 +376,8 @@ public class FeedContentProvider extends ContentProvider {
             db.execSQL(SQL_CREATE_VIDEO_EDITORS);
             db.execSQL(SQL_CREATE_VIDEO_MY_VIDEO);
             db.execSQL(SQL_CREATE_VIDEO_SUBSCRIPTION);
+            db.execSQL(SQL_CREATE_SEARCH_RESULTS);
+            db.execSQL(SQL_CREATE_SEARCH_QUERY);
         }
 
         @Override
