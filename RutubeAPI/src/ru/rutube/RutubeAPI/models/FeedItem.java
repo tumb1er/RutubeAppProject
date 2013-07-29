@@ -74,18 +74,15 @@ public class FeedItem implements Parcelable {
     }
 
     protected static Date getCreated(JSONObject data) {
-        Log.d(FeedItem.class.getName(), "JSON: " + data.toString());
 
         String date;
         date = data.optString(JSON_POSTING);
-        Log.d(FeedItem.class.getName(), "posting_ts "+ date);
         JSONObject video = data.optJSONObject(JSON_VIDEO);
         if (date.isEmpty() && video != null)
             date = video.optString(JSON_CREATED);
         if (date.isEmpty())
             date = data.optString(JSON_CREATED);
         try {
-            Log.d(FeedItem.class.getName(), "created: " + date);
             return sJsonDateTimeFormat.parse(date);
         } catch (ParseException e) {
             return new Date(0);
@@ -122,7 +119,6 @@ public class FeedItem implements Parcelable {
         String description = data.getString(JSON_DESCIPTION);
         Uri thumbnailUri = Uri.parse(data.getString(JSON_THUMBNAIL_URL));
         String videoId = data.getString(JSON_VIDEO_ID);
-        Log.d(FeedItem.class.getName(), "Created item: " + videoId + " " + String.valueOf(created));
         return new FeedItem(title, description, created, thumbnailUri, videoId, author);
     }
 
@@ -179,19 +175,8 @@ public class FeedItem implements Parcelable {
         return videoId;
     }
 
-    public void fillRow(ContentValues row) {
-        row.put(FeedContract.FeedColumns._ID, videoId);
-        row.put(FeedContract.FeedColumns.TITLE, title);
-        row.put(FeedContract.FeedColumns.DESCRIPTION, description);
-        row.put(FeedContract.FeedColumns.CREATED, sSqlDateTimeFormat.format(created));
-        row.put(FeedContract.FeedColumns.THUMBNAIL_URI, thumbnailUri.toString());
-
-        if (author != null) {
-            row.put(FeedContract.FeedColumns.AUTHOR_ID, author.getId());
-            row.put(FeedContract.FeedColumns.AUTHOR_NAME, author.getName());
-            row.put(FeedContract.FeedColumns.AVATAR_URI, author.getAvatarUrl().toString());
-        }
-
+    public void fillRow(ContentValues row, int position) {
+        fillRow(row);
     }
 
     public Uri getVideoUri(Context context) {
@@ -215,5 +200,19 @@ public class FeedItem implements Parcelable {
         }
         return new FeedItem(title, description, created, thumbnailUri, videoId, author);
 
+    }
+
+    protected void fillRow(ContentValues row) {
+        row.put(FeedContract.FeedColumns._ID, videoId);
+        row.put(FeedContract.FeedColumns.TITLE, title);
+        row.put(FeedContract.FeedColumns.DESCRIPTION, description);
+        row.put(FeedContract.FeedColumns.CREATED, sSqlDateTimeFormat.format(created));
+        row.put(FeedContract.FeedColumns.THUMBNAIL_URI, thumbnailUri.toString());
+
+        if (author != null) {
+            row.put(FeedContract.FeedColumns.AUTHOR_ID, author.getId());
+            row.put(FeedContract.FeedColumns.AUTHOR_NAME, author.getName());
+            row.put(FeedContract.FeedColumns.AVATAR_URI, author.getAvatarUrl().toString());
+        }
     }
 }

@@ -35,11 +35,20 @@ import java.util.Date;
 public class FeedCursorAdapter extends SimpleCursorAdapter {
     protected static final SimpleDateFormat sqlDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     protected static final SimpleDateFormat reprDateFormat = new SimpleDateFormat("d L y");
-    private static final String LOG_TAG = FeedCursorAdapter.class.getName();
     protected ImageLoader imageLoader;
     protected static int item_layout_id = R.layout.feed_item;
+    private final String LOG_TAG = getClass().getName();
     private Context context;
     private RequestQueue mRequestQueue;
+    private int mPerPage;
+
+    public int getPerPage() {
+        return mPerPage;
+    }
+
+    public void setPerPage(int perPage) {
+        this.mPerPage = perPage;
+    }
 
     public interface LoadMoreListener
     {
@@ -54,6 +63,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     public FeedCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
         super(context, layout, c, from, to, flags);
         this.context = context;
+        mPerPage = 20;
         initImageLoader(context);
     }
 
@@ -61,7 +71,6 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        Log.d(getClass().getName(), "new view");
         View view = inflater.inflate(item_layout_id, null);
         ThumbnailView thumbnailView = (ThumbnailView)view.findViewById(R.id.thumbnailImageView);
         thumbnailView.setDefaultImageResId(R.drawable.stub);
@@ -70,7 +79,6 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        Log.d(getClass().getName(), "bind view");
         try {
             int titleIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.TITLE);
             int thumbnailUriIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.THUMBNAIL_URI);
@@ -85,10 +93,9 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
             Date created = null;
             try {
                 String created_str = cursor.getString(createdIndex);
-                Log.d(getClass().getName(), "CR:" + created_str);
                 created = sqlDateFormat.parse(created_str);
             } catch (ParseException ignored) {
-                Log.d(getClass().getName(), "CR Parse error");
+                Log.e(getClass().getName(), "CR Parse error");
             }
             String authorName = cursor.getString(authorNameIndex);
             String avatarUri = cursor.getString(avatarIndex);
@@ -139,8 +146,8 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
 
     @Override
     public Object getItem(int position) {
-        Log.d(LOG_TAG, "getItem " + String.valueOf(position));
-        if (position > getCount() - 10) {
+        if (position > getCount() - mPerPage / 2) {
+            Log.d(LOG_TAG, String.format("Load more: %d of %d", position, getCount()));
             loadMore();
         }
         return super.getItem(position);
@@ -148,8 +155,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Log.d(LOG_TAG, "getView " + String.valueOf(position));
-        if (position > getCount() - 10) {
+        if (position > getCount() - mPerPage / 2) {
             loadMore();
         }
         return super.getView(position, convertView, parent);

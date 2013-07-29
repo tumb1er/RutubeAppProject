@@ -3,6 +3,7 @@ package ru.rutube.RutubeFeed.ui;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListFragment;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -15,6 +16,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.SearchView;
 
 //import com.huewu.pla.lib.MultiColumnListView;
 //import com.huewu.pla.lib.internal.PLA_AdapterView;
@@ -59,26 +61,43 @@ public class FeedFragment extends ListFragment implements FeedController.FeedVie
         inflater.inflate(R.menu.feed_menu, menu);
         mRefreshItem = menu.findItem(R.id.menu_refresh);
         mSearchItem = menu.findItem(R.id.menu_search);
-        MenuItemCompat.setOnActionExpandListener(mSearchItem, new MenuItemCompat.OnActionExpandListener() {
-            @Override
-            public boolean onMenuItemActionExpand(MenuItem menuItem) {
-                return true;
-            }
+//        MenuItemCompat.setOnActionExpandListener(mSearchItem, new MenuItemCompat.OnActionExpandListener() {
+//            @Override
+//            public boolean onMenuItemActionExpand(MenuItem menuItem) {
+//                return true;
+//            }
+//
+//            @Override
+//            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+//                return true;
+//            }
+//        });
 
-            @Override
-            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
-                return true;
-            }
-        });
+        Activity activity = getActivity();
+        assert activity != null;
+        // Get the SearchView and set the searchable configuration
+        SearchManager searchManager = (SearchManager) activity.getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) mSearchItem.getActionView();
+        assert searchView != null;
+        // Assumes current activity is the searchable activity
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(activity.getComponentName()));
+        searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d(LOG_TAG, "onOptionsItemSelected");
         int id = item.getItemId();
         if(id == R.id.menu_refresh){
                 refreshFeed();
                 return true;
         }
+        if (id == R.id.menu_search) {
+            Log.d(LOG_TAG, "Search btn!");
+            return false;
+        }
+        Log.d(LOG_TAG, "super.onOptionsItemSelected");
         return super.onOptionsItemSelected(item);
 
     }

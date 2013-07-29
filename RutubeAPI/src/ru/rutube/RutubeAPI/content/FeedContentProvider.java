@@ -103,10 +103,14 @@ public class FeedContentProvider extends ContentProvider {
                 queryBuilder.setTables(FeedContract.SearchResults.CONTENT_PATH);
                 List<String> pathSegments = uri.getPathSegments();
                 assert pathSegments != null;
-                String queryId = pathSegments.get(2);
+                Log.d(LOG_TAG, String.valueOf(pathSegments));
+                // путь выглядит так: /search_results/1
+                // соответственно, нужен 2 сегмент
+                String queryId = pathSegments.get(1);
                 assert queryId != null;
                 queryBuilder.appendWhere(FeedContract.SearchResults.QUERY_ID + "="
                         + queryId);
+                break;
             case SEARCH_RESULTS_FEEDITEM:
                 queryBuilder.setTables(FeedContract.SearchResults.CONTENT_PATH);
                 queryBuilder.appendWhere(FeedContract.FeedColumns._ID + "="
@@ -159,22 +163,27 @@ public class FeedContentProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues contentValues) {
+        Log.d(LOG_TAG, "Insert uri: " + uri.toString());
         int uriType = sUriMatcher.match(uri);
+        Log.d(LOG_TAG, "Type: " + String.valueOf(uriType));
         SQLiteDatabase sqlDB = dbHelper.getWritableDatabase();
+        long rowId = 0;
         switch (uriType) {
             case EDITORS:
-                sqlDB.replace(FeedContract.Editors.CONTENT_PATH, null, contentValues);
+                rowId = sqlDB.replace(FeedContract.Editors.CONTENT_PATH, null, contentValues);
                 break;
             case MY_VIDEO:
-                sqlDB.replace(FeedContract.MyVideo.CONTENT_PATH, null, contentValues);
+                rowId = sqlDB.replace(FeedContract.MyVideo.CONTENT_PATH, null, contentValues);
                 break;
             case SUBSCRIPTION:
-                sqlDB.replace(FeedContract.Subscriptions.CONTENT_PATH, null, contentValues);
+                rowId = sqlDB.replace(FeedContract.Subscriptions.CONTENT_PATH, null, contentValues);
                 break;
             case SEARCH_RESULTS:
-                sqlDB.replace(FeedContract.SearchResults.CONTENT_PATH, null, contentValues);
+                rowId = sqlDB.replace(FeedContract.SearchResults.CONTENT_PATH, null, contentValues);
+                break;
             case SEARCH_QUERY:
-                sqlDB.replace(FeedContract.SearchQuery.CONTENT_PATH, null, contentValues);
+                rowId = sqlDB.replace(FeedContract.SearchQuery.CONTENT_PATH, null, contentValues);
+                break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
@@ -182,12 +191,23 @@ public class FeedContentProvider extends ContentProvider {
 
         switch (uriType) {
             case SEARCH_RESULTS:
+                return FeedContract.SearchResults.CONTENT_URI.buildUpon()
+                        .appendEncodedPath(contentValues.getAsString(FeedContract.SearchResults.QUERY_ID))
+                        .appendEncodedPath(String.valueOf(rowId)).build();
+            case SEARCH_QUERY:
+                return Uri.withAppendedPath(FeedContract.SearchQuery.CONTENT_URI,
+                        String.valueOf(rowId));
+            case EDITORS:
                 return Uri.withAppendedPath(FeedContract.Editors.CONTENT_URI,
-                    "/" + contentValues.getAsString(FeedContract.SearchResults.QUERY_ID) +
-                    "/" + contentValues.getAsString(FeedContract.FeedColumns._ID));
+                        String.valueOf(rowId));
+            case MY_VIDEO:
+                return Uri.withAppendedPath(FeedContract.MyVideo.CONTENT_URI,
+                        String.valueOf(rowId));
+            case SUBSCRIPTION:
+                return Uri.withAppendedPath(FeedContract.Subscriptions.CONTENT_URI,
+                        String.valueOf(rowId));
             default:
-                return Uri.withAppendedPath(FeedContract.Editors.CONTENT_URI,
-                        "/" + contentValues.getAsString(FeedContract.FeedColumns._ID));
+                throw new IllegalArgumentException("Unknown URI");
         }
     }
 
@@ -237,7 +257,7 @@ public class FeedContentProvider extends ContentProvider {
             sqlDB.endTransaction();
         }
         //getContext().getContentResolver().notifyChange(uri, null);
-        Log.d(LOG_TAG, "end bulk insert");
+        Log.d(LOG_TAG, String.format("end bulk insert: %d of %d inserted", numInserted, values.length));
         return numInserted;
     }
 

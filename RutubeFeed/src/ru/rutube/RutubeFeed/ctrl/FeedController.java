@@ -188,6 +188,11 @@ public class FeedController implements Parcelable {
             if (mView.getListAdapter().getCount() == 0)
                 mContext.getContentResolver().notifyChange(mFeed.getContentUri(), null);
             mPerPage = result.getInt(Constants.Result.PER_PAGE);
+            ((FeedCursorAdapter)mView.getListAdapter()).setPerPage(mPerPage);
+            requestDone();
+        }
+
+        private void requestDone() {
             if (mLoading > 0) mLoading -= 1;
             if (mLoading == 0)
                 mView.doneRefreshing();
@@ -196,11 +201,13 @@ public class FeedController implements Parcelable {
         @Override
         public void onVolleyError(VolleyError error) {
             mView.showError();
+
         }
 
         @Override
         public void onRequestError(int tag, RequestError error) {
             mView.showError();
+
         }
     };
 
@@ -242,8 +249,9 @@ public class FeedController implements Parcelable {
      * @param page номер страницы с 1
      */
     private void loadPage(int page) {
-        if (mLoading == 0)
-            mView.setRefreshing();
+        if (mLoading != 0)
+            return;
+        mView.setRefreshing();
         mLoading += 1;
         JsonObjectRequest request = mFeed.getFeedRequest(page, mContext, mLoadPageRequestListener);
         mRequestQueue.add(request);
