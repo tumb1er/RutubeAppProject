@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.util.Log;
 import android.view.*;
 import android.view.animation.Animation;
@@ -31,7 +32,8 @@ import ru.rutube.RutubeFeed.ctrl.FeedController;
  */
 public class FeedFragment extends ListFragment implements FeedController.FeedView {
     private static final String LOG_TAG = FeedFragment.class.getName();
-    private MenuItem refreshItem;
+    private MenuItem mRefreshItem;
+    private MenuItem mSearchItem;
     private Uri feedUri;
 //    private MultiColumnListView sgView;
     private ListView sgView;
@@ -55,7 +57,19 @@ public class FeedFragment extends ListFragment implements FeedController.FeedVie
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.feed_menu, menu);
-        refreshItem = menu.findItem(R.id.menu_refresh);
+        mRefreshItem = menu.findItem(R.id.menu_refresh);
+        mSearchItem = menu.findItem(R.id.menu_search);
+        MenuItemCompat.setOnActionExpandListener(mSearchItem, new MenuItemCompat.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem menuItem) {
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+                return true;
+            }
+        });
     }
 
     @Override
@@ -123,12 +137,12 @@ public class FeedFragment extends ListFragment implements FeedController.FeedVie
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         Log.d(LOG_TAG, "onPrepareOptionsMenu");
-        refreshItem = menu.findItem(R.id.menu_refresh);
+        mRefreshItem = menu.findItem(R.id.menu_refresh);
         super.onPrepareOptionsMenu(menu);
     }
 
     public void setRefreshing() {
-        if (refreshItem == null) {
+        if (mRefreshItem == null) {
             Log.d(LOG_TAG, "empty refresh item");
             return;
         }
@@ -142,16 +156,16 @@ public class FeedFragment extends ListFragment implements FeedController.FeedVie
         assert rotation != null;
         rotation.setRepeatCount(Animation.INFINITE);
         iv.startAnimation(rotation);
-        refreshItem.setActionView(iv);
+        mRefreshItem.setActionView(iv);
     }
 
     public void doneRefreshing() {
-        if (refreshItem == null)
+        if (mRefreshItem == null)
             return;
-        View actionView = refreshItem.getActionView();
+        View actionView = mRefreshItem.getActionView();
         if (actionView != null)
             actionView.clearAnimation();
-        refreshItem.setActionView(null);
+        mRefreshItem.setActionView(null);
     }
 
     @Override
