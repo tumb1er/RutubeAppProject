@@ -1,20 +1,16 @@
-RutubeAPI/*.iml
 RutubeAPI/gen/
 RutubeAPI/bin/
 
-RutubeApp/*.iml
 RutubeApp/out/
 RutubeApp/bin/
 RutubeApp/gen/
+RutubeApp/asserts/
 
-RutubeFeed/*.iml
 RutubeFeed/gen/
 RutubeFeed/bin/
 
-RutubePlayer/*.iml
 RutubePlayer/gen/
 RutubePlayer/bin/
-
 
 
 # files for the dex VM
@@ -26,6 +22,7 @@ RutubePlayer/bin/
 # generated files
 bin/
 gen/
+out/
 
 # built application files
 *.apk
