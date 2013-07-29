@@ -356,7 +356,7 @@ public class FeedContentProvider extends ContentProvider {
             FeedContract.SearchResults.CONTENT_PATH + " (" +
             SEARCH_RESULTS_COLUMNS_SQL + ")";
 
-    private static final String SQL_CREATE_SEARCH_QUERY = "CREATE TABLE" +
+    private static final String SQL_CREATE_SEARCH_QUERY = "CREATE TABLE " +
             FeedContract.SearchQuery.CONTENT_PATH + " (" +
             SEARCH_QUERY_COLUMNS_SQL + ")";
 
