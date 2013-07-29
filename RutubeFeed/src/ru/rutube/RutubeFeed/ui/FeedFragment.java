@@ -40,8 +40,22 @@ public class FeedFragment extends ListFragment implements FeedController.FeedVie
     public ListAdapter getListAdapter() {
         return sgView.getAdapter();
     }
+
     public void setListAdapter(ListAdapter adapter) {
         sgView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.feed_menu, menu);
+        refreshItem = menu.findItem(R.id.menu_refresh);
     }
 
     @Override
