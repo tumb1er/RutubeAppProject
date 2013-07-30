@@ -89,6 +89,11 @@
             android:name="ru.rutube.RutubeAPI.content.FeedContentProvider"
             android:authorities="ru.rutube.RutubeAPI.content.FeedContentProvider"
             />
+        <provider
+                android:authorities="ru.rutube.RutubeFeed.content.SearchSuggestProvider"
+                android:name="ru.rutube.RutubeFeed.content.SearchSuggestProvider" >
+        </provider>
+
     </application>
 
 </manifest> 

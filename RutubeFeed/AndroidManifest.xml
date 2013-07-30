@@ -15,5 +15,9 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <provider
+                android:authorities="ru.rutube.RutubeFeed.content.SearchSuggestProvider"
+                android:name=".content.SearchSuggestProvider" >
+        </provider>
     </application>
 </manifest>
