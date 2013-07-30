@@ -130,7 +130,10 @@ public class FeedContentProvider extends ContentProvider {
 
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         if (sortOrder == null) {
-            sortOrder = FeedContract.FeedColumns.CREATED + " DESC";
+            if (uriType == SEARCH_RESULTS)
+                sortOrder = FeedContract.SearchResults.POSITION;
+            else
+                sortOrder = FeedContract.FeedColumns.CREATED + " DESC";
         }
         Log.d(LOG_TAG, "ORDER BY: " + sortOrder);
         Cursor cursor = queryBuilder.query(db, projection, selection,
