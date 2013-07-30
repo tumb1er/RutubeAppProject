@@ -13,7 +13,6 @@ import ru.rutube.RutubeFeed.helpers.TopRoundCornerBitmapProcessor;
  * Created by tumbler on 07.07.13.
  */
 public class ThumbnailView extends NetworkImageView {
-    // TODO: сделать возможность задачать round_pixels через XML в процентах.
     private static double ROUND_PERCENT = 0.03;
     private static double ASPECT = 0.668;
     private static final BitmapProcessor sBitmapProcessor = new TopRoundCornerBitmapProcessor(ROUND_PERCENT, ASPECT);
