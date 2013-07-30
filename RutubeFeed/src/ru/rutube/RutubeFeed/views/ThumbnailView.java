@@ -31,7 +31,6 @@ public class ThumbnailView extends NetworkImageView {
 
     @Override
     public void setImageBitmap(Bitmap bm) {
-
         super.setImageBitmap(sBitmapProcessor.process(bm, this));
     }
 
