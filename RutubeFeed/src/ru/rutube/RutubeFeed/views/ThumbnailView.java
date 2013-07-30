@@ -14,7 +14,9 @@ import ru.rutube.RutubeFeed.helpers.TopRoundCornerBitmapProcessor;
  */
 public class ThumbnailView extends NetworkImageView {
     // TODO: сделать возможность задачать round_pixels через XML в процентах.
-    private static final BitmapProcessor sBitmapProcessor = new TopRoundCornerBitmapProcessor(10);
+    private static double ROUND_PERCENT = 0.03;
+    private static double ASPECT = 0.668;
+    private static final BitmapProcessor sBitmapProcessor = new TopRoundCornerBitmapProcessor(ROUND_PERCENT, ASPECT);
     public ThumbnailView(Context context) {
         super(context);
     }
@@ -31,5 +33,11 @@ public class ThumbnailView extends NetworkImageView {
     public void setImageBitmap(Bitmap bm) {
 
         super.setImageBitmap(sBitmapProcessor.process(bm, this));
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
+        setMeasuredDimension(parentWidth, (int)(parentWidth * ASPECT));
     }
 }
