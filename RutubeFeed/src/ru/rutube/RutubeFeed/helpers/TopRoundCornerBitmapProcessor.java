@@ -28,7 +28,8 @@ public class TopRoundCornerBitmapProcessor implements BitmapProcessor {
         int width = imageView.getWidth();
         Bitmap cropped = cropAspect(bitmap, mCropAspect);
         Bitmap round = roundCorners(cropped, imageView, (int)(width * mRoundPercent));
-        cropped.recycle();
+        if (cropped != null)
+            cropped.recycle();
         return round;
     }
 
