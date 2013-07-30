@@ -31,12 +31,24 @@ import ru.rutube.RutubePlayer.ctrl.PlayerController;
 public class PlayerFragment extends Fragment
         implements PlayerController.PlayerView, MediaPlayer.OnCompletionListener,
         MediaPlayer.OnPreparedListener {
+
+    public interface PlayerStateListener {
+        public void onPrepare();
+        public void onPlay();
+        public void onSuspend();
+        public void onComplete();
+    }
+
     private static final String CONTROLLER = "controller";
-    private final String LOG_TAG = getClass().getName();
+
     protected PlayerController mController;
     protected VideoView mVideoView;
     protected Uri mStreamUri;
     protected Boolean mVideoViewInited;
+    private PlayerStateListener mPlayerStateListener;
+
+
+    private final String LOG_TAG = getClass().getName();
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -118,6 +130,10 @@ public class PlayerFragment extends Fragment
             getView().findViewById(R.id.thumbnail).setVisibility(View.INVISIBLE);
             startVideoPlayback();
         }
+    }
+
+    public void setPlayerStateListener(PlayerStateListener playerStateListener) {
+        mPlayerStateListener = playerStateListener;
     }
 
     /**

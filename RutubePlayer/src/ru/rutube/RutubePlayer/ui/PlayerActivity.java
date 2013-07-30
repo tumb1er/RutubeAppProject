@@ -17,8 +17,28 @@ import ru.rutube.RutubePlayer.R;
  * Возможен старт по intent-action: ru.rutube.player.play c Uri видео вида:
  * http://rutube.ru/video/<video_id>/
  */
-public class PlayerActivity extends Activity {
+public class PlayerActivity extends Activity implements PlayerFragment.PlayerStateListener {
     private final String LOG_TAG = getClass().getName();
+
+    @Override
+    public void onPrepare() {
+
+    }
+
+    @Override
+    public void onPlay() {
+
+    }
+
+    @Override
+    public void onSuspend() {
+
+    }
+
+    @Override
+    public void onComplete() {
+
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -33,6 +53,8 @@ public class PlayerActivity extends Activity {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         } else {
             setContentView(R.layout.player_activity);
+            PlayerFragment f = (PlayerFragment)getFragmentManager().findFragmentById(R.id.player);
+            f.setPlayerStateListener(this);
         }
     }
 
