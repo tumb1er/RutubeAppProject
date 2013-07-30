@@ -45,7 +45,7 @@ public class FeedController implements Parcelable {
         public void doneRefreshing();
         public void showError();
         public LoaderManager getLoaderManager();
-        public void openPlayer(Uri uri);
+        public void openPlayer(Uri uri, Uri thumbnailUri);
     }
 
     private static final int LOADER_ID = 1;
@@ -85,8 +85,7 @@ public class FeedController implements Parcelable {
         Cursor c = (Cursor) mView.getListAdapter().getItem(position);
         FeedItem item = Feed.loadFeedItem(mContext, c, mFeedUri);
         Uri uri = item.getVideoUri(mContext);
-
-        mView.openPlayer(uri);
+        mView.openPlayer(uri, item.getThumbnailUri());
     }
 
     /**
@@ -114,7 +113,7 @@ public class FeedController implements Parcelable {
     /**
      * Отсоединяется от останавливаемой активити
      */
-    public  void detach() {
+    public void detach() {
         mContext = null;
         mView = null;
         mRequestQueue.cancelAll(Requests.FEED_PAGE);

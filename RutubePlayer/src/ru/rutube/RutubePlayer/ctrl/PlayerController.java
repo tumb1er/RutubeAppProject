@@ -10,22 +10,29 @@ import android.util.Log;
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpClientStack;
+import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
 import java.util.List;
 
 import ru.rutube.RutubeAPI.HttpTransport;
+import ru.rutube.RutubeAPI.RutubeAPI;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeAPI.models.TrackInfo;
 import ru.rutube.RutubeAPI.models.Video;
 import ru.rutube.RutubeAPI.requests.RequestListener;
 import ru.rutube.RutubeAPI.requests.Requests;
+import ru.rutube.RutubeAPI.tools.BitmapLruCache;
 
 /**
  * Created by tumbler on 27.07.13.
  */
 public class PlayerController implements Parcelable, RequestListener {
+
+    public ImageLoader getImageLoader() {
+        return mImageLoader;
+    }
 
     /**
      * Интерфейс для представления плеера
@@ -38,6 +45,7 @@ public class PlayerController implements Parcelable, RequestListener {
         public void setStreamUri(Uri uri);
 
         public void setVideoTitle(String title);
+        public void setThumbnailUri(Uri uri);
         /**
          * Отображает сообщение об ошибке
          */
@@ -51,7 +59,7 @@ public class PlayerController implements Parcelable, RequestListener {
     }
 
     public static int STATE_NEW = 0;
-    public static int STATE_READY = 1;
+    public static int STATE_STARTING = 1;
     public static int STATE_PLAYING = 2;
     public static int STATE_COMPLETED = 3;
 
@@ -60,11 +68,13 @@ public class PlayerController implements Parcelable, RequestListener {
     private Video mVideo;
     private int mState;
 
-    private RequestQueue mRequestQueue;
+    protected RequestQueue mRequestQueue;
     private volatile int mPlayRequestStage;
     private boolean mAttached;
     private PlayerView mView;
     private Context mContext;
+    private Uri mThumbnailUri;
+    protected ImageLoader mImageLoader;
 
     /**
      * Обработка результатов запросов к API.
@@ -89,6 +99,10 @@ public class PlayerController implements Parcelable, RequestListener {
         }
         if (tag == Requests.PLAY_OPTIONS) {
             Boolean allowed = result.getBoolean(Constants.Result.ACL_ALLOWED);
+            if (mThumbnailUri == null){
+                Uri thumbnailUri = result.getParcelable(Constants.Result.PLAY_THUMBNAIL);
+                mView.setThumbnailUri(thumbnailUri);
+            }
             if (!allowed) {
                 Log.w(LOG_TAG, "Playback not allowed");
                 mView.showError();
@@ -98,7 +112,7 @@ public class PlayerController implements Parcelable, RequestListener {
         }
         if (mPlayRequestStage == 2) {
             Log.d(LOG_TAG, "OK, playing");
-            mState = STATE_READY;
+            mState = STATE_STARTING;
             startPlayback();
         } else
             Log.d(LOG_TAG, "Not ready yet");
@@ -118,15 +132,16 @@ public class PlayerController implements Parcelable, RequestListener {
         mView.showError();
     }
 
-    public PlayerController(Uri videoUri) {
+    public PlayerController(Uri videoUri, Uri thumbnailUri) {
         mContext = null;
         mView = null;
         mVideoUri = videoUri;
         mState = STATE_NEW;
+        mThumbnailUri = thumbnailUri;
     }
 
-    protected PlayerController(Uri videoUri, int state) {
-        this(videoUri);
+    protected PlayerController(Uri videoUri, Uri thumbnailUri, int state) {
+        this(videoUri, thumbnailUri);
         mState = state;
     }
 
@@ -150,6 +165,10 @@ public class PlayerController implements Parcelable, RequestListener {
         mView = view;
         mRequestQueue = Volley.newRequestQueue(context,
                 new HttpClientStack(HttpTransport.getHttpClient()));
+        mImageLoader = new ImageLoader(mRequestQueue, RutubeAPI.getBitmapCache());
+        if (mThumbnailUri != null) {
+            mView.setThumbnailUri(mThumbnailUri);
+        }
         mAttached = true;
     }
 
@@ -174,13 +193,15 @@ public class PlayerController implements Parcelable, RequestListener {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeParcelable(mVideoUri, i);
+        parcel.writeParcelable(mThumbnailUri, i);
         parcel.writeInt(mState);
     }
 
     public static PlayerController fromParcel(Parcel in) {
         Uri feedUri = in.readParcelable(Uri.class.getClassLoader());
+        Uri thumbnailUri = in.readParcelable(Uri.class.getClassLoader());
         int state = in.readInt();
-        return new PlayerController(feedUri, state);
+        return new PlayerController(feedUri, thumbnailUri, state);
     }
 
     @SuppressWarnings("UnusedDeclaration")

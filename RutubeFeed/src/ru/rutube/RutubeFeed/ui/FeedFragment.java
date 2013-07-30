@@ -108,11 +108,12 @@ public class FeedFragment extends ListFragment implements FeedController.FeedVie
     }
 
     @Override
-    public void openPlayer(Uri uri) {
+    public void openPlayer(Uri uri, Uri thumbnailUri) {
         Activity activity = getActivity();
         assert activity != null;
         Intent intent = new Intent("ru.rutube.player.play");
         intent.setData(uri);
+        intent.putExtra(Constants.Params.THUMBNAIL_URI, thumbnailUri);
         Log.d(LOG_TAG, "Starting player");
         startActivityForResult(intent, 0);
         Log.d(LOG_TAG, "Player started");

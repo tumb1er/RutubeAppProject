@@ -14,6 +14,10 @@ import android.view.ViewGroup;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
+
+import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubePlayer.R;
 import ru.rutube.RutubePlayer.ctrl.PlayerController;
 
@@ -111,6 +115,7 @@ public class PlayerFragment extends Fragment
                 + String.valueOf(mVideoViewInited) + " uri: " + String.valueOf(mStreamUri));
         if (mVideoViewInited && mStreamUri != null) {
             Log.d(LOG_TAG, "Start!");
+            getView().findViewById(R.id.thumbnail).setVisibility(View.INVISIBLE);
             startVideoPlayback();
         }
     }
@@ -141,6 +146,17 @@ public class PlayerFragment extends Fragment
 
     }
 
+    @Override
+    public void setThumbnailUri(Uri uri) {
+        View view = getView();
+        assert view != null;
+        NetworkImageView netImgView = (NetworkImageView) view.findViewById(R.id.thumbnail);
+        ImageLoader imageLoader = mController.getImageLoader();
+        if (imageLoader == null)
+            throw new NullPointerException("no image loader");
+        netImgView.setImageUrl(uri.toString(), imageLoader);
+    }
+
     /**
      * Начинает воспроизведение видео
      */
@@ -159,14 +175,15 @@ public class PlayerFragment extends Fragment
         Activity activity = getActivity();
         assert activity != null;
         Intent intent = activity.getIntent();
-        Uri uri = intent.getData();
+        Uri videoUri = intent.getData();
+        Uri thumbnailUri = intent.getParcelableExtra(Constants.Params.THUMBNAIL_URI);
         initVideoView();
         mController = null;
         if (savedInstanceState != null) {
             mController = savedInstanceState.getParcelable(CONTROLLER);
         }
         if (mController == null) {
-            mController = new PlayerController(uri);
+            mController = new PlayerController(videoUri, thumbnailUri);
         }
         mController.attach(activity, this);
     }

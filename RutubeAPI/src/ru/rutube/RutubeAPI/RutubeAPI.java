@@ -3,10 +3,18 @@ package ru.rutube.RutubeAPI;
 import android.content.Context;
 import android.net.Uri;
 
+import ru.rutube.RutubeAPI.tools.BitmapLruCache;
+
 /**
  * Created by tumbler on 22.06.13.
  */
 public class RutubeAPI {
+
+    public static BitmapLruCache sBitmapCache = new BitmapLruCache();
+
+    public static BitmapLruCache getBitmapCache() {
+        return sBitmapCache;
+    }
 
     public static String getUrl(Context context, int stringId) {
         assert context != null;

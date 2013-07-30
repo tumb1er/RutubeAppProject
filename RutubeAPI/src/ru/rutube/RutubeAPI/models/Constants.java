@@ -15,6 +15,7 @@ public final class Constants {
         public static final String PROGRESS = "ru.rutube.api.upload.progress";
         public static final String AUTH_COOKIE = "ru.rutube.api.login.cookie";
         public static final String ACL_ALLOWED = "ru.rutube.api.acl.allowed";
+        public static final String PLAY_THUMBNAIL = "ru.rutube.api.play.thumbnail";
     }
 
     public final class Params {
@@ -30,6 +31,7 @@ public final class Constants {
         public static final String EMAIL = "ru.rutube.api.login.email";
         public static final String PASSWORD = "ru.rutube.api.login.password";
         public static final String VIDEO_URI = "ru.rutube.api.upload.video";
+        public static final String THUMBNAIL_URI = "ru.rutube.api.video.thumbnail_url";
     }
 
     public final class Actions {
