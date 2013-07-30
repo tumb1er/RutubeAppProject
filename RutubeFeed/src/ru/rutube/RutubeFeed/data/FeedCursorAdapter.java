@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
@@ -107,12 +108,22 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
             tv = (TextView) view.findViewById(R.id.descriptionTextView);
             tv.setText(Html.fromHtml(description));
             tv = (TextView) view.findViewById(R.id.authorTextView);
-            tv.setText(authorName);
-            NetworkImageView iv = (NetworkImageView) view.findViewById(R.id.thumbnailImageView);
-            iv.setImageUrl(thumbnailUri, imageLoader);
-            iv = (NetworkImageView) view.findViewById(R.id.avatarImageView);
-            iv.setImageUrl(avatarUri, imageLoader);
 
+            // При отсутствии имени автора скрываем соответствующий TextField
+            int visibility = (authorName == null) ? View.GONE : View.VISIBLE;
+            tv.setVisibility(visibility);
+            tv.setText(authorName);
+
+            NetworkImageView netImgView = (NetworkImageView) view.findViewById(R.id.thumbnailImageView);
+            netImgView.setImageUrl(thumbnailUri, imageLoader);
+
+            // При отсутствии аватара скрываем его ImageView и стрелочку вниз
+            visibility = (avatarUri == null) ? View.GONE : View.VISIBLE;
+            netImgView = (NetworkImageView) view.findViewById(R.id.avatarImageView);
+            netImgView.setVisibility(visibility);
+            netImgView.setImageUrl(avatarUri, imageLoader);
+            ImageView imView = (ImageView) view.findViewById(R.id.commentBaloon);
+            imView.setVisibility(visibility);
 
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
