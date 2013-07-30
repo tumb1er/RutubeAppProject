@@ -2,4 +2,6 @@
 <resources>
     <string name="app_name">RutubePlayer</string>
     <string name="faled_to_load_data">Failed to load data</string>
+    <string name="replay">Replay</string>
+    <string name="share">Share</string>
 </resources>
