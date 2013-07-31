@@ -1,6 +1,9 @@
 package ru.rutube.RutubePlayer.ui;
 
+import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,9 +38,22 @@ public class EndscreenFragment extends Fragment {
     protected View.OnClickListener mShareBtnListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            Log.d(LOG_TAG, "onShare");
+            share();
         }
     };
+
+    private void share() {
+        Activity activity = getActivity();
+        assert activity != null;
+        Uri videoUri = activity.getIntent().getData();
+        assert videoUri != null;
+        Log.d(LOG_TAG, "Sharing: " + String.valueOf(videoUri));
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_TEXT, videoUri.toString());
+        intent.putExtra(android.content.Intent.EXTRA_SUBJECT, activity.getString(R.string.share_text));
+        startActivity(Intent.createChooser(intent, activity.getString(R.string.share)));
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
