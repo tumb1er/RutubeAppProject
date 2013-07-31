@@ -32,41 +32,37 @@ public class PlayerFragment extends Fragment
         implements PlayerController.PlayerView, MediaPlayer.OnCompletionListener,
         MediaPlayer.OnPreparedListener {
 
-    private MediaController mMediaController;
-
     public void replay() {
         mController.replay();
     }
 
-    @Override
-    public int getCurrentOffset() {
-        return mVideoView.getCurrentPosition();
-    }
-
-    @Override
-    public void stopPlayback() {
-        mVideoView.setVideoURI(null);
-        mVideoView.stopPlayback();
-    }
-
-    public void seekTo(int millis) {
-        mVideoView.seekTo(millis);
-    }
-
+    /**
+     * Интерфейс общения с активити, в которое встроен фрагмент с плеером
+     */
     public interface PlayerStateListener {
+
+        /**
+         * Событие начала воспроизведения
+         */
         public void onPlay();
+
+        /**
+         * Событие окончания воспроизведения
+         */
         public void onComplete();
     }
-
     private static final String CONTROLLER = "controller";
+    private static final String LOG_TAG = PlayerFragment.class.getName();
 
     protected PlayerController mController;
     protected VideoView mVideoView;
     protected Uri mStreamUri;
     protected PlayerStateListener mPlayerStateListener;
+    protected MediaController mMediaController;
 
-
-    private final String LOG_TAG = getClass().getName();
+    //
+    // переопределенные методы из Fragment
+    //
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -82,13 +78,6 @@ public class PlayerFragment extends Fragment
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        Log.d(LOG_TAG, "onPause");
-        mController.onPause();
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         mController.onResume();
@@ -96,8 +85,10 @@ public class PlayerFragment extends Fragment
     }
 
     @Override
-    public void pauseVideo() {
-        mVideoView.pause();
+    public void onPause() {
+        super.onPause();
+        Log.d(LOG_TAG, "onPause");
+        mController.onPause();
     }
 
     @Override
@@ -114,10 +105,46 @@ public class PlayerFragment extends Fragment
         outState.putParcelable(CONTROLLER, mController);
     }
 
+    //
+    // Обработчики событий MediaPlayer
+    //
+
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
         mController.onCompletion();
         onComplete();
+    }
+
+    @Override
+    public void onPrepared(MediaPlayer mediaPlayer) {
+        mController.onViewReady();
+        startPlayback();
+
+    }
+
+    //
+    // Реализация интерфейса PlayerController.PlayerView
+    //
+
+    @Override
+    public int getCurrentOffset() {
+        return mVideoView.getCurrentPosition();
+    }
+
+    @Override
+    public void stopPlayback() {
+        mVideoView.setVideoURI(null);
+        mVideoView.stopPlayback();
+    }
+
+    @Override
+    public void seekTo(int millis) {
+        mVideoView.seekTo(millis);
+    }
+
+    @Override
+    public void pauseVideo() {
+        mVideoView.pause();
     }
 
     @Override
@@ -130,24 +157,6 @@ public class PlayerFragment extends Fragment
         toggleMediaController(false);
     }
 
-    protected void toggleMediaController(boolean visible) {
-        if (visible)
-            mMediaController.show();
-        else
-            mMediaController.hide();
-    }
-
-    @Override
-    public void onPrepared(MediaPlayer mediaPlayer) {
-        mController.onViewReady();
-        startPlayback();
-
-    }
-
-    /**
-     * Сохраняет Uri видеопотока
-     * @param uri ссылка на видеопоток (например, http://.../name.m3u8)
-     */
     @Override
     public void setStreamUri(Uri uri) {
         Log.d(LOG_TAG, "setStreamUri " + String.valueOf(uri));
@@ -168,14 +177,6 @@ public class PlayerFragment extends Fragment
                 show();
     }
 
-    /**
-     * Проверяет возможность и стартует воспроизведение видео.
-     *
-     * Возможность воспроизвести видео зависит от двух факторов:
-     * 1. Проинициализирован видеоэлемент (mVideoViewInited)
-     * 2. Получен Uri видеопотока (mStreamUri)
-     * Если оба условия выполнены, начинается собственно воспроизведение (startVideoPlayback)
-     */
     @Override
     public void startPlayback() {
         Log.d(LOG_TAG, "StartPlayback");
@@ -194,6 +195,7 @@ public class PlayerFragment extends Fragment
 
     }
 
+    @Override
     public void toggleThumbnail(boolean visible) {
         int visibility = (visible)? View.VISIBLE : View.INVISIBLE;
         View view = getView();
@@ -202,8 +204,43 @@ public class PlayerFragment extends Fragment
         thumbnail.setVisibility(visibility);
     }
 
+    @Override
+    public void setVideoTitle(String title) {
+
+    }
+
+    @Override
+    public void setThumbnailUri(Uri uri) {
+        View view = getView();
+        assert view != null;
+        NetworkImageView netImgView = (NetworkImageView) view.findViewById(R.id.thumbnail);
+        ImageLoader imageLoader = mController.getImageLoader();
+        if (imageLoader == null)
+            throw new NullPointerException("no image loader");
+        netImgView.setImageUrl(uri.toString(), imageLoader);
+    }
+
+    //
+    // Собственные публичные методы
+    //
+
+    /**
+     * Инициализирует обрабочтик событий PlayerStateListener
+     * @param playerStateListener контейнер фрагмента, обрабатывающий события
+     */
     public void setPlayerStateListener(PlayerStateListener playerStateListener) {
         mPlayerStateListener = playerStateListener;
+    }
+
+    /**
+     * Меняет видимость элементов управления плеером
+     * @param visible true если необходимо сделать элементы управления видимыми
+     */
+    protected void toggleMediaController(boolean visible) {
+        if (visible)
+            mMediaController.show();
+        else
+            mMediaController.hide();
     }
 
     /**
@@ -227,27 +264,11 @@ public class PlayerFragment extends Fragment
         mVideoView.setVideoURI(uri);
     }
 
-    @Override
-    public void setVideoTitle(String title) {
-
-    }
-
-    @Override
-    public void setThumbnailUri(Uri uri) {
-        View view = getView();
-        assert view != null;
-        NetworkImageView netImgView = (NetworkImageView) view.findViewById(R.id.thumbnail);
-        ImageLoader imageLoader = mController.getImageLoader();
-        if (imageLoader == null)
-            throw new NullPointerException("no image loader");
-        netImgView.setImageUrl(uri.toString(), imageLoader);
-    }
-
     /**
      * Начинает воспроизведение видео
      */
     protected void startVideoPlayback() {
-        Log.d(LOG_TAG, "stopPlayback");
+        Log.d(LOG_TAG, "startVideoPlayback");
         mVideoView.setVideoURI(mStreamUri);
         mVideoView.start();
     }
@@ -274,6 +295,5 @@ public class PlayerFragment extends Fragment
         mController.attach(activity, this);
         if (savedInstanceState == null)
             mController.requestStream();
-
     }
 }

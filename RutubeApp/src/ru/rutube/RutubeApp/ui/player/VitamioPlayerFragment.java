@@ -26,18 +26,56 @@ import ru.rutube.RutubePlayer.ui.PlayerFragment;
  * и vitamio.widget.VideoView в частности.
  */
 public class VitamioPlayerFragment extends PlayerFragment
-        implements MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener {
+        implements MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener,
+        MediaPlayer.OnErrorListener {
 
     private static final String LOG_TAG = VitamioPlayerFragment.class.getName();
-    private ProgressBar mLoadProgressBar;
-    private TextView mEmptyTextView;
-    private VideoView mVideoView;
-    private VitamioMediaController vitamioMediaController;
-    private String mVideoTitle;
+    protected ProgressBar mLoadProgressBar;
+    protected TextView mEmptyTextView;
+    protected VideoView mVideoView;
+    protected VitamioMediaController vitamioMediaController;
+    protected String mVideoTitle;
+
+    //
+    // переопределенные методы из Fragment
+    //
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.player_fragment, container, false);
+    }
+
+    //
+    // Обработчики событий MediaPlayer
+    //
+
+    @Override
+    public void onCompletion(MediaPlayer mp) {
+        Log.d(LOG_TAG, "onCompletion");
+        mController.onCompletion();
+    }
+
+    @Override
+    public void onPrepared(MediaPlayer mp) {
+        Log.d(LOG_TAG, "onPrepared");
+        mVideoView.pause();
+        vitamioMediaController.setFileName(mVideoTitle);
+        mController.onViewReady();
+    }
+
+    @Override
+    public boolean onError(MediaPlayer mp, int what, int extra) {
+        Log.d(LOG_TAG, "onError");
+        return false;
+    }
+
+    //
+    // Переопределенные методы работы с VideoView
+    //
 
     @Override
     public int getCurrentOffset() {
-        return (int)mVideoView.getCurrentPosition();
+        return (int) mVideoView.getCurrentPosition();
     }
 
     @Override
@@ -47,7 +85,6 @@ public class VitamioPlayerFragment extends PlayerFragment
         mVideoView.stopPlayback();
     }
 
-
     @Override
     public void seekTo(int millis) {
         Log.d(LOG_TAG, "Seek to: " + String.valueOf(millis));
@@ -55,14 +92,46 @@ public class VitamioPlayerFragment extends PlayerFragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.player_fragment, container, false);
-    }
-
-    @Override
     public void pauseVideo() {
         Log.d(LOG_TAG, "pauseVideo");
         mVideoView.pause();
+    }
+
+    @Override
+    public void setVideoUri(Uri uri) {
+        mVideoView.setVideoURI(uri);
+    }
+
+    @Override
+    public void setVideoTitle(String title) {
+        mVideoTitle = title;
+        vitamioMediaController.setFileName(mVideoTitle);
+    }
+
+    @Override
+    public void startVideoPlayback() {
+        mVideoView.setVideoURI(mStreamUri);
+        mVideoView.start();
+    }
+
+    @Override
+    public void setLoading() {
+        mLoadProgressBar.setVisibility(View.VISIBLE);
+        mEmptyTextView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void setLoadingCompleted() {
+        mLoadProgressBar.setVisibility(View.GONE);
+        mEmptyTextView.setVisibility(View.GONE);
+    }
+
+    @Override
+    protected void toggleMediaController(boolean visible) {
+        if (visible)
+            vitamioMediaController.show();
+        else
+            vitamioMediaController.hide();
     }
 
     @Override
@@ -82,62 +151,5 @@ public class VitamioPlayerFragment extends PlayerFragment
         mVideoView.setOnErrorListener(this);
         mVideoView.pause();
         mVideoView.requestFocus();
-    }
-
-    public void setLoading() {
-        mLoadProgressBar.setVisibility(View.VISIBLE);
-        mEmptyTextView.setVisibility(View.GONE);
-    }
-
-    public void setLoadingCompleted() {
-        mLoadProgressBar.setVisibility(View.GONE);
-        mEmptyTextView.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void setVideoUri(Uri uri) {
-        mVideoView.setVideoURI(uri);
-    }
-
-    @Override
-    public void setVideoTitle(String title) {
-        mVideoTitle = title;
-        vitamioMediaController.setFileName(mVideoTitle);
-    }
-
-    @Override
-    public void startVideoPlayback() {
-        mVideoView.setVideoURI(mStreamUri);
-        Log.d(LOG_TAG, "startVideoPlayback: " + String.valueOf(mVideoTitle));
-        vitamioMediaController.setFileName(mVideoTitle);
-        mVideoView.start();
-    }
-
-    @Override
-    public void onCompletion(MediaPlayer mp) {
-        Log.d(LOG_TAG, "onCompletion");
-        mController.onCompletion();
-    }
-
-    @Override
-    protected void toggleMediaController(boolean visible) {
-        if (visible)
-            vitamioMediaController.show();
-        else
-            vitamioMediaController.hide();
-    }
-
-    @Override
-    public boolean onError(MediaPlayer mp, int what, int extra) {
-        Log.d(LOG_TAG, "onError");
-        return false;
-    }
-
-    @Override
-    public void onPrepared(MediaPlayer mp) {
-        Log.d(LOG_TAG, "onPrepared");
-        mVideoView.pause();
-        vitamioMediaController.setFileName(mVideoTitle);
-        mController.onViewReady();
     }
 }
