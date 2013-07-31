@@ -90,13 +90,11 @@ public class VitamioPlayerFragment extends PlayerFragment
     }
 
     @Override
-    public void onComplete() {
-        if (mPlayerStateListener != null) {
-            Log.d(LOG_TAG, "onComplete");
-            mPlayerStateListener.onComplete();
-        }
-        Log.d(LOG_TAG, "Hide MC");
-        vitamioMediaController.setVisibility(View.INVISIBLE);
+    protected void toggleMediaController(boolean visible) {
+        if (visible)
+            vitamioMediaController.show();
+        else
+            vitamioMediaController.hide();
     }
 
     @Override

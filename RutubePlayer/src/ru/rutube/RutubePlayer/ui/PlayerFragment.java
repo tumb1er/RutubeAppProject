@@ -91,7 +91,14 @@ public class PlayerFragment extends Fragment
             Log.d(LOG_TAG, "onComplete");
             mPlayerStateListener.onComplete();
         }
-        mMediaController.hide();
+        toggleMediaController(false);
+    }
+
+    protected void toggleMediaController(boolean visible) {
+        if (visible)
+            mMediaController.show();
+        else
+            mMediaController.hide();
     }
 
     @Override
