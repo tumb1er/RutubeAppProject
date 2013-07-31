@@ -10,4 +10,5 @@ public class Requests {
     public static final int TRACK_INFO = 2;
     public static final int FEED_PAGE = 3;
     public static final int PLAY_OPTIONS = 4;
+    public static final int YAST_VIEWED = 5;
 }

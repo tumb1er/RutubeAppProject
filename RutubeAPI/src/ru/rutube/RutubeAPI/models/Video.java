@@ -195,7 +195,9 @@ public class Video {
                 .build();
         assert uri != null;
         Log.d(LOG_TAG, "Yast request: " + uri.toString());
-        return new JsonObjectRequest(uri.toString(), null, getYastListener(), null);
+        JsonObjectRequest request = new JsonObjectRequest(uri.toString(), null, getYastListener(), null);
+        request.setTag(Requests.YAST_VIEWED);
+        return request;
     }
 
     public String getVideoId() {

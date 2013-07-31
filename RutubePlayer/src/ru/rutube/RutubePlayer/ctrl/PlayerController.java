@@ -182,7 +182,7 @@ public class PlayerController implements Parcelable, RequestListener {
      * Отсоединяется от останавливаемой активити
      */
     public  void detach() {
-        mRequestQueue.cancelAll(Requests.FEED_PAGE);
+        mRequestQueue.stop();
         mRequestQueue = null;
         mContext = null;
         mView = null;
@@ -227,7 +227,6 @@ public class PlayerController implements Parcelable, RequestListener {
      * необходимых для начала проигрывания
      */
     public void requestStream() {
-        assert mAttached;
         if (!mAttached)
             throw new NullPointerException("Not attached");
         Log.d(LOG_TAG, "Got Uri: " + String.valueOf(mVideoUri));
@@ -267,10 +266,9 @@ public class PlayerController implements Parcelable, RequestListener {
      * @param video объект видео, которое надо воспроизвести.
      */
     private void startPlayRequests(Video video) {
-        if (mState != STATE_NEW) {
-            Log.d(LOG_TAG, String.format("Can't start play requests in state %d", mState));
-            return;
-        }
+        if (mState != STATE_NEW)
+            throw new IllegalStateException(
+                    String.format("can't change state to STARTING from %d", mState));
         mPlayRequestStage = 0;
         JsonObjectRequest request = video.getTrackInfoRequest(mContext, this);
         mRequestQueue.add(request);

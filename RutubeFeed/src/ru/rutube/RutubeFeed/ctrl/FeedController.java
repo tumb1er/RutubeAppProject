@@ -114,10 +114,10 @@ public class FeedController implements Parcelable {
      * Отсоединяется от останавливаемой активити
      */
     public void detach() {
+        mRequestQueue.stop();
+        mRequestQueue = null;
         mContext = null;
         mView = null;
-        mRequestQueue.cancelAll(Requests.FEED_PAGE);
-        mRequestQueue = null;
         mAttached = false;
     }
 
