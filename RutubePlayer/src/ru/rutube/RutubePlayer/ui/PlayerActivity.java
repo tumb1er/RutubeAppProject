@@ -1,11 +1,14 @@
 package ru.rutube.RutubePlayer.ui;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -27,7 +30,17 @@ public class PlayerActivity extends Activity implements PlayerFragment.PlayerSta
 
     @Override
     public void onPlay() {
+        toggleEndscreen(false);
+    }
 
+    private void toggleEndscreen(boolean visible) {
+        EndscreenFragment f = (EndscreenFragment)getFragmentManager().findFragmentById(R.id.endscreen_fragment);
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        if (visible)
+            ft.show(f);
+        else
+            ft.hide(f);
+        ft.commit();
     }
 
     @Override
@@ -37,7 +50,8 @@ public class PlayerActivity extends Activity implements PlayerFragment.PlayerSta
 
     @Override
     public void onComplete() {
-
+        Log.d(LOG_TAG, "onComplete");
+        toggleEndscreen(true);
     }
 
     @Override
@@ -53,9 +67,15 @@ public class PlayerActivity extends Activity implements PlayerFragment.PlayerSta
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         } else {
             setContentView(R.layout.player_activity);
-            PlayerFragment f = (PlayerFragment)getFragmentManager().findFragmentById(R.id.player);
-            f.setPlayerStateListener(this);
+            init();
         }
+    }
+
+    private void init() {
+        PlayerFragment f = (PlayerFragment)getFragmentManager().findFragmentById(R.id.player_fragment);
+        assert f != null;
+        f.setPlayerStateListener(this);
+        toggleEndscreen(false);
     }
 
     /**

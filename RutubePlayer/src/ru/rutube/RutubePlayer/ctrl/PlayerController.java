@@ -56,6 +56,11 @@ public class PlayerController implements Parcelable, RequestListener {
          */
         public void startPlayback();
 
+        /**
+         * Обрабатывает конец показа видео
+         */
+        public void onComplete();
+
     }
 
     public static int STATE_NEW = 0;
@@ -150,6 +155,7 @@ public class PlayerController implements Parcelable, RequestListener {
      */
     public void onCompletion() {
         mState = STATE_COMPLETED;
+        mView.onComplete();
     }
 
     /**
@@ -176,10 +182,10 @@ public class PlayerController implements Parcelable, RequestListener {
      * Отсоединяется от останавливаемой активити
      */
     public  void detach() {
-        mContext = null;
-        mView = null;
         mRequestQueue.cancelAll(Requests.FEED_PAGE);
         mRequestQueue = null;
+        mContext = null;
+        mView = null;
         mAttached = false;
     }
 
@@ -222,6 +228,8 @@ public class PlayerController implements Parcelable, RequestListener {
      */
     public void requestStream() {
         assert mAttached;
+        if (!mAttached)
+            throw new NullPointerException("Not attached");
         Log.d(LOG_TAG, "Got Uri: " + String.valueOf(mVideoUri));
         if (mVideoUri != null) {
             final List<String> segments = mVideoUri.getPathSegments();

@@ -14,14 +14,14 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:name="ru.rutube.RutubeApp.ui.player.VitamioPlayerFragment"
-            android:id="@+id/player"
+            android:id="@+id/player_fragment"
             android:layout_gravity="center"
             tools:layout="@layout/player_fragment"/>
     <fragment
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:name="ru.rutube.RutubePlayer.ui.EndscreenFragment"
-            android:id="@+id/endscreen"
+            android:id="@+id/endscreen_fragment"
             android:layout_gravity="center"
             tools:layout="@layout/endscreen_fragment"/>
 </FrameLayout>

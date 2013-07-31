@@ -32,6 +32,8 @@ public class PlayerFragment extends Fragment
         implements PlayerController.PlayerView, MediaPlayer.OnCompletionListener,
         MediaPlayer.OnPreparedListener {
 
+    private MediaController mMediaController;
+
     public interface PlayerStateListener {
         public void onPrepare();
         public void onPlay();
@@ -45,7 +47,7 @@ public class PlayerFragment extends Fragment
     protected VideoView mVideoView;
     protected Uri mStreamUri;
     protected Boolean mVideoViewInited;
-    private PlayerStateListener mPlayerStateListener;
+    protected PlayerStateListener mPlayerStateListener;
 
 
     private final String LOG_TAG = getClass().getName();
@@ -67,6 +69,7 @@ public class PlayerFragment extends Fragment
     @Override
     public void onDetach() {
         super.onDetach();
+        Log.d(LOG_TAG, "Controller detached");
         mController.detach();
     }
 
@@ -79,6 +82,16 @@ public class PlayerFragment extends Fragment
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
         mController.onCompletion();
+        onComplete();
+    }
+
+    @Override
+    public void onComplete() {
+        if (mPlayerStateListener != null) {
+            Log.d(LOG_TAG, "onComplete");
+            mPlayerStateListener.onComplete();
+        }
+        mMediaController.hide();
     }
 
     @Override
@@ -143,7 +156,7 @@ public class PlayerFragment extends Fragment
         View view = getView();
         assert view != null;
         mVideoView = (VideoView) view.findViewById(R.id.video_view);
-        MediaController mMediaController = new MediaController(getActivity());
+        mMediaController = new MediaController(getActivity());
         mVideoView.setMediaController(mMediaController);
         mVideoView.setPadding(10, 0, 0, 0);
         mVideoView.setOnCompletionListener(this);
