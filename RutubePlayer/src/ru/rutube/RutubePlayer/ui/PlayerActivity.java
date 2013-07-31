@@ -20,12 +20,15 @@ import ru.rutube.RutubePlayer.R;
  * Возможен старт по intent-action: ru.rutube.player.play c Uri видео вида:
  * http://rutube.ru/video/<video_id>/
  */
-public class PlayerActivity extends Activity implements PlayerFragment.PlayerStateListener {
+public class PlayerActivity extends Activity implements PlayerFragment.PlayerStateListener,
+EndscreenFragment.ReplayListener {
     private final String LOG_TAG = getClass().getName();
+    private PlayerFragment mPlayerFragment;
+    private EndscreenFragment mEndscreenFragment;
 
     @Override
-    public void onPrepare() {
-
+    public void replay() {
+        mPlayerFragment.replay();
     }
 
     @Override
@@ -34,18 +37,12 @@ public class PlayerActivity extends Activity implements PlayerFragment.PlayerSta
     }
 
     private void toggleEndscreen(boolean visible) {
-        EndscreenFragment f = (EndscreenFragment)getFragmentManager().findFragmentById(R.id.endscreen_fragment);
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         if (visible)
-            ft.show(f);
+            ft.show(mEndscreenFragment);
         else
-            ft.hide(f);
+            ft.hide(mEndscreenFragment);
         ft.commit();
-    }
-
-    @Override
-    public void onSuspend() {
-
     }
 
     @Override
@@ -72,9 +69,12 @@ public class PlayerActivity extends Activity implements PlayerFragment.PlayerSta
     }
 
     private void init() {
-        PlayerFragment f = (PlayerFragment)getFragmentManager().findFragmentById(R.id.player_fragment);
-        assert f != null;
-        f.setPlayerStateListener(this);
+        mPlayerFragment = (PlayerFragment) getFragmentManager().findFragmentById(R.id.player_fragment);
+        assert mPlayerFragment != null;
+        mPlayerFragment.setPlayerStateListener(this);
+        mEndscreenFragment = (EndscreenFragment) getFragmentManager().findFragmentById(R.id.endscreen_fragment);
+        assert mEndscreenFragment != null;
+        mEndscreenFragment.setReplayListener(this);
         toggleEndscreen(false);
     }
 

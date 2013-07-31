@@ -34,10 +34,27 @@ public class PlayerFragment extends Fragment
 
     private MediaController mMediaController;
 
+    public void replay() {
+        mController.replay();
+    }
+
+    @Override
+    public int getCurrentOffset() {
+        return mVideoView.getCurrentPosition();
+    }
+
+    @Override
+    public void stopPlayback() {
+        mVideoView.setVideoURI(null);
+        mVideoView.stopPlayback();
+    }
+
+    public void seekTo(int millis) {
+        mVideoView.seekTo(millis);
+    }
+
     public interface PlayerStateListener {
-        public void onPrepare();
         public void onPlay();
-        public void onSuspend();
         public void onComplete();
     }
 
@@ -46,7 +63,6 @@ public class PlayerFragment extends Fragment
     protected PlayerController mController;
     protected VideoView mVideoView;
     protected Uri mStreamUri;
-    protected Boolean mVideoViewInited;
     protected PlayerStateListener mPlayerStateListener;
 
 
@@ -57,13 +73,31 @@ public class PlayerFragment extends Fragment
         super.onActivityCreated(savedInstanceState);
         Log.d(LOG_TAG, "onActivityCreated");
         init(savedInstanceState);
-        mController.requestStream();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.player_fragment, container, false);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(LOG_TAG, "onPause");
+        mController.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mController.onResume();
+        Log.d(LOG_TAG, "onResume");
+    }
+
+    @Override
+    public void pauseVideo() {
+        mVideoView.pause();
     }
 
     @Override
@@ -76,6 +110,7 @@ public class PlayerFragment extends Fragment
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        Log.d(LOG_TAG, "onSaveInstanceState");
         outState.putParcelable(CONTROLLER, mController);
     }
 
@@ -91,6 +126,7 @@ public class PlayerFragment extends Fragment
             Log.d(LOG_TAG, "onComplete");
             mPlayerStateListener.onComplete();
         }
+        stopPlayback();
         toggleMediaController(false);
     }
 
@@ -103,7 +139,7 @@ public class PlayerFragment extends Fragment
 
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
-        mVideoViewInited = true;
+        mController.onViewReady();
         startPlayback();
 
     }
@@ -114,7 +150,7 @@ public class PlayerFragment extends Fragment
      */
     @Override
     public void setStreamUri(Uri uri) {
-        Log.d(LOG_TAG, "setStreamUri " + uri.toString());
+        Log.d(LOG_TAG, "setStreamUri " + String.valueOf(uri));
         setVideoUri(uri);
         mStreamUri = uri;
     }
@@ -142,14 +178,28 @@ public class PlayerFragment extends Fragment
      */
     @Override
     public void startPlayback() {
-        Log.d(LOG_TAG, "Trying to start playback");
-        Log.d(LOG_TAG, "Launch control: inited: "
-                + String.valueOf(mVideoViewInited) + " uri: " + String.valueOf(mStreamUri));
-        if (mVideoViewInited && mStreamUri != null) {
-            Log.d(LOG_TAG, "Start!");
-            getView().findViewById(R.id.thumbnail).setVisibility(View.INVISIBLE);
-            startVideoPlayback();
-        }
+        Log.d(LOG_TAG, "StartPlayback");
+        if (mPlayerStateListener != null)
+            mPlayerStateListener.onPlay();
+        startVideoPlayback();
+    }
+
+    @Override
+    public void setLoading() {
+
+    }
+
+    @Override
+    public void setLoadingCompleted() {
+
+    }
+
+    public void toggleThumbnail(boolean visible) {
+        int visibility = (visible)? View.VISIBLE : View.INVISIBLE;
+        View view = getView();
+        assert view != null;
+        View thumbnail = view.findViewById(R.id.thumbnail);
+        thumbnail.setVisibility(visibility);
     }
 
     public void setPlayerStateListener(PlayerStateListener playerStateListener) {
@@ -197,6 +247,8 @@ public class PlayerFragment extends Fragment
      * Начинает воспроизведение видео
      */
     protected void startVideoPlayback() {
+        Log.d(LOG_TAG, "stopPlayback");
+        mVideoView.setVideoURI(mStreamUri);
         mVideoView.start();
     }
 
@@ -205,8 +257,6 @@ public class PlayerFragment extends Fragment
      * @param savedInstanceState сохраненное состояние активити
      */
     private void init(Bundle savedInstanceState) {
-        // TODO: восстановление mStreamUri из сохраненного состояния
-        mVideoViewInited = false;
         mStreamUri = null;
         Activity activity = getActivity();
         assert activity != null;
@@ -222,5 +272,8 @@ public class PlayerFragment extends Fragment
             mController = new PlayerController(videoUri, thumbnailUri);
         }
         mController.attach(activity, this);
+        if (savedInstanceState == null)
+            mController.requestStream();
+
     }
 }

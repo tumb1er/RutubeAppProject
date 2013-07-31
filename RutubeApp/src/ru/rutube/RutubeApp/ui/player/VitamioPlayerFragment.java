@@ -33,10 +33,36 @@ public class VitamioPlayerFragment extends PlayerFragment
     private TextView mEmptyTextView;
     private VideoView mVideoView;
     private VitamioMediaController vitamioMediaController;
+    private String mVideoTitle;
+
+    @Override
+    public int getCurrentOffset() {
+        return (int)mVideoView.getCurrentPosition();
+    }
+
+    @Override
+    public void stopPlayback() {
+        Log.d(LOG_TAG, "stopPlayback");
+        mVideoView.setVideoURI(null);
+        mVideoView.stopPlayback();
+    }
+
+
+    @Override
+    public void seekTo(int millis) {
+        Log.d(LOG_TAG, "Seek to: " + String.valueOf(millis));
+        mVideoView.seekTo(millis);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.player_fragment, container, false);
+    }
+
+    @Override
+    public void pauseVideo() {
+        Log.d(LOG_TAG, "pauseVideo");
+        mVideoView.pause();
     }
 
     @Override
@@ -54,16 +80,16 @@ public class VitamioPlayerFragment extends PlayerFragment
         mVideoView.setOnCompletionListener(this);
         mVideoView.setOnPreparedListener(this);
         mVideoView.setOnErrorListener(this);
+        mVideoView.pause();
         mVideoView.requestFocus();
-        setLoading();
     }
 
-    private void setLoading() {
+    public void setLoading() {
         mLoadProgressBar.setVisibility(View.VISIBLE);
         mEmptyTextView.setVisibility(View.GONE);
     }
 
-    private void setLoadingCompleted(MediaPlayer mp) {
+    public void setLoadingCompleted() {
         mLoadProgressBar.setVisibility(View.GONE);
         mEmptyTextView.setVisibility(View.GONE);
     }
@@ -75,11 +101,15 @@ public class VitamioPlayerFragment extends PlayerFragment
 
     @Override
     public void setVideoTitle(String title) {
-        vitamioMediaController.setFileName(title);
+        mVideoTitle = title;
+        vitamioMediaController.setFileName(mVideoTitle);
     }
 
     @Override
     public void startVideoPlayback() {
+        mVideoView.setVideoURI(mStreamUri);
+        Log.d(LOG_TAG, "startVideoPlayback: " + String.valueOf(mVideoTitle));
+        vitamioMediaController.setFileName(mVideoTitle);
         mVideoView.start();
     }
 
@@ -106,8 +136,8 @@ public class VitamioPlayerFragment extends PlayerFragment
     @Override
     public void onPrepared(MediaPlayer mp) {
         Log.d(LOG_TAG, "onPrepared");
-        setLoadingCompleted(mp);
-        mVideoViewInited = true;
-        startPlayback();
+        mVideoView.pause();
+        vitamioMediaController.setFileName(mVideoTitle);
+        mController.onViewReady();
     }
 }
