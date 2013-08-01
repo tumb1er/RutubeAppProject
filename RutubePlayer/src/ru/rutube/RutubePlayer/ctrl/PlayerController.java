@@ -301,7 +301,6 @@ public class PlayerController implements Parcelable, RequestListener {
             mView.setThumbnailUri(mThumbnailUri);
         }
         mAttached = true;
-        mView.setLoading();
         if (mState != STATE_NEW)
             restoreFromState();
     }
@@ -312,6 +311,9 @@ public class PlayerController implements Parcelable, RequestListener {
      * Останавливает очередь запросов, зануляет все ссылки на объекты Android.
      */
     public void detach() {
+        mRequestQueue.cancelAll(Requests.TRACK_INFO);
+        mRequestQueue.cancelAll(Requests.PLAY_OPTIONS);
+        mRequestQueue.cancelAll(Requests.YAST_VIEWED);
         mRequestQueue.stop();
         mRequestQueue = null;
         mContext = null;
