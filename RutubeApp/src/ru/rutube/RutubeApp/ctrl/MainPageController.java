@@ -85,9 +85,9 @@ public class MainPageController implements Parcelable {
         // После добавления вкладки она автоматически делается активной, поэтому опускаем
         // флажок, разрешающий обработку события смены активной вкладки.
         mTabsInited = false;
-        mView.addFeedTab(mContext.getString(ru.rutube.RutubeFeed.R.id.editors_feed), TAB_EDITORS);
-        mView.addFeedTab(mContext.getString(ru.rutube.RutubeFeed.R.id.my_video), TAB_MY_VIDEO);
-        mView.addFeedTab(mContext.getString(ru.rutube.RutubeFeed.R.id.subscriptions), TAB_SUBSCRIPTIONS);
+        mView.addFeedTab(mContext.getResources().getString(ru.rutube.RutubeFeed.R.string.tab_editors_feed), TAB_EDITORS);
+        mView.addFeedTab(mContext.getResources().getString(ru.rutube.RutubeFeed.R.string.tab_my_video), TAB_MY_VIDEO);
+        mView.addFeedTab(mContext.getResources().getString(ru.rutube.RutubeFeed.R.string.tab_subscriptions), TAB_SUBSCRIPTIONS);
         mTabsInited = true;
         Log.d(LOG_TAG, "selecting tab" + mSelectedTab);
         mView.selectTab(mSelectedTab);
