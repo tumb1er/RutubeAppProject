@@ -1,6 +1,6 @@
 [submodule "RutubeAPI/libs/volley"]
 	path = RutubeAPI/libs/volley
-	url = https://android.googlesource.com/platform/frameworks/volley
+	url = https://github.com/rutube/volley.git
 [submodule "RutubeApp/libs/PinterestLikeAdapterView"]
 	path = RutubeApp/libs/PinterestLikeAdapterView
 	url = https://github.com/rutube/PinterestLikeAdapterView.git
