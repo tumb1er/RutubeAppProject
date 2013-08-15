@@ -10,4 +10,7 @@
     <string name="login">Login</string>
     <string name="select_video">Select video</string>
     <string name="action_search">Search</string>
+    <string name="tab_editors_feed">Editors</string>
+    <string name="tab_my_video">My Video</string>
+    <string name="tab_subscriptions">Subscriptions</string>
 </resources>
