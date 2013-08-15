@@ -1,5 +1,6 @@
 package ru.rutube.RutubeAPI.models;
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -17,6 +18,7 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 
 import ru.rutube.RutubeAPI.content.ContentMatcher;
 import ru.rutube.RutubeAPI.content.FeedContract;
@@ -28,10 +30,12 @@ import ru.rutube.RutubeAPI.requests.Requests;
  * Created by tumbler on 22.06.13.
  */
 public class Feed<FeedItemT extends FeedItem> {
-    private static final String LOG_TAG = Feed.class.getName();
+    private static final String PARAM_PAGE = "page";
+    private final String LOG_TAG = getClass().getName();
     private final String mToken;
     private final Uri mFeedUri;
     private final Uri mContentUri;
+    private int mForeignKeyId;
 
     /**
      * Конструктор объекта ленты
@@ -44,11 +48,20 @@ public class Feed<FeedItemT extends FeedItem> {
         mToken = token;
         mFeedUri = feedUri;
         mContentUri = contentUri;
+        try {
+            mForeignKeyId = Integer.parseInt(contentUri.getLastPathSegment());
+        } catch (NumberFormatException e) {
+            mForeignKeyId = 0;
+        }
     }
 
     private static Uri getContentUri(Uri feedUri, Context context) {
         ContentMatcher contentMatcher = ContentMatcher.from(context);
-        return contentMatcher.getContentUri(feedUri);
+        Uri result = contentMatcher.getContentUri(feedUri);
+        if (result == null) {
+            result = contentMatcher.getSearchContentUri(context, feedUri);
+        }
+        return result;
     }
 
     /**
@@ -59,8 +72,12 @@ public class Feed<FeedItemT extends FeedItem> {
      * @return
      */
     public JsonObjectRequest getFeedRequest(int page, Context context, RequestListener requestListener) {
-        String fullUrl = String.format("%s?page=%d", mFeedUri, page);
-        JsonObjectRequest request = new AuthJsonObjectRequest(fullUrl, null,
+        Uri uri = mFeedUri.buildUpon()
+                .appendQueryParameter(PARAM_PAGE, String.valueOf(page))
+                .build();
+        assert uri!= null;
+        Log.d(LOG_TAG, "Fetching: "+ uri.toString());
+        JsonObjectRequest request = new AuthJsonObjectRequest(uri.toString(), null,
                 getFeedPageListener(context, requestListener),
                 getErrorListener(requestListener), mToken);
         request.setShouldCache(true);
@@ -82,14 +99,15 @@ public class Feed<FeedItemT extends FeedItem> {
     protected Bundle parseFeedPage(Context context, JSONObject response) throws JSONException {
         Bundle bundle = new Bundle();
         int perPage = response.getInt("per_page");
+        int page = response.getInt("page");
         bundle.putInt(Constants.Result.PER_PAGE, perPage);
-
+        int offset = (page - 1) * perPage;
         JSONArray data = response.getJSONArray("results");
         ContentValues[] feedItems = new ContentValues[data.length()];
         for (int i = 0; i < data.length(); ++i) {
             JSONObject data_item = data.getJSONObject(i);
             FeedItem item = constructFeedItem(data_item);
-            ContentValues row = fillRow(item);
+            ContentValues row = fillRow(item, offset + i);
             feedItems[i] = row;
         }
         Log.d(LOG_TAG, "Inserting items: " + Arrays.toString(feedItems));
@@ -107,12 +125,16 @@ public class Feed<FeedItemT extends FeedItem> {
 
     private FeedItem constructFeedItem(JSONObject data_item) throws JSONException {
         if (mContentUri.equals(FeedContract.MyVideo.CONTENT_URI)) {
-            Log.d(LOG_TAG, "Overriding FeedItem class, return MyVideoFeedItem");
             return MyVideoFeedItem.fromJSON(data_item);
         }
         if (mContentUri.equals(FeedContract.Editors.CONTENT_URI)) {
-            Log.d(LOG_TAG, "Overriding FeedItem class, return EditorsFeedItem");
             return EditorsFeedItem.fromJSON(data_item);
+        }
+        if (mContentUri.getEncodedPath().startsWith(
+                FeedContract.SearchResults.CONTENT_URI.getEncodedPath())) {
+            SearchFeedItem item = SearchFeedItem.fromJSON(data_item);
+            item.setQueryId(mForeignKeyId);
+            return item;
         }
         return FeedItem.fromJSON(data_item);
     }
@@ -122,9 +144,9 @@ public class Feed<FeedItemT extends FeedItem> {
      * @param item запись ленты
      * @return
      */
-    protected ContentValues fillRow(FeedItem item) {
+    protected ContentValues fillRow(FeedItem item, int position) {
         ContentValues row = new ContentValues();
-        item.fillRow(row);
+        item.fillRow(row, position);
         return row;
     }
 

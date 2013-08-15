@@ -45,7 +45,7 @@ public class FeedController implements Parcelable {
         public void doneRefreshing();
         public void showError();
         public LoaderManager getLoaderManager();
-        public void openPlayer(Uri uri);
+        public void openPlayer(Uri uri, Uri thumbnailUri);
     }
 
     private static final int LOADER_ID = 1;
@@ -58,6 +58,8 @@ public class FeedController implements Parcelable {
     private RequestQueue mRequestQueue;
     private int mLoading = 0;
     private boolean mAttached = false;
+    private boolean mCacheValid = false;
+    private int mLastItemsCount;
 
 
     public FeedController(Uri feedUri) {
@@ -66,6 +68,13 @@ public class FeedController implements Parcelable {
         mFeedUri = feedUri;
     }
 
+    /**
+     * Получает последние обновления ленты
+     */
+    public void refresh() {
+        Log.d(LOG_TAG, "Refreshing");
+        loadPage(1);
+    }
 
     /**
      * По клику на элементе ленты открывает плеер
@@ -76,8 +85,7 @@ public class FeedController implements Parcelable {
         Cursor c = (Cursor) mView.getListAdapter().getItem(position);
         FeedItem item = Feed.loadFeedItem(mContext, c, mFeedUri);
         Uri uri = item.getVideoUri(mContext);
-
-        mView.openPlayer(uri);
+        mView.openPlayer(uri, item.getThumbnailUri());
     }
 
     /**
@@ -105,11 +113,11 @@ public class FeedController implements Parcelable {
     /**
      * Отсоединяется от останавливаемой активити
      */
-    public  void detach() {
+    public void detach() {
+        mRequestQueue.stop();
+        mRequestQueue = null;
         mContext = null;
         mView = null;
-        mRequestQueue.cancelAll(Requests.FEED_PAGE);
-        mRequestQueue = null;
         mAttached = false;
     }
 
@@ -166,7 +174,9 @@ public class FeedController implements Parcelable {
         @Override
         public void onLoadMore() {
             ListAdapter adapter = mView.getListAdapter();
-            loadPage((adapter.getCount() + mPerPage) / mPerPage);
+            // Грузим новую страницу API только если кэш в БД невалидный
+            if (!mCacheValid)
+                loadPage((adapter.getCount() + mPerPage) / mPerPage);
         }
     };
 
@@ -178,9 +188,17 @@ public class FeedController implements Parcelable {
         public void onResult(int tag, Bundle result) {
             if (!mAttached)
                 return;
-            if (mView.getListAdapter().getCount() == 0)
+            FeedCursorAdapter listAdapter = (FeedCursorAdapter)mView.getListAdapter();
+            if (listAdapter.getCount() == 0)
                 mContext.getContentResolver().notifyChange(mFeed.getContentUri(), null);
             mPerPage = result.getInt(Constants.Result.PER_PAGE);
+            listAdapter.setPerPage(mPerPage);
+            // Если количество записей в БД не поменялось, значит кэш в БД валидный
+            mCacheValid = mLastItemsCount == listAdapter.getCount();
+            requestDone();
+        }
+
+        private void requestDone() {
             if (mLoading > 0) mLoading -= 1;
             if (mLoading == 0)
                 mView.doneRefreshing();
@@ -189,11 +207,13 @@ public class FeedController implements Parcelable {
         @Override
         public void onVolleyError(VolleyError error) {
             mView.showError();
+
         }
 
         @Override
         public void onRequestError(int tag, RequestError error) {
             mView.showError();
+
         }
     };
 
@@ -218,7 +238,8 @@ public class FeedController implements Parcelable {
         public void onLoadFinished(Loader<Cursor> arg0, Cursor cursor) {
             Log.d(LOG_TAG, "onLoadFinished " + String.valueOf(cursor.getCount()));
             ((CursorAdapter) mView.getListAdapter()).swapCursor(cursor);
-            if (cursor.getCount() < mPerPage) {
+            // Грузим следующую страницу только если кэш в БД невалидный
+            if (cursor.getCount() < mPerPage && ! mCacheValid) {
                 Log.d(LOG_TAG, "load more from olf");
                 loadPage((cursor.getCount() + mPerPage) / mPerPage);
             }
@@ -235,9 +256,12 @@ public class FeedController implements Parcelable {
      * @param page номер страницы с 1
      */
     private void loadPage(int page) {
-        if (mLoading == 0)
-            mView.setRefreshing();
+        if (mLoading != 0)
+            return;
+        mView.setRefreshing();
         mLoading += 1;
+        mCacheValid = false;
+        mLastItemsCount = mView.getListAdapter().getCount();
         JsonObjectRequest request = mFeed.getFeedRequest(page, mContext, mLoadPageRequestListener);
         mRequestQueue.add(request);
     }

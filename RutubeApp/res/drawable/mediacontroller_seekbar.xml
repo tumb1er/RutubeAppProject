@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item   android:id="@android:id/background"
+            android:drawable="@drawable/mediacontroller_seekbar02"/>
+
+    <item android:id="@android:id/secondaryProgress">
+        <clip>
+            <shape>
+                <solid android:color="#ffffff"/>
+                <corners
+                        android:radius="2dp"/>
+            </shape>
+        </clip>
+    </item>
+    <item android:id="@android:id/progress">
+        <clip>
+            <layer-list>
+                <item>
+                    <clip>
+                        <shape android:gravity="center_vertical|fill_vertical|left">
+                            <solid android:color="#4685c6"/>
+                            <corners
+                                    android:radius="2dp"/>
+                        </shape>
+                    </clip>
+                </item>
+            </layer-list>
+        </clip>
+    </item>
+
+</layer-list>

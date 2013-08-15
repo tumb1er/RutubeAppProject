@@ -112,8 +112,10 @@ public class Video {
             public void onResponse(JSONObject response) {
                 try {
                     Boolean allowed = parseAllowed(response);
+                    Uri thumbnailUri = parsePlayThumbnailUri(response);
                     Bundle bundle = new Bundle();
                     bundle.putBoolean(Constants.Result.ACL_ALLOWED, allowed);
+                    bundle.putParcelable(Constants.Result.PLAY_THUMBNAIL, thumbnailUri);
                     requestListener.onResult(Requests.PLAY_OPTIONS, bundle);
                 }  catch (JSONException e) {
                     RequestListener.RequestError error = new RequestListener.RequestError(e.getMessage());
@@ -121,6 +123,10 @@ public class Video {
                 }
             }
         };
+    }
+
+    private Uri parsePlayThumbnailUri(JSONObject response) throws JSONException {
+        return Uri.parse(response.getString(JSON_THUMBNAIL_URL));
     }
 
     protected  Response.Listener<JSONObject> getYastListener() {
@@ -189,7 +195,9 @@ public class Video {
                 .build();
         assert uri != null;
         Log.d(LOG_TAG, "Yast request: " + uri.toString());
-        return new JsonObjectRequest(uri.toString(), null, getYastListener(), null);
+        JsonObjectRequest request = new JsonObjectRequest(uri.toString(), null, getYastListener(), null);
+        request.setTag(Requests.YAST_VIEWED);
+        return request;
     }
 
     public String getVideoId() {

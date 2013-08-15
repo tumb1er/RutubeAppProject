@@ -15,15 +15,42 @@ import android.widget.ImageView;
  */
 public class TopRoundCornerBitmapProcessor implements BitmapProcessor {
     private static final String LOG_TAG = TopRoundCornerBitmapProcessor.class.getName();
-    private final int mRoundPixels;
+    private final double mRoundPercent;
+    private final double mCropAspect;
 
-    public TopRoundCornerBitmapProcessor(int roundPixels) {
-        this.mRoundPixels = roundPixels;
+    public TopRoundCornerBitmapProcessor(double roundPercent, double cropAspect) {
+        this.mRoundPercent = roundPercent;
+        this.mCropAspect = cropAspect;
     }
 
     @Override
     public Bitmap process(Bitmap bitmap, ImageView imageView) {
-        return roundCorners(bitmap, imageView, mRoundPixels);
+        int width = imageView.getWidth();
+        Bitmap cropped = cropAspect(bitmap, mCropAspect);
+        Bitmap round = roundCorners(cropped, imageView, (int)(width * mRoundPercent));
+        if (cropped != null)
+            cropped.recycle();
+        return round;
+    }
+
+    private static Bitmap cropAspect(Bitmap bitmap, double cropAspect) {
+        if (bitmap == null)
+            return null;
+        if (bitmap.getWidth() == 0)
+            return bitmap;
+        double srcAspect = (double)bitmap.getHeight() / (double)bitmap.getWidth();
+        int width, height;
+        Bitmap cropped;
+        if (srcAspect < cropAspect) {
+            height = bitmap.getHeight();
+            width = (int)(height / cropAspect);
+            cropped = Bitmap.createBitmap(bitmap, (bitmap.getWidth() - width) / 2, 0, width, height);
+        } else {
+            width = bitmap.getWidth();
+            height = (int)(width * cropAspect);
+            cropped = Bitmap.createBitmap(bitmap, 0, (bitmap.getHeight() - height) / 2, width, height);
+        }
+        return cropped;
     }
 
     private static Bitmap roundCorners(Bitmap bitmap, ImageView imageView, int roundPixels) {

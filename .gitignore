@@ -1,4 +1,17 @@
+RutubeAPI/gen/
+RutubeAPI/bin/
+
 RutubeApp/out/
+RutubeApp/bin/
+RutubeApp/gen/
+RutubeApp/asserts/
+
+RutubeFeed/gen/
+RutubeFeed/bin/
+
+RutubePlayer/gen/
+RutubePlayer/bin/
+
 
 # files for the dex VM
 *.dex
@@ -9,6 +22,7 @@ RutubeApp/out/
 # generated files
 bin/
 gen/
+out/
 
 # built application files
 *.apk
@@ -38,5 +52,3 @@ Icon
 # Files that might appear on external disk
 .Spotlight-V100
 .Trashes
-
-RutubeAPI/libs/volley

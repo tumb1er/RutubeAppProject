@@ -1,9 +1,9 @@
 [submodule "RutubeAPI/libs/volley"]
 	path = RutubeAPI/libs/volley
-	url = https://github.com/rutube/volley.git
+	url =  git@github.com:rutube/volley.git
 [submodule "RutubeApp/libs/PinterestLikeAdapterView"]
 	path = RutubeApp/libs/PinterestLikeAdapterView
-	url = https://github.com/rutube/PinterestLikeAdapterView.git
+	url = git@github.com:rutube/PinterestLikeAdapterView.git
 [submodule "RutubeApp/libs/VitamioBundle"]
 	path = RutubeApp/libs/VitamioBundle
-	url = https://github.com/rutube/VitamioBundle.git
+	url = git@github.com:rutube/VitamioBundle.git

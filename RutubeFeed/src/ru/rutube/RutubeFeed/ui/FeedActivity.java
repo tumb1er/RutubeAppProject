@@ -1,6 +1,7 @@
 package ru.rutube.RutubeFeed.ui;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,7 +17,7 @@ import ru.rutube.RutubeFeed.R;
  * To change this template use File | Settings | File Templates.
  */
 public class FeedActivity extends Activity {
-    private static final String LOG_TAG = FeedActivity.class.getName();
+    private final String LOG_TAG = getClass().getName();
     protected Uri feedUri;
     protected static final int R_FEED_MENU = R.menu.feed_menu;
 

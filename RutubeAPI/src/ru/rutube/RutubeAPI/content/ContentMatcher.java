@@ -1,12 +1,17 @@
 package ru.rutube.RutubeAPI.content;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
+import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
 import ru.rutube.RutubeAPI.R;
+import ru.rutube.RutubeAPI.models.FeedItem;
 
+import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -17,7 +22,8 @@ import java.util.HashMap;
  * To change this template use File | Settings | File Templates.
  */
 public class ContentMatcher {
-    private static final String LOG_TAG = ContentMatcher.class.getName();
+    private static final String PARAM_QUERY = "query";
+    private final String LOG_TAG = getClass().getName();
     private HashMap<String, Uri> uriMap = null;
     private static ContentMatcher instance;
 
@@ -48,5 +54,54 @@ public class ContentMatcher {
         Log.d(LOG_TAG, "Matched: " + String.valueOf(result));
         return result;
     }
+
+    public Uri getSearchContentUri(Context context, Uri feedUri) {
+        Log.d(LOG_TAG, "Matching search: " + feedUri.toString());
+        String path = feedUri.getPath();
+        assert path != null;
+        if (!path.startsWith("/"))
+            path = "/" + path;
+        String searchPath = "/" + context.getString(R.string.search_uri);
+        if (!path.startsWith(searchPath)) {
+            Log.d(LOG_TAG, "Path not ok");
+            return null;
+        }
+
+        String query = feedUri.getQueryParameter(PARAM_QUERY);
+        if (query == null){
+            Log.d(LOG_TAG, "Missing query");
+            return null;
+        }
+
+        ContentValues cv = new ContentValues();
+        cv.put(FeedContract.SearchQuery.UPDATED, FeedItem.sSqlDateTimeFormat.format(new Date()));
+        cv.put(FeedContract.SearchQuery.QUERY, query);
+        String[] selectionArgs = {query};
+        String[] projection = {FeedContract.SearchQuery._ID};
+        ContentResolver contentResolver = context.getContentResolver();
+        Cursor c = contentResolver.query(
+                FeedContract.SearchQuery.CONTENT_URI,
+                projection,
+                FeedContract.SearchQuery.QUERY + " = ?", selectionArgs,
+                FeedContract.SearchQuery._ID);
+
+        int query_id;
+        if (c.moveToFirst()) {
+            query_id = c.getInt(c.getColumnIndex(FeedContract.SearchQuery._ID));
+            c.close();
+            contentResolver.update(FeedContract.SearchQuery.CONTENT_URI, cv,
+                    FeedContract.SearchQuery._ID + " = ?", selectionArgs);
+        } else {
+            c.close();
+            Uri inserted = contentResolver.insert(FeedContract.SearchQuery.CONTENT_URI, cv);
+            Log.d(LOG_TAG, "Inserted Search Query: " + inserted.toString());
+            query_id = Integer.parseInt(inserted.getLastPathSegment());
+        }
+        Uri result = FeedContract.SearchResults.CONTENT_URI.buildUpon().appendPath(
+                String.valueOf(query_id)).build();
+        Log.d(LOG_TAG, "Matched search uri: " + result.toString());
+        return result;
+    }
+
 
 }

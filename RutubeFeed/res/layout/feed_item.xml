@@ -9,13 +9,14 @@
             android:id="@+id/thumbnailImageView"
             android:layout_weight="1"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:minHeight="100dp"
             android:adjustViewBounds="true"
             android:layout_marginLeft="-1dp"
             android:layout_marginRight="-1dp"
             android:contentDescription="@string/thumbnail"
-            android:scaleType="fitXY"/>
+            android:scaleType="centerCrop"
+            android:src="@drawable/stub"/>
 
     <RelativeLayout
             android:layout_width="fill_parent"
@@ -62,7 +63,7 @@
                 <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/imageView"
+                        android:id="@+id/commentBaloon"
                         android:focusable="false"
                         android:src="@drawable/comment_line"
                         android:layout_gravity="left"/>
@@ -74,14 +75,16 @@
                     android:layout_height="fill_parent"
                     android:paddingTop="10dp">
 
-                <ru.rutube.RutubeFeed.views.ThumbnailView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                <com.android.volley.toolbox.NetworkImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
                         android:id="@+id/avatarImageView"
-                        android:minWidth="50px"
+                        android:minWidth="50dp"
+                        android:minHeight="50dp"
                         android:maxHeight="50dp"
                         android:maxWidth="50dp"
-                        android:scaleType="matrix"/>
+                        android:scaleType="centerCrop"
+                        android:adjustViewBounds="true"/>
 
                 <LinearLayout
                         android:orientation="vertical"

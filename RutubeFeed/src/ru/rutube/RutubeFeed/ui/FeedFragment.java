@@ -3,43 +3,27 @@ package ru.rutube.RutubeFeed.ui;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListFragment;
-import android.app.LoaderManager;
+import android.app.SearchManager;
 import android.content.Context;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.support.v4.view.MenuItemCompat;
 import android.util.Log;
 import android.view.*;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.SearchView;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpClientStack;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 //import com.huewu.pla.lib.MultiColumnListView;
 //import com.huewu.pla.lib.internal.PLA_AdapterView;
 
-import ru.rutube.RutubeAPI.HttpTransport;
-import ru.rutube.RutubeAPI.content.ContentMatcher;
-import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.models.Constants;
-import ru.rutube.RutubeAPI.models.Feed;
-import ru.rutube.RutubeAPI.models.User;
-import ru.rutube.RutubeAPI.requests.RequestListener;
 import ru.rutube.RutubeFeed.R;
 import ru.rutube.RutubeFeed.ctrl.FeedController;
-import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
-import ru.rutube.RutubePlayer.ui.PlayerActivity;
 
 /**
  * Created with IntelliJ IDEA.
@@ -50,7 +34,8 @@ import ru.rutube.RutubePlayer.ui.PlayerActivity;
  */
 public class FeedFragment extends ListFragment implements FeedController.FeedView {
     private static final String LOG_TAG = FeedFragment.class.getName();
-    private MenuItem refreshItem;
+    private MenuItem mRefreshItem;
+    private MenuItem mSearchItem;
     private Uri feedUri;
 //    private MultiColumnListView sgView;
     private ListView sgView;
@@ -59,16 +44,76 @@ public class FeedFragment extends ListFragment implements FeedController.FeedVie
     public ListAdapter getListAdapter() {
         return sgView.getAdapter();
     }
+
     public void setListAdapter(ListAdapter adapter) {
         sgView.setAdapter(adapter);
     }
 
     @Override
-    public void openPlayer(Uri uri) {
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.feed_menu, menu);
+        mRefreshItem = menu.findItem(R.id.menu_refresh);
+        mSearchItem = menu.findItem(R.id.menu_search);
+//        MenuItemCompat.setOnActionExpandListener(mSearchItem, new MenuItemCompat.OnActionExpandListener() {
+//            @Override
+//            public boolean onMenuItemActionExpand(MenuItem menuItem) {
+//                return true;
+//            }
+//
+//            @Override
+//            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+//                return true;
+//            }
+//        });
+
+        Activity activity = getActivity();
+        assert activity != null;
+        // Get the SearchView and set the searchable configuration
+        SearchManager searchManager = (SearchManager) activity.getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) mSearchItem.getActionView();
+        assert searchView != null;
+        // Assumes current activity is the searchable activity
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(activity.getComponentName()));
+        searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d(LOG_TAG, "onOptionsItemSelected");
+        int id = item.getItemId();
+        if(id == R.id.menu_refresh){
+                refreshFeed();
+                return true;
+        }
+        if (id == R.id.menu_search) {
+            Log.d(LOG_TAG, "Search btn!");
+            return false;
+        }
+        Log.d(LOG_TAG, "super.onOptionsItemSelected");
+        return super.onOptionsItemSelected(item);
+
+    }
+
+    protected void refreshFeed() {
+        mController.refresh();
+
+    }
+
+    @Override
+    public void openPlayer(Uri uri, Uri thumbnailUri) {
         Activity activity = getActivity();
         assert activity != null;
         Intent intent = new Intent("ru.rutube.player.play");
         intent.setData(uri);
+        intent.putExtra(Constants.Params.THUMBNAIL_URI, thumbnailUri);
         Log.d(LOG_TAG, "Starting player");
         startActivityForResult(intent, 0);
         Log.d(LOG_TAG, "Player started");
@@ -128,12 +173,12 @@ public class FeedFragment extends ListFragment implements FeedController.FeedVie
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         Log.d(LOG_TAG, "onPrepareOptionsMenu");
-        refreshItem = menu.findItem(R.id.menu_refresh);
+        mRefreshItem = menu.findItem(R.id.menu_refresh);
         super.onPrepareOptionsMenu(menu);
     }
 
     public void setRefreshing() {
-        if (refreshItem == null) {
+        if (mRefreshItem == null) {
             Log.d(LOG_TAG, "empty refresh item");
             return;
         }
@@ -147,16 +192,16 @@ public class FeedFragment extends ListFragment implements FeedController.FeedVie
         assert rotation != null;
         rotation.setRepeatCount(Animation.INFINITE);
         iv.startAnimation(rotation);
-        refreshItem.setActionView(iv);
+        mRefreshItem.setActionView(iv);
     }
 
     public void doneRefreshing() {
-        if (refreshItem == null)
+        if (mRefreshItem == null)
             return;
-        View actionView = refreshItem.getActionView();
+        View actionView = mRefreshItem.getActionView();
         if (actionView != null)
             actionView.clearAnimation();
-        refreshItem.setActionView(null);
+        mRefreshItem.setActionView(null);
     }
 
     @Override
