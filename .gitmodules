@@ -3,7 +3,7 @@
 	url = https://android.googlesource.com/platform/frameworks/volley
 [submodule "RutubeApp/libs/PinterestLikeAdapterView"]
 	path = RutubeApp/libs/PinterestLikeAdapterView
-	url = https://github.com/huewu/PinterestLikeAdapterView
+	url = https://github.com/rutube/PinterestLikeAdapterView.git
 [submodule "RutubeApp/libs/VitamioBundle"]
 	path = RutubeApp/libs/VitamioBundle
-	url = https://github.com/yixia/VitamioBundle.git
+	url = https://github.com/rutube/VitamioBundle.git
