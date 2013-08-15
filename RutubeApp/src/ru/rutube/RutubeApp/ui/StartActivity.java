@@ -1,15 +1,13 @@
 package ru.rutube.RutubeApp.ui;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.View;
-import android.widget.LinearLayout;
 
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeApp.R;
@@ -18,7 +16,7 @@ import ru.rutube.RutubeFeed.ui.FeedFragment;
 
 import java.util.HashMap;
 
-public class StartActivity extends Activity implements MainPageController.MainPageView, ActionBar.TabListener {
+public class StartActivity extends FragmentActivity implements MainPageController.MainPageView, ActionBar.TabListener {
     private static final String LOG_TAG = StartActivity.class.getName();
     private static final String CONTROLLER = "controller";
     private static final int LOGIN_REQUEST_CODE = 1;
@@ -150,7 +148,6 @@ public class StartActivity extends Activity implements MainPageController.MainPa
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         mController.initTabs();
         Log.d(LOG_TAG, "initTabs done");
-
     }
 
     /**
