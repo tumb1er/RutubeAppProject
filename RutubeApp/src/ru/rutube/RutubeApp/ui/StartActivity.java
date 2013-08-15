@@ -1,6 +1,7 @@
 package ru.rutube.RutubeApp.ui;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.util.Log;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubeApp.ctrl.MainPageController;
+import ru.rutube.RutubeApp.ui.dialog.LoginDialogFragment;
 import ru.rutube.RutubeFeed.ui.FeedFragment;
 
 import java.util.HashMap;
@@ -75,9 +77,31 @@ public class StartActivity extends FragmentActivity implements MainPageControlle
     }
 
     public void showLoginDialog() {
-        Intent intent = new Intent("ru.rutube.api.login_required");
-        Log.d(LOG_TAG, "Login activity started");
-        startActivityForResult(intent, LOGIN_REQUEST_CODE);
+//        Intent intent = new Intent("ru.rutube.api.login_required");
+//        Log.d(LOG_TAG, "Login activity started");
+//        startActivityForResult(intent, LOGIN_REQUEST_CODE);
+        LoginDialogFragment.InputDialogFragmentBuilder builder = new LoginDialogFragment.InputDialogFragmentBuilder(this);
+        builder.setOnDoneListener(new LoginDialogFragment.OnDoneListener() {
+            @Override
+            public void onFinishInputDialog(String emailText, String passwordText) {
+                mController.startLoginRequests(emailText, passwordText);
+            }
+        }).setOnCancelListener(new LoginDialogFragment.OnCancelListener() {
+            @Override
+            public void onCancel() {
+                mController.loginCanceled();
+            }
+        }).show();
+    }
+
+    @Override
+    public void showError() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.
+                setTitle(android.R.string.dialog_alert_title).
+                setMessage(getString(ru.rutube.RutubePlayer.R.string.faled_to_load_data)).
+                create().
+                show();
     }
 
     /**

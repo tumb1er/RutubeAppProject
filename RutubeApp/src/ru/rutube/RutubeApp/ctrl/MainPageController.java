@@ -1,29 +1,75 @@
 package ru.rutube.RutubeApp.ctrl;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.HttpClientStack;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONObject;
 
 import java.util.HashMap;
 
+import ru.rutube.RutubeAPI.HttpTransport;
 import ru.rutube.RutubeAPI.R;
 import ru.rutube.RutubeAPI.RutubeAPI;
+import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeAPI.models.User;
+import ru.rutube.RutubeAPI.requests.RequestListener;
+import ru.rutube.RutubeApp.ui.LoginFragment;
 
 /**
  * Created by tumbler on 14.07.13.
  */
-public class MainPageController implements Parcelable {
+public class MainPageController implements Parcelable, RequestListener {
     private static final String TAB_EDITORS = "editors";
     private static final String TAB_MY_VIDEO = "my_video";
     private static final String TAB_SUBSCRIPTIONS = "subscription";
     private static final String LOG_TAG = MainPageController.class.getName();
 
     private HashMap<String, Uri> feedUriMap;
+    private RequestQueue mRequestQueue;
+
+    @Override
+    public void onResult(int tag, Bundle result) {
+        String token = result.getString(Constants.Result.TOKEN);
+        User.saveToken(mContext, token);
+        loginSuccessful();
+    }
+
+    @Override
+    public void onVolleyError(VolleyError error) {
+        String response = new String(error.networkResponse.data);
+        Log.e(LOG_TAG, "Volley Error" + response);
+        if (response.contains("Unable to login with provided credentials") ||
+                response.contains("username") ||
+                response.contains("password"))
+            showLoginDialog();
+        else {
+            mView.showError();
+            loginCanceled();
+        }
+    }
+
+    @Override
+    public void onRequestError(int tag, RequestError error) {
+        Log.e(LOG_TAG, "Request Error" + String.valueOf(error));
+        mView.showError();
+        loginCanceled();
+    }
+
+    public void loginCanceled() {
+        Log.d(LOG_TAG, "Login cancelled, switching to " + mSelectedTab);
+        mView.selectTab(mSelectedTab);
+    }
 
     public interface MainPageView {
         void addFeedTab(String name, String tag);
@@ -32,6 +78,8 @@ public class MainPageController implements Parcelable {
         void showFeedFragment(String tag, Uri feedUri);
 
         void showLoginDialog();
+
+        void showError();
     }
 
     private Context mContext = null;
@@ -52,6 +100,10 @@ public class MainPageController implements Parcelable {
         mTabsInited = false;
     }
 
+    public void startLoginRequests(String email, String password) {
+        mRequestQueue.add(mUser.getTokenRequest(email, password, mContext, this));
+    }
+
     public void loginSuccessful() {
         mUser = User.load(mContext);
         Uri feedUri = feedUriMap.get(mAfterLoginTab);
@@ -64,6 +116,8 @@ public class MainPageController implements Parcelable {
         assert mView == null;
         mContext = context;
         mView = view;
+        mRequestQueue = Volley.newRequestQueue(context,
+            new HttpClientStack(HttpTransport.getHttpClient()));
         mUser = User.load(context);
         initFeedUriMap();
         mAttached = true;
