@@ -76,10 +76,8 @@ public class StartActivity extends FragmentActivity implements MainPageControlle
 
     }
 
+    @Override
     public void showLoginDialog() {
-//        Intent intent = new Intent("ru.rutube.api.login_required");
-//        Log.d(LOG_TAG, "Login activity started");
-//        startActivityForResult(intent, LOGIN_REQUEST_CODE);
         LoginDialogFragment.InputDialogFragmentBuilder builder = new LoginDialogFragment.InputDialogFragmentBuilder(this);
         builder.setOnDoneListener(new LoginDialogFragment.OnDoneListener() {
             @Override

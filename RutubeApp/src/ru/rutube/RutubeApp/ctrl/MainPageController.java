@@ -1,6 +1,5 @@
 package ru.rutube.RutubeApp.ctrl;
 
-import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,11 +9,8 @@ import android.util.Log;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.HttpClientStack;
 import com.android.volley.toolbox.Volley;
-
-import org.json.JSONObject;
 
 import java.util.HashMap;
 
@@ -24,7 +20,6 @@ import ru.rutube.RutubeAPI.RutubeAPI;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeAPI.models.User;
 import ru.rutube.RutubeAPI.requests.RequestListener;
-import ru.rutube.RutubeApp.ui.LoginFragment;
 
 /**
  * Created by tumbler on 14.07.13.
