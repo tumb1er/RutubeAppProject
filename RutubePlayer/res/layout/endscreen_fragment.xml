@@ -4,7 +4,7 @@
               android:orientation="vertical"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
-              android:background="@color/shade"
+              android:background="@color/endscreen_shade"
               android:id="@+id/endscreen"
               android:gravity="center">
     <LinearLayout android:orientation="vertical"

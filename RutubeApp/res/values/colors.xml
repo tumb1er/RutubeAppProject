@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <color name="transparent">#00000000</color>
-    <color name="gray">#FF777777</color>
-    <color name="mediacontroller_bg_pressed">#ff53c1bd</color>
-
+    <color name="seekbar_bg">#FFB6B6B6</color>
+    <color name="seekbar_progress">#FF0090FF</color>
+    <color name="seekbar_secondary">#FFFFFFFF</color>
 </resources>

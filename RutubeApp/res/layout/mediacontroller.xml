@@ -52,23 +52,36 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal" >
 
+                <ImageButton
+                        android:id="@+id/mediacontroller_play_pause"
+                        android:layout_width="48dip"
+                        android:layout_height="48dip"
+                        android:background="@color/transparent"
+                        android:contentDescription="@string/mediacontroller_play_pause"
+                        android:gravity="center"
+                        android:src="@drawable/mediacontroller_pause_button" />
+
                 <TextView
                         android:id="@+id/mediacontroller_time_current"
                         style="@style/MediaController_Text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_centerVertical="true" />
+                        android:layout_alignParentLeft="false"
+                        android:layout_centerVertical="true"
+                        android:layout_toRightOf="@+id/mediacontroller_play_pause"/>
 
                 <SeekBar
                         android:id="@+id/mediacontroller_seekbar"
-                        style="@style/MediaController_SeekBar"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_toLeftOf="@+id/mediacontroller_time_total"
                         android:layout_toRightOf="@+id/mediacontroller_time_current"
                         android:focusable="true"
-                        android:max="1000" />
+                        android:max="1000"
+                        android:progressDrawable="@drawable/seekbar_progress"
+                        android:thumb="@drawable/seekbar_thumb"
+                        android:layout_marginTop="8dp"/>
+
 
                 <TextView
                         android:id="@+id/mediacontroller_time_total"
@@ -86,16 +99,6 @@
                     android:layout_marginBottom="@dimen/mediacontroller_buttons_bottom_margin"
                     android:layout_marginTop="@dimen/mediacontroller_buttons_top_margin"
                     android:orientation="horizontal" >
-
-                <ImageButton
-                        android:id="@+id/mediacontroller_play_pause"
-                        android:layout_width="48dip"
-                        android:layout_height="48dip"
-                        android:layout_centerInParent="true"
-                        android:background="@color/transparent"
-                        android:contentDescription="@string/mediacontroller_play_pause"
-                        android:gravity="center"
-                        android:src="@drawable/mediacontroller_pause_button" />
 
             </RelativeLayout>
         </LinearLayout>
