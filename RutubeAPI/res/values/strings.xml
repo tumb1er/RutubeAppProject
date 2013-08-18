@@ -8,4 +8,5 @@
     <string name="days_ago_59">%d days ago</string>
     <string name="week_ago">%d week ago</string>
     <string name="weeks_ago">%d weeks ago</string>
+    <string name="failed_to_load_data">Failed to load data</string>
 </resources>

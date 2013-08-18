@@ -114,7 +114,7 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.
                     setTitle(android.R.string.dialog_alert_title).
-                    setMessage(getString(R.string.faled_to_load_data)).
+                    setMessage(getString(R.string.failed_to_load_data)).
                     create().
                     show();
         }

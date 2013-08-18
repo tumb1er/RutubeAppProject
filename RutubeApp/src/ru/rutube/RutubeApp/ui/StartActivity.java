@@ -97,7 +97,7 @@ public class StartActivity extends FragmentActivity implements MainPageControlle
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.
                 setTitle(android.R.string.dialog_alert_title).
-                setMessage(getString(ru.rutube.RutubePlayer.R.string.faled_to_load_data)).
+                setMessage(getString(ru.rutube.RutubePlayer.R.string.failed_to_load_data)).
                 create().
                 show();
     }
