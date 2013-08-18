@@ -99,13 +99,16 @@ public class VitamioPlayerFragment extends PlayerFragment
 
     @Override
     public void setVideoUri(Uri uri) {
-        mVideoView.setVideoURI(uri);
+        mStreamUri = uri;
+        if (mVideoView != null)
+            mVideoView.setVideoURI(uri);
     }
 
     @Override
     public void setVideoTitle(String title) {
         mVideoTitle = title;
-        vitamioMediaController.setFileName(mVideoTitle);
+        if (vitamioMediaController != null)
+            vitamioMediaController.setFileName(mVideoTitle);
     }
 
     @Override
@@ -151,5 +154,6 @@ public class VitamioPlayerFragment extends PlayerFragment
         mVideoView.setOnErrorListener(this);
         mVideoView.pause();
         mVideoView.requestFocus();
+        vitamioMediaController.setFileName(mVideoTitle);
     }
 }

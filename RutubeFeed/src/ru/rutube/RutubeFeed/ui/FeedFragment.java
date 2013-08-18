@@ -71,7 +71,7 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
         // Assumes current activity is the searchable activity
         searchView.setSearchableInfo(searchManager.getSearchableInfo(activity.getComponentName()));
         searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
-
+        searchView.setFocusable(false);
     }
 
     @Override

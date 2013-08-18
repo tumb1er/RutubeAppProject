@@ -174,6 +174,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     }
 
     private void loadMore() {
+        Log.i(LOG_TAG, "Load more");
         if (loadMoreListener!=null)
             loadMoreListener.onLoadMore();
     }

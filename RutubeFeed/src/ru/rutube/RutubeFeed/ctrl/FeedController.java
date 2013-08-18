@@ -58,7 +58,6 @@ public class FeedController implements Parcelable {
     private RequestQueue mRequestQueue;
     private int mLoading = 0;
     private boolean mAttached = false;
-    private boolean mCacheValid = false;
     private int mLastItemsCount;
 
 
@@ -174,9 +173,7 @@ public class FeedController implements Parcelable {
         @Override
         public void onLoadMore() {
             ListAdapter adapter = mView.getListAdapter();
-            // Грузим новую страницу API только если кэш в БД невалидный
-            if (!mCacheValid)
-                loadPage((adapter.getCount() + mPerPage) / mPerPage);
+            loadPage((adapter.getCount() + mPerPage) / mPerPage);
         }
     };
 
@@ -193,8 +190,6 @@ public class FeedController implements Parcelable {
                 mContext.getContentResolver().notifyChange(mFeed.getContentUri(), null);
             mPerPage = result.getInt(Constants.Result.PER_PAGE);
             listAdapter.setPerPage(mPerPage);
-            // Если количество записей в БД не поменялось, значит кэш в БД валидный
-            mCacheValid = mLastItemsCount == listAdapter.getCount();
             requestDone();
         }
 
@@ -239,7 +234,7 @@ public class FeedController implements Parcelable {
             Log.d(LOG_TAG, "onLoadFinished " + String.valueOf(cursor.getCount()));
             ((CursorAdapter) mView.getListAdapter()).swapCursor(cursor);
             // Грузим следующую страницу только если кэш в БД невалидный
-            if (cursor.getCount() < mPerPage && ! mCacheValid) {
+            if (cursor.getCount() < mPerPage) {
                 Log.d(LOG_TAG, "load more from olf");
                 loadPage((cursor.getCount() + mPerPage) / mPerPage);
             }
@@ -260,7 +255,6 @@ public class FeedController implements Parcelable {
             return;
         mView.setRefreshing();
         mLoading += 1;
-        mCacheValid = false;
         mLastItemsCount = mView.getListAdapter().getCount();
         JsonObjectRequest request = mFeed.getFeedRequest(page, mContext, mLoadPageRequestListener);
         mRequestQueue.add(request);
