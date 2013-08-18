@@ -3,13 +3,11 @@ package ru.rutube.RutubeFeed.ui;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
-import android.app.ListFragment;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.view.MenuItemCompat;
 import android.util.Log;
 import android.view.*;
 import android.view.animation.Animation;
@@ -41,6 +39,7 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
     private Uri feedUri;
     private ListView sgView;
     protected FeedController mController;
+    private SearchView mSearchView;
 
     public ListAdapter getListAdapter() {
         return sgView.getAdapter();
@@ -66,12 +65,12 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
         assert activity != null;
         // Get the SearchView and set the searchable configuration
         SearchManager searchManager = (SearchManager) activity.getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) mSearchItem.getActionView();
-        assert searchView != null;
+        mSearchView = (SearchView) mSearchItem.getActionView();
+        assert mSearchView != null;
         // Assumes current activity is the searchable activity
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(activity.getComponentName()));
-        searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
-        searchView.setFocusable(false);
+        mSearchView.setSearchableInfo(searchManager.getSearchableInfo(activity.getComponentName()));
+        mSearchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+        mSearchView.setFocusable(false);
     }
 
     @Override
@@ -159,6 +158,12 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
         Log.d(LOG_TAG, "onPrepareOptionsMenu");
         mRefreshItem = menu.findItem(R.id.menu_refresh);
         super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mSearchView.clearFocus();
     }
 
     public void setRefreshing() {
