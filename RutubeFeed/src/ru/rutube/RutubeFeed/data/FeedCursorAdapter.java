@@ -44,6 +44,16 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     private RequestQueue mRequestQueue;
     private int mPerPage;
 
+    static class ViewHolder {
+        TextView title;
+        TextView created;
+        TextView description;
+        TextView author;
+        NetworkImageView thumbnail;
+        NetworkImageView avatar;
+        ImageView commentBaloon;
+    }
+
     public int getPerPage() {
         return mPerPage;
     }
@@ -76,6 +86,15 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         View view = inflater.inflate(item_layout_id, null);
         ThumbnailView thumbnailView = (ThumbnailView)view.findViewById(R.id.thumbnailImageView);
         thumbnailView.setDefaultImageResId(R.drawable.stub);
+        ViewHolder holder = new ViewHolder();
+        holder.title = (TextView)view.findViewById(R.id.titleTextView);
+        holder.description = (TextView)view.findViewById(R.id.descriptionTextView);
+        holder.author = (TextView)view.findViewById(R.id.authorTextView);
+        holder.created = (TextView)view.findViewById(R.id.createdTextView);
+        holder.commentBaloon = (ImageView)view.findViewById(R.id.commentBaloon);
+        holder.avatar = (NetworkImageView)view.findViewById(R.id.avatarImageView);
+        holder.thumbnail = (NetworkImageView)view.findViewById(R.id.thumbnailImageView);
+        view.setTag(holder);
         return view;
     }
 
@@ -101,30 +120,29 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
             }
             String authorName = cursor.getString(authorNameIndex);
             String avatarUri = cursor.getString(avatarIndex);
-            TextView tv = (TextView) view.findViewById(R.id.titleTextView);
-            tv.setText(title);
-            tv = (TextView) view.findViewById(R.id.createdTextView);
+
+            ViewHolder holder = (ViewHolder)view.getTag();
+            holder.title.setText(title);
             if (created != null)
-                tv.setText(getCreatedText(created));
-            tv = (TextView) view.findViewById(R.id.descriptionTextView);
-            tv.setText(Html.fromHtml(description));
-            tv = (TextView) view.findViewById(R.id.authorTextView);
+                holder.created.setText(getCreatedText(created));
+            assert description!=null;
+            if (description.indexOf('<') >= 0)
+                holder.description.setText(Html.fromHtml(description));
+            else
+                holder.description.setText(description);
 
             // При отсутствии имени автора скрываем соответствующий TextField
             int visibility = (authorName == null) ? View.GONE : View.VISIBLE;
-            tv.setVisibility(visibility);
-            tv.setText(authorName);
+            holder.author.setVisibility(visibility);
+            holder.author.setText(authorName);
 
-            NetworkImageView netImgView = (NetworkImageView) view.findViewById(R.id.thumbnailImageView);
-            netImgView.setImageUrl(thumbnailUri, imageLoader);
+            holder.thumbnail.setImageUrl(thumbnailUri, imageLoader);
 
             // При отсутствии аватара скрываем его ImageView и стрелочку вниз
             visibility = (avatarUri == null) ? View.GONE : View.VISIBLE;
-            netImgView = (NetworkImageView) view.findViewById(R.id.avatarImageView);
-            netImgView.setVisibility(visibility);
-            netImgView.setImageUrl(avatarUri, imageLoader);
-            ImageView imView = (ImageView) view.findViewById(R.id.commentBaloon);
-            imView.setVisibility(visibility);
+            holder.avatar.setVisibility(visibility);
+            holder.avatar.setImageUrl(avatarUri, imageLoader);
+            holder.commentBaloon.setVisibility(visibility);
 
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
