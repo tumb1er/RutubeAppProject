@@ -2,6 +2,7 @@ package ru.rutube.RutubeFeed.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.app.ListFragment;
 import android.app.SearchManager;
 import android.content.Context;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.*;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -32,14 +34,13 @@ import ru.rutube.RutubeFeed.ctrl.FeedController;
  * Time: 12:56
  * To change this template use File | Settings | File Templates.
  */
-public class FeedFragment extends ListFragment implements FeedController.FeedView {
+public class FeedFragment extends Fragment implements FeedController.FeedView, AdapterView.OnItemClickListener {
     private static final String LOG_TAG = FeedFragment.class.getName();
     private MenuItem mRefreshItem;
     private MenuItem mSearchItem;
     private Uri feedUri;
-//    private MultiColumnListView sgView;
     private ListView sgView;
-    private FeedController mController;
+    protected FeedController mController;
 
     public ListAdapter getListAdapter() {
         return sgView.getAdapter();
@@ -61,18 +62,6 @@ public class FeedFragment extends ListFragment implements FeedController.FeedVie
         inflater.inflate(R.menu.feed_menu, menu);
         mRefreshItem = menu.findItem(R.id.menu_refresh);
         mSearchItem = menu.findItem(R.id.menu_search);
-//        MenuItemCompat.setOnActionExpandListener(mSearchItem, new MenuItemCompat.OnActionExpandListener() {
-//            @Override
-//            public boolean onMenuItemActionExpand(MenuItem menuItem) {
-//                return true;
-//            }
-//
-//            @Override
-//            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
-//                return true;
-//            }
-//        });
-
         Activity activity = getActivity();
         assert activity != null;
         // Get the SearchView and set the searchable configuration
@@ -117,11 +106,6 @@ public class FeedFragment extends ListFragment implements FeedController.FeedVie
         Log.d(LOG_TAG, "Starting player");
         startActivityForResult(intent, 0);
         Log.d(LOG_TAG, "Player started");
-    }
-
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        mController.onListItemClick(position);
     }
 
     public void showError() {
@@ -207,11 +191,14 @@ public class FeedFragment extends ListFragment implements FeedController.FeedVie
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
-        Log.d(LOG_TAG, "onCreateView");
-//        sgView = (MultiColumnListView)inflater.inflate(R.layout.feed_fragment, container, false);
-//        sgView.setOnItemClickListener(onItemClickListener);
         sgView = (ListView)inflater.inflate(R.layout.feed_fragment, container, false);
+        assert sgView != null;
+        sgView.setOnItemClickListener(this);
         return sgView;
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        mController.onListItemClick(position);
+    }
 }

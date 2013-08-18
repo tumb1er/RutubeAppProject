@@ -4,4 +4,5 @@
     <color name="seekbar_bg">#FFB6B6B6</color>
     <color name="seekbar_progress">#FF0090FF</color>
     <color name="seekbar_secondary">#FFFFFFFF</color>
+    <color name="feed_bg">#FFF3F3F3</color>
 </resources>

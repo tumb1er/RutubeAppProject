@@ -14,7 +14,7 @@ import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubeApp.ctrl.MainPageController;
 import ru.rutube.RutubeApp.ui.dialog.LoginDialogFragment;
-import ru.rutube.RutubeFeed.ui.FeedFragment;
+import ru.rutube.RutubeApp.ui.feed.PlaFeedFragment;
 
 import java.util.HashMap;
 
@@ -199,7 +199,7 @@ public class StartActivity extends FragmentActivity implements MainPageControlle
      * @return готовый к использованию фрагмент ленты
      */
     private Fragment createFeedFragment(Uri feedUri) {
-        Fragment fragment = new FeedFragment();
+        Fragment fragment = new PlaFeedFragment();
         Bundle args = new Bundle();
         args.putParcelable(Constants.Params.FEED_URI, feedUri);
         fragment.setArguments(args);

@@ -11,4 +11,5 @@
     <string name="select_category"/>
     <string name="upload_done">Video uploaded successfully</string>
     <string name="completed">Completed</string>
+    <string name="mediacontroller_play_pause">Play/Pause</string>
 </resources>
