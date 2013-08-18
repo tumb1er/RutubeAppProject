@@ -163,7 +163,8 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
     @Override
     public void onResume() {
         super.onResume();
-        mSearchView.clearFocus();
+        if (mSearchView != null)
+            mSearchView.clearFocus();
     }
 
     public void setRefreshing() {
