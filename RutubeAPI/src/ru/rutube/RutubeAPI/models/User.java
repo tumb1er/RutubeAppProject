@@ -99,10 +99,10 @@ public class User {
 
     /**
      * Проверяет, авторизован ли пользователь на Rutube
-     * @return true, если пользователь авторизован
+     * @return false, если пользователь авторизован
      */
-    public boolean isAuthenticated() {
-        return (mToken != null);
+    public boolean isAnonymous() {
+        return (mToken == null);
     }
 
     /**

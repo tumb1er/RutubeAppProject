@@ -13,6 +13,8 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 import android.util.Log;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.*;
 
 /**
@@ -170,7 +172,7 @@ public class FeedContentProvider extends ContentProvider {
         int uriType = sUriMatcher.match(uri);
         Log.d(LOG_TAG, "Type: " + String.valueOf(uriType));
         SQLiteDatabase sqlDB = dbHelper.getWritableDatabase();
-        long rowId = 0;
+        long rowId;
         switch (uriType) {
             case EDITORS:
                 rowId = sqlDB.replace(FeedContract.Editors.CONTENT_PATH, null, contentValues);
@@ -215,7 +217,7 @@ public class FeedContentProvider extends ContentProvider {
     }
 
     @Override
-    public int bulkInsert(Uri uri, ContentValues[] values) {
+    public int bulkInsert(Uri uri, @NotNull ContentValues[] values) {
         Log.d(LOG_TAG, "start bulk insert");
         int numInserted = 0;
         if (values.length == 0) {

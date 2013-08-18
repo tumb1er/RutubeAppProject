@@ -12,4 +12,5 @@
     <string name="tab_editors_feed">Editors</string>
     <string name="tab_my_video">My Video</string>
     <string name="tab_subscriptions">Subscriptions</string>
+    <string name="empty"/>
 </resources>

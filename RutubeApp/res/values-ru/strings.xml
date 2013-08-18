@@ -11,4 +11,6 @@
     <string name="select_category"/>
     <string name="upload_done">Загрузка видео успешно завершена!</string>
     <string name="completed">Completed</string>
+    <string name="email">E-mail</string>
+    <string name="password">Пароль</string>
 </resources>

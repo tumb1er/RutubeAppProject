@@ -7,6 +7,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+
+import org.jetbrains.annotations.NotNull;
+
 import ru.rutube.RutubeFeed.R;
 
 /**
@@ -46,7 +49,7 @@ public class FeedActivity extends Activity {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NotNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable("feedUri", feedUri);
     }

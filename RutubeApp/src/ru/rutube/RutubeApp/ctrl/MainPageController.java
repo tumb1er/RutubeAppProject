@@ -151,7 +151,7 @@ public class MainPageController implements Parcelable, RequestListener {
             Log.d(LOG_TAG, "skip onTabSelected");
             return;
         }
-        if (tag != TAB_EDITORS && !mUser.isAuthenticated()) {
+        if (!tag.equals(TAB_EDITORS) && mUser.isAnonymous()) {
             mAfterLoginTab = tag;
             showLoginDialog();
             return;

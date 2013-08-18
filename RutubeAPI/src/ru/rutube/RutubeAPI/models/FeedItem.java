@@ -113,7 +113,7 @@ public class FeedItem implements Parcelable {
         Author author = getAuthor(data);
         try {
             data = data.getJSONObject(JSON_VIDEO);
-        } catch (JSONException e) {
+        } catch (JSONException ignored) {
         }
         String title = data.getString(JSON_TITLE);
         String description = data.getString(JSON_DESCIPTION);

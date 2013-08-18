@@ -58,7 +58,6 @@ public class FeedController implements Parcelable {
     private RequestQueue mRequestQueue;
     private int mLoading = 0;
     private boolean mAttached = false;
-    private int mLastItemsCount;
 
 
     public FeedController(Uri feedUri) {
@@ -255,7 +254,6 @@ public class FeedController implements Parcelable {
             return;
         mView.setRefreshing();
         mLoading += 1;
-        mLastItemsCount = mView.getListAdapter().getCount();
         JsonObjectRequest request = mFeed.getFeedRequest(page, mContext, mLoadPageRequestListener);
         if (nocache)
             mRequestQueue.getCache().remove(request.getCacheKey());

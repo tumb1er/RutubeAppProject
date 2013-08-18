@@ -11,6 +11,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="8dp"
             android:layout_gravity="right|center_vertical"
+            android:contentDescription="@string/clear"
             android:src="@drawable/ic_action_clear_light"/>
 
     <EditText
@@ -21,13 +22,13 @@
             android:autoText="false"
             android:lines="1"
             android:linksClickable="false"
-            android:hint="E-mail"/>
+            android:hint="@string/email"/>
 
     <EditText
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
-            android:hint="Пароль"
+            android:hint="@string/password"
             android:ems="10"
             android:id="@+id/password"/>
 

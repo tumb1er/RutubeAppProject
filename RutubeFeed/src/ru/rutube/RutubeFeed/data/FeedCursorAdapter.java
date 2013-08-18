@@ -17,6 +17,8 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.Volley;
 
+import org.jetbrains.annotations.NotNull;
+
 import ru.rutube.RutubeAPI.RutubeAPI;
 import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.tools.BitmapLruCache;
@@ -41,7 +43,6 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     protected static int item_layout_id = R.layout.feed_item;
     private final String LOG_TAG = getClass().getName();
     private Context context;
-    private RequestQueue mRequestQueue;
     private int mPerPage;
 
     static class ViewHolder {
@@ -84,8 +85,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(item_layout_id, null);
-        ThumbnailView thumbnailView = (ThumbnailView)view.findViewById(R.id.thumbnailImageView);
-        thumbnailView.setDefaultImageResId(R.drawable.stub);
+        assert view != null;
         ViewHolder holder = new ViewHolder();
         holder.title = (TextView)view.findViewById(R.id.titleTextView);
         holder.description = (TextView)view.findViewById(R.id.descriptionTextView);
@@ -94,12 +94,13 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         holder.commentBaloon = (ImageView)view.findViewById(R.id.commentBaloon);
         holder.avatar = (NetworkImageView)view.findViewById(R.id.avatarImageView);
         holder.thumbnail = (NetworkImageView)view.findViewById(R.id.thumbnailImageView);
+        holder.thumbnail.setDefaultImageResId(R.drawable.stub);
         view.setTag(holder);
         return view;
     }
 
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(@NotNull View view, Context context, @NotNull Cursor cursor) {
         try {
             int titleIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.TITLE);
             int thumbnailUriIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.THUMBNAIL_URI);
@@ -170,8 +171,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     }
 
     protected void initImageLoader(Context context) {
-        mRequestQueue = Volley.newRequestQueue(context);
-        imageLoader = new ImageLoader(mRequestQueue, RutubeAPI.getBitmapCache());
+        imageLoader = new ImageLoader(Volley.newRequestQueue(context), RutubeAPI.getBitmapCache());
     }
 
     @Override

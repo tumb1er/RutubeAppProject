@@ -35,7 +35,6 @@ import ru.rutube.RutubeFeed.ctrl.FeedController;
 public class FeedFragment extends Fragment implements FeedController.FeedView, AdapterView.OnItemClickListener {
     private static final String LOG_TAG = FeedFragment.class.getName();
     private MenuItem mRefreshItem;
-    private MenuItem mSearchItem;
     private Uri feedUri;
     private ListView sgView;
     protected FeedController mController;
@@ -60,12 +59,13 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.feed_menu, menu);
         mRefreshItem = menu.findItem(R.id.menu_refresh);
-        mSearchItem = menu.findItem(R.id.menu_search);
+        MenuItem searchItem = menu.findItem(R.id.menu_search);
+        assert searchItem != null;
         Activity activity = getActivity();
         assert activity != null;
         // Get the SearchView and set the searchable configuration
         SearchManager searchManager = (SearchManager) activity.getSystemService(Context.SEARCH_SERVICE);
-        mSearchView = (SearchView) mSearchItem.getActionView();
+        mSearchView = (SearchView) searchItem.getActionView();
         assert mSearchView != null;
         // Assumes current activity is the searchable activity
         mSearchView.setSearchableInfo(searchManager.getSearchableInfo(activity.getComponentName()));

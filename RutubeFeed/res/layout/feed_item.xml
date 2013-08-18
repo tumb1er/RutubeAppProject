@@ -8,7 +8,6 @@
 
         <ru.rutube.RutubeFeed.views.ThumbnailView
                 android:id="@+id/thumbnailImageView"
-                android:layout_weight="1"
                 android:layout_width="fill_parent"
                 android:layout_height="0dp"
                 android:minHeight="100dp"
@@ -41,7 +40,7 @@
                     android:textColor="@android:color/primary_text_light_nodisable"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
-                    ></TextView>
+                    />
 
             <TextView
                     android:id="@+id/createdTextView"
@@ -52,7 +51,7 @@
                     android:textColor="@android:color/secondary_text_light"
                     android:layout_alignParentLeft="false"
                     android:layout_alignParentTop="false"
-                    android:layout_below="@+id/titleTextView"></TextView>
+                    android:layout_below="@+id/titleTextView"/>
 
             <ImageView
                     android:layout_width="wrap_content"
@@ -60,6 +59,7 @@
                     android:id="@+id/commentLine"
                     android:src="@drawable/comment_line_right"
                     android:adjustViewBounds="true"
+                    android:contentDescription="@string/empty"
                     android:layout_below="@+id/createdTextView"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentLeft="true"
@@ -69,6 +69,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/commentBaloon"
+                    android:contentDescription="@string/empty"
                     android:focusable="false"
                     android:src="@drawable/comment_line"
                     android:layout_gravity="left"
