@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ACTIVITY_ENTRY_NAME</string>
+    <string name="now">Только что</string>
+    <string name="today">Сегодня</string>
+    <string name="yesterday">Вчера</string>
+    <string name="days_ago_24">%d дня назад</string>
+    <string name="days_ago_59">%d дней назад</string>
+    <string name="week_ago">%d неделю назад</string>
+    <string name="weeks_ago">%d недели назад</string>
+</resources>
