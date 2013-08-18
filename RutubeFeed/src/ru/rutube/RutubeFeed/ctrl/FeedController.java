@@ -72,7 +72,7 @@ public class FeedController implements Parcelable {
      */
     public void refresh() {
         Log.d(LOG_TAG, "Refreshing");
-        loadPage(1);
+        loadPage(1, true);
     }
 
     /**
@@ -250,14 +250,20 @@ public class FeedController implements Parcelable {
      * Запрашивает страницу API ленты
      * @param page номер страницы с 1
      */
-    private void loadPage(int page) {
+    private void loadPage(int page, boolean nocache) {
         if (mLoading != 0)
             return;
         mView.setRefreshing();
         mLoading += 1;
         mLastItemsCount = mView.getListAdapter().getCount();
         JsonObjectRequest request = mFeed.getFeedRequest(page, mContext, mLoadPageRequestListener);
+        if (nocache)
+            mRequestQueue.getCache().remove(request.getCacheKey());
         mRequestQueue.add(request);
+    }
+
+    private void loadPage(int page) {
+        loadPage(page, false);
     }
 
 }
