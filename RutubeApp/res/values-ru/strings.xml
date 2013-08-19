@@ -13,4 +13,6 @@
     <string name="completed">Completed</string>
     <string name="email">E-mail</string>
     <string name="password">Пароль</string>
+    <string name="registration">Регистрация</string>
+    <string name="remind_password">Забыл пароль</string>
 </resources>

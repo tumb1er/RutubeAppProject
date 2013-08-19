@@ -6,12 +6,15 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -83,6 +86,18 @@ public class LoginDialogFragment extends DialogFragment implements TextView.OnEd
         txtPasswordInput = (EditText) view.findViewById(R.id.password);
         txtPasswordInput.setOnEditorActionListener(this);
         txtPasswordInput.setOnFocusChangeListener(this);
+
+        Resources resources = getActivity().getResources();
+
+        TextView tv = (TextView)view.findViewById(R.id.registerUrl);
+        tv.setText(Html.fromHtml(String.format(resources.getString(R.string.register_url),
+                resources.getString(R.string.registration))));
+        tv.setMovementMethod(LinkMovementMethod.getInstance());
+
+        tv = (TextView)view.findViewById(R.id.remindUrl);
+        tv.setText(Html.fromHtml(String.format(resources.getString(R.string.remind_url),
+                resources.getString(R.string.remind_password))));
+        tv.setMovementMethod(LinkMovementMethod.getInstance());
 
         view.findViewById(R.id.btnClear).setOnClickListener(this);
         builder.setView(view);
