@@ -1,6 +1,8 @@
 package ru.rutube.RutubePlayer.ctrl;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -184,7 +186,7 @@ public class PlayerController implements Parcelable, RequestListener {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeParcelable(mVideoUri, i);
-        parcel.writeParcelable(mTrackInfo.getBalancerUrl(), i);
+        parcel.writeParcelable(mTrackInfo, i);
         parcel.writeParcelable(mThumbnailUri, i);
         parcel.writeInt(mState);
         parcel.writeInt(mVideoOffset);
@@ -345,15 +347,26 @@ public class PlayerController implements Parcelable, RequestListener {
     private void parseVideoUri() {
         final List<String> segments = mVideoUri.getPathSegments();
         assert segments != null;
-        if (segments.size() == 2) {
+        if (segments.size() == 2 && segments.get(1).matches("[a-f\\d]{32}")) {
             String videoId = segments.get(1);
             mVideo = new Video(videoId);
-        } else if (segments.size() == 3) {
+        } else if (segments.size() == 3 &&
+                (segments.get(1).equals("private") || segments.get(1).equals("embed")) &&
+                segments.get(2).matches("[a-f\\d]{32}")) {
             String videoId = segments.get(2);
             String signature = mVideoUri.getQueryParameter("p");
             mVideo = new Video(videoId, signature);
         } else {
-            throw new IllegalArgumentException("Incorrect Uri: " + String.valueOf(mVideoUri));
+            Log.d(LOG_TAG, "Uncaught url from intent-filter, starting browser.");
+            String packageName = "com.android.browser";
+            String className = "com.android.browser.BrowserActivity";
+            Intent internetIntent = new Intent(Intent.ACTION_VIEW);
+            internetIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+            internetIntent.setClassName(packageName, className);
+            internetIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            internetIntent.setData(mVideoUri);
+            mContext.startActivity(internetIntent);
+            ((Activity)mContext).finish();
         }
     }
 
