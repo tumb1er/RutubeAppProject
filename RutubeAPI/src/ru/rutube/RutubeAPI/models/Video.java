@@ -18,6 +18,7 @@ import java.util.Date;
 
 import ru.rutube.RutubeAPI.R;
 import ru.rutube.RutubeAPI.RutubeAPI;
+import ru.rutube.RutubeAPI.requests.AuthJsonObjectRequest;
 import ru.rutube.RutubeAPI.requests.RequestListener;
 import ru.rutube.RutubeAPI.requests.Requests;
 
@@ -185,8 +186,9 @@ public class Video {
                 .appendQueryParameter("referer", context.getString(R.string.referer))
                 .build();
         assert uri != null;
-        JsonObjectRequest request = new JsonObjectRequest(uri.toString(),
-                null, getPlayOptionsListener(listener), getErrorListener(listener));
+        JsonObjectRequest request = new AuthJsonObjectRequest(uri.toString(),
+                null, getPlayOptionsListener(listener), getErrorListener(listener),
+                User.loadToken(context));
         request.setShouldCache(true);
         request.setTag(Requests.PLAY_OPTIONS);
         Log.d(LOG_TAG, "Play Options URL: " + uri.toString());
