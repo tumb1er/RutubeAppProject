@@ -38,6 +38,7 @@ public class Video {
     private static final String URI_SIGNATURE = "p";
     private static final String JSON_ACL_ACCESS = "acl_access";
     private static final String JSON_ALLOWED = "allowed";
+    private static final String JSON_ACL_ERRCODE = "err_code";
     private String mVideoId;
     private String mTitle;
     private String mDescription;
@@ -112,9 +113,11 @@ public class Video {
             public void onResponse(JSONObject response) {
                 try {
                     Boolean allowed = parseAllowed(response);
+                    Integer errCode = parseErrCode(response);
                     Uri thumbnailUri = parsePlayThumbnailUri(response);
                     Bundle bundle = new Bundle();
                     bundle.putBoolean(Constants.Result.ACL_ALLOWED, allowed);
+                    bundle.putInt(Constants.Result.ACL_ERRCODE, errCode);
                     bundle.putParcelable(Constants.Result.PLAY_THUMBNAIL, thumbnailUri);
                     requestListener.onResult(Requests.PLAY_OPTIONS, bundle);
                 }  catch (JSONException e) {
@@ -141,6 +144,11 @@ public class Video {
     private Boolean parseAllowed(JSONObject response) throws JSONException {
         JSONObject acl = response.getJSONObject(JSON_ACL_ACCESS);
         return acl.optBoolean(JSON_ALLOWED, false);
+    }
+
+    private Integer parseErrCode(JSONObject response) throws  JSONException {
+        JSONObject acl = response.getJSONObject(JSON_ACL_ACCESS);
+        return acl.optInt(JSON_ACL_ERRCODE, 0);
     }
 
     protected Response.ErrorListener getErrorListener(final RequestListener requestListener){

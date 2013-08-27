@@ -36,6 +36,11 @@ EndscreenFragment.ReplayListener {
         toggleEndscreen(false);
     }
 
+    @Override
+    public void onFail() {
+        finish();
+    }
+
     private void toggleEndscreen(boolean visible) {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         if (visible)

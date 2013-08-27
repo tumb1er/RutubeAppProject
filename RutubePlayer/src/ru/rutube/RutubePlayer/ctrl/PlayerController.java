@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
+import android.util.SparseArray;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
@@ -16,6 +17,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import java.util.HashMap;
 import java.util.List;
 
 import ru.rutube.RutubeAPI.HttpTransport;
@@ -25,6 +27,7 @@ import ru.rutube.RutubeAPI.models.TrackInfo;
 import ru.rutube.RutubeAPI.models.Video;
 import ru.rutube.RutubeAPI.requests.RequestListener;
 import ru.rutube.RutubeAPI.requests.Requests;
+import ru.rutube.RutubePlayer.R;
 
 /**
  * Created by tumbler on 27.07.13.
@@ -44,7 +47,7 @@ public class PlayerController implements Parcelable, RequestListener {
         public void setVideoTitle(String title);
         public void setThumbnailUri(Uri uri);
 
-        public void showError();
+        public void showError(String error);
 
         public void startPlayback();
 
@@ -85,6 +88,8 @@ public class PlayerController implements Parcelable, RequestListener {
     private TrackInfo mTrackInfo;
     private int mState;
     private int mVideoOffset;
+    private SparseArray<Integer> mErrorMap;
+    private Boolean mPlaybackAllowed = null;
 
     private volatile int mPlayRequestStage;
     private boolean mAttached;
@@ -111,23 +116,31 @@ public class PlayerController implements Parcelable, RequestListener {
             mTrackInfo = result.getParcelable(Constants.Result.TRACKINFO);
             assert mTrackInfo != null;
             assert mView != null;
-
-            mView.setStreamUri(mTrackInfo.getBalancerUrl());
             mView.setVideoTitle(mTrackInfo.getTitle());
-
+            if (mPlaybackAllowed != null && mPlaybackAllowed)
+                mView.setStreamUri(mTrackInfo.getBalancerUrl());
             mPlayRequestStage++;
         }
 
         if (tag == Requests.PLAY_OPTIONS) {
-            Boolean allowed = result.getBoolean(Constants.Result.ACL_ALLOWED);
+            mPlaybackAllowed = result.getBoolean(Constants.Result.ACL_ALLOWED);
+            Integer err_code = result.getInt(Constants.Result.ACL_ERRCODE, 0);
             if (mThumbnailUri == null){
                 Uri thumbnailUri = result.getParcelable(Constants.Result.PLAY_THUMBNAIL);
                 mView.setThumbnailUri(thumbnailUri);
             }
-            if (!allowed) {
+            if (!mPlaybackAllowed) {
                 Log.w(LOG_TAG, "Playback not allowed");
-                mView.showError();
+                try {
+                    mView.showError(mContext.getResources().getString(mErrorMap.get(err_code)));
+                } catch (NullPointerException ignored) {
+                    mView.showError(mContext.getResources().getString(R.string.failed_to_load_data));
+                }
                 return;
+            } else {
+                if (mTrackInfo != null) {
+                    mView.setStreamUri(mTrackInfo.getBalancerUrl());
+                }
             }
             mPlayRequestStage++;
         }
@@ -138,13 +151,13 @@ public class PlayerController implements Parcelable, RequestListener {
     @Override
     public void onVolleyError(VolleyError error) {
         Log.e(LOG_TAG, error.toString());
-        mView.showError();
+        mView.showError(mContext.getResources().getString(R.string.failed_to_load_data));
     }
 
     @Override
     public void onRequestError(int tag, RequestError error) {
         Log.e(LOG_TAG, error.toString());
-        mView.showError();
+        mView.showError(mContext.getResources().getString(R.string.failed_to_load_data));
     }
 
     //
@@ -158,6 +171,15 @@ public class PlayerController implements Parcelable, RequestListener {
         mState = STATE_NEW;
         mThumbnailUri = thumbnailUri;
         mVideoOffset = 0;
+        initErrorMap();
+    }
+
+    private void initErrorMap() {
+        mErrorMap = new SparseArray<Integer>();
+        mErrorMap.put(1, R.string.video_not_allowed);
+        mErrorMap.put(2, R.string.region_not_allowed);
+        mErrorMap.put(3, R.string.mobile_not_allowed);
+        mErrorMap.put(4, R.string.anonymous_not_allowed);
     }
 
     protected PlayerController(Uri videoUri, Uri thumbnailUri, int state, int offset, TrackInfo trackInfo) {
@@ -460,6 +482,8 @@ public class PlayerController implements Parcelable, RequestListener {
             throw new IllegalStateException(
                     String.format("can't change state to STARTING from %d", mState));
         mPlayRequestStage = 0;
+        mPlaybackAllowed = null;
+        mTrackInfo = null;
         JsonObjectRequest request = video.getTrackInfoRequest(mContext, this);
         mRequestQueue.add(request);
         request = video.getPlayOptionsRequest(mContext, this);

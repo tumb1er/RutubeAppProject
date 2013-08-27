@@ -3,6 +3,7 @@ package ru.rutube.RutubePlayer.ui;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -50,6 +51,11 @@ public class PlayerFragment extends Fragment
          * Событие окончания воспроизведения
          */
         public void onComplete();
+
+        /**
+         * Событие невозможности воспроизведения
+         */
+        public void onFail();
     }
     private static final String CONTROLLER = "controller";
     private static final String LOG_TAG = PlayerFragment.class.getName();
@@ -59,6 +65,13 @@ public class PlayerFragment extends Fragment
     protected Uri mStreamUri;
     protected PlayerStateListener mPlayerStateListener;
     protected MediaController mMediaController;
+    protected DialogInterface.OnDismissListener mErrorListener = new DialogInterface.OnDismissListener() {
+        @Override
+        public void onDismiss(DialogInterface dialogInterface) {
+            if (mPlayerStateListener != null)
+                mPlayerStateListener.onFail();
+        }
+    };
 
     //
     // переопределенные методы из Fragment
@@ -165,16 +178,17 @@ public class PlayerFragment extends Fragment
     }
 
     @Override
-    public void showError() {
+    public void showError(String error) {
         Activity activity = getActivity();
         if (activity == null)
             return;
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.
+        AlertDialog dialog = builder.
                 setTitle(android.R.string.dialog_alert_title).
-                setMessage(getString(R.string.failed_to_load_data)).
-                create().
-                show();
+                setMessage(error).
+                create();
+        dialog.setOnDismissListener(mErrorListener);
+        dialog.show();
     }
 
     @Override

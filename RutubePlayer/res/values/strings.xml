@@ -4,4 +4,8 @@
     <string name="replay">Replay</string>
     <string name="share">Share</string>
     <string name="share_text">Watch on Rutube</string>
+    <string name="region_not_allowed">Video not allowed for region</string>
+    <string name="mobile_not_allowed">Video not allowed for mobile devices</string>
+    <string name="anonymous_not_allowed">Video not allowed for anonymous users</string>
+    <string name="video_not_allowed">Video blocked</string>
 </resources>
