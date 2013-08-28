@@ -7,4 +7,11 @@
     <string name="mobile_not_allowed">Видео недоступно на мобильных устройствах</string>
     <string name="anonymous_not_allowed">Видео недоступно для неавторизованных пользователей</string>
     <string name="video_not_allowed">Видео заблокировано</string>
+    <string name="video_deleted_by_user">Видео удалено автором</string>
+    <string name="video_deleted_by_admin">Видео удалено администрацией из-за нарушения правил сайта</string>
+    <string name="video_deleted_inappropriate">Видео удалено т.к. содержит противоправный контент</string>
+    <string name="video_deleted_by_rightholder">Видео удалено правообладателем</string>
+    <string name="video_deleted">Видео удалено</string>
+    <string name="video_doesnt_exist">Видео не существует</string>
+    <string name="video_is_hidden">Автор скрыл данное видео</string>
 </resources>

@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
-import android.util.SparseArray;
+import android.util.SparseIntArray;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
@@ -17,7 +17,6 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
-import java.util.HashMap;
 import java.util.List;
 
 import ru.rutube.RutubeAPI.HttpTransport;
@@ -77,6 +76,7 @@ public class PlayerController implements Parcelable, RequestListener {
     public static final int STATE_STARTING = 1;
     public static final int STATE_PLAYING = 2;
     public static final int STATE_COMPLETED = 3;
+    public static final int STATE_ERROR = 4;
 
     private static final String LOG_TAG = PlayerController.class.getName();
 
@@ -88,7 +88,8 @@ public class PlayerController implements Parcelable, RequestListener {
     private TrackInfo mTrackInfo;
     private int mState;
     private int mVideoOffset;
-    private SparseArray<Integer> mErrorMap;
+    private SparseIntArray mOptionsErrorMap;
+    private SparseIntArray mTrackInfoErrorMap;
     private Boolean mPlaybackAllowed = null;
 
     private volatile int mPlayRequestStage;
@@ -114,8 +115,18 @@ public class PlayerController implements Parcelable, RequestListener {
 
         if (tag == Requests.TRACK_INFO) {
             mTrackInfo = result.getParcelable(Constants.Result.TRACKINFO);
-            assert mTrackInfo != null;
             assert mView != null;
+            if (mTrackInfo == null) {
+                Integer errCode = result.getInt(Constants.Result.TRACKINFO_ERROR);
+                Log.e(LOG_TAG, "Track info error " + String.valueOf(errCode));
+                mRequestQueue.cancelAll(Requests.PLAY_OPTIONS);
+                if (mState == STATE_ERROR)
+                    return;
+                setState(STATE_ERROR);
+                mView.showError(mContext.getResources().getString(
+                            mTrackInfoErrorMap.get(errCode, R.string.video_deleted)));
+                return;
+            }
             mView.setVideoTitle(mTrackInfo.getTitle());
             if (mPlaybackAllowed != null && mPlaybackAllowed)
                 mView.setStreamUri(mTrackInfo.getBalancerUrl());
@@ -123,23 +134,30 @@ public class PlayerController implements Parcelable, RequestListener {
         }
 
         if (tag == Requests.PLAY_OPTIONS) {
-            mPlaybackAllowed = result.getBoolean(Constants.Result.ACL_ALLOWED);
-            Integer err_code = result.getInt(Constants.Result.ACL_ERRCODE, 0);
-            if (mThumbnailUri == null){
-                Uri thumbnailUri = result.getParcelable(Constants.Result.PLAY_THUMBNAIL);
-                mView.setThumbnailUri(thumbnailUri);
-            }
+            mPlaybackAllowed = result.getBoolean(Constants.Result.ACL_ALLOWED, false);
+            Integer errCode = result.getInt(Constants.Result.ACL_ERRCODE, 0);
             if (!mPlaybackAllowed) {
                 Log.w(LOG_TAG, "Playback not allowed");
-                try {
-                    mView.showError(mContext.getResources().getString(mErrorMap.get(err_code)));
-                } catch (NullPointerException ignored) {
-                    mView.showError(mContext.getResources().getString(R.string.failed_to_load_data));
+                mRequestQueue.cancelAll(Requests.TRACK_INFO);
+                if (mState == STATE_ERROR)
+                    return;
+                setState(STATE_ERROR);
+                Integer error_resource;
+                if (errCode == 0){
+                    errCode = result.getInt(Constants.Result.TRACKINFO_ERROR, 0);
+                    error_resource = mTrackInfoErrorMap.get(errCode, R.string.video_deleted);
+                } else {
+                    error_resource = mOptionsErrorMap.get(errCode, R.string.failed_to_load_data);
                 }
+                mView.showError(mContext.getResources().getString(error_resource));
                 return;
             } else {
                 if (mTrackInfo != null) {
                     mView.setStreamUri(mTrackInfo.getBalancerUrl());
+                }
+                if (mThumbnailUri == null){
+                    Uri thumbnailUri = result.getParcelable(Constants.Result.PLAY_THUMBNAIL);
+                    mView.setThumbnailUri(thumbnailUri);
                 }
             }
             mPlayRequestStage++;
@@ -175,11 +193,20 @@ public class PlayerController implements Parcelable, RequestListener {
     }
 
     private void initErrorMap() {
-        mErrorMap = new SparseArray<Integer>();
-        mErrorMap.put(1, R.string.video_not_allowed);
-        mErrorMap.put(2, R.string.region_not_allowed);
-        mErrorMap.put(3, R.string.mobile_not_allowed);
-        mErrorMap.put(4, R.string.anonymous_not_allowed);
+        mOptionsErrorMap = new SparseIntArray();
+        mOptionsErrorMap.put(1, R.string.video_not_allowed);
+        mOptionsErrorMap.put(2, R.string.region_not_allowed);
+        mOptionsErrorMap.put(3, R.string.mobile_not_allowed);
+        mOptionsErrorMap.put(4, R.string.anonymous_not_allowed);
+        mTrackInfoErrorMap = new SparseIntArray();
+        mTrackInfoErrorMap.put(3, R.string.video_deleted_by_user);
+        mTrackInfoErrorMap.put(4, R.string.video_deleted_by_admin);
+        mTrackInfoErrorMap.put(7, R.string.video_deleted_inappropriate);
+        mTrackInfoErrorMap.put(8, R.string.video_deleted_by_rightholder);
+        mTrackInfoErrorMap.put(11, R.string.video_doesnt_exist);
+        mTrackInfoErrorMap.put(12, R.string.video_is_hidden);
+        mTrackInfoErrorMap.put(13, R.string.mobile_not_allowed);
+
     }
 
     protected PlayerController(Uri videoUri, Uri thumbnailUri, int state, int offset, TrackInfo trackInfo) {

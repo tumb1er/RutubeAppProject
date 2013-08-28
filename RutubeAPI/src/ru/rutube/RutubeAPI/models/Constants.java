@@ -17,6 +17,7 @@ public final class Constants {
         public static final String ACL_ALLOWED = "ru.rutube.api.acl.allowed";
         public static final String PLAY_THUMBNAIL = "ru.rutube.api.play.thumbnail";
         public static final String ACL_ERRCODE = "ru.rutube.api.acl.errcode";
+        public static final String TRACKINFO_ERROR = "ru.rutube.api.trackinfo.error";
     }
 
     public final class Params {

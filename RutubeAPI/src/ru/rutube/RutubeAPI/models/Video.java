@@ -12,6 +12,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -40,6 +41,8 @@ public class Video {
     private static final String JSON_ACL_ACCESS = "acl_access";
     private static final String JSON_ALLOWED = "allowed";
     private static final String JSON_ACL_ERRCODE = "err_code";
+    private static final String JSON_TRACKINFO_DETAIL = "detail";
+    private static final String JSON_TRACKINFO_ID = "id";
     private String mVideoId;
     private String mTitle;
     private String mDescription;
@@ -129,10 +132,6 @@ public class Video {
         };
     }
 
-    private Uri parsePlayThumbnailUri(JSONObject response) throws JSONException {
-        return Uri.parse(response.getString(JSON_THUMBNAIL_URL));
-    }
-
     protected  Response.Listener<JSONObject> getYastListener() {
         return new Response.Listener<JSONObject>() {
             @Override
@@ -140,6 +139,19 @@ public class Video {
 
             }
         };
+    }
+
+    private Integer parseTrackInfoError(JSONObject response) {
+        try {
+            JSONObject details = response.getJSONObject(JSON_TRACKINFO_DETAIL);
+            return details.optInt(JSON_TRACKINFO_ID, 0);
+        } catch (JSONException ignored) {
+            return 0;
+        }
+    }
+
+    private Uri parsePlayThumbnailUri(JSONObject response) throws JSONException {
+        return Uri.parse(response.getString(JSON_THUMBNAIL_URL));
     }
 
     private Boolean parseAllowed(JSONObject response) throws JSONException {
@@ -150,15 +162,6 @@ public class Video {
     private Integer parseErrCode(JSONObject response) throws  JSONException {
         JSONObject acl = response.getJSONObject(JSON_ACL_ACCESS);
         return acl.optInt(JSON_ACL_ERRCODE, 0);
-    }
-
-    protected Response.ErrorListener getErrorListener(final RequestListener requestListener){
-        return new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                requestListener.onVolleyError(error);
-            }
-        };
     }
 
     protected TrackInfo parseTrackInfo(JSONObject data) throws JSONException {
@@ -172,11 +175,32 @@ public class Video {
         if (mSignature != null)
             trackInfoUri += String.format("?p=%s", mSignature);
         JsonObjectRequest request = new JsonObjectRequest(trackInfoUri,
-                null, getTrackInfoListener(listener), getErrorListener(listener));
+                null, getTrackInfoListener(listener), getErrorListener(Requests.TRACK_INFO, listener));
         request.setShouldCache(true);
         request.setTag(Requests.TRACK_INFO);
         Log.d(LOG_TAG, "Trackinfo URL: " + trackInfoUri);
         return request;
+    }
+
+    private Response.ErrorListener getErrorListener(final int tag, final RequestListener requestListener) {
+        return new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(LOG_TAG, "onErrorResponse");
+                try {
+                    String responseBody = new String( error.networkResponse.data, "utf-8" );
+                    JSONObject response = new JSONObject( responseBody );
+                    Bundle bundle = new Bundle();
+                    Integer errCode = parseTrackInfoError(response);
+                    bundle.putInt(Constants.Result.TRACKINFO_ERROR, errCode);
+                    requestListener.onResult(tag, bundle);
+                } catch ( JSONException ignored ) {
+                    requestListener.onVolleyError(error);
+                } catch (UnsupportedEncodingException ignored){
+                    requestListener.onVolleyError(error);
+                }
+            }
+        };
     }
 
     public JsonObjectRequest getPlayOptionsRequest(Context context, RequestListener listener) {
@@ -187,7 +211,7 @@ public class Video {
                 .build();
         assert uri != null;
         JsonObjectRequest request = new AuthJsonObjectRequest(uri.toString(),
-                null, getPlayOptionsListener(listener), getErrorListener(listener),
+                null, getPlayOptionsListener(listener), getErrorListener(Requests.PLAY_OPTIONS, listener),
                 User.loadToken(context));
         request.setShouldCache(true);
         request.setTag(Requests.PLAY_OPTIONS);
