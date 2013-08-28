@@ -38,7 +38,7 @@ import java.util.Date;
  */
 public class FeedCursorAdapter extends SimpleCursorAdapter {
     protected static final SimpleDateFormat sqlDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    protected static final SimpleDateFormat reprDateFormat = new SimpleDateFormat("d L y");
+    protected static final SimpleDateFormat reprDateFormat = new SimpleDateFormat("d MMMM y");
     protected ImageLoader imageLoader;
     protected static int item_layout_id = R.layout.feed_item;
     private final String LOG_TAG = getClass().getName();
