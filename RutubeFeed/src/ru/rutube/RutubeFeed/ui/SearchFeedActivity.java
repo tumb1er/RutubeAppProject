@@ -1,11 +1,11 @@
 package ru.rutube.RutubeFeed.ui;
 
-import android.app.ActionBar;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.SearchRecentSuggestions;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.MenuItem;
 
@@ -52,7 +52,7 @@ public class SearchFeedActivity extends FeedActivity {
     }
 
     private void init() {
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
         actionBar.setDisplayHomeAsUpEnabled(true);
         if (mQuery != null)

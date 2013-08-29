@@ -1,14 +1,12 @@
 package ru.rutube.RutubePlayer.ui;
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.Display;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -20,7 +18,7 @@ import ru.rutube.RutubePlayer.R;
  * Возможен старт по intent-action: ru.rutube.player.play c Uri видео вида:
  * http://rutube.ru/video/<video_id>/
  */
-public class PlayerActivity extends Activity implements PlayerFragment.PlayerStateListener,
+public class PlayerActivity extends FragmentActivity implements PlayerFragment.PlayerStateListener,
 EndscreenFragment.ReplayListener {
     private final String LOG_TAG = getClass().getName();
     private PlayerFragment mPlayerFragment;
@@ -42,7 +40,7 @@ EndscreenFragment.ReplayListener {
     }
 
     private void toggleEndscreen(boolean visible) {
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         if (visible)
             ft.show(mEndscreenFragment);
         else
@@ -74,10 +72,10 @@ EndscreenFragment.ReplayListener {
     }
 
     private void init() {
-        mPlayerFragment = (PlayerFragment) getFragmentManager().findFragmentById(R.id.player_fragment);
+        mPlayerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentById(R.id.player_fragment);
         assert mPlayerFragment != null;
         mPlayerFragment.setPlayerStateListener(this);
-        mEndscreenFragment = (EndscreenFragment) getFragmentManager().findFragmentById(R.id.endscreen_fragment);
+        mEndscreenFragment = (EndscreenFragment) getSupportFragmentManager().findFragmentById(R.id.endscreen_fragment);
         assert mEndscreenFragment != null;
         mEndscreenFragment.setReplayListener(this);
         toggleEndscreen(false);

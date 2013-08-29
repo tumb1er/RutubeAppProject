@@ -2,24 +2,27 @@ package ru.rutube.RutubeFeed.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SearchView;
-
-//import com.huewu.pla.lib.MultiColumnListView;
-//import com.huewu.pla.lib.internal.PLA_AdapterView;
 
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeFeed.R;
@@ -65,7 +68,7 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
         assert activity != null;
         // Get the SearchView and set the searchable configuration
         SearchManager searchManager = (SearchManager) activity.getSystemService(Context.SEARCH_SERVICE);
-        mSearchView = (SearchView) searchItem.getActionView();
+        mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         assert mSearchView != null;
         // Assumes current activity is the searchable activity
         mSearchView.setSearchableInfo(searchManager.getSearchableInfo(activity.getComponentName()));
@@ -182,16 +185,16 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
         assert rotation != null;
         rotation.setRepeatCount(Animation.INFINITE);
         iv.startAnimation(rotation);
-        mRefreshItem.setActionView(iv);
+        MenuItemCompat.setActionView(mRefreshItem, iv);
     }
 
     public void doneRefreshing() {
         if (mRefreshItem == null)
             return;
-        View actionView = mRefreshItem.getActionView();
+        View actionView = MenuItemCompat.getActionView(mRefreshItem);
         if (actionView != null)
             actionView.clearAnimation();
-        mRefreshItem.setActionView(null);
+        MenuItemCompat.setActionView(mRefreshItem, null);
     }
 
     @Override

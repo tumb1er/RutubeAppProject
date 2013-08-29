@@ -1,13 +1,13 @@
 package ru.rutube.RutubeApp.ui;
 
-import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 
 import ru.rutube.RutubeAPI.models.Constants;
@@ -18,7 +18,7 @@ import ru.rutube.RutubeApp.ui.feed.PlaFeedFragment;
 
 import java.util.HashMap;
 
-public class StartActivity extends FragmentActivity implements MainPageController.MainPageView, ActionBar.TabListener {
+public class StartActivity extends ActionBarActivity implements MainPageController.MainPageView, ActionBar.TabListener {
     private static final String LOG_TAG = StartActivity.class.getName();
     private static final String CONTROLLER = "controller";
     private static final int LOGIN_REQUEST_CODE = 1;
@@ -107,7 +107,7 @@ public class StartActivity extends FragmentActivity implements MainPageControlle
      * @param tag
      */
     public void selectTab(String tag) {
-        getActionBar().selectTab(mTabMap.get(tag));
+        getSupportActionBar().selectTab(mTabMap.get(tag));
     }
 
     /**
@@ -116,7 +116,7 @@ public class StartActivity extends FragmentActivity implements MainPageControlle
      * @param tag
      */
     public void addFeedTab(String title, String tag) {
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
         ActionBar.Tab tab = actionBar.newTab();
         tab.setText(title);
@@ -136,7 +136,7 @@ public class StartActivity extends FragmentActivity implements MainPageControlle
         if (mFragmentTransaction != null){
             replaceFragmentInTransaction(mFragmentTransaction, tag, feedUri);
         } else {
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             replaceFragmentInTransaction(ft, tag, feedUri);
             ft.commit();
         }
@@ -165,7 +165,7 @@ public class StartActivity extends FragmentActivity implements MainPageControlle
      */
     private void initTabs() {
         Log.d(LOG_TAG, "initTabs");
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         mController.initTabs();
