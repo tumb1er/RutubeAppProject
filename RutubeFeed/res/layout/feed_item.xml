@@ -88,7 +88,8 @@
                     android:src="@drawable/stub"
                     android:layout_alignParentLeft="false"
                     android:layout_alignParentTop="false"
-                    android:layout_below="@+id/commentLine"/>
+                    android:layout_below="@+id/commentLine"
+                android:layout_margin="5dp" />
 
             <TextView
                     android:layout_width="fill_parent"
