@@ -13,4 +13,5 @@
     <string name="tab_my_video">My Video</string>
     <string name="tab_subscriptions">Subscriptions</string>
     <string name="empty"/>
+    <string name="no_data">Feed is empty</string>
 </resources>

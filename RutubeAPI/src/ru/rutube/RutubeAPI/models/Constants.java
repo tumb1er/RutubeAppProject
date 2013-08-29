@@ -18,6 +18,7 @@ public final class Constants {
         public static final String PLAY_THUMBNAIL = "ru.rutube.api.play.thumbnail";
         public static final String ACL_ERRCODE = "ru.rutube.api.acl.errcode";
         public static final String TRACKINFO_ERROR = "ru.rutube.api.trackinfo.error";
+        public static final String HAS_NEXT = "ru.rutube.api.has_next";
     }
 
     public final class Params {

@@ -1,6 +1,5 @@
 package ru.rutube.RutubeAPI.models;
 
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -16,9 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 
 import ru.rutube.RutubeAPI.content.ContentMatcher;
 import ru.rutube.RutubeAPI.content.FeedContract;
@@ -100,7 +97,9 @@ public class Feed<FeedItemT extends FeedItem> {
         Bundle bundle = new Bundle();
         int perPage = response.getInt("per_page");
         int page = response.getInt("page");
+        boolean hasNext = response.getBoolean("has_next");
         bundle.putInt(Constants.Result.PER_PAGE, perPage);
+        bundle.putBoolean(Constants.Result.HAS_NEXT, hasNext);
         int offset = (page - 1) * perPage;
         JSONArray data = response.getJSONArray("results");
         ContentValues[] feedItems = new ContentValues[data.length()];

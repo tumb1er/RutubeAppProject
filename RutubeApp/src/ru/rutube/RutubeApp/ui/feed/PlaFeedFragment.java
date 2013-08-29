@@ -30,10 +30,12 @@ public class PlaFeedFragment extends ru.rutube.RutubeFeed.ui.FeedFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
         Log.d(LOG_TAG, "onCreateView");
-        sgView = (MultiColumnListView)inflater.inflate(R.layout.pla_feed_fragment, container, false);
+        View result = inflater.inflate(R.layout.pla_feed_fragment, container, false);
+        assert result != null;
+        sgView = (MultiColumnListView)result.findViewById(R.id.feed_item_list);
         assert sgView != null;
         sgView.setOnItemClickListener(onItemClickListener);
-        return sgView;
+        return result;
     }
 
     @Override

@@ -8,6 +8,6 @@ import ru.rutube.RutubeApp.R;
 public class SearchFeedActivity extends ru.rutube.RutubeFeed.ui.SearchFeedActivity {
     @Override
     public void setContentView(int layoutResID) {
-        super.setContentView(R.layout.feed_activity);
+        super.setContentView(R.layout.search_feed_activity);
     }
 }

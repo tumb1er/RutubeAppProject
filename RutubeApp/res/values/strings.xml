@@ -19,4 +19,5 @@
     <string name="remind_url"><![CDATA[<a href=\"http://rutube.ru/accounts/remind/\">%s</a>]]></string>
     <string name="registration">Registration</string>
     <string name="remind_password">Remind password</string>
+    <string name="nothing_found">Nothing found</string>
 </resources>

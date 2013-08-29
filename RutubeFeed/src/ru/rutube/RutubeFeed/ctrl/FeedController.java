@@ -26,7 +26,6 @@ import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeAPI.models.Feed;
 import ru.rutube.RutubeAPI.models.FeedItem;
 import ru.rutube.RutubeAPI.requests.RequestListener;
-import ru.rutube.RutubeAPI.requests.Requests;
 import ru.rutube.RutubeFeed.R;
 import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
 
@@ -57,6 +56,7 @@ public class FeedController implements Parcelable {
     private int mPerPage = 10;
     private RequestQueue mRequestQueue;
     private int mLoading = 0;
+    private boolean mHasNext = true;
     private boolean mAttached = false;
 
 
@@ -172,7 +172,8 @@ public class FeedController implements Parcelable {
         @Override
         public void onLoadMore() {
             ListAdapter adapter = mView.getListAdapter();
-            loadPage((adapter.getCount() + mPerPage) / mPerPage);
+            if (mHasNext)
+                loadPage((adapter.getCount() + mPerPage) / mPerPage);
         }
     };
 
@@ -188,7 +189,9 @@ public class FeedController implements Parcelable {
             if (listAdapter.getCount() == 0)
                 mContext.getContentResolver().notifyChange(mFeed.getContentUri(), null);
             mPerPage = result.getInt(Constants.Result.PER_PAGE);
+            mHasNext = result.getBoolean(Constants.Result.HAS_NEXT);
             listAdapter.setPerPage(mPerPage);
+            listAdapter.setHasMore(mHasNext);
             requestDone();
         }
 
@@ -233,7 +236,7 @@ public class FeedController implements Parcelable {
             Log.d(LOG_TAG, "onLoadFinished " + String.valueOf(cursor.getCount()));
             ((CursorAdapter) mView.getListAdapter()).swapCursor(cursor);
             // Грузим следующую страницу только если кэш в БД невалидный
-            if (cursor.getCount() < mPerPage) {
+            if ((cursor.getCount() < mPerPage) && mHasNext) {
                 Log.d(LOG_TAG, "load more from olf");
                 loadPage((cursor.getCount() + mPerPage) / mPerPage);
             }

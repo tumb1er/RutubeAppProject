@@ -2,7 +2,6 @@ package ru.rutube.RutubeFeed.data;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.Volley;
@@ -21,9 +19,7 @@ import org.jetbrains.annotations.NotNull;
 
 import ru.rutube.RutubeAPI.RutubeAPI;
 import ru.rutube.RutubeAPI.content.FeedContract;
-import ru.rutube.RutubeAPI.tools.BitmapLruCache;
 import ru.rutube.RutubeFeed.R;
-import ru.rutube.RutubeFeed.views.ThumbnailView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -44,6 +40,11 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     private final String LOG_TAG = getClass().getName();
     private Context context;
     private int mPerPage;
+    private boolean mHasMore;
+
+    public void setHasMore(boolean hasMore) {
+        mHasMore = hasMore;
+    }
 
     static class ViewHolder {
         TextView title;
@@ -77,6 +78,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         super(context, layout, c, from, to, flags);
         this.context = context;
         mPerPage = 20;
+        mHasMore = true;
         initImageLoader(context);
     }
 
@@ -176,7 +178,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
 
     @Override
     public Object getItem(int position) {
-        if (position > getCount() - mPerPage / 2) {
+        if (mHasMore && (position > getCount() - mPerPage / 2)) {
             Log.d(LOG_TAG, String.format("Load more: %d of %d", position, getCount()));
             loadMore();
         }
@@ -185,7 +187,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        if (position > getCount() - mPerPage / 2) {
+        if (mHasMore && (position > getCount() - mPerPage / 2)) {
             loadMore();
         }
         return super.getView(position, convertView, parent);

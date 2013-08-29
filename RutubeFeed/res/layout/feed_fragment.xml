@@ -1,12 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ListView xmlns:android="http://schemas.android.com/apk/res/android"
-          android:layout_width="fill_parent"
-          android:layout_height="wrap_content"
-          android:id="@android:id/list"
-          android:layout_gravity="center"
-          android:background="#cccccccc"
-          android:divider="@android:color/transparent"
-          android:drawSelectorOnTop="false"
-          android:cacheColorHint="#cccccccc"
-          android:listSelector="@android:color/transparent"/>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent">
+
+    <TextView android:id="@+id/empty"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:text="@string/no_data"
+        android:gravity="center"
+        />
+
+    <ListView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@android:id/list"
+        android:layout_gravity="center"
+        android:background="#cccccccc"
+        android:divider="@android:color/transparent"
+        android:drawSelectorOnTop="false"
+        android:cacheColorHint="#cccccccc"
+        android:listSelector="@android:color/transparent"/>
+</RelativeLayout>
