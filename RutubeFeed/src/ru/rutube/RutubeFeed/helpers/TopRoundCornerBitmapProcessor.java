@@ -10,11 +10,14 @@ import android.graphics.RectF;
 import android.util.Log;
 import android.widget.ImageView;
 
+import ru.rutube.RutubeAPI.BuildConfig;
+
 /**
  * Created by tumbler on 06.07.13.
  */
 public class TopRoundCornerBitmapProcessor implements BitmapProcessor {
     private static final String LOG_TAG = TopRoundCornerBitmapProcessor.class.getName();
+    private static final boolean D = BuildConfig.DEBUG;
     private final double mRoundPercent;
     private final double mCropAspect;
 
@@ -146,7 +149,7 @@ public class TopRoundCornerBitmapProcessor implements BitmapProcessor {
         try {
             roundBitmap = getRoundedCornerBitmap(bitmap, roundPixels, srcRect, destRect, width, height);
         } catch (OutOfMemoryError e) {
-            Log.e(LOG_TAG, "Can't create bitmap with rounded corners. Not enough memory.");
+            if (D) Log.e(LOG_TAG, "Can't create bitmap with rounded corners. Not enough memory.");
             roundBitmap = bitmap;
         }
 

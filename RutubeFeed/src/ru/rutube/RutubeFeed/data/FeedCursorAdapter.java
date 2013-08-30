@@ -17,6 +17,7 @@ import com.android.volley.toolbox.Volley;
 
 import org.jetbrains.annotations.NotNull;
 
+import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.RutubeAPI;
 import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeFeed.R;
@@ -38,6 +39,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     protected ImageLoader imageLoader;
     protected static int item_layout_id = R.layout.feed_item;
     private final String LOG_TAG = getClass().getName();
+    private static final boolean D = BuildConfig.DEBUG;
     private Context context;
     private int mPerPage;
     private boolean mHasMore;
@@ -120,7 +122,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
                 String created_str = cursor.getString(createdIndex);
                 created = sqlDateFormat.parse(created_str);
             } catch (ParseException ignored) {
-                Log.e(getClass().getName(), "CR Parse error");
+                if (D) Log.e(getClass().getName(), "CR Parse error");
             }
             String authorName = cursor.getString(authorNameIndex);
             String avatarUri = cursor.getString(avatarIndex);
@@ -185,7 +187,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
 
     private void processPosition(int position) {
         if (mHasMore && (position > getCount() - mPerPage / 2)) {
-            Log.d(LOG_TAG, String.format("Load more: %d of %d", position, getCount()));
+            if (D) Log.d(LOG_TAG, String.format("Load more: %d of %d", position, getCount()));
             loadMore();
         } else {
             if (loadMoreListener != null)
@@ -200,7 +202,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     }
 
     private void loadMore() {
-        Log.i(LOG_TAG, "Load more");
+        if (D) Log.i(LOG_TAG, "Load more");
         if (loadMoreListener!=null)
             loadMoreListener.onLoadMore();
     }

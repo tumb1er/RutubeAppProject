@@ -24,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeFeed.R;
 import ru.rutube.RutubeFeed.ctrl.FeedController;
@@ -37,6 +38,7 @@ import ru.rutube.RutubeFeed.ctrl.FeedController;
  */
 public class FeedFragment extends Fragment implements FeedController.FeedView, AdapterView.OnItemClickListener {
     private static final String LOG_TAG = FeedFragment.class.getName();
+    private static final boolean D = BuildConfig.DEBUG;
     protected FeedController mController;
     private MenuItem mRefreshItem;
     private Uri feedUri;
@@ -49,7 +51,7 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
         // Обработчик клика по ImageView для кнопки "обновить"
         @Override
         public void onClick(View view) {
-            Log.d(LOG_TAG, "IV onClick");
+            if (D) Log.d(LOG_TAG, "IV onClick");
             refreshFeed();
         }
     };
@@ -92,14 +94,14 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Log.d(LOG_TAG, "onOptionsItemSelected");
+        if (D) Log.d(LOG_TAG, "onOptionsItemSelected");
         int id = item.getItemId();
         // Клик по Refresh работает с ImageView.onClick
         if (id == R.id.menu_search) {
-            Log.d(LOG_TAG, "Search btn!");
+            if (D) Log.d(LOG_TAG, "Search btn!");
             return false;
         }
-        Log.d(LOG_TAG, "super.onOptionsItemSelected");
+        if (D) Log.d(LOG_TAG, "super.onOptionsItemSelected");
         return super.onOptionsItemSelected(item);
 
     }
@@ -116,9 +118,9 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
         Intent intent = new Intent("ru.rutube.player.play");
         intent.setData(uri);
         intent.putExtra(Constants.Params.THUMBNAIL_URI, thumbnailUri);
-        Log.d(LOG_TAG, "Starting player");
+        if (D) Log.d(LOG_TAG, "Starting player");
         startActivityForResult(intent, 0);
-        Log.d(LOG_TAG, "Player started");
+        if (D) Log.d(LOG_TAG, "Player started");
     }
 
     public void showError() {
@@ -150,7 +152,7 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.d(LOG_TAG, "onActivityCreated");
+        if (D) Log.d(LOG_TAG, "onActivityCreated");
         setHasOptionsMenu(true);
         init();
     }
@@ -164,12 +166,12 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
             assert activity != null;
             feedUri = activity.getIntent().getData();
         }
-        Log.d(LOG_TAG, "Feed Uri:" + String.valueOf(feedUri));
+        if (D) Log.d(LOG_TAG, "Feed Uri:" + String.valueOf(feedUri));
     }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        Log.d(LOG_TAG, "onPrepareOptionsMenu");
+        if (D) Log.d(LOG_TAG, "onPrepareOptionsMenu");
         mRefreshItem = menu.findItem(R.id.menu_refresh);
 
         mRotateAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate_icon);
@@ -192,7 +194,7 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
 
     public void setRefreshing() {
         if (mRefreshItem == null) {
-            Log.d(LOG_TAG, "empty refresh item");
+            if (D) Log.d(LOG_TAG, "empty refresh item");
             return;
         }
         Activity activity = getActivity();
@@ -205,11 +207,6 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
         if (mRefreshItem == null)
             return;
         MenuItemCompat.getActionView(mRefreshItem).clearAnimation();
-//        if (actionView != null)
-//            actionView.clearAnimation();
-//        MenuItemCompat.setActionView(mRefreshItem, null);
-//        //mMenu.clear();
-        //getActivity().onCreateOptionsMenu(mMenu);
     }
 
     @Override

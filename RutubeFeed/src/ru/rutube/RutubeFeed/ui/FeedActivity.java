@@ -9,6 +9,7 @@ import android.view.View;
 
 import org.jetbrains.annotations.NotNull;
 
+import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeFeed.R;
 
 /**
@@ -20,6 +21,7 @@ import ru.rutube.RutubeFeed.R;
  */
 public class FeedActivity extends ActionBarActivity {
     private final String LOG_TAG = getClass().getName();
+    private static final boolean D = BuildConfig.DEBUG;
     protected Uri feedUri;
     protected static final int R_FEED_MENU = R.menu.feed_menu;
 
@@ -35,10 +37,10 @@ public class FeedActivity extends ActionBarActivity {
                 .appendEncodedPath(getString(ru.rutube.RutubeAPI.R.string.editors_uri)).build();
             getIntent().setData(feedUri);
         }
-        Log.d(LOG_TAG, "onCreate: " + feedUri.toString());
+        if (D) Log.d(LOG_TAG, "onCreate: " + feedUri.toString());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.feed_activity);
-        Log.d(LOG_TAG, "content view set.");
+        if (D) Log.d(LOG_TAG, "content view set.");
     }
 
     @Override

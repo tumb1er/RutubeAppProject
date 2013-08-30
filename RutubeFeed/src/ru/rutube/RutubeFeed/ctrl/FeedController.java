@@ -19,6 +19,7 @@ import com.android.volley.toolbox.HttpClientStack;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.HttpTransport;
 import ru.rutube.RutubeAPI.content.FeedContentProvider;
 import ru.rutube.RutubeAPI.content.FeedContract;
@@ -49,6 +50,7 @@ public class FeedController implements Parcelable {
 
     private static final int LOADER_ID = 1;
     private static final String LOG_TAG = FeedController.class.getName();
+    private static final boolean D = BuildConfig.DEBUG;
     private Uri mFeedUri;
     private Feed mFeed;
     private Context mContext;
@@ -71,7 +73,7 @@ public class FeedController implements Parcelable {
      * Получает последние обновления ленты
      */
     public void refresh() {
-        Log.d(LOG_TAG, "Refreshing");
+        if (D) Log.d(LOG_TAG, "Refreshing");
         loadPage(1, true);
     }
 
@@ -80,7 +82,7 @@ public class FeedController implements Parcelable {
      * @param position индекс выбранного элемента
      */
     public void onListItemClick(int position) {
-        Log.d(LOG_TAG, "onListItemClick");
+        if (D) Log.d(LOG_TAG, "onListItemClick");
         Cursor c = (Cursor) mView.getListAdapter().getItem(position);
         FeedItem item = Feed.loadFeedItem(mContext, c, mFeedUri);
         Uri uri = item.getVideoUri(mContext);
@@ -243,11 +245,11 @@ public class FeedController implements Parcelable {
 
         @Override
         public void onLoadFinished(Loader<Cursor> arg0, Cursor cursor) {
-            Log.d(LOG_TAG, "onLoadFinished " + String.valueOf(cursor.getCount()));
+            if (D) Log.d(LOG_TAG, "onLoadFinished " + String.valueOf(cursor.getCount()));
             ((CursorAdapter) mView.getListAdapter()).swapCursor(cursor);
             // Грузим следующую страницу только если кэш в БД невалидный
             if ((cursor.getCount() < mPerPage) && mHasNext) {
-                Log.d(LOG_TAG, "load more from olf");
+                if (D) Log.d(LOG_TAG, "load more from olf");
                 loadPage((cursor.getCount() + mPerPage) / mPerPage);
             }
         }
