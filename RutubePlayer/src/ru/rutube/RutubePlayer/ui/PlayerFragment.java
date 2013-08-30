@@ -18,6 +18,7 @@ import android.widget.VideoView;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 
+import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubePlayer.R;
 import ru.rutube.RutubePlayer.ctrl.PlayerController;
@@ -59,6 +60,7 @@ public class PlayerFragment extends Fragment
     }
     private static final String CONTROLLER = "controller";
     private static final String LOG_TAG = PlayerFragment.class.getName();
+    private static final boolean D = BuildConfig.DEBUG;
 
     protected PlayerController mController;
     protected VideoView mVideoView;
@@ -80,7 +82,7 @@ public class PlayerFragment extends Fragment
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.d(LOG_TAG, "onActivityCreated");
+        if (D) Log.d(LOG_TAG, "onActivityCreated");
         init(savedInstanceState);
     }
 
@@ -94,27 +96,27 @@ public class PlayerFragment extends Fragment
     public void onResume() {
         super.onResume();
         mController.onResume();
-        Log.d(LOG_TAG, "onResume");
+        if (D) Log.d(LOG_TAG, "onResume");
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(LOG_TAG, "onPause");
+        if (D) Log.d(LOG_TAG, "onPause");
         mController.onPause();
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        Log.d(LOG_TAG, "Controller detached");
+        if (D) Log.d(LOG_TAG, "Controller detached");
         mController.detach();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.d(LOG_TAG, "onSaveInstanceState");
+        if (D) Log.d(LOG_TAG, "onSaveInstanceState");
         outState.putParcelable(CONTROLLER, mController);
     }
 
@@ -163,7 +165,7 @@ public class PlayerFragment extends Fragment
     @Override
     public void onComplete() {
         if (mPlayerStateListener != null) {
-            Log.d(LOG_TAG, "onComplete");
+            if (D) Log.d(LOG_TAG, "onComplete");
             mPlayerStateListener.onComplete();
         }
         stopPlayback();
@@ -172,7 +174,7 @@ public class PlayerFragment extends Fragment
 
     @Override
     public void setStreamUri(Uri uri) {
-        Log.d(LOG_TAG, "setStreamUri " + String.valueOf(uri));
+        if (D) Log.d(LOG_TAG, "setStreamUri " + String.valueOf(uri));
         setVideoUri(uri);
         mStreamUri = uri;
     }
@@ -193,7 +195,7 @@ public class PlayerFragment extends Fragment
 
     @Override
     public void startPlayback() {
-        Log.d(LOG_TAG, "StartPlayback");
+        if (D) Log.d(LOG_TAG, "StartPlayback");
         if (mPlayerStateListener != null)
             mPlayerStateListener.onPlay();
         startVideoPlayback();
@@ -282,7 +284,7 @@ public class PlayerFragment extends Fragment
      * Начинает воспроизведение видео
      */
     protected void startVideoPlayback() {
-        Log.d(LOG_TAG, "startVideoPlayback");
+        if (D) Log.d(LOG_TAG, "startVideoPlayback");
         mVideoView.setVideoURI(mStreamUri);
         mVideoView.start();
     }

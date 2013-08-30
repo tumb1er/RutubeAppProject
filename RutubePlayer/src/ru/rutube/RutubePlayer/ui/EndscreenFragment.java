@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubePlayer.R;
 
 /**
@@ -23,6 +24,7 @@ public class EndscreenFragment extends Fragment {
     }
 
     private final String LOG_TAG = getClass().getName();
+    private static final boolean D = BuildConfig.DEBUG;
 
     private ReplayListener mReplayListener;
 
@@ -47,7 +49,7 @@ public class EndscreenFragment extends Fragment {
         assert activity != null;
         Uri videoUri = activity.getIntent().getData();
         assert videoUri != null;
-        Log.d(LOG_TAG, "Sharing: " + String.valueOf(videoUri));
+        if (D) Log.d(LOG_TAG, "Sharing: " + String.valueOf(videoUri));
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_TEXT, videoUri.toString());
@@ -57,7 +59,7 @@ public class EndscreenFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d(LOG_TAG, "OnCreateView");
+        if (D) Log.d(LOG_TAG, "OnCreateView");
         View view = inflater.inflate(R.layout.endscreen_fragment, container, false);
         assert view != null;
         Button btn = (Button)view.findViewById(R.id.replay_btn);

@@ -19,6 +19,7 @@ import com.android.volley.toolbox.Volley;
 
 import java.util.List;
 
+import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.HttpTransport;
 import ru.rutube.RutubeAPI.RutubeAPI;
 import ru.rutube.RutubeAPI.models.Constants;
@@ -79,6 +80,7 @@ public class PlayerController implements Parcelable, RequestListener {
     public static final int STATE_ERROR = 4;
 
     private static final String LOG_TAG = PlayerController.class.getName();
+    private static final boolean D = BuildConfig.DEBUG;
 
     protected RequestQueue mRequestQueue;
     protected ImageLoader mImageLoader;
@@ -118,7 +120,7 @@ public class PlayerController implements Parcelable, RequestListener {
             assert mView != null;
             if (mTrackInfo == null) {
                 Integer errCode = result.getInt(Constants.Result.TRACKINFO_ERROR);
-                Log.e(LOG_TAG, "Track info error " + String.valueOf(errCode));
+                if (D) Log.e(LOG_TAG, "Track info error " + String.valueOf(errCode));
                 mRequestQueue.cancelAll(Requests.PLAY_OPTIONS);
                 if (mState == STATE_ERROR)
                     return;
@@ -137,7 +139,7 @@ public class PlayerController implements Parcelable, RequestListener {
             mPlaybackAllowed = result.getBoolean(Constants.Result.ACL_ALLOWED, false);
             Integer errCode = result.getInt(Constants.Result.ACL_ERRCODE, 0);
             if (!mPlaybackAllowed) {
-                Log.w(LOG_TAG, "Playback not allowed");
+                if (D) Log.w(LOG_TAG, "Playback not allowed");
                 mRequestQueue.cancelAll(Requests.TRACK_INFO);
                 if (mState == STATE_ERROR)
                     return;
@@ -168,13 +170,13 @@ public class PlayerController implements Parcelable, RequestListener {
 
     @Override
     public void onVolleyError(VolleyError error) {
-        Log.e(LOG_TAG, error.toString());
+        if (D) Log.e(LOG_TAG, error.toString());
         mView.showError(mContext.getResources().getString(R.string.failed_to_load_data));
     }
 
     @Override
     public void onRequestError(int tag, RequestError error) {
-        Log.e(LOG_TAG, error.toString());
+        if (D) Log.e(LOG_TAG, error.toString());
         mView.showError(mContext.getResources().getString(R.string.failed_to_load_data));
     }
 
@@ -283,7 +285,7 @@ public class PlayerController implements Parcelable, RequestListener {
      */
     public void onPause() {
         mVideoOffset = mView.getCurrentOffset();
-        Log.d(LOG_TAG, "onPause: offset = " + String.valueOf(mVideoOffset));
+        if (D) Log.d(LOG_TAG, "onPause: offset = " + String.valueOf(mVideoOffset));
         mView.stopPlayback();
         mView.setStreamUri(null);
     }
@@ -379,7 +381,7 @@ public class PlayerController implements Parcelable, RequestListener {
     public void requestStream() {
         if (!mAttached)
             throw new NullPointerException("Not attached");
-        Log.d(LOG_TAG, "Got Uri: " + String.valueOf(mVideoUri));
+        if (D) Log.d(LOG_TAG, "Got Uri: " + String.valueOf(mVideoUri));
         mVideo = null;
         if (mVideoUri != null) {
             parseVideoUri();
@@ -406,7 +408,7 @@ public class PlayerController implements Parcelable, RequestListener {
             String signature = mVideoUri.getQueryParameter("p");
             mVideo = new Video(videoId, signature);
         } else {
-            Log.d(LOG_TAG, "Uncaught url from intent-filter, starting browser.");
+            if (D) Log.d(LOG_TAG, "Uncaught url from intent-filter, starting browser.");
             String packageName = "com.android.browser";
             String className = "com.android.browser.BrowserActivity";
             Intent internetIntent = new Intent(Intent.ACTION_VIEW);
@@ -424,7 +426,7 @@ public class PlayerController implements Parcelable, RequestListener {
      * от состояния контроллера на момент сохранения
      */
     private void restoreFromState() {
-        Log.d(LOG_TAG, "Restoring from state " + String.valueOf(mState));
+        if (D) Log.d(LOG_TAG, "Restoring from state " + String.valueOf(mState));
         switch(mState) {
             case STATE_STARTING:
                 // на момент сохранения запросы еще не были обработаны, запускаем их заново
@@ -468,7 +470,7 @@ public class PlayerController implements Parcelable, RequestListener {
         if (mPlayRequestStage == 3) {
             startPlayback(true);
         } else
-            Log.d(LOG_TAG, "Not ready yet");
+            if (D) Log.d(LOG_TAG, "Not ready yet");
     }
 
     /**
@@ -493,7 +495,7 @@ public class PlayerController implements Parcelable, RequestListener {
      * @param state STATE_NEW, STATE_STARTING, STATE_PLAYING, STATE_COMPLETED
      */
     private void setState(int state) {
-        Log.d(LOG_TAG, String.format("Changing state: %d to %d", mState, state));
+        if (D) Log.d(LOG_TAG, String.format("Changing state: %d to %d", mState, state));
         mState = state;
     }
 

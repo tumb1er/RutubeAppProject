@@ -10,6 +10,7 @@ import android.view.Display;
 import android.view.Window;
 import android.view.WindowManager;
 
+import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubePlayer.R;
 
 
@@ -21,6 +22,7 @@ import ru.rutube.RutubePlayer.R;
 public class PlayerActivity extends FragmentActivity implements PlayerFragment.PlayerStateListener,
 EndscreenFragment.ReplayListener {
     private final String LOG_TAG = getClass().getName();
+    private static final boolean D = BuildConfig.DEBUG;
     private PlayerFragment mPlayerFragment;
     private EndscreenFragment mEndscreenFragment;
 
@@ -50,13 +52,13 @@ EndscreenFragment.ReplayListener {
 
     @Override
     public void onComplete() {
-        Log.d(LOG_TAG, "onComplete");
+        if (D) Log.d(LOG_TAG, "onComplete");
         toggleEndscreen(true);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.d(LOG_TAG, "onCreate");
+        if (D) Log.d(LOG_TAG, "onCreate");
         super.onCreate(savedInstanceState);
         initWindow();
         // Запрашиваем горизонтальное расположение экрана, если он перевернется,
