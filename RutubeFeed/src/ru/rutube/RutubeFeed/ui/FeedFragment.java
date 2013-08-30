@@ -42,6 +42,18 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
     private Uri feedUri;
     private ListView sgView;
     private SearchView mSearchView;
+    private Menu mMenu;
+    private Animation mRotateAnimation;
+
+    private View.OnClickListener mRefreshClickListener = new View.OnClickListener() {
+        // Обработчик клика по ImageView для кнопки "обновить"
+        @Override
+        public void onClick(View view) {
+            Log.d(LOG_TAG, "IV onClick");
+            refreshFeed();
+        }
+    };
+
 
     public ListAdapter getListAdapter() {
         return sgView.getAdapter();
@@ -60,6 +72,8 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
+
+        mMenu = menu;
         inflater.inflate(R.menu.feed_menu, menu);
         mRefreshItem = menu.findItem(R.id.menu_refresh);
         MenuItem searchItem = menu.findItem(R.id.menu_search);
@@ -80,10 +94,7 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.d(LOG_TAG, "onOptionsItemSelected");
         int id = item.getItemId();
-        if(id == R.id.menu_refresh){
-                refreshFeed();
-                return true;
-        }
+        // Клик по Refresh работает с ImageView.onClick
         if (id == R.id.menu_search) {
             Log.d(LOG_TAG, "Search btn!");
             return false;
@@ -160,6 +171,15 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
     public void onPrepareOptionsMenu(Menu menu) {
         Log.d(LOG_TAG, "onPrepareOptionsMenu");
         mRefreshItem = menu.findItem(R.id.menu_refresh);
+
+        mRotateAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate_icon);
+        assert mRotateAnimation != null;
+        mRotateAnimation.setRepeatCount(Animation.INFINITE);
+
+        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        ImageView iv = (ImageView) inflater.inflate(R.layout.refresh_btn, null);
+        iv.setOnClickListener(mRefreshClickListener);
+        MenuItemCompat.setActionView(mRefreshItem, iv);
         super.onPrepareOptionsMenu(menu);
     }
 
@@ -178,23 +198,18 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
         Activity activity = getActivity();
         if (activity == null)
             return;
-        LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        ImageView iv = (ImageView) inflater.inflate(R.layout.refresh_btn, null);
-        assert iv != null;
-        Animation rotation = AnimationUtils.loadAnimation(activity, R.anim.rotate_icon);
-        assert rotation != null;
-        rotation.setRepeatCount(Animation.INFINITE);
-        iv.startAnimation(rotation);
-        MenuItemCompat.setActionView(mRefreshItem, iv);
+        MenuItemCompat.getActionView(mRefreshItem).startAnimation(mRotateAnimation);
     }
 
     public void doneRefreshing() {
         if (mRefreshItem == null)
             return;
-        View actionView = MenuItemCompat.getActionView(mRefreshItem);
-        if (actionView != null)
-            actionView.clearAnimation();
-        MenuItemCompat.setActionView(mRefreshItem, null);
+        MenuItemCompat.getActionView(mRefreshItem).clearAnimation();
+//        if (actionView != null)
+//            actionView.clearAnimation();
+//        MenuItemCompat.setActionView(mRefreshItem, null);
+//        //mMenu.clear();
+        //getActivity().onCreateOptionsMenu(mMenu);
     }
 
     @Override
