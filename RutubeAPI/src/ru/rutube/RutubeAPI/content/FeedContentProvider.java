@@ -17,6 +17,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
+import ru.rutube.RutubeAPI.BuildConfig;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Сергей
@@ -38,6 +40,7 @@ public class FeedContentProvider extends ContentProvider {
     private static final int SEARCH_QUERY = 9;
     private static final int SEARCH_QUERY_ITEM = 10;
     private static final String LOG_TAG = FeedContentProvider.class.getName();
+    private static final boolean D = BuildConfig.DEBUG;
 
     public static final String AUTHORITY = FeedContentProvider.class.getName();
 
@@ -105,7 +108,7 @@ public class FeedContentProvider extends ContentProvider {
                 queryBuilder.setTables(FeedContract.SearchResults.CONTENT_PATH);
                 List<String> pathSegments = uri.getPathSegments();
                 assert pathSegments != null;
-                Log.d(LOG_TAG, String.valueOf(pathSegments));
+                if (D) Log.d(LOG_TAG, String.valueOf(pathSegments));
                 // путь выглядит так: /search_results/1
                 // соответственно, нужен 2 сегмент
                 String queryId = pathSegments.get(1);
@@ -137,11 +140,11 @@ public class FeedContentProvider extends ContentProvider {
             else
                 sortOrder = FeedContract.FeedColumns.CREATED + " DESC";
         }
-        Log.d(LOG_TAG, "ORDER BY: " + sortOrder);
+        if (D) Log.d(LOG_TAG, "ORDER BY: " + sortOrder);
         Cursor cursor = queryBuilder.query(db, projection, selection,
                 selectionArgs, null, null, sortOrder);
         // Make sure that potential listeners are getting notified
-        Log.d(LOG_TAG, "context: " + getContext().getContentResolver());
+        if (D) Log.d(LOG_TAG, "context: " + getContext().getContentResolver());
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
 
         return cursor;
@@ -168,9 +171,9 @@ public class FeedContentProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues contentValues) {
-        Log.d(LOG_TAG, "Insert uri: " + uri.toString());
+        if (D) Log.d(LOG_TAG, "Insert uri: " + uri.toString());
         int uriType = sUriMatcher.match(uri);
-        Log.d(LOG_TAG, "Type: " + String.valueOf(uriType));
+        if (D) Log.d(LOG_TAG, "Type: " + String.valueOf(uriType));
         SQLiteDatabase sqlDB = dbHelper.getWritableDatabase();
         long rowId;
         switch (uriType) {
@@ -218,10 +221,10 @@ public class FeedContentProvider extends ContentProvider {
 
     @Override
     public int bulkInsert(Uri uri, @NotNull ContentValues[] values) {
-        Log.d(LOG_TAG, "start bulk insert");
+        if (D) Log.d(LOG_TAG, "start bulk insert");
         int numInserted = 0;
         if (values.length == 0) {
-            Log.d(LOG_TAG, "empty bulk insert");
+            if (D) Log.d(LOG_TAG, "empty bulk insert");
             return 0;
         }
         String table;
@@ -262,7 +265,7 @@ public class FeedContentProvider extends ContentProvider {
             sqlDB.endTransaction();
         }
         //getContext().getContentResolver().notifyChange(uri, null);
-        Log.d(LOG_TAG, String.format("end bulk insert: %d of %d inserted", numInserted, values.length));
+        if (D) Log.d(LOG_TAG, String.format("end bulk insert: %d of %d inserted", numInserted, values.length));
         return numInserted;
     }
 
@@ -397,7 +400,7 @@ public class FeedContentProvider extends ContentProvider {
         }
 
         public void onCreate(SQLiteDatabase db) {
-            Log.d(LOG_TAG, "Creating database");
+            if (D) Log.d(LOG_TAG, "Creating database");
             db.execSQL(SQL_CREATE_VIDEO_EDITORS);
             db.execSQL(SQL_CREATE_VIDEO_MY_VIDEO);
             db.execSQL(SQL_CREATE_VIDEO_SUBSCRIPTION);

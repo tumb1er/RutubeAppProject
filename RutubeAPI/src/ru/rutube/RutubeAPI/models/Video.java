@@ -17,6 +17,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.R;
 import ru.rutube.RutubeAPI.RutubeAPI;
 import ru.rutube.RutubeAPI.requests.AuthJsonObjectRequest;
@@ -30,6 +31,7 @@ public class Video {
     public final static SimpleDateFormat dtf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
     private static final String LOG_TAG = Video.class.getName();
+    private static final boolean D = BuildConfig.DEBUG;
     private static final String JSON_CREATED = "created_ts";
     private static final String JSON_AUTHOR = "author";
     private static final String JSON_TITLE = "title";
@@ -88,7 +90,7 @@ public class Video {
         String description = data.getString(JSON_DESCIPTION);
         Uri thumbnailUri = Uri.parse(data.getString(JSON_THUMBNAIL_URL));
         String videoId = data.getString(JSON_VIDEO_ID);
-        Log.d(FeedItem.class.getName(), "Created item: " + videoId + " " + String.valueOf(created));
+        if (D) Log.d(LOG_TAG, "Created item: " + videoId + " " + String.valueOf(created));
         Uri videoUri = Uri.parse(data.getString(JSON_VIDEO_URL));
         return new Video(videoId, videoUri.getQueryParameter(URI_SIGNATURE), title, description,
                 created, thumbnailUri, author);
@@ -165,7 +167,7 @@ public class Video {
     }
 
     protected TrackInfo parseTrackInfo(JSONObject data) throws JSONException {
-        Log.d(LOG_TAG, "Result: " + data.toString());
+        if (D) Log.d(LOG_TAG, "Result: " + data.toString());
         return TrackInfo.fromJSON(data);
     }
 
@@ -178,7 +180,7 @@ public class Video {
                 null, getTrackInfoListener(listener), getErrorListener(Requests.TRACK_INFO, listener));
         request.setShouldCache(true);
         request.setTag(Requests.TRACK_INFO);
-        Log.d(LOG_TAG, "Trackinfo URL: " + trackInfoUri);
+        if (D) Log.d(LOG_TAG, "Trackinfo URL: " + trackInfoUri);
         return request;
     }
 
@@ -186,7 +188,7 @@ public class Video {
         return new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d(LOG_TAG, "onErrorResponse");
+                if (D) Log.d(LOG_TAG, "onErrorResponse");
                 try {
                     String responseBody = new String( error.networkResponse.data, "utf-8" );
                     JSONObject response = new JSONObject( responseBody );
@@ -215,20 +217,20 @@ public class Video {
                 User.loadToken(context));
         request.setShouldCache(true);
         request.setTag(Requests.PLAY_OPTIONS);
-        Log.d(LOG_TAG, "Play Options URL: " + uri.toString());
+        if (D) Log.d(LOG_TAG, "Play Options URL: " + uri.toString());
         return request;
     }
 
     public JsonObjectRequest getYastRequest(Context context) {
         assert mTrackInfo != null;
         assert context != null;
-        Log.d(LOG_TAG, "Context: " + String.valueOf(context) + " TI: " + String.valueOf(mTrackInfo));
+        if (D) Log.d(LOG_TAG, "Context: " + String.valueOf(context) + " TI: " + String.valueOf(mTrackInfo));
         String yastUrl = String.format(context.getString(R.string.yastUri), mTrackInfo.getTrackId());
         Uri uri = Uri.parse(yastUrl).buildUpon()
                 .appendQueryParameter("referer", context.getString(R.string.referer))
                 .build();
         assert uri != null;
-        Log.d(LOG_TAG, "Yast request: " + uri.toString());
+        if (D) Log.d(LOG_TAG, "Yast request: " + uri.toString());
         JsonObjectRequest request = new JsonObjectRequest(uri.toString(), null, getYastListener(), null);
         request.setTag(Requests.YAST_VIEWED);
         return request;

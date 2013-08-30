@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
+import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.R;
 import ru.rutube.RutubeAPI.models.FeedItem;
 
@@ -23,7 +24,8 @@ import java.util.HashMap;
  */
 public class ContentMatcher {
     private static final String PARAM_QUERY = "query";
-    private final String LOG_TAG = getClass().getName();
+    private static final String LOG_TAG = ContentMatcher.class.getName();
+    private static final boolean D = BuildConfig.DEBUG;
     private HashMap<String, Uri> uriMap = null;
     private static ContentMatcher instance;
 
@@ -42,34 +44,34 @@ public class ContentMatcher {
     }
 
     public Uri getContentUri(Uri rutube_uri) {
-        Log.d(LOG_TAG, "Matching " + rutube_uri.toString());
+        if (D) Log.d(LOG_TAG, "Matching " + rutube_uri.toString());
         String path = rutube_uri.getPath();
         assert path != null;
         if (!path.endsWith("/"))
             path += "/";
         if (!path.startsWith("/"))
             path = "/" + path;
-        Log.d(LOG_TAG, "Path: " + path);
+        if (D) Log.d(LOG_TAG, "Path: " + path);
         Uri result = uriMap.get(path);
-        Log.d(LOG_TAG, "Matched: " + String.valueOf(result));
+        if (D) Log.d(LOG_TAG, "Matched: " + String.valueOf(result));
         return result;
     }
 
     public Uri getSearchContentUri(Context context, Uri feedUri) {
-        Log.d(LOG_TAG, "Matching search: " + feedUri.toString());
+        if (D) Log.d(LOG_TAG, "Matching search: " + feedUri.toString());
         String path = feedUri.getPath();
         assert path != null;
         if (!path.startsWith("/"))
             path = "/" + path;
         String searchPath = "/" + context.getString(R.string.search_uri);
         if (!path.startsWith(searchPath)) {
-            Log.d(LOG_TAG, "Path not ok");
+            if (D) Log.d(LOG_TAG, "Path not ok");
             return null;
         }
 
         String query = feedUri.getQueryParameter(PARAM_QUERY);
         if (query == null){
-            Log.d(LOG_TAG, "Missing query");
+            if (D) Log.d(LOG_TAG, "Missing query");
             return null;
         }
 
@@ -94,12 +96,12 @@ public class ContentMatcher {
         } else {
             c.close();
             Uri inserted = contentResolver.insert(FeedContract.SearchQuery.CONTENT_URI, cv);
-            Log.d(LOG_TAG, "Inserted Search Query: " + inserted.toString());
+            if (D) Log.d(LOG_TAG, "Inserted Search Query: " + inserted.toString());
             query_id = Integer.parseInt(inserted.getLastPathSegment());
         }
         Uri result = FeedContract.SearchResults.CONTENT_URI.buildUpon().appendPath(
                 String.valueOf(query_id)).build();
-        Log.d(LOG_TAG, "Matched search uri: " + result.toString());
+        if (D) Log.d(LOG_TAG, "Matched search uri: " + result.toString());
         return result;
     }
 

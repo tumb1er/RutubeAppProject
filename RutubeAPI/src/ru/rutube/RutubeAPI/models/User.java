@@ -13,6 +13,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.R;
 import ru.rutube.RutubeAPI.RutubeAPI;
 import ru.rutube.RutubeAPI.requests.RequestListener;
@@ -33,6 +34,8 @@ public class User {
     protected static final String USERNAME = "username";
     protected static final String PASSWORD = "password";
     private static final String LOG_TAG = User.class.getName();
+    private static final boolean D = BuildConfig.DEBUG;
+
     private String mToken = null;
 
     /**
@@ -137,7 +140,7 @@ public class User {
      * @throws JSONException
      */
     protected String parseToken(JSONObject data) throws JSONException {
-        Log.d(LOG_TAG, "Result: " + data.toString());
+        if (D) Log.d(LOG_TAG, "Result: " + data.toString());
         return data.getString(TOKEN);
     }
 

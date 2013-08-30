@@ -17,6 +17,7 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 
+import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.content.ContentMatcher;
 import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.requests.AuthJsonObjectRequest;
@@ -28,6 +29,7 @@ import ru.rutube.RutubeAPI.requests.Requests;
  */
 public class Feed<FeedItemT extends FeedItem> {
     private static final String PARAM_PAGE = "page";
+    private static final boolean D = BuildConfig.DEBUG;
     private final String LOG_TAG = getClass().getName();
     private final String mToken;
     private final Uri mFeedUri;
@@ -73,7 +75,7 @@ public class Feed<FeedItemT extends FeedItem> {
                 .appendQueryParameter(PARAM_PAGE, String.valueOf(page))
                 .build();
         assert uri!= null;
-        Log.d(LOG_TAG, "Fetching: "+ uri.toString());
+        if (D) Log.d(LOG_TAG, "Fetching: "+ uri.toString());
         JsonObjectRequest request = new AuthJsonObjectRequest(uri.toString(), null,
                 getFeedPageListener(context, requestListener),
                 getErrorListener(requestListener), mToken);
@@ -109,7 +111,7 @@ public class Feed<FeedItemT extends FeedItem> {
             ContentValues row = fillRow(item, offset + i);
             feedItems[i] = row;
         }
-        Log.d(LOG_TAG, "Inserting items: " + Arrays.toString(feedItems));
+        if (D) Log.d(LOG_TAG, "Inserting items: " + Arrays.toString(feedItems));
         try {
             context.getContentResolver().bulkInsert(mContentUri, feedItems);
         } catch (Exception e) {
@@ -117,7 +119,7 @@ public class Feed<FeedItemT extends FeedItem> {
             e.printStackTrace();
         }
         context.getContentResolver().notifyChange(mContentUri, null);
-        Log.d(LOG_TAG, "Operation finished");
+        if (D) Log.d(LOG_TAG, "Operation finished");
         return bundle;
 
     }
