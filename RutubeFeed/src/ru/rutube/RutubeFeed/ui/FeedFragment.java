@@ -37,10 +37,10 @@ import ru.rutube.RutubeFeed.ctrl.FeedController;
  */
 public class FeedFragment extends Fragment implements FeedController.FeedView, AdapterView.OnItemClickListener {
     private static final String LOG_TAG = FeedFragment.class.getName();
+    protected FeedController mController;
     private MenuItem mRefreshItem;
     private Uri feedUri;
     private ListView sgView;
-    protected FeedController mController;
     private SearchView mSearchView;
 
     public ListAdapter getListAdapter() {

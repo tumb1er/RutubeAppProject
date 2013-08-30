@@ -53,7 +53,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         TextView author;
         NetworkImageView thumbnail;
         NetworkImageView avatar;
-        ImageView commentBaloon;
+        ImageView commentBalloon;
     }
 
     public int getPerPage() {
@@ -67,6 +67,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     public interface LoadMoreListener
     {
         public void onLoadMore();
+        public void onItemRequested(int position);
     }
 
     private LoadMoreListener loadMoreListener = null;
@@ -93,7 +94,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         holder.description = (TextView)view.findViewById(R.id.descriptionTextView);
         holder.author = (TextView)view.findViewById(R.id.authorTextView);
         holder.created = (TextView)view.findViewById(R.id.createdTextView);
-        holder.commentBaloon = (ImageView)view.findViewById(R.id.commentBaloon);
+        holder.commentBalloon = (ImageView)view.findViewById(R.id.commentBaloon);
         holder.avatar = (NetworkImageView)view.findViewById(R.id.avatarImageView);
         holder.thumbnail = (NetworkImageView)view.findViewById(R.id.thumbnailImageView);
         holder.thumbnail.setDefaultImageResId(R.drawable.stub);
@@ -145,7 +146,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
             visibility = (avatarUri == null) ? View.GONE : View.VISIBLE;
             holder.avatar.setVisibility(visibility);
             holder.avatar.setImageUrl(avatarUri, imageLoader);
-            holder.commentBaloon.setVisibility(visibility);
+            holder.commentBalloon.setVisibility(visibility);
 
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
@@ -178,18 +179,23 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
 
     @Override
     public Object getItem(int position) {
+        processPosition(position);
+        return super.getItem(position);
+    }
+
+    private void processPosition(int position) {
         if (mHasMore && (position > getCount() - mPerPage / 2)) {
             Log.d(LOG_TAG, String.format("Load more: %d of %d", position, getCount()));
             loadMore();
+        } else {
+            if (loadMoreListener != null)
+                loadMoreListener.onItemRequested(position);
         }
-        return super.getItem(position);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        if (mHasMore && (position > getCount() - mPerPage / 2)) {
-            loadMore();
-        }
+        processPosition(position);
         return super.getView(position, convertView, parent);
     }
 

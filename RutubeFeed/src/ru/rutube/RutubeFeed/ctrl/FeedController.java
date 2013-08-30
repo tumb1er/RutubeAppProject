@@ -58,6 +58,7 @@ public class FeedController implements Parcelable {
     private int mLoading = 0;
     private boolean mHasNext = true;
     private boolean mAttached = false;
+    private int mUpdatedPage = 0;
 
 
     public FeedController(Uri feedUri) {
@@ -174,6 +175,15 @@ public class FeedController implements Parcelable {
             ListAdapter adapter = mView.getListAdapter();
             if (mHasNext)
                 loadPage((adapter.getCount() + mPerPage) / mPerPage);
+        }
+
+        @Override
+        public void onItemRequested(int position) {
+            int page = (position / mPerPage) + 1;
+            if (mLoading == 0 && mHasNext && page > mUpdatedPage) {
+                mUpdatedPage = page;
+                loadPage(page);
+            }
         }
     };
 
