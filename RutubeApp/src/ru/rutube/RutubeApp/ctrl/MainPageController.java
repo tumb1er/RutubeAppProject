@@ -14,6 +14,7 @@ import com.android.volley.toolbox.Volley;
 
 import java.util.HashMap;
 
+import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.HttpTransport;
 import ru.rutube.RutubeAPI.R;
 import ru.rutube.RutubeAPI.RutubeAPI;
@@ -29,6 +30,7 @@ public class MainPageController implements Parcelable, RequestListener {
     private static final String TAB_MY_VIDEO = "my_video";
     private static final String TAB_SUBSCRIPTIONS = "subscription";
     private static final String LOG_TAG = MainPageController.class.getName();
+    private static final boolean D = BuildConfig.DEBUG;
 
     private HashMap<String, Uri> feedUriMap;
     private RequestQueue mRequestQueue;
@@ -43,7 +45,7 @@ public class MainPageController implements Parcelable, RequestListener {
     @Override
     public void onVolleyError(VolleyError error) {
         String response = new String(error.networkResponse.data);
-        Log.e(LOG_TAG, "Volley Error" + response);
+        if (D) Log.e(LOG_TAG, "Volley Error" + response);
         if (response.contains("Unable to login with provided credentials") ||
                 response.contains("username") ||
                 response.contains("password"))
@@ -56,13 +58,13 @@ public class MainPageController implements Parcelable, RequestListener {
 
     @Override
     public void onRequestError(int tag, RequestError error) {
-        Log.e(LOG_TAG, "Request Error" + String.valueOf(error));
+        if (D) Log.e(LOG_TAG, "Request Error" + String.valueOf(error));
         mView.showError();
         loginCanceled();
     }
 
     public void loginCanceled() {
-        Log.d(LOG_TAG, "Login cancelled, switching to " + mSelectedTab);
+        if (D) Log.d(LOG_TAG, "Login cancelled, switching to " + mSelectedTab);
         mView.selectTab(mSelectedTab);
     }
 
@@ -140,7 +142,7 @@ public class MainPageController implements Parcelable, RequestListener {
         mView.addFeedTab(mContext.getResources().getString(ru.rutube.RutubeFeed.R.string.tab_my_video), TAB_MY_VIDEO);
         mView.addFeedTab(mContext.getResources().getString(ru.rutube.RutubeFeed.R.string.tab_subscriptions), TAB_SUBSCRIPTIONS);
         mTabsInited = true;
-        Log.d(LOG_TAG, "selecting tab" + mSelectedTab);
+        if (D) Log.d(LOG_TAG, "selecting tab" + mSelectedTab);
         mView.selectTab(mSelectedTab);
         mView.showFeedFragment(mSelectedTab, feedUriMap.get(mSelectedTab));
     }
@@ -148,7 +150,7 @@ public class MainPageController implements Parcelable, RequestListener {
 
     public void onTabSelected(String tag) {
         if (!mTabsInited) {
-            Log.d(LOG_TAG, "skip onTabSelected");
+            if (D) Log.d(LOG_TAG, "skip onTabSelected");
             return;
         }
         if (!tag.equals(TAB_EDITORS) && mUser.isAnonymous()) {
@@ -158,7 +160,7 @@ public class MainPageController implements Parcelable, RequestListener {
         }
         Uri feedUri = feedUriMap.get(tag);
         mSelectedTab = tag;
-        Log.d(LOG_TAG, "Show fragment " + tag);
+        if (D) Log.d(LOG_TAG, "Show fragment " + tag);
         mView.showFeedFragment(tag, feedUri);
     }
 
@@ -179,7 +181,7 @@ public class MainPageController implements Parcelable, RequestListener {
 
     public static MainPageController fromParcel(Parcel in) {
         String selectedTab = in.readString();
-        Log.d(LOG_TAG, "From parcel: " + selectedTab);
+        if (D) Log.d(LOG_TAG, "From parcel: " + selectedTab);
         return new MainPageController(selectedTab);
     }
 

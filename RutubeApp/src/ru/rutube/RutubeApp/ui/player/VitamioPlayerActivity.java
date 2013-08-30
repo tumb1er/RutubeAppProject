@@ -18,7 +18,6 @@ public class VitamioPlayerActivity extends PlayerActivity {
 
     @Override
     public void setContentView(int layoutResID) {
-        Log.d(getClass().getName(), "Vitamio!");
         super.setContentView(R.layout.player_activity);
     }
 }

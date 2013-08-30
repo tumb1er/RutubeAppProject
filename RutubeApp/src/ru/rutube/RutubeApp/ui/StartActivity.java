@@ -10,6 +10,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 
+import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubeApp.ctrl.MainPageController;
@@ -22,6 +23,7 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
     private static final String LOG_TAG = StartActivity.class.getName();
     private static final String CONTROLLER = "controller";
     private static final int LOGIN_REQUEST_CODE = 1;
+    private static final boolean D = BuildConfig.DEBUG;
 
     private MainPageController mController;
     private HashMap<String, ActionBar.Tab> mTabMap = new HashMap<String, ActionBar.Tab>();
@@ -150,12 +152,12 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(LOG_TAG, "onActivityResult");
+        if (D) Log.d(LOG_TAG, "onActivityResult");
         if (requestCode == LOGIN_REQUEST_CODE && resultCode == RESULT_OK) {
-            Log.d(LOG_TAG, "loginSuccessful");
+            if (D) Log.d(LOG_TAG, "loginSuccessful");
             mController.loginSuccessful();
         } else {
-            Log.d(LOG_TAG, "smth strange");
+            if (D) Log.d(LOG_TAG, "smth strange");
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
@@ -164,12 +166,12 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
      * Настраивает таб-навигацию
      */
     private void initTabs() {
-        Log.d(LOG_TAG, "initTabs");
+        if (D) Log.d(LOG_TAG, "initTabs");
         ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         mController.initTabs();
-        Log.d(LOG_TAG, "initTabs done");
+        if (D) Log.d(LOG_TAG, "initTabs done");
     }
 
     /**

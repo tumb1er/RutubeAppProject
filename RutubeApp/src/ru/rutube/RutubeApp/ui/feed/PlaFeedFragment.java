@@ -10,6 +10,7 @@ import android.widget.ListAdapter;
 import com.huewu.pla.lib.MultiColumnListView;
 import com.huewu.pla.lib.internal.PLA_AdapterView;
 
+import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeApp.R;
 
 /**
@@ -17,6 +18,7 @@ import ru.rutube.RutubeApp.R;
  */
 public class PlaFeedFragment extends ru.rutube.RutubeFeed.ui.FeedFragment {
     private static final String LOG_TAG = PlaFeedFragment.class.getName();
+    private static final boolean D = BuildConfig.DEBUG;
     private MultiColumnListView sgView;
 
     private PLA_AdapterView.OnItemClickListener onItemClickListener = new PLA_AdapterView.OnItemClickListener() {
@@ -29,7 +31,7 @@ public class PlaFeedFragment extends ru.rutube.RutubeFeed.ui.FeedFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
-        Log.d(LOG_TAG, "onCreateView");
+        if (D) Log.d(LOG_TAG, "onCreateView");
         View result = inflater.inflate(R.layout.pla_feed_fragment, container, false);
         assert result != null;
         sgView = (MultiColumnListView)result.findViewById(R.id.feed_item_list);

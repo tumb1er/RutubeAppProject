@@ -13,6 +13,7 @@ import android.widget.TextView;
 import io.vov.vitamio.LibsChecker;
 import io.vov.vitamio.MediaPlayer;
 import io.vov.vitamio.widget.VideoView;
+import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubePlayer.ui.PlayerFragment;
 
@@ -30,6 +31,7 @@ public class VitamioPlayerFragment extends PlayerFragment
         MediaPlayer.OnErrorListener {
 
     private static final String LOG_TAG = VitamioPlayerFragment.class.getName();
+    private static final boolean D = BuildConfig.DEBUG;
     protected ProgressBar mLoadProgressBar;
     protected TextView mEmptyTextView;
     protected VideoView mVideoView;
@@ -51,13 +53,13 @@ public class VitamioPlayerFragment extends PlayerFragment
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        Log.d(LOG_TAG, "onCompletion");
+        if (D) Log.d(LOG_TAG, "onCompletion");
         mController.onCompletion();
     }
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-        Log.d(LOG_TAG, "onPrepared");
+        if (D) Log.d(LOG_TAG, "onPrepared");
         mVideoView.pause();
         vitamioMediaController.setFileName(mVideoTitle);
         mController.onViewReady();
@@ -65,7 +67,7 @@ public class VitamioPlayerFragment extends PlayerFragment
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
-        Log.d(LOG_TAG, "onError");
+        if (D) Log.d(LOG_TAG, "onError");
         return false;
     }
 
@@ -80,20 +82,20 @@ public class VitamioPlayerFragment extends PlayerFragment
 
     @Override
     public void stopPlayback() {
-        Log.d(LOG_TAG, "stopPlayback");
+        if (D) Log.d(LOG_TAG, "stopPlayback");
         mVideoView.setVideoURI(null);
         mVideoView.stopPlayback();
     }
 
     @Override
     public void seekTo(int millis) {
-        Log.d(LOG_TAG, "Seek to: " + String.valueOf(millis));
+        if (D) Log.d(LOG_TAG, "Seek to: " + String.valueOf(millis));
         mVideoView.seekTo(millis);
     }
 
     @Override
     public void pauseVideo() {
-        Log.d(LOG_TAG, "pauseVideo");
+        if (D) Log.d(LOG_TAG, "pauseVideo");
         mVideoView.pause();
     }
 
