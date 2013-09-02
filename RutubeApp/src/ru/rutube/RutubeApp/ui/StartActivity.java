@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.Window;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.models.Constants;
@@ -38,6 +39,8 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
         else
             mController = new MainPageController();
         super.onCreate(savedInstanceState);
+        // Compat ActionBar needs this
+        supportRequestWindowFeature(Window.FEATURE_ACTION_MODE_OVERLAY);
         setContentView(R.layout.start_activity);
         mController.attach(this, this);
         initTabs();
