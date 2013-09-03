@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -63,7 +64,7 @@ public class Video {
         this(videoId, signature, null, null, null, null, null);
     }
 
-    protected Video(String videoId, String signature, String title, String description, Date created, Uri thumbnailUri, Author author){
+    protected Video(String videoId, String signature, String title, String description, Date created, Uri thumbnailUri, Author author) {
         this.mVideoId = videoId;
         this.mTitle = title;
         this.mDescription = description;
@@ -72,6 +73,7 @@ public class Video {
         this.mAuthor = author;
         this.mSignature = signature;
     }
+
     private static Date parseDate(String data) {
         try {
             return dtf.parse(data);
@@ -113,7 +115,7 @@ public class Video {
         };
     }
 
-    protected  Response.Listener<JSONObject> getPlayOptionsListener(final RequestListener requestListener) {
+    protected Response.Listener<JSONObject> getPlayOptionsListener(final RequestListener requestListener) {
         return new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -126,7 +128,7 @@ public class Video {
                     bundle.putInt(Constants.Result.ACL_ERRCODE, errCode);
                     bundle.putParcelable(Constants.Result.PLAY_THUMBNAIL, thumbnailUri);
                     requestListener.onResult(Requests.PLAY_OPTIONS, bundle);
-                }  catch (JSONException e) {
+                } catch (JSONException e) {
                     RequestListener.RequestError error = new RequestListener.RequestError(e.getMessage());
                     requestListener.onRequestError(Requests.PLAY_OPTIONS, error);
                 }
@@ -134,7 +136,7 @@ public class Video {
         };
     }
 
-    protected  Response.Listener<JSONObject> getYastListener() {
+    protected Response.Listener<JSONObject> getYastListener() {
         return new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -161,7 +163,7 @@ public class Video {
         return acl.optBoolean(JSON_ALLOWED, false);
     }
 
-    private Integer parseErrCode(JSONObject response) throws  JSONException {
+    private Integer parseErrCode(JSONObject response) throws JSONException {
         JSONObject acl = response.getJSONObject(JSON_ACL_ACCESS);
         return acl.optInt(JSON_ACL_ERRCODE, 0);
     }
@@ -190,15 +192,21 @@ public class Video {
             public void onErrorResponse(VolleyError error) {
                 if (D) Log.d(LOG_TAG, "onErrorResponse");
                 try {
-                    String responseBody = new String( error.networkResponse.data, "utf-8" );
-                    JSONObject response = new JSONObject( responseBody );
+                    NetworkResponse networkResponse = error.networkResponse;
                     Bundle bundle = new Bundle();
-                    Integer errCode = parseTrackInfoError(response);
-                    bundle.putInt(Constants.Result.TRACKINFO_ERROR, errCode);
+                    if (networkResponse != null) {
+                        String responseBody = new String(networkResponse.data, "utf-8");
+                        JSONObject response = new JSONObject(responseBody);
+                        Integer errCode = parseTrackInfoError(response);
+                        bundle.putInt(Constants.Result.TRACKINFO_ERROR, errCode);
+                    } else {
+                        requestListener.onVolleyError(error);
+                    }
+
                     requestListener.onResult(tag, bundle);
-                } catch ( JSONException ignored ) {
+                } catch (JSONException ignored) {
                     requestListener.onVolleyError(error);
-                } catch (UnsupportedEncodingException ignored){
+                } catch (UnsupportedEncodingException ignored) {
                     requestListener.onVolleyError(error);
                 }
             }
@@ -224,7 +232,8 @@ public class Video {
     public JsonObjectRequest getYastRequest(Context context) {
         assert mTrackInfo != null;
         assert context != null;
-        if (D) Log.d(LOG_TAG, "Context: " + String.valueOf(context) + " TI: " + String.valueOf(mTrackInfo));
+        if (D)
+            Log.d(LOG_TAG, "Context: " + String.valueOf(context) + " TI: " + String.valueOf(mTrackInfo));
         String yastUrl = String.format(context.getString(R.string.yastUri), mTrackInfo.getTrackId());
         Uri uri = Uri.parse(yastUrl).buildUpon()
                 .appendQueryParameter("referer", context.getString(R.string.referer))
