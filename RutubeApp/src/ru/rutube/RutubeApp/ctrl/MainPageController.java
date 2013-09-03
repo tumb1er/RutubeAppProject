@@ -7,6 +7,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.android.volley.NetworkResponse;
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpClientStack;
@@ -44,12 +45,16 @@ public class MainPageController implements Parcelable, RequestListener {
 
     @Override
     public void onVolleyError(VolleyError error) {
-        String response = new String(error.networkResponse.data);
-        if (D) Log.e(LOG_TAG, "Volley Error" + response);
-        if (response.contains("Unable to login with provided credentials") ||
-                response.contains("username") ||
-                response.contains("password"))
-            showLoginDialog();
+
+        NetworkResponse networkResponse = error.networkResponse;
+        if (networkResponse != null){
+            String response = new String(networkResponse.data);
+            if (D) Log.e(LOG_TAG, "Volley Error" + response);
+            if (response.contains("Unable to login with provided credentials") ||
+                    response.contains("username") ||
+                    response.contains("password"))
+                showLoginDialog();
+        }
         else {
             mView.showError();
             loginCanceled();
