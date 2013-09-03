@@ -68,7 +68,6 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
         String tag = (String)tab.getTag();
         mController.onTabSelected(tag);
         mFragmentTransaction = null;
-
     }
 
     @Override
@@ -189,13 +188,7 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
             // добавляем в кэш
             mFragmentMap.put(tag, fragment);
         }
-
-        if (mCurrentFragment != null){
-            if (mCurrentFragment.equals(fragment))
-                return;
-            ft.remove(mCurrentFragment);
-        }
-        ft.add(R.id.feed_fragment_container, fragment, tag);
+        ft.replace(R.id.feed_fragment_container, fragment);
         mCurrentFragment = fragment;
     }
     /**
