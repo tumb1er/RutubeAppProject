@@ -21,7 +21,7 @@ import java.util.List;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.HttpTransport;
-import ru.rutube.RutubeAPI.RutubeAPI;
+import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeAPI.models.TrackInfo;
 import ru.rutube.RutubeAPI.models.Video;
@@ -349,7 +349,7 @@ public class PlayerController implements Parcelable, RequestListener {
         mView = view;
         mRequestQueue = Volley.newRequestQueue(context,
                 new HttpClientStack(HttpTransport.getHttpClient()));
-        mImageLoader = new ImageLoader(mRequestQueue, RutubeAPI.getBitmapCache());
+        mImageLoader = new ImageLoader(mRequestQueue, RutubeApp.getBitmapCache());
         if (mThumbnailUri != null) {
             mView.setThumbnailUri(mThumbnailUri);
         }

@@ -15,7 +15,7 @@ import org.json.JSONObject;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.R;
-import ru.rutube.RutubeAPI.RutubeAPI;
+import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.requests.RequestListener;
 import ru.rutube.RutubeAPI.requests.Requests;
 
@@ -82,7 +82,7 @@ public class User {
      */
     public JsonObjectRequest getTokenRequest(String email, String password, Context context,
                                              RequestListener requestListener) {
-        String loginUri = RutubeAPI.getUrl(context, R.string.token_uri);
+        String loginUri = RutubeApp.getUrl(R.string.token_uri);
         JSONObject requestData = getTokenRequestData(email, password);
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, loginUri,
                 requestData, getTokenListener(requestListener),

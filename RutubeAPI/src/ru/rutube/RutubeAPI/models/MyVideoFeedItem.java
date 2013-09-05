@@ -12,7 +12,7 @@ import org.json.JSONObject;
 import java.util.Date;
 
 import ru.rutube.RutubeAPI.R;
-import ru.rutube.RutubeAPI.RutubeAPI;
+import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.content.FeedContract;
 
 /**
@@ -60,11 +60,11 @@ public class MyVideoFeedItem extends FeedItem {
     public Uri getVideoUri(Context context) {
         String url;
         if (mSignature == null){
-            url = String.format(RutubeAPI.getUrl(context, R.string.video_page_uri),
+            url = String.format(RutubeApp.getUrl(R.string.video_page_uri),
                 getVideoId());
             return Uri.parse(url);
         } else {
-            url = String.format(RutubeAPI.getUrl(context, R.string.video_private_uri),
+            url = String.format(RutubeApp.getUrl(R.string.video_private_uri),
                     getVideoId());
             return Uri.parse(url).buildUpon().appendQueryParameter(URI_SIGNATURE, mSignature).build();
         }

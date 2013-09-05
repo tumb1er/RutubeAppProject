@@ -20,7 +20,7 @@ import java.util.Date;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.R;
-import ru.rutube.RutubeAPI.RutubeAPI;
+import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.requests.AuthJsonObjectRequest;
 import ru.rutube.RutubeAPI.requests.RequestListener;
 import ru.rutube.RutubeAPI.requests.Requests;
@@ -175,7 +175,7 @@ public class Video {
 
     public JsonObjectRequest getTrackInfoRequest(Context context, RequestListener listener) {
         String trackInfoPath = String.format(context.getString(R.string.trackinfo_uri), mVideoId);
-        String trackInfoUri = RutubeAPI.getUrl(context, trackInfoPath);
+        String trackInfoUri = RutubeApp.getUrl(trackInfoPath);
         if (mSignature != null)
             trackInfoUri += String.format("?p=%s", mSignature);
         JsonObjectRequest request = new JsonObjectRequest(trackInfoUri,
@@ -215,7 +215,7 @@ public class Video {
 
     public JsonObjectRequest getPlayOptionsRequest(Context context, RequestListener listener) {
         String playOptionsPath = String.format(context.getString(R.string.playoptions_uri), mVideoId);
-        String playOptionsUrl = RutubeAPI.getUrl(context, playOptionsPath);
+        String playOptionsUrl = RutubeApp.getUrl(playOptionsPath);
         Uri uri = Uri.parse(playOptionsUrl).buildUpon()
                 .appendQueryParameter("referer", context.getString(R.string.referer))
                 .build();

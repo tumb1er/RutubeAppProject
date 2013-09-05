@@ -10,7 +10,7 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import ru.rutube.RutubeAPI.R;
-import ru.rutube.RutubeAPI.RutubeAPI;
+import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeFeed.content.SearchSuggestProvider;
 
 /**
@@ -61,7 +61,7 @@ public class SearchFeedActivity extends FeedActivity {
 
 
     private Uri getSearchFeedUri(String query) {
-        return Uri.parse(RutubeAPI.getUrl(this, R.string.search_uri)).buildUpon()
+        return Uri.parse(RutubeApp.getUrl(R.string.search_uri)).buildUpon()
                 .appendQueryParameter(PARAM_QUERY, query).build();
     }
 }

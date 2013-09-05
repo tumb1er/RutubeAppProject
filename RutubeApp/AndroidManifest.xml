@@ -81,7 +81,7 @@
             <!--</intent-filter>-->
         <!--</activity>-->
 
-        <!--<service android:name="ru.rutube.RutubeAPI.requests.RutubeRestService"/>-->
+        <!--<service android:name="ru.rutube.RutubeApp.requests.RutubeRestService"/>-->
         <provider
             android:name="ru.rutube.RutubeAPI.content.FeedContentProvider"
             android:authorities="ru.rutube.RutubeAPI.content.FeedContentProvider"

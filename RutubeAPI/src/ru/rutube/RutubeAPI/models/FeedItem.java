@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,7 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import ru.rutube.RutubeAPI.R;
-import ru.rutube.RutubeAPI.RutubeAPI;
+import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.content.FeedContract;
 
 /**
@@ -180,7 +180,7 @@ public class FeedItem implements Parcelable {
     }
 
     public Uri getVideoUri(Context context) {
-        String url = String.format(RutubeAPI.getUrl(context, R.string.video_page_uri), videoId);
+        String url = String.format(RutubeApp.getUrl(R.string.video_page_uri), videoId);
         return Uri.parse(url);
     }
 

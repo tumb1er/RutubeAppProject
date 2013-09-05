@@ -25,6 +25,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import ru.rutube.RutubeAPI.BuildConfig;
+import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeFeed.R;
 import ru.rutube.RutubeFeed.ctrl.FeedController;
@@ -193,6 +194,8 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
     }
 
     public void setRefreshing() {
+        boolean isLoading = RutubeApp.isLoadingFeed();
+        RutubeApp.startLoading();
         if (mRefreshItem == null) {
             if (D) Log.d(LOG_TAG, "empty refresh item");
             return;
@@ -200,10 +203,12 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
         Activity activity = getActivity();
         if (activity == null)
             return;
-        MenuItemCompat.getActionView(mRefreshItem).startAnimation(mRotateAnimation);
+        if (!isLoading)
+            MenuItemCompat.getActionView(mRefreshItem).startAnimation(mRotateAnimation);
     }
 
     public void doneRefreshing() {
+        RutubeApp.stopLoading();
         if (mRefreshItem == null)
             return;
         MenuItemCompat.getActionView(mRefreshItem).clearAnimation();

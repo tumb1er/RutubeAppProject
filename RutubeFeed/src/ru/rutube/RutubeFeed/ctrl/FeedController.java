@@ -115,6 +115,7 @@ public class FeedController implements Parcelable {
      * Отсоединяется от останавливаемой активити
      */
     public void detach() {
+        mView.doneRefreshing();
         mRequestQueue.stop();
         mRequestQueue = null;
         mContext = null;

@@ -18,7 +18,7 @@ import com.android.volley.toolbox.Volley;
 import org.jetbrains.annotations.NotNull;
 
 import ru.rutube.RutubeAPI.BuildConfig;
-import ru.rutube.RutubeAPI.RutubeAPI;
+import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeFeed.R;
 
@@ -176,7 +176,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     }
 
     protected void initImageLoader(Context context) {
-        imageLoader = new ImageLoader(Volley.newRequestQueue(context), RutubeAPI.getBitmapCache());
+        imageLoader = new ImageLoader(Volley.newRequestQueue(context), RutubeApp.getBitmapCache());
     }
 
     @Override

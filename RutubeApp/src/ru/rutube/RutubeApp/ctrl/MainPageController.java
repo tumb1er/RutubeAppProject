@@ -18,7 +18,7 @@ import java.util.HashMap;
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.HttpTransport;
 import ru.rutube.RutubeAPI.R;
-import ru.rutube.RutubeAPI.RutubeAPI;
+import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeAPI.models.User;
 import ru.rutube.RutubeAPI.requests.RequestListener;
@@ -127,9 +127,9 @@ public class MainPageController implements Parcelable, RequestListener {
 
     private void initFeedUriMap() {
         feedUriMap = new HashMap<String, Uri>();
-        feedUriMap.put(TAB_EDITORS, Uri.parse(RutubeAPI.getUrl(mContext, R.string.editors_uri)));
-        feedUriMap.put(TAB_MY_VIDEO, Uri.parse(RutubeAPI.getUrl(mContext, R.string.my_video_uri)));
-        feedUriMap.put(TAB_SUBSCRIPTIONS, Uri.parse(RutubeAPI.getUrl(mContext, R.string.subscription_uri)));
+        feedUriMap.put(TAB_EDITORS, Uri.parse(RutubeApp.getUrl(R.string.editors_uri)));
+        feedUriMap.put(TAB_MY_VIDEO, Uri.parse(RutubeApp.getUrl(R.string.my_video_uri)));
+        feedUriMap.put(TAB_SUBSCRIPTIONS, Uri.parse(RutubeApp.getUrl(R.string.subscription_uri)));
     }
 
     public  void detach() {
