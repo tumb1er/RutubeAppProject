@@ -23,7 +23,6 @@ public class FeedActivity extends ActionBarActivity {
     private final String LOG_TAG = getClass().getName();
     private static final boolean D = BuildConfig.DEBUG;
     protected Uri feedUri;
-    protected static final int R_FEED_MENU = R.menu.feed_menu;
 
     public void onCreate(Bundle savedInstanceState) {
         if (savedInstanceState == null)
@@ -41,12 +40,6 @@ public class FeedActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.feed_activity);
         if (D) Log.d(LOG_TAG, "content view set.");
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R_FEED_MENU, menu);
-        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
