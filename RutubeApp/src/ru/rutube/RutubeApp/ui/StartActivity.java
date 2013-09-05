@@ -30,7 +30,20 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
     private HashMap<String, ActionBar.Tab> mTabMap = new HashMap<String, ActionBar.Tab>();
     private HashMap<String, Fragment> mFragmentMap = new HashMap<String, Fragment>();
     private FragmentTransaction mFragmentTransaction;
-    private Fragment mCurrentFragment;
+
+    @Override
+    public boolean supportRequestWindowFeature(int featureId) {
+        // где-то во внутренностях ActionBarActivity кроется хитрый случай, когда
+        // данный метод вызывается после выполнения setContentView, из-за чего
+        // возникает исключение.
+        try {
+            return super.supportRequestWindowFeature(featureId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Issue #36 exception raised");
+            return false;
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,7 +66,6 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
         super.onAttachFragment(fragment);
         if (mFragmentMap.get(fragment.getTag()) == null)
             mFragmentMap.put(fragment.getTag(), fragment);
-        mCurrentFragment = fragment;
     }
 
     /**
@@ -98,10 +110,15 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
 
     @Override
     public void showError() {
+        String message = getString(ru.rutube.RutubePlayer.R.string.failed_to_load_data);
+        showError(message);
+    }
+
+    private void showError(String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.
                 setTitle(android.R.string.dialog_alert_title).
-                setMessage(getString(ru.rutube.RutubePlayer.R.string.failed_to_load_data)).
+                setMessage(message).
                 create().
                 show();
     }
@@ -189,7 +206,6 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
             mFragmentMap.put(tag, fragment);
         }
         ft.replace(R.id.feed_fragment_container, fragment);
-        mCurrentFragment = fragment;
     }
     /**
      * Конструирует новый фрагмент с лентой
