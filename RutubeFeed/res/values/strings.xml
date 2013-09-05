@@ -14,4 +14,5 @@
     <string name="tab_subscriptions">Subscriptions</string>
     <string name="empty"/>
     <string name="no_data">Feed is empty</string>
+    <string name="logout">Logout</string>
 </resources>

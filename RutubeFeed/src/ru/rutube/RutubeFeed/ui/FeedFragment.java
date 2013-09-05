@@ -27,6 +27,7 @@ import android.widget.ListView;
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.models.Constants;
+import ru.rutube.RutubeAPI.models.User;
 import ru.rutube.RutubeFeed.R;
 import ru.rutube.RutubeFeed.ctrl.FeedController;
 

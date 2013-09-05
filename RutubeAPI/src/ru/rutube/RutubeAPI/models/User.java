@@ -190,4 +190,9 @@ public class User {
         }
         return requestData;
     }
+
+    public void deleteToken(Context context) {
+        mToken = null;
+        User.saveToken(context, null);
+    }
 }

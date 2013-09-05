@@ -16,4 +16,5 @@
     <string name="registration">Регистрация</string>
     <string name="remind_password">Забыл пароль</string>
     <string name="nothing_found">Ничего не найдено</string>
+    <string name="logouted">Вы вышли из аккаунта.</string>
 </resources>

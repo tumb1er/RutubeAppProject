@@ -9,10 +9,13 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.Window;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.models.Constants;
+import ru.rutube.RutubeAPI.models.User;
 import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubeApp.ctrl.MainPageController;
 import ru.rutube.RutubeApp.ui.dialog.LoginDialogFragment;
@@ -43,6 +46,32 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
             showError("Issue #36 exception raised");
             return false;
         }
+    }
+
+    @Override
+    public boolean onCreatePanelMenu(int featureId, Menu menu) {
+        boolean result = super.onCreatePanelMenu(featureId, menu);
+        User user = User.load(this);
+        MenuItem logoutItem = menu.findItem(ru.rutube.RutubeFeed.R.id.menu_logout);
+        assert logoutItem != null;
+        logoutItem.setVisible(!user.isAnonymous());
+        return result;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == ru.rutube.RutubeFeed.R.id.menu_logout) {
+            logout();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void logout() {
+        if (D) Log.d(LOG_TAG, "Logging out");
+        mController.logout();
+        showError(getString(R.string.logouted));
     }
 
     @Override

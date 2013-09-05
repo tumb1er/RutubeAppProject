@@ -20,4 +20,5 @@
     <string name="registration">Registration</string>
     <string name="remind_password">Remind password</string>
     <string name="nothing_found">Nothing found</string>
+    <string name="logouted">Logout successful</string>
 </resources>

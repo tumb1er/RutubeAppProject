@@ -6,4 +6,5 @@
     <string name="action_search">Поиск</string>
     <string name="login">Авторизация</string>
     <string name="no_data">Лента пуста</string>
+    <string name="logout">Выйти</string>
 </resources>

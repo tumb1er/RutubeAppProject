@@ -73,6 +73,12 @@ public class MainPageController implements Parcelable, RequestListener {
         mView.selectTab(mSelectedTab);
     }
 
+    public void logout() {
+        mUser.deleteToken(mContext);
+        mSelectedTab = TAB_EDITORS;
+        mView.selectTab(mSelectedTab);
+    }
+
     public interface MainPageView {
         void addFeedTab(String name, String tag);
         void selectTab(String tag);
@@ -82,6 +88,7 @@ public class MainPageController implements Parcelable, RequestListener {
         void showLoginDialog();
 
         void showError();
+
     }
 
     private Context mContext = null;
