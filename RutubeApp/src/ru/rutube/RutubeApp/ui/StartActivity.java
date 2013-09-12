@@ -6,12 +6,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.Window;
+
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.models.Constants;
@@ -23,7 +24,7 @@ import ru.rutube.RutubeApp.ui.feed.PlaFeedFragment;
 
 import java.util.HashMap;
 
-public class StartActivity extends ActionBarActivity implements MainPageController.MainPageView, ActionBar.TabListener {
+public class StartActivity extends SherlockFragmentActivity implements MainPageController.MainPageView, ActionBar.TabListener {
     private static final String LOG_TAG = StartActivity.class.getName();
     private static final String CONTROLLER = "controller";
     private static final int LOGIN_REQUEST_CODE = 1;
@@ -33,20 +34,6 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
     private HashMap<String, ActionBar.Tab> mTabMap = new HashMap<String, ActionBar.Tab>();
     private HashMap<String, Fragment> mFragmentMap = new HashMap<String, Fragment>();
     private FragmentTransaction mFragmentTransaction;
-
-    @Override
-    public boolean supportRequestWindowFeature(int featureId) {
-        // где-то во внутренностях ActionBarActivity кроется хитрый случай, когда
-        // данный метод вызывается после выполнения setContentView, из-за чего
-        // возникает исключение.
-        try {
-            return super.supportRequestWindowFeature(featureId);
-        } catch (Exception e) {
-            e.printStackTrace();
-            showError("Issue #36 exception raised");
-            return false;
-        }
-    }
 
     @Override
     public boolean onCreatePanelMenu(int featureId, Menu menu) {
@@ -81,8 +68,6 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
         else
             mController = new MainPageController();
         super.onCreate(savedInstanceState);
-        // Compat ActionBar needs this
-        supportRequestWindowFeature(Window.FEATURE_ACTION_MODE_OVERLAY);
         setContentView(R.layout.start_activity);
         mController.attach(this, this);
         initTabs();

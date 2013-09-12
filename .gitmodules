@@ -7,3 +7,6 @@
 [submodule "RutubeApp/libs/VitamioBundle"]
 	path = RutubeApp/libs/VitamioBundle
 	url = ssh://git@github.com/rutube/VitamioBundle.git
+[submodule "libs/ActionBarSherlock"]
+	path = libs/ActionBarSherlock
+	url = ssh://git@github.com/rutube/ActionBarSherlock.git

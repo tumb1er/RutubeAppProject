@@ -2,10 +2,9 @@ package ru.rutube.RutubeFeed.ui;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.View;
+
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -19,7 +18,7 @@ import ru.rutube.RutubeFeed.R;
  * Time: 12:04
  * To change this template use File | Settings | File Templates.
  */
-public class FeedActivity extends ActionBarActivity {
+public class FeedActivity extends SherlockFragmentActivity {
     private final String LOG_TAG = getClass().getName();
     private static final boolean D = BuildConfig.DEBUG;
     protected Uri feedUri;
@@ -48,8 +47,4 @@ public class FeedActivity extends ActionBarActivity {
         outState.putParcelable("feedUri", feedUri);
     }
 
-    @Override
-    public boolean onPreparePanel(int featureId, View view, Menu menu) {
-        return super.onPreparePanel(featureId, view, menu);
-    }
 }

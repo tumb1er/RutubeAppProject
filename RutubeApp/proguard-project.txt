@@ -18,3 +18,17 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+#-optimizationpasses 5
+#-dontusemixedcaseclassnames
+#-dontskipnonpubliclibraryclasses
+#-dontskipnonpubliclibraryclassmembers
+-dontpreverify
+#-verbose
+#-libraryjars ../libs/android-support-v4.jar
+
+-optimizations !code/simplification/arithmetic
+-repackageclasses ''
+-allowaccessmodification
+
+-injars ../out/production/
+-ignorewarnings
