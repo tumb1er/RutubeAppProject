@@ -221,12 +221,12 @@ public class PlayerController implements Parcelable, RequestListener {
     // Реализация Parcelable
 
     public static PlayerController fromParcel(Parcel in) {
-        Uri feedUri = in.readParcelable(Uri.class.getClassLoader());
+        Uri videoUri = in.readParcelable(Uri.class.getClassLoader());
         TrackInfo trackInfo = in.readParcelable(TrackInfo.class.getClassLoader());
         Uri thumbnailUri = in.readParcelable(Uri.class.getClassLoader());
         int state = in.readInt();
         int videoOffset = in.readInt();
-        return new PlayerController(feedUri, thumbnailUri, state, videoOffset, trackInfo);
+        return new PlayerController(videoUri, thumbnailUri, state, videoOffset, trackInfo);
     }
 
     @Override
