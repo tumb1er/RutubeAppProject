@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 
 import ru.rutube.RutubeAPI.BuildConfig;
@@ -14,6 +15,7 @@ import ru.rutube.RutubeAPI.models.FeedItem;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -41,20 +43,53 @@ public class ContentMatcher {
         uriMap.put("/" + context.getString(R.string.editors_uri), FeedContract.Editors.CONTENT_URI);
         uriMap.put("/" + context.getString(R.string.my_video_uri), FeedContract.MyVideo.CONTENT_URI);
         uriMap.put("/" + context.getString(R.string.subscription_uri), FeedContract.Subscriptions.CONTENT_URI);
+        uriMap.put("/" + context.getString(R.string.authors_uri), FeedContract.AuthorVideo.CONTENT_URI);
     }
 
     public Uri getContentUri(Uri rutube_uri) {
         if (D) Log.d(LOG_TAG, "Matching " + rutube_uri.toString());
         String path = rutube_uri.getPath();
         assert path != null;
+        path = normalize(path);
+        if (D) Log.d(LOG_TAG, "Path: " + path);
+        Uri result = uriMap.get(path);
+        if (result == null) {
+            result = matchWithParams(rutube_uri);
+        }
+        if (D) Log.d(LOG_TAG, "Matched: " + String.valueOf(result));
+        return result;
+    }
+
+    public String normalize(String path) {
         if (!path.endsWith("/"))
             path += "/";
         if (!path.startsWith("/"))
             path = "/" + path;
-        if (D) Log.d(LOG_TAG, "Path: " + path);
+        if (!path.startsWith("/api/"))
+            path = "/api" + path;
+        return path;
+    }
+
+    /**
+     * Выбирает из урла последний сегмент, и если он числовой, осуществляет поиск соответствующего
+     * contentUri
+     * @param rutube_uri
+     * @return
+     */
+    private Uri matchWithParams(Uri rutube_uri) {
+
+        List<String> segments = rutube_uri.getPathSegments();
+        assert segments != null;
+        String last = segments.get(segments.size() - 1);
+        if (!last.matches("^[\\d]+")) return null;
+        int id = Integer.parseInt(last);
+        String path = TextUtils.join("/", segments).replace(last, "%d");
+        path = normalize(path);
+        if (D) Log.d(LOG_TAG, "Matching with params: " + path);
         Uri result = uriMap.get(path);
-        if (D) Log.d(LOG_TAG, "Matched: " + String.valueOf(result));
-        return result;
+        if (result == null)
+            return null;
+        return result.buildUpon().appendEncodedPath(last).build();
     }
 
     public Uri getSearchContentUri(Context context, Uri feedUri) {

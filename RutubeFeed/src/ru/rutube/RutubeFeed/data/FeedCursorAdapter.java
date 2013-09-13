@@ -113,6 +113,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
             int createdIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.CREATED);
             int authorNameIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.AUTHOR_NAME);
             int avatarIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.AVATAR_URI);
+            int authorIdIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.AUTHOR_ID);
 
             String title = cursor.getString(titleIndex);
             String thumbnailUri = cursor.getString(thumbnailUriIndex);
@@ -148,6 +149,13 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
             visibility = (avatarUri == null) ? View.GONE : View.VISIBLE;
             holder.avatar.setVisibility(visibility);
             holder.avatar.setImageUrl(avatarUri, imageLoader);
+            holder.avatar.setTag(cursor.getInt(authorIdIndex));
+            holder.avatar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.d(LOG_TAG, "Clicked" + String.valueOf(view.getTag()));
+                }
+            });
             holder.commentBalloon.setVisibility(visibility);
 
         } catch (IllegalArgumentException e) {

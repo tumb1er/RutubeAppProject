@@ -6,6 +6,7 @@
     <string name="editors_uri">api/video/editors/</string>
     <string name="my_video_uri">api/video/person/</string>
     <string name="subscription_uri">api/subscription/video/</string>
+    <string name="authors_uri" >api/video/person/%d/</string>
     <string name="video_uri">api/video/%s/</string>
     <string name="search_uri">api/search/video/</string>
     <string name="video_page_uri">video/%s/</string>

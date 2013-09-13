@@ -219,7 +219,7 @@ public class FeedFragment extends SherlockFragment implements FeedController.Fee
         setHasOptionsMenu(true);
         sgView = (ListView)inflater.inflate(R.layout.feed_fragment, container, false);
         assert sgView != null;
-        sgView.setOnItemClickListener(this);
+        // sgView.setOnItemClickListener(this);
         return sgView;
     }
 

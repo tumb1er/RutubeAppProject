@@ -41,6 +41,12 @@ public final class FeedContract {
         public static final String SIGNATURE = "signature";
     }
 
+    public static final class AuthorVideo implements BaseColumns, FeedColumns {
+        public static final String CONTENT_PATH = "author_video";
+        public static final Uri CONTENT_URI = Uri.withAppendedPath(FEED_URI, CONTENT_PATH);
+        public static final String CONTENT_TYPE = VND + FEED + "." + CONTENT_PATH;
+    }
+
     public static final class Subscriptions implements BaseColumns, FeedColumns {
         public static final String CONTENT_PATH = "subscriptions";
         public static final Uri CONTENT_URI = Uri.withAppendedPath(FEED_URI, CONTENT_PATH);

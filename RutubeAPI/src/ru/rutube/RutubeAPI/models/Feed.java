@@ -45,13 +45,19 @@ public class Feed<FeedItemT extends FeedItem> {
         String token = User.loadToken(context);
         Uri contentUri = getContentUri(feedUri, context);
         mToken = token;
-        mFeedUri = feedUri;
+        mFeedUri = normalizeFeedUri(feedUri, context);
         mContentUri = contentUri;
         try {
             mForeignKeyId = Integer.parseInt(contentUri.getLastPathSegment());
         } catch (NumberFormatException e) {
             mForeignKeyId = 0;
         }
+    }
+
+    private static Uri normalizeFeedUri(Uri feedUri, Context context) {
+        ContentMatcher cm = ContentMatcher.from(context);
+        String path = cm.normalize(feedUri.getEncodedPath());
+        return feedUri.buildUpon().encodedPath(path).build();
     }
 
     private static Uri getContentUri(Uri feedUri, Context context) {
@@ -136,6 +142,10 @@ public class Feed<FeedItemT extends FeedItem> {
             SearchFeedItem item = SearchFeedItem.fromJSON(data_item);
             item.setQueryId(mForeignKeyId);
             return item;
+        }
+        if (mContentUri.getEncodedPath().startsWith(
+                FeedContract.AuthorVideo.CONTENT_URI.getEncodedPath())) {
+            return (AuthorFeedItem) AuthorFeedItem.fromJSON(data_item);
         }
         return FeedItem.fromJSON(data_item);
     }

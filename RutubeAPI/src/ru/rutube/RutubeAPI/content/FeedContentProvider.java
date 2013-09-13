@@ -39,6 +39,9 @@ public class FeedContentProvider extends ContentProvider {
     private static final int SEARCH_RESULTS_FEEDITEM = 8;
     private static final int SEARCH_QUERY = 9;
     private static final int SEARCH_QUERY_ITEM = 10;
+    private static final int AUTHOR_VIDEO = 11;
+    private static final int AUTHOR_VIDEO_FEEDITEM = 12;
+
     private static final String LOG_TAG = FeedContentProvider.class.getName();
     private static final boolean D = BuildConfig.DEBUG;
 
@@ -55,6 +58,8 @@ public class FeedContentProvider extends ContentProvider {
         sUriMatcher.addURI(AUTHORITY, FeedContract.SearchResults.CONTENT_PATH + "/#/#", SEARCH_RESULTS_FEEDITEM);
         sUriMatcher.addURI(AUTHORITY, FeedContract.SearchQuery.CONTENT_PATH, SEARCH_QUERY);
         sUriMatcher.addURI(AUTHORITY, FeedContract.SearchQuery.CONTENT_PATH + "/#", SEARCH_QUERY_ITEM);
+        sUriMatcher.addURI(AUTHORITY, FeedContract.AuthorVideo.CONTENT_PATH + "/#", AUTHOR_VIDEO);
+        sUriMatcher.addURI(AUTHORITY, FeedContract.AuthorVideo.CONTENT_PATH + "/#/#", AUTHOR_VIDEO_FEEDITEM);
     }
 
     private MainDatabaseHelper dbHelper;
@@ -93,6 +98,14 @@ public class FeedContentProvider extends ContentProvider {
                 break;
             case MY_VIDEO_FEEDITEM:
                 queryBuilder.setTables(FeedContract.MyVideo.CONTENT_PATH);
+                queryBuilder.appendWhere(FeedContract.FeedColumns._ID + "="
+                        + uri.getLastPathSegment());
+                break;
+            case AUTHOR_VIDEO:
+                queryBuilder.setTables(FeedContract.AuthorVideo.CONTENT_PATH);
+                break;
+            case AUTHOR_VIDEO_FEEDITEM:
+                queryBuilder.setTables(FeedContract.AuthorVideo.CONTENT_PATH);
                 queryBuilder.appendWhere(FeedContract.FeedColumns._ID + "="
                         + uri.getLastPathSegment());
                 break;
@@ -164,6 +177,8 @@ public class FeedContentProvider extends ContentProvider {
                 return FeedContract.SearchResults.CONTENT_TYPE;
             case SEARCH_QUERY:
                 return FeedContract.SearchQuery.CONTENT_TYPE;
+            case AUTHOR_VIDEO:
+                return FeedContract.AuthorVideo.CONTENT_TYPE;
             default:
                 return null;
         }
@@ -192,6 +207,9 @@ public class FeedContentProvider extends ContentProvider {
             case SEARCH_QUERY:
                 rowId = sqlDB.replace(FeedContract.SearchQuery.CONTENT_PATH, null, contentValues);
                 break;
+            case AUTHOR_VIDEO:
+                rowId = sqlDB.replace(FeedContract.AuthorVideo.CONTENT_PATH, null, contentValues);
+                break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
@@ -213,6 +231,9 @@ public class FeedContentProvider extends ContentProvider {
                         String.valueOf(rowId));
             case SUBSCRIPTION:
                 return Uri.withAppendedPath(FeedContract.Subscriptions.CONTENT_URI,
+                        String.valueOf(rowId));
+            case AUTHOR_VIDEO:
+                return Uri.withAppendedPath(FeedContract.AuthorVideo.CONTENT_URI,
                         String.valueOf(rowId));
             default:
                 throw new IllegalArgumentException("Unknown URI");
@@ -246,6 +267,9 @@ public class FeedContentProvider extends ContentProvider {
                 break;
             case SEARCH_QUERY:
                 table = FeedContract.SearchQuery.CONTENT_PATH;
+                break;
+            case AUTHOR_VIDEO:
+                table = FeedContract.AuthorVideo.CONTENT_PATH;
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
@@ -388,6 +412,10 @@ public class FeedContentProvider extends ContentProvider {
             FeedContract.SearchQuery.CONTENT_PATH + " (" +
             SEARCH_QUERY_COLUMNS_SQL + ")";
 
+    private static final String SQL_CREATE_AUTHOR_QUERY = "CREATE TABLE " +
+            FeedContract.AuthorVideo.CONTENT_PATH + " (" +
+            FEED_COLUMNS_SQL + ")";
+
     protected static final class MainDatabaseHelper extends SQLiteOpenHelper {
 
 
@@ -396,7 +424,7 @@ public class FeedContentProvider extends ContentProvider {
          * Do not do database creation and upgrade here.
          */
         MainDatabaseHelper(Context context) {
-            super(context, DBNAME, null, 1);
+            super(context, DBNAME, null, 2);
         }
 
         public void onCreate(SQLiteDatabase db) {
@@ -409,8 +437,10 @@ public class FeedContentProvider extends ContentProvider {
         }
 
         @Override
-        public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i2) {
-            //To change body of implemented methods use File | Settings | File Templates.
+        public void onUpgrade(SQLiteDatabase db, int from, int to) {
+            if (from == 1 && to == 2) {
+                db.execSQL(SQL_CREATE_AUTHOR_QUERY);
+            }
         }
     }
 
