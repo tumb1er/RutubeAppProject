@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import ru.rutube.RutubeAPI.R;
 import ru.rutube.RutubeAPI.RutubeApp;
@@ -157,6 +158,10 @@ public class FeedItem implements Parcelable {
 
     public String getTitle() {
         return title;
+    }
+
+    public List<VideoTag> getTags() {
+        return null;
     }
 
     public String getDescription() {
