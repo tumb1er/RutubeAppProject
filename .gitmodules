@@ -9,4 +9,4 @@
 	url = ssh://git@github.com/rutube/VitamioBundle.git
 [submodule "libs/ActionBarSherlock"]
 	path = libs/ActionBarSherlock
-	url = https://github.com/rutube/ActionBarSherlock
+	url = ssh://git@github.com/rutube/ActionBarSherlock
