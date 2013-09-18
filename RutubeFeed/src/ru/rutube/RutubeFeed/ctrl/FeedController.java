@@ -210,20 +210,21 @@ public class FeedController implements Parcelable {
 
         private void requestDone() {
             if (mLoading > 0) mLoading -= 1;
-            if (mLoading == 0)
+            if (mLoading == 0 && mView != null)
                 mView.doneRefreshing();
         }
 
         @Override
         public void onVolleyError(VolleyError error) {
-            mView.showError();
+            if (mView != null)
+                mView.showError();
 
         }
 
         @Override
         public void onRequestError(int tag, RequestError error) {
-            mView.showError();
-
+            if (mView != null)
+                mView.showError();
         }
     };
 
