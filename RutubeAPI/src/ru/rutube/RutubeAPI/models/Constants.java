@@ -19,6 +19,8 @@ public final class Constants {
         public static final String ACL_ERRCODE = "ru.rutube.api.acl.errcode";
         public static final String TRACKINFO_ERROR = "ru.rutube.api.trackinfo.error";
         public static final String HAS_NEXT = "ru.rutube.api.has_next";
+        public static final String BALANCER_ERROR = "ru.rutube.bl.error";
+        public static final String MP4_URL = "ru.rutube.bl.mp4_url";
     }
 
     public final class Params {

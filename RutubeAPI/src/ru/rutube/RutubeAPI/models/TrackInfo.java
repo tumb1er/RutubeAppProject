@@ -1,10 +1,28 @@
 package ru.rutube.RutubeAPI.models;
 
+import android.content.Context;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
+
+import com.android.volley.NetworkResponse;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+
+import ru.rutube.RutubeAPI.BuildConfig;
+import ru.rutube.RutubeAPI.R;
+import ru.rutube.RutubeAPI.requests.AuthJsonObjectRequest;
+import ru.rutube.RutubeAPI.requests.RequestListener;
+import ru.rutube.RutubeAPI.requests.Requests;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,7 +34,12 @@ import org.json.JSONObject;
 public class TrackInfo implements Parcelable {
     public static final String VIDEO_BALANCER = "video_balancer";
     public static final String STREAM_TYPE_M3U8 = "m3u8";
-    private static final String JSON_TRACK_ID = "track_id";
+    public static final String STREAM_TYPE_JSON = "json";
+    public static final String JSON_TRACK_ID = "track_id";
+    private static final String JSON_RESULTS = "results";
+    private static final String LOG_TAG = TrackInfo.class.getName();
+    private static final boolean D = BuildConfig.DEBUG;
+
     private Uri mBalancerUrl;
     private int mTrackId;
     private String mTitle;
@@ -75,5 +98,54 @@ public class TrackInfo implements Parcelable {
 
     public int getTrackId(){
         return mTrackId;
+    }
+
+    public JsonObjectRequest getMP4UrlRequest(Context context, RequestListener listener) {
+        String balancerUrl = mBalancerUrl.toString().replace(STREAM_TYPE_M3U8, STREAM_TYPE_JSON);
+        Uri uri = Uri.parse(balancerUrl).buildUpon()
+                .appendQueryParameter("referer", context.getString(R.string.referer))
+                .build();
+        assert uri != null;
+        JsonObjectRequest request = new JsonObjectRequest(uri.toString(),
+                null, getMP4UrlListener(listener), getErrorListener(Requests.BALANCER_JSON, listener));
+        request.setShouldCache(true);
+        request.setTag(Requests.PLAY_OPTIONS);
+        return request;
+    }
+
+    private Response.Listener<JSONObject> getMP4UrlListener(final RequestListener listener){
+        return new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    JSONArray results = response.getJSONArray(JSON_RESULTS);
+                    Bundle bundle = new Bundle();
+                    if (results.length() > 0) {
+                        bundle.putString(Constants.Result.MP4_URL, results.get(0).toString());
+                    }
+                    listener.onResult(Requests.BALANCER_JSON, bundle);
+                } catch (JSONException e) {
+                    RequestListener.RequestError error = new RequestListener.RequestError(e.getMessage());
+                    listener.onRequestError(Requests.BALANCER_JSON, error);
+                }
+            }
+        };
+    }
+
+    private Response.ErrorListener getErrorListener(final int tag, final RequestListener requestListener) {
+        return new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                if (D) Log.d(LOG_TAG, "onErrorResponse");
+                NetworkResponse networkResponse = error.networkResponse;
+                Bundle bundle = new Bundle();
+                if (networkResponse != null) {
+                    bundle.putInt(Constants.Result.BALANCER_ERROR, networkResponse.statusCode);
+                } else {
+                    requestListener.onVolleyError(error);
+                }
+                requestListener.onResult(tag, bundle);
+            }
+        };
     }
 }

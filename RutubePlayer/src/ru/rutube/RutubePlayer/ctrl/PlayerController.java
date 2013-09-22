@@ -34,6 +34,8 @@ import ru.rutube.RutubePlayer.R;
  */
 public class PlayerController implements Parcelable, RequestListener {
 
+    private static final int TOTAL_REQUESTS_NEEDED = 4;
+
     /**
      * Интерфейс для представления плеера
      */
@@ -86,6 +88,7 @@ public class PlayerController implements Parcelable, RequestListener {
     protected ImageLoader mImageLoader;
 
     private Uri mVideoUri;
+    private Uri mStreamUri;
     private Video mVideo;
     private TrackInfo mTrackInfo;
     private int mState;
@@ -130,8 +133,11 @@ public class PlayerController implements Parcelable, RequestListener {
                 return;
             }
             mView.setVideoTitle(mTrackInfo.getTitle());
-            if (mPlaybackAllowed != null && mPlaybackAllowed)
-                mView.setStreamUri(mTrackInfo.getBalancerUrl());
+            if (mPlaybackAllowed != null && mPlaybackAllowed){
+            //    mView.setStreamUri(mTrackInfo.getBalancerUrl());
+                JsonObjectRequest request = mTrackInfo.getMP4UrlRequest(mContext, this);
+                mRequestQueue.add(request);
+            }
             mPlayRequestStage++;
         }
 
@@ -154,13 +160,26 @@ public class PlayerController implements Parcelable, RequestListener {
                 mView.showError(mContext.getResources().getString(error_resource));
                 return;
             } else {
-                if (mTrackInfo != null) {
-                    mView.setStreamUri(mTrackInfo.getBalancerUrl());
+//                if (mTrackInfo != null) {
+//                    mView.setStreamUri(mTrackInfo.getBalancerUrl());
+//                }
+                if (mStreamUri != null) {
+                    mView.setStreamUri(mStreamUri);
                 }
                 if (mThumbnailUri == null){
                     Uri thumbnailUri = result.getParcelable(Constants.Result.PLAY_THUMBNAIL);
                     mView.setThumbnailUri(thumbnailUri);
                 }
+            }
+            mPlayRequestStage++;
+        }
+
+        if (tag == Requests.BALANCER_JSON) {
+            String mp4url = result.getString(Constants.Result.MP4_URL);
+            if (D) Log.d(LOG_TAG, "Got mp4 uri: " + mp4url);
+            if (mp4url != null) {
+                mStreamUri =Uri.parse(mp4url);
+                mView.setStreamUri(mStreamUri);
             }
             mPlayRequestStage++;
         }
@@ -320,7 +339,7 @@ public class PlayerController implements Parcelable, RequestListener {
      * Включает тамнейл, вызывает у фрагмента обрабочтик onComplete
      */
     public void onCompletion() {
-        if (mState!= STATE_PLAYING)
+        if (mState!= STATE_PLAYING && mState != STATE_STARTING)
             throw new IllegalStateException(
                     String.format("Can't change state to Starting from %d", mState));
         setState(STATE_COMPLETED);
@@ -467,7 +486,7 @@ public class PlayerController implements Parcelable, RequestListener {
     private void checkReadyToPlay() {
         // Для начала воспроизведения необходимо дождаться завершения 2 запросов
         // и вызова onViewReady() - всего 3 стадии.
-        if (mPlayRequestStage == 3) {
+        if (mPlayRequestStage == TOTAL_REQUESTS_NEEDED) {
             startPlayback(true);
         } else
             if (D) Log.d(LOG_TAG, "Not ready yet");
