@@ -109,7 +109,7 @@ public class TrackInfo implements Parcelable {
         assert uri != null;
         JsonObjectRequest request = new JsonObjectRequest(uri.toString(),
                 null, getMP4UrlListener(listener), getErrorListener(Requests.BALANCER_JSON, listener));
-        request.setShouldCache(true);
+        request.setShouldCache(false);
         request.setTag(Requests.PLAY_OPTIONS);
         return request;
     }

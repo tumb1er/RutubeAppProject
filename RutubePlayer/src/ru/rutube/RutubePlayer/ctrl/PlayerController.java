@@ -34,8 +34,6 @@ import ru.rutube.RutubePlayer.R;
  */
 public class PlayerController implements Parcelable, RequestListener {
 
-    private static final int TOTAL_REQUESTS_NEEDED = 4;
-
     /**
      * Интерфейс для представления плеера
      */
@@ -83,6 +81,7 @@ public class PlayerController implements Parcelable, RequestListener {
 
     private static final String LOG_TAG = PlayerController.class.getName();
     private static final boolean D = BuildConfig.DEBUG;
+    private static final int TOTAL_REQUESTS_NEEDED = 4;
 
     protected RequestQueue mRequestQueue;
     protected ImageLoader mImageLoader;
@@ -293,12 +292,12 @@ public class PlayerController implements Parcelable, RequestListener {
         if (mState!= STATE_COMPLETED)
             throw new IllegalStateException(
                     String.format("Can't change state to Starting from %d", mState));
-        setState(STATE_PLAYING);
+        setState(STATE_STARTING);
         mVideoOffset = 0;
         mView.toggleThumbnail(false);
-        mView.setStreamUri(mTrackInfo.getBalancerUrl());
+        mView.setStreamUri(mStreamUri);
         mView.setVideoTitle(mTrackInfo.getTitle());
-        mView.startPlayback();
+        mPlayRequestStage = TOTAL_REQUESTS_NEEDED - 1;
     }
 
     /**
@@ -344,9 +343,9 @@ public class PlayerController implements Parcelable, RequestListener {
      * Включает тамнейл, вызывает у фрагмента обрабочтик onComplete
      */
     public void onCompletion() {
-        if (mState!= STATE_PLAYING && mState != STATE_STARTING)
+        if (mState!= STATE_PLAYING)
             throw new IllegalStateException(
-                    String.format("Can't change state to Starting from %d", mState));
+                    String.format("Can't change state to Completed from %d", mState));
         setState(STATE_COMPLETED);
         mView.toggleThumbnail(true);
         mView.onComplete();
@@ -466,10 +465,9 @@ public class PlayerController implements Parcelable, RequestListener {
                 // Запускается показ видео без отправки статистики.
                 mState = STATE_STARTING;
                 mView.setVideoTitle(mTrackInfo.getTitle());
-                mView.setStreamUri(mTrackInfo.getBalancerUrl());
+                mView.setStreamUri(mStreamUri);
                 mView.setLoadingCompleted();
-                mView.seekTo(mVideoOffset);
-                startPlayback(false);
+                mPlayRequestStage = TOTAL_REQUESTS_NEEDED - 1;
                 break;
             case STATE_COMPLETED:
                 // На момент сохранения был показан эндскрин.
@@ -508,6 +506,8 @@ public class PlayerController implements Parcelable, RequestListener {
         setState(STATE_PLAYING);
         mView.setLoadingCompleted();
         mView.toggleThumbnail(false);
+        if (mVideoOffset > 0)
+            mView.seekTo(mVideoOffset);
         mView.startPlayback();
         if (sendViewed) {
             JsonObjectRequest request = mVideo.getYastRequest(mContext);

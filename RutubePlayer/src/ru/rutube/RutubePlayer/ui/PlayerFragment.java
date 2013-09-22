@@ -248,6 +248,7 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
     public void onResume() {
         super.onResume();
         mController.onResume();
+        mMediaController.setMediaPlayer(mMediaPlayerControl);
         if (D) Log.d(LOG_TAG, "onResume");
     }
 
@@ -256,6 +257,9 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         super.onPause();
         if (D) Log.d(LOG_TAG, "onPause");
         mController.onPause();
+        mPlayer.reset();
+        mPlayer.release();
+        mMediaController.setMediaPlayer(null);
     }
 
     @Override
@@ -293,6 +297,7 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
 
     @Override
     public void seekTo(int millis) {
+        if (D) Log.d(LOG_TAG, "Seek To: " + String.valueOf(millis / 1000));
         mPlayer.seekTo(millis);
 //        mVideoView.seekTo(millis);
     }
@@ -439,6 +444,7 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
     protected void setVideoUri(Uri uri) {
         if (uri != null)
             try {
+                mPlayer.reset();
                 mPlayer.setDataSource(getActivity(), uri);
                 mPlayer.prepareAsync();
                 mBufferingPercent = 0;
