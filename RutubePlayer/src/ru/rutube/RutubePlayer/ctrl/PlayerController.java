@@ -119,6 +119,7 @@ public class PlayerController implements Parcelable, RequestListener {
     public void onResult(int tag, Bundle result) {
 
         if (tag == Requests.TRACK_INFO) {
+            if (D) Log.d(LOG_TAG, "Got Trackinfo");
             mTrackInfo = result.getParcelable(Constants.Result.TRACKINFO);
             assert mView != null;
             if (mTrackInfo == null) {
@@ -133,7 +134,7 @@ public class PlayerController implements Parcelable, RequestListener {
                 return;
             }
             mView.setVideoTitle(mTrackInfo.getTitle());
-            if (mPlaybackAllowed != null && mPlaybackAllowed){
+            if (mPlaybackAllowed == null || mPlaybackAllowed){
             //    mView.setStreamUri(mTrackInfo.getBalancerUrl());
                 JsonObjectRequest request = mTrackInfo.getMP4UrlRequest(mContext, this);
                 mRequestQueue.add(request);
@@ -142,11 +143,13 @@ public class PlayerController implements Parcelable, RequestListener {
         }
 
         if (tag == Requests.PLAY_OPTIONS) {
+            if (D) Log.d(LOG_TAG, "Got PlayOptions");
             mPlaybackAllowed = result.getBoolean(Constants.Result.ACL_ALLOWED, false);
             Integer errCode = result.getInt(Constants.Result.ACL_ERRCODE, 0);
             if (!mPlaybackAllowed) {
                 if (D) Log.w(LOG_TAG, "Playback not allowed");
                 mRequestQueue.cancelAll(Requests.TRACK_INFO);
+                mRequestQueue.cancelAll(Requests.BALANCER_JSON);
                 if (mState == STATE_ERROR)
                     return;
                 setState(STATE_ERROR);
@@ -175,11 +178,13 @@ public class PlayerController implements Parcelable, RequestListener {
         }
 
         if (tag == Requests.BALANCER_JSON) {
+            if (D) Log.d(LOG_TAG, "Got Balancer Result");
             String mp4url = result.getString(Constants.Result.MP4_URL);
             if (D) Log.d(LOG_TAG, "Got mp4 uri: " + mp4url);
             if (mp4url != null) {
-                mStreamUri =Uri.parse(mp4url);
-                mView.setStreamUri(mStreamUri);
+                mStreamUri = Uri.parse(mp4url);
+                if (mPlaybackAllowed != null && mPlaybackAllowed)
+                    mView.setStreamUri(mStreamUri);
             }
             mPlayRequestStage++;
         }
@@ -351,6 +356,7 @@ public class PlayerController implements Parcelable, RequestListener {
      * Обработка события инициализации VideoView
      */
     public void onViewReady() {
+        if (D) Log.d(LOG_TAG, "Got ViewReady");
         mPlayRequestStage++;
         checkReadyToPlay();
     }

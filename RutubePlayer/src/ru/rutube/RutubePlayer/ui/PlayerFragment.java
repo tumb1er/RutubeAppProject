@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.MediaController;
+import android.widget.ProgressBar;
 import android.widget.VideoView;
 
 import com.android.volley.toolbox.ImageLoader;
@@ -33,6 +34,8 @@ import ru.rutube.RutubePlayer.ctrl.PlayerController;
 public class PlayerFragment extends Fragment
         implements PlayerController.PlayerView, MediaPlayer.OnCompletionListener,
         MediaPlayer.OnPreparedListener {
+
+    private ProgressBar mLoadProgressBar;
 
     public void replay() {
         mController.replay();
@@ -133,7 +136,7 @@ public class PlayerFragment extends Fragment
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
         mController.onViewReady();
-        startPlayback();
+//        startPlayback();
 
     }
 
@@ -200,15 +203,14 @@ public class PlayerFragment extends Fragment
             mPlayerStateListener.onPlay();
         startVideoPlayback();
     }
-
     @Override
     public void setLoading() {
-
+        mLoadProgressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void setLoadingCompleted() {
-
+        mLoadProgressBar.setVisibility(View.GONE);
     }
 
     @Override
@@ -265,11 +267,13 @@ public class PlayerFragment extends Fragment
     protected void initVideoView() {
         View view = getView();
         assert view != null;
+        mLoadProgressBar = (ProgressBar) view.findViewById(R.id.load);
         mVideoView = (VideoView) view.findViewById(R.id.video_view);
         mMediaController = new MediaController(getActivity());
         mVideoView.setMediaController(mMediaController);
         mVideoView.setPadding(10, 0, 0, 0);
         mVideoView.setOnCompletionListener(this);
+        mVideoView.setOnPreparedListener(this);
     }
 
     /**
@@ -277,7 +281,8 @@ public class PlayerFragment extends Fragment
      * @param uri Uri видеопотока
      */
     protected void setVideoUri(Uri uri) {
-        mVideoView.setVideoURI(uri);
+        if (uri != null)
+            mVideoView.setVideoURI(uri);
     }
 
     /**
@@ -285,7 +290,7 @@ public class PlayerFragment extends Fragment
      */
     protected void startVideoPlayback() {
         if (D) Log.d(LOG_TAG, "startVideoPlayback");
-        mVideoView.setVideoURI(mStreamUri);
+        //mVideoiew.setVideoURI(mStreamUri);
         mVideoView.start();
     }
 

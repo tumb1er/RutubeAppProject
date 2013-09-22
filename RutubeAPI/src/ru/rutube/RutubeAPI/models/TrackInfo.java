@@ -105,6 +105,7 @@ public class TrackInfo implements Parcelable {
         Uri uri = Uri.parse(balancerUrl).buildUpon()
                 .appendQueryParameter("referer", context.getString(R.string.referer))
                 .build();
+        if (D) Log.d(LOG_TAG, "Balancer Url:" + uri.toString());
         assert uri != null;
         JsonObjectRequest request = new JsonObjectRequest(uri.toString(),
                 null, getMP4UrlListener(listener), getErrorListener(Requests.BALANCER_JSON, listener));
@@ -117,6 +118,7 @@ public class TrackInfo implements Parcelable {
         return new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                if (D) Log.d(LOG_TAG, "mp4Url response: " + String.valueOf(response));
                 try {
                     JSONArray results = response.getJSONArray(JSON_RESULTS);
                     Bundle bundle = new Bundle();
