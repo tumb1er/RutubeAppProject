@@ -17,4 +17,5 @@
     <string name="video_deleted">Video was deleted</string>
     <string name="video_doesnt_exist">Video doesn\'t exist</string>
     <string name="video_is_hidden">Author hid this video</string>
+    <string name="mediacontroller_play_pause">play/pause</string>
 </resources>

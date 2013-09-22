@@ -3,11 +3,15 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="#000000">
-
-    <VideoView
+    <FrameLayout android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/center_video_view">
+    <SurfaceView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:id="@+id/video_view"></VideoView>
+        android:layout_gravity="center"
+        android:id="@+id/video_view"/>
+    </FrameLayout>
 
     <com.android.volley.toolbox.NetworkImageView
         android:layout_width="fill_parent"
