@@ -421,7 +421,7 @@ public class FeedContentProvider extends ContentProvider {
             //To change body of implemented methods use File | Settings | File Templates.
             if (D) Log.d(LOG_TAG, String.format("Upgrading db from %d to %d", from, to));
             if (from == 1 && to == 2) {
-                db.execSQL("ALTER TABLE " + FeedContract.SearchQuery.CONTENT_PATH +
+                db.execSQL("ALTER TABLE " + FeedContract.Subscriptions.CONTENT_PATH +
                         " ADD COLUMN tags_json TEXT NULL DEFAULT '[]'");
             }
         }
