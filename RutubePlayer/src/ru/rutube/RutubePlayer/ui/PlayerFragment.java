@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.MediaController;
 import android.widget.ProgressBar;
-import android.widget.VideoView;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
@@ -71,6 +70,7 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
     protected PlayerStateListener mPlayerStateListener;
     protected RutubeMediaController mMediaController;
     protected int mBufferingPercent = 0;
+    protected boolean mPrepared = false;
 
 
     /**
@@ -179,6 +179,8 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
             if (D) Log.d(LOG_TAG, "OnPrepared");
             mController.onViewReady();
             mMediaController.setMediaPlayer(mMediaPlayerControl);
+            if (D) Log.d(LOG_TAG, "Prepared!");
+            mPrepared = true;
         }
     };
 
@@ -196,6 +198,12 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
             if (D) Log.d(LOG_TAG, "onTouch");
+            if (!mPrepared) {
+                if (D) Log.d(LOG_TAG, "preparing, don't show media controller");
+                return true;
+            } else {
+                if (D) Log.d(LOG_TAG, "MP is prepared");
+            }
             mMediaController.show();
             return true;
         }
@@ -262,6 +270,7 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
 
     private void initMediaPlayer() {
         if (D) Log.d(LOG_TAG, "initMediaPlayer");
+        mPrepared = false;
         if (mPlayer != null)
             mPlayer.release();
         mPlayer = new MediaPlayer();
@@ -468,6 +477,8 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         if (uri != null)
             try {
                 mPlayer.reset();
+                mPrepared = false;
+                if (D) Log.d(LOG_TAG, "Preparing!");
                 mPlayer.setDataSource(getActivity(), uri);
                 mPlayer.prepareAsync();
                 mBufferingPercent = 0;
