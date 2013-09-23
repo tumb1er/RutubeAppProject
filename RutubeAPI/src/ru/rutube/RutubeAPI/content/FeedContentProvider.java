@@ -332,6 +332,10 @@ public class FeedContentProvider extends ContentProvider {
             columnList.add(FeedContract.SearchResults.POSITION);
         }
 
+        if (uriType == SUBSCRIPTION || uriType == SUBSCRIPTION_FEEDITEM) {
+            columnList.add(FeedContract.Subscriptions.TAGS_JSON);
+        }
+
         String[] result = new String[columnList.size()];
         return columnList.toArray(result);
     }
@@ -363,6 +367,10 @@ public class FeedContentProvider extends ContentProvider {
             FEED_COLUMNS_SQL + "," +
                     " signature VARCHAR(30) NULL";
 
+    private static final String SUBSCRIPTIONS_COLUMNS_SQL =
+            FEED_COLUMNS_SQL + "," +
+                    " tags_json TEXT NULL";
+
     private static final String SEARCH_RESULTS_COLUMNS_SQL =
             FEED_COLUMNS_SQL + "," +
                     " query_id INTEGER NOT NULL," +
@@ -378,7 +386,7 @@ public class FeedContentProvider extends ContentProvider {
 
     private static final String SQL_CREATE_VIDEO_SUBSCRIPTION = "CREATE TABLE " +
             FeedContract.Subscriptions.CONTENT_PATH + " (" +
-            FEED_COLUMNS_SQL + ")";
+            SUBSCRIPTIONS_COLUMNS_SQL + ")";
 
     private static final String SQL_CREATE_SEARCH_RESULTS = "CREATE TABLE " +
             FeedContract.SearchResults.CONTENT_PATH + " (" +
@@ -396,7 +404,7 @@ public class FeedContentProvider extends ContentProvider {
          * Do not do database creation and upgrade here.
          */
         MainDatabaseHelper(Context context) {
-            super(context, DBNAME, null, 1);
+            super(context, DBNAME, null, 2);
         }
 
         public void onCreate(SQLiteDatabase db) {
@@ -409,8 +417,13 @@ public class FeedContentProvider extends ContentProvider {
         }
 
         @Override
-        public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i2) {
+        public void onUpgrade(SQLiteDatabase db, int from, int to) {
             //To change body of implemented methods use File | Settings | File Templates.
+            if (D) Log.d(LOG_TAG, String.format("Upgrading db from %d to %d", from, to));
+            if (from == 1 && to == 2) {
+                db.execSQL("ALTER TABLE " + FeedContract.SearchQuery.CONTENT_PATH +
+                        " ADD COLUMN tags_json TEXT NULL DEFAULT '[]'");
+            }
         }
     }
 

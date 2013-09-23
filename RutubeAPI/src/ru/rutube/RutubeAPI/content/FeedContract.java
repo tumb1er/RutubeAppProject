@@ -45,6 +45,9 @@ public final class FeedContract {
         public static final String CONTENT_PATH = "subscriptions";
         public static final Uri CONTENT_URI = Uri.withAppendedPath(FEED_URI, CONTENT_PATH);
         public static final String CONTENT_TYPE = VND + FEED + "." + CONTENT_PATH;
+
+        public static final String TAGS_JSON = "tags_json";
+
     }
 
     public static final class SearchResults implements BaseColumns, FeedColumns {

@@ -91,7 +91,7 @@ public class TagsFeedItem extends FeedItem {
         parcel.writeArray(tags.toArray());
     }
     public List<VideoTag> getTags() {
-        return null;
+        return tags;
     }
 
     public void fillRow(ContentValues row, int position) {
@@ -106,5 +106,7 @@ public class TagsFeedItem extends FeedItem {
 
     protected void fillRow(ContentValues row) {
         super.fillRow(row);
+        JSONArray tags_json = new JSONArray(tags);
+        row.put(FeedContract.Subscriptions.TAGS_JSON, tags_json.toString());
     }
 }
