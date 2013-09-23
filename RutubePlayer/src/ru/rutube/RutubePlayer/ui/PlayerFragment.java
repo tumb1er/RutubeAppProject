@@ -94,17 +94,19 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
     protected SurfaceHolder.Callback mSurfaceCallbackListener = new SurfaceHolder.Callback() {
         @Override
         public void surfaceCreated(SurfaceHolder surfaceHolder) {
+            if (D) Log.d(LOG_TAG, "surfaceCreated");
             mPlayer.setDisplay(surfaceHolder);
         }
 
         @Override
         public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i2, int i3) {
-
+            if (D) Log.d(LOG_TAG, "surfaceChanged");
+            mPlayer.setDisplay(surfaceHolder);
         }
 
         @Override
         public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-
+            if (D) Log.d(LOG_TAG, "surfaceDestroyed");
         }
     };
 
@@ -165,6 +167,7 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
 
         @Override
         public void onCompletion(MediaPlayer mediaPlayer) {
+            if (D) Log.d(LOG_TAG, "OnCompletion");
             mController.onCompletion();
             onComplete();
         }
@@ -173,8 +176,9 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
     protected MediaPlayer.OnPreparedListener mOnPreparedListener = new MediaPlayer.OnPreparedListener() {
         @Override
         public void onPrepared(MediaPlayer mediaPlayer) {
-            mMediaController.setMediaPlayer(mMediaPlayerControl);
+            if (D) Log.d(LOG_TAG, "OnPrepared");
             mController.onViewReady();
+            mMediaController.setMediaPlayer(mMediaPlayerControl);
         }
     };
 
@@ -237,7 +241,7 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mPlayer = new MediaPlayer();
+        if (D) Log.d(LOG_TAG, "onCreateView");
         View view = inflater.inflate(R.layout.player_fragment, container, false);
         assert view != null;
         view.setOnTouchListener(mOnTouchListener);
@@ -246,10 +250,28 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
 
     @Override
     public void onResume() {
+        if (D) Log.d(LOG_TAG, "onResume");
         super.onResume();
+        // Плеер может быть уже проинициализирован в onCreateView
+        // и точно уничтожается в onPause
+        if (mPlayer == null)
+            initMediaPlayer();
         mController.onResume();
         mMediaController.setMediaPlayer(mMediaPlayerControl);
-        if (D) Log.d(LOG_TAG, "onResume");
+    }
+
+    private void initMediaPlayer() {
+        if (D) Log.d(LOG_TAG, "initMediaPlayer");
+        if (mPlayer != null)
+            mPlayer.release();
+        mPlayer = new MediaPlayer();
+        // когда вызывается initMediaPlayer, SurfaceView еще может быть недоступна.
+        // Поэтому setDisplay вызывается в соответствующем callack-е SurfaceView
+        // mPlayer.setDisplay(mVideoView.getHolder());
+        mPlayer.setOnPreparedListener(mOnPreparedListener);
+        mPlayer.setOnCompletionListener(mOnCompletionListener);
+        mPlayer.setOnBufferingUpdateListener(mOnBufferingUpdateListener);
+        mPlayer.setOnVideoSizeChangedListener(mOnVideoSizeChanged);
     }
 
     @Override
@@ -258,7 +280,12 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         if (D) Log.d(LOG_TAG, "onPause");
         mController.onPause();
         mPlayer.reset();
+        // невыполнение release загоняет плеер в ошибочное состояние, которое выливается в ошибку
+        // Error (1, -110), После release плеер необходимо инициализировать заново.
         mPlayer.release();
+        mPlayer = null;
+        // messageHandler после детача получает очередное сообщение о прогрессе и пытается вызвать
+        // у деинициализированного плеера getDuration. Результат - ISE/NPE.
         mMediaController.setMediaPlayer(null);
     }
 
@@ -428,11 +455,7 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         //mMediaController.setMediaPlayer();
         mMediaController.setAnchorView((FrameLayout)view.findViewById(R.id.center_video_view));
         mVideoView.setPadding(10, 0, 0, 0);
-
-        mPlayer.setOnPreparedListener(mOnPreparedListener);
-        mPlayer.setOnCompletionListener(mOnCompletionListener);
-        mPlayer.setOnBufferingUpdateListener(mOnBufferingUpdateListener);
-        mPlayer.setOnVideoSizeChangedListener(mOnVideoSizeChanged);
+        initMediaPlayer();
 //        mVideoView.setOnCompletionListener(this);
 //        mVideoView.setOnPreparedListener(this);
     }

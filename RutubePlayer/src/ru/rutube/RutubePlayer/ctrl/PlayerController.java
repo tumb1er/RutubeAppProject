@@ -321,10 +321,13 @@ public class PlayerController implements Parcelable, RequestListener {
      */
     public void onResume() {
         if (mState == STATE_PLAYING){
-            mView.setStreamUri(mTrackInfo.getBalancerUrl());
+            mView.setStreamUri(mStreamUri);
             mView.setVideoTitle(mTrackInfo.getTitle());
-            mView.seekTo(mVideoOffset);
-            mView.startPlayback();
+            mPlayRequestStage = TOTAL_REQUESTS_NEEDED - 1;
+            setState(STATE_STARTING);
+            // После выполнения setStreamUri необходимо дождаться onPrepared
+            // mView.seekTo(mVideoOffset);
+            // mView.startPlayback();
         }
     }
 
@@ -465,9 +468,9 @@ public class PlayerController implements Parcelable, RequestListener {
                 // Запускается показ видео без отправки статистики.
                 mState = STATE_STARTING;
                 mView.setVideoTitle(mTrackInfo.getTitle());
+                mPlayRequestStage = TOTAL_REQUESTS_NEEDED - 1;
                 mView.setStreamUri(mStreamUri);
                 mView.setLoadingCompleted();
-                mPlayRequestStage = TOTAL_REQUESTS_NEEDED - 1;
                 break;
             case STATE_COMPLETED:
                 // На момент сохранения был показан эндскрин.
@@ -502,7 +505,7 @@ public class PlayerController implements Parcelable, RequestListener {
      */
     private void startPlayback(boolean sendViewed) {
         if (mState!= STATE_STARTING)
-            throw new IllegalStateException(String.format("Can't change state to Starting from %d", mState));
+            throw new IllegalStateException(String.format("Can't change state to Playing from %d", mState));
         setState(STATE_PLAYING);
         mView.setLoadingCompleted();
         mView.toggleThumbnail(false);
