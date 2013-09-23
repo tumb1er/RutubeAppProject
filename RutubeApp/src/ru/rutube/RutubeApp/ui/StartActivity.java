@@ -34,6 +34,7 @@ public class StartActivity extends SherlockFragmentActivity implements MainPageC
     private HashMap<String, ActionBar.Tab> mTabMap = new HashMap<String, ActionBar.Tab>();
     private HashMap<String, Fragment> mFragmentMap = new HashMap<String, Fragment>();
     private FragmentTransaction mFragmentTransaction;
+    private Fragment mCurrentFragment;
 
     @Override
     public boolean onCreatePanelMenu(int featureId, Menu menu) {
@@ -80,6 +81,7 @@ public class StartActivity extends SherlockFragmentActivity implements MainPageC
         super.onAttachFragment(fragment);
         if (mFragmentMap.get(fragment.getTag()) == null)
             mFragmentMap.put(fragment.getTag(), fragment);
+        mCurrentFragment = fragment;
     }
 
     /**
@@ -211,15 +213,29 @@ public class StartActivity extends SherlockFragmentActivity implements MainPageC
      * Заменяет фрагмент ленты в UI рассчитывая на нахождение в контексте транзакции фрагмента.
      */
     private void replaceFragmentInTransaction(FragmentTransaction ft, String tag, Uri feedUri) {
+        if (D) Log.d(LOG_TAG, "replace fragment: to " + tag);
         // ищем фрагмент в локальном кэше
         Fragment fragment = mFragmentMap.get(tag);
         // не нашли, конструируем новый фрагмент с feedUri
         if (fragment == null) {
-            fragment = createFeedFragment(feedUri);
+            if (D) Log.d(LOG_TAG, "Not in cache, creating");
+                    fragment = createFeedFragment(feedUri);
             // добавляем в кэш
             mFragmentMap.put(tag, fragment);
         }
-        ft.replace(R.id.feed_fragment_container, fragment);
+        // Для ActionBarCompat рабочий код гораздо короче
+        // ft.replace(R.id.feed_fragment_container, fragment);
+        if (mCurrentFragment != null){
+            if (D) Log.d(LOG_TAG, "Current not null");
+            if (mCurrentFragment.equals(fragment)) {
+                if (D) Log.d(LOG_TAG, "Same fragment, not removing :)");
+                return;
+            }
+            if (D) Log.d(LOG_TAG, "Removing " + mCurrentFragment.getTag().toString());
+            ft.remove(mCurrentFragment);
+        }
+        ft.add(R.id.feed_fragment_container, fragment, tag);
+        mCurrentFragment = fragment;
     }
     /**
      * Конструирует новый фрагмент с лентой

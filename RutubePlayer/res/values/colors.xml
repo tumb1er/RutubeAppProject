@@ -5,4 +5,6 @@
     <color name="seekbar_bg">#FFB6B6B6</color>
     <color name="seekbar_progress">#FF0090FF</color>
     <color name="seekbar_secondary">#FFFFFFFF</color>
+    <!-- MediaController timeline text color -->
+    <color name="dim_foreground_dark">#FFFFFFFF</color>
 </resources>

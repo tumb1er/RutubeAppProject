@@ -4,9 +4,6 @@
 [submodule "RutubeApp/libs/PinterestLikeAdapterView"]
 	path = RutubeApp/libs/PinterestLikeAdapterView
 	url = ssh://git@github.com/rutube/PinterestLikeAdapterView.git
-[submodule "RutubeApp/libs/VitamioBundle"]
-	path = RutubeApp/libs/VitamioBundle
-	url = ssh://git@github.com/rutube/VitamioBundle.git
 [submodule "libs/ActionBarSherlock"]
 	path = libs/ActionBarSherlock
-	url = https://github.com/rutube/ActionBarSherlock
+	url = ssh://git@github.com/rutube/ActionBarSherlock

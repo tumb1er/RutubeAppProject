@@ -65,12 +65,12 @@ EndscreenFragment.ReplayListener {
         // то активити пересоздатся и вся цепочка автостарта воспроизведения обломится,
         // поэтому не задаем ContentView ДО готовности ориентации экрана.
         int orientation = getScreenOrientation();
-//        if (orientation != Configuration.ORIENTATION_LANDSCAPE) {
-//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-//        } else {
+        if (orientation != Configuration.ORIENTATION_LANDSCAPE) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        } else {
             setContentView(R.layout.player_activity);
             init();
-//        }
+        }
     }
 
     private void init() {

@@ -10,13 +10,19 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.MediaController;
-import android.widget.VideoView;
+import android.widget.ProgressBar;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
+
+import java.io.IOException;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.models.Constants;
@@ -30,13 +36,7 @@ import ru.rutube.RutubePlayer.ctrl.PlayerController;
  * Time: 20:14
  * To change this template use File | Settings | File Templates.
  */
-public class PlayerFragment extends Fragment
-        implements PlayerController.PlayerView, MediaPlayer.OnCompletionListener,
-        MediaPlayer.OnPreparedListener {
-
-    public void replay() {
-        mController.replay();
-    }
+public class PlayerFragment extends Fragment implements PlayerController.PlayerView {
 
     /**
      * Интерфейс общения с активити, в которое встроен фрагмент с плеером
@@ -63,15 +63,175 @@ public class PlayerFragment extends Fragment
     private static final boolean D = BuildConfig.DEBUG;
 
     protected PlayerController mController;
-    protected VideoView mVideoView;
+    protected SurfaceView mVideoView;
+    protected MediaPlayer mPlayer;
     protected Uri mStreamUri;
+    protected ProgressBar mLoadProgressBar;
     protected PlayerStateListener mPlayerStateListener;
-    protected MediaController mMediaController;
+    protected RutubeMediaController mMediaController;
+    protected int mBufferingPercent = 0;
+    protected boolean mPrepared = false;
+
+
+    /**
+     * Обработчик закрытия диалога сообщения об ошибке
+     */
     protected DialogInterface.OnDismissListener mErrorListener = new DialogInterface.OnDismissListener() {
         @Override
         public void onDismiss(DialogInterface dialogInterface) {
             if (mPlayerStateListener != null)
                 mPlayerStateListener.onFail();
+        }
+    };
+
+
+    /**
+     * Обработчики различных интерфейсов, необходимые, чтобы заставить MediaPlayer показывать на
+     * SurfaceView видео под управлением MediaController
+     */
+
+
+    protected SurfaceHolder.Callback mSurfaceCallbackListener = new SurfaceHolder.Callback() {
+        @Override
+        public void surfaceCreated(SurfaceHolder surfaceHolder) {
+            if (D) Log.d(LOG_TAG, "surfaceCreated");
+            mPlayer.setDisplay(surfaceHolder);
+        }
+
+        @Override
+        public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i2, int i3) {
+            if (D) Log.d(LOG_TAG, "surfaceChanged");
+            mPlayer.setDisplay(surfaceHolder);
+        }
+
+        @Override
+        public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+            if (D) Log.d(LOG_TAG, "surfaceDestroyed");
+        }
+    };
+
+    protected MediaController.MediaPlayerControl mMediaPlayerControl = new MediaController.MediaPlayerControl() {
+        @Override
+        public void start() {
+            mPlayer.start();
+        }
+
+        @Override
+        public void pause() {
+            mPlayer.pause();
+        }
+
+        @Override
+        public int getDuration() {
+            return mPlayer.getDuration();
+        }
+
+        @Override
+        public int getCurrentPosition() {
+            return mPlayer.getCurrentPosition();
+        }
+
+        @Override
+        public void seekTo(int millis) {
+            mPlayer.seekTo(millis);
+        }
+
+        @Override
+        public boolean isPlaying() {
+            return mPlayer.isPlaying();
+        }
+
+        @Override
+        public int getBufferPercentage() {
+            return mBufferingPercent;
+        }
+
+        @Override
+        public boolean canPause() {
+            return true ;
+        }
+
+        @Override
+        public boolean canSeekBackward() {
+            return true;
+        }
+
+        @Override
+        public boolean canSeekForward() {
+            return true;
+        }
+
+    };
+
+    protected MediaPlayer.OnCompletionListener mOnCompletionListener = new MediaPlayer.OnCompletionListener() {
+
+        @Override
+        public void onCompletion(MediaPlayer mediaPlayer) {
+            if (D) Log.d(LOG_TAG, "OnCompletion");
+            mController.onCompletion();
+            onComplete();
+        }
+    };
+
+    protected MediaPlayer.OnPreparedListener mOnPreparedListener = new MediaPlayer.OnPreparedListener() {
+        @Override
+        public void onPrepared(MediaPlayer mediaPlayer) {
+            if (D) Log.d(LOG_TAG, "OnPrepared");
+            mController.onViewReady();
+            mMediaController.setMediaPlayer(mMediaPlayerControl);
+            if (D) Log.d(LOG_TAG, "Prepared!");
+            mPrepared = true;
+        }
+    };
+
+    protected MediaPlayer.OnBufferingUpdateListener mOnBufferingUpdateListener = new MediaPlayer.OnBufferingUpdateListener() {
+
+        @Override
+        public void onBufferingUpdate(MediaPlayer mediaPlayer, int percent) {
+            mBufferingPercent = percent;
+
+        }
+    };
+
+    protected View.OnTouchListener mOnTouchListener = new View.OnTouchListener() {
+
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            if (D) Log.d(LOG_TAG, "onTouch");
+            if (!mPrepared) {
+                if (D) Log.d(LOG_TAG, "preparing, don't show media controller");
+                return true;
+            } else {
+                if (D) Log.d(LOG_TAG, "MP is prepared");
+            }
+            mMediaController.show();
+            return true;
+        }
+    };
+
+    protected MediaPlayer.OnVideoSizeChangedListener mOnVideoSizeChanged = new MediaPlayer.OnVideoSizeChangedListener() {
+
+        @Override
+        public void onVideoSizeChanged(MediaPlayer mediaPlayer, int w, int h) {
+            int surfaceView_Width = mVideoView.getWidth();
+            int surfaceView_Height = mVideoView.getHeight();
+
+            float ratio_width = surfaceView_Width/ (float) w;
+            float ratio_height = surfaceView_Height/ (float) h;
+            float aspectratio = (float) w / (float) h;
+
+            ViewGroup.LayoutParams layoutParams = mVideoView.getLayoutParams();
+            assert layoutParams != null;
+            if (ratio_width > ratio_height){
+                layoutParams.width = (int) (surfaceView_Height * aspectratio);
+                layoutParams.height = surfaceView_Height;
+            }else{
+                layoutParams.width = surfaceView_Width;
+                layoutParams.height = (int) (surfaceView_Width / aspectratio);
+            }
+
+            mVideoView.setLayoutParams(layoutParams);
+
         }
     };
 
@@ -89,14 +249,38 @@ public class PlayerFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.player_fragment, container, false);
+        if (D) Log.d(LOG_TAG, "onCreateView");
+        View view = inflater.inflate(R.layout.player_fragment, container, false);
+        assert view != null;
+        view.setOnTouchListener(mOnTouchListener);
+        return view;
     }
 
     @Override
     public void onResume() {
-        super.onResume();
-        mController.onResume();
         if (D) Log.d(LOG_TAG, "onResume");
+        super.onResume();
+        // Плеер может быть уже проинициализирован в onCreateView
+        // и точно уничтожается в onPause
+        if (mPlayer == null)
+            initMediaPlayer();
+        mController.onResume();
+        mMediaController.setMediaPlayer(mMediaPlayerControl);
+    }
+
+    private void initMediaPlayer() {
+        if (D) Log.d(LOG_TAG, "initMediaPlayer");
+        mPrepared = false;
+        if (mPlayer != null)
+            mPlayer.release();
+        mPlayer = new MediaPlayer();
+        // когда вызывается initMediaPlayer, SurfaceView еще может быть недоступна.
+        // Поэтому setDisplay вызывается в соответствующем callack-е SurfaceView
+        // mPlayer.setDisplay(mVideoView.getHolder());
+        mPlayer.setOnPreparedListener(mOnPreparedListener);
+        mPlayer.setOnCompletionListener(mOnCompletionListener);
+        mPlayer.setOnBufferingUpdateListener(mOnBufferingUpdateListener);
+        mPlayer.setOnVideoSizeChangedListener(mOnVideoSizeChanged);
     }
 
     @Override
@@ -104,6 +288,14 @@ public class PlayerFragment extends Fragment
         super.onPause();
         if (D) Log.d(LOG_TAG, "onPause");
         mController.onPause();
+        mPlayer.reset();
+        // невыполнение release загоняет плеер в ошибочное состояние, которое выливается в ошибку
+        // Error (1, -110), После release плеер необходимо инициализировать заново.
+        mPlayer.release();
+        mPlayer = null;
+        // messageHandler после детача получает очередное сообщение о прогрессе и пытается вызвать
+        // у деинициализированного плеера getDuration. Результат - ISE/NPE.
+        mMediaController.setMediaPlayer(null);
     }
 
     @Override
@@ -121,45 +313,35 @@ public class PlayerFragment extends Fragment
     }
 
     //
-    // Обработчики событий MediaPlayer
-    //
-
-    @Override
-    public void onCompletion(MediaPlayer mediaPlayer) {
-        mController.onCompletion();
-        onComplete();
-    }
-
-    @Override
-    public void onPrepared(MediaPlayer mediaPlayer) {
-        mController.onViewReady();
-        startPlayback();
-
-    }
-
-    //
     // Реализация интерфейса PlayerController.PlayerView
     //
 
     @Override
     public int getCurrentOffset() {
-        return mVideoView.getCurrentPosition();
+        return mPlayer.getCurrentPosition();
     }
 
     @Override
     public void stopPlayback() {
-        mVideoView.setVideoURI(null);
-        mVideoView.stopPlayback();
+        mPlayer.stop();
+
+//        mVideoView.setVideoURI(null);
+//        mVideoView.stopPlayback();
     }
+
+
 
     @Override
     public void seekTo(int millis) {
-        mVideoView.seekTo(millis);
+        if (D) Log.d(LOG_TAG, "Seek To: " + String.valueOf(millis / 1000));
+        mPlayer.seekTo(millis);
+//        mVideoView.seekTo(millis);
     }
 
     @Override
     public void pauseVideo() {
-        mVideoView.pause();
+        mPlayer.pause();
+//        mVideoView.pause();
     }
 
     @Override
@@ -200,15 +382,14 @@ public class PlayerFragment extends Fragment
             mPlayerStateListener.onPlay();
         startVideoPlayback();
     }
-
     @Override
     public void setLoading() {
-
+        mLoadProgressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void setLoadingCompleted() {
-
+        mLoadProgressBar.setVisibility(View.GONE);
     }
 
     @Override
@@ -241,6 +422,14 @@ public class PlayerFragment extends Fragment
     //
 
     /**
+     * Повторное воспроизведение видео
+     */
+    public void replay() {
+        mController.replay();
+    }
+
+
+    /**
      * Инициализирует обрабочтик событий PlayerStateListener
      * @param playerStateListener контейнер фрагмента, обрабатывающий события
      */
@@ -265,11 +454,19 @@ public class PlayerFragment extends Fragment
     protected void initVideoView() {
         View view = getView();
         assert view != null;
-        mVideoView = (VideoView) view.findViewById(R.id.video_view);
-        mMediaController = new MediaController(getActivity());
-        mVideoView.setMediaController(mMediaController);
+        mLoadProgressBar = (ProgressBar) view.findViewById(R.id.load);
+        mVideoView = (SurfaceView) view.findViewById(R.id.video_view);
+        SurfaceHolder holder = mVideoView.getHolder();
+        assert holder != null;
+        holder.addCallback(mSurfaceCallbackListener);
+        mMediaController = new RutubeMediaController(getActivity());
+        //mVideoView.setMediaController(mMediaController);
+        //mMediaController.setMediaPlayer();
+        mMediaController.setAnchorView((FrameLayout)view.findViewById(R.id.center_video_view));
         mVideoView.setPadding(10, 0, 0, 0);
-        mVideoView.setOnCompletionListener(this);
+        initMediaPlayer();
+//        mVideoView.setOnCompletionListener(this);
+//        mVideoView.setOnPreparedListener(this);
     }
 
     /**
@@ -277,7 +474,18 @@ public class PlayerFragment extends Fragment
      * @param uri Uri видеопотока
      */
     protected void setVideoUri(Uri uri) {
-        mVideoView.setVideoURI(uri);
+        if (uri != null)
+            try {
+                mPlayer.reset();
+                mPrepared = false;
+                if (D) Log.d(LOG_TAG, "Preparing!");
+                mPlayer.setDataSource(getActivity(), uri);
+                mPlayer.prepareAsync();
+                mBufferingPercent = 0;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+//            mVideoView.setVideoURI(uri);
     }
 
     /**
@@ -285,8 +493,9 @@ public class PlayerFragment extends Fragment
      */
     protected void startVideoPlayback() {
         if (D) Log.d(LOG_TAG, "startVideoPlayback");
-        mVideoView.setVideoURI(mStreamUri);
-        mVideoView.start();
+        //mVideoiew.setVideoURI(mStreamUri);
+        mPlayer.start();
+//        mVideoView.start();
     }
 
     /**

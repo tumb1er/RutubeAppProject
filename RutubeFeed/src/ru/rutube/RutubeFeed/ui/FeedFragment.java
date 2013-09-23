@@ -195,6 +195,8 @@ public class FeedFragment extends SherlockFragment implements FeedController.Fee
 
     public void setRefreshing() {
         boolean isLoading = RutubeApp.isLoadingFeed();
+        if (isLoading)
+            return;
         RutubeApp.startLoading();
         if (mRefreshItem == null) {
             if (D) Log.d(LOG_TAG, "empty refresh item");
