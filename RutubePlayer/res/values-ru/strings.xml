@@ -14,4 +14,5 @@
     <string name="video_deleted">Видео удалено</string>
     <string name="video_doesnt_exist">Видео не существует</string>
     <string name="video_is_hidden">Автор скрыл данное видео</string>
+    <string name="video_playback_error">Ошибка воспроизведения видео</string>
 </resources>
