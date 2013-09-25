@@ -84,6 +84,7 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
             }
             ViewHolder holder = (ViewHolder)view.getTag();
             holder.tags.setAdapter(new TagsListAdapter(mContext, R.layout.tag_item, tagValues));
+            holder.tags.setVisibility(View.VISIBLE);
 
         } catch (IllegalArgumentException e) {
             e.printStackTrace();

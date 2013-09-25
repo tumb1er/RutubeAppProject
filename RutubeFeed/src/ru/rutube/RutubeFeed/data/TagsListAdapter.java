@@ -36,7 +36,7 @@ public class TagsListAdapter extends ArrayAdapter<VideoTag> {
         VideoTag item = getItem(position);
         if (item != null) {
             TextView tv = (TextView) view.findViewById(R.id.title);
-            tv.setText(item.getTag());
+            tv.setText("#" + item.getTag());
             tv = (TextView)view.findViewById(R.id.comment);
             tv.setText(item.getMessage());
         }

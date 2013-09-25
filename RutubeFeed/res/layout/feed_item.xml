@@ -57,7 +57,9 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/tagsList"
-                android:visibility="gone" />
+                android:visibility="gone"
+                android:layout_below="@id/createdTextView"
+                />
 
             <ImageView
                     android:layout_width="wrap_content"
@@ -66,7 +68,7 @@
                     android:src="@drawable/comment_line_right"
                     android:adjustViewBounds="true"
                     android:contentDescription="@string/empty"
-                    android:layout_below="@+id/createdTextView"
+                    android:layout_below="@+id/tagsList"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentLeft="true"
                     android:scaleType="fitXY"/>
