@@ -53,14 +53,6 @@
                     android:layout_alignParentTop="false"
                     android:layout_below="@+id/titleTextView"/>
 
-            <ListView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/tagsList"
-                android:visibility="gone"
-                android:layout_below="@id/createdTextView"
-                />
-
             <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -68,7 +60,7 @@
                     android:src="@drawable/comment_line_right"
                     android:adjustViewBounds="true"
                     android:contentDescription="@string/empty"
-                    android:layout_below="@+id/tagsList"
+                    android:layout_below="@+id/createdTextView"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentLeft="true"
                     android:scaleType="fitXY"/>
@@ -83,6 +75,17 @@
                     android:layout_gravity="left"
                     android:layout_below="@+id/createdTextView"/>
 
+            <ListView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/tagsList"
+                android:visibility="gone"
+                android:layout_below="@id/commentLine"
+                android:paddingBottom="10dp"
+                android:divider="@drawable/comment_line"
+                android:dividerHeight="1px"
+                />
+
             <com.android.volley.toolbox.NetworkImageView
                     android:layout_width="50dp"
                     android:layout_height="50dp"
@@ -96,7 +99,7 @@
                     android:src="@drawable/stub"
                     android:layout_alignParentLeft="false"
                     android:layout_alignParentTop="false"
-                    android:layout_below="@+id/commentLine"
+                    android:layout_below="@+id/tagsList"
                 android:layout_margin="5dp" />
 
             <TextView
@@ -108,7 +111,7 @@
                     android:textSize="12dp"
                     android:textStyle="bold"
                     android:layout_toRightOf="@+id/avatarImageView"
-                    android:layout_below="@+id/commentLine"/>
+                    android:layout_below="@+id/tagsList"/>
 
             <TextView
                     android:layout_width="fill_parent"

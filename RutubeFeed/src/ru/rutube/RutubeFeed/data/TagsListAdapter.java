@@ -20,8 +20,8 @@ public class TagsListAdapter extends ArrayAdapter<VideoTag> {
         super(context, resourceId);
     }
 
-    public TagsListAdapter(Context mContext, int tag_item, VideoTag[] values) {
-        super(mContext, tag_item, values);
+    public TagsListAdapter(Context mContext, int resource_id, VideoTag[] values) {
+        super(mContext, resource_id, values);
     }
 
     @Nullable
@@ -38,7 +38,13 @@ public class TagsListAdapter extends ArrayAdapter<VideoTag> {
             TextView tv = (TextView) view.findViewById(R.id.title);
             tv.setText("#" + item.getTag());
             tv = (TextView)view.findViewById(R.id.comment);
-            tv.setText(item.getMessage());
+            String message = item.getMessage();
+            tv.setText(message);
+            if (message == null || message.isEmpty()) {
+                tv.setVisibility(View.GONE);
+            } else {
+                tv.setVisibility(View.VISIBLE);
+            }
         }
 
         return view;

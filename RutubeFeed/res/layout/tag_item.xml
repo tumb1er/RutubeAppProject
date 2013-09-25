@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFFFF">
@@ -21,5 +21,6 @@
         android:text=""
         android:id="@+id/comment"
         android:textColor="@android:color/primary_text_light_nodisable"
-        android:textSize="12dp" />
-</LinearLayout>
+        android:textSize="12dp"
+        android:layout_below="@id/title"/>
+</RelativeLayout>
