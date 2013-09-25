@@ -215,7 +215,11 @@ public class StartActivity extends SherlockFragmentActivity implements MainPageC
      * Заменяет фрагмент ленты в UI рассчитывая на нахождение в контексте транзакции фрагмента.
      */
     private void replaceFragmentInTransaction(FragmentTransaction ft, String tag, Uri feedUri) {
-        if (D) Log.d(LOG_TAG, "replace fragment: to " + tag);
+        Fragment old = getSupportFragmentManager().findFragmentById(R.id.feed_fragment_container);
+        if (old != null)
+            if (D) Log.d(LOG_TAG, "replace fragment: " + String.valueOf(old.getTag()) + " to " + tag);
+        else
+            if (D) Log.d(LOG_TAG, "replace fragment: null to " + tag);
         // ищем фрагмент в локальном кэше
         Fragment fragment = mFragmentMap.get(tag);
         // не нашли, конструируем новый фрагмент с feedUri
@@ -236,6 +240,8 @@ public class StartActivity extends SherlockFragmentActivity implements MainPageC
             }
             if (D) Log.d(LOG_TAG, "Removing " + String.valueOf(prevFragment.getTag()));
             ft.remove(prevFragment);
+            if (old != null)
+                ft.remove(old);
         }
         ft.add(R.id.feed_fragment_container, fragment, tag);
         mCurrentFragmentTag = tag;

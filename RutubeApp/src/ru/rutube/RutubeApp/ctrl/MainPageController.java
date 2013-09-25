@@ -154,7 +154,7 @@ public class MainPageController implements Parcelable, RequestListener {
         mView.addFeedTab(mContext.getResources().getString(ru.rutube.RutubeFeed.R.string.tab_my_video), TAB_MY_VIDEO);
         mView.addFeedTab(mContext.getResources().getString(ru.rutube.RutubeFeed.R.string.tab_subscriptions), TAB_SUBSCRIPTIONS);
         mTabsInited = true;
-        if (D) Log.d(LOG_TAG, "selecting tab" + mSelectedTab);
+        if (D) Log.d(LOG_TAG, "selecting tab " + mSelectedTab);
         mView.selectTab(mSelectedTab);
         mView.showFeedFragment(mSelectedTab, feedUriMap.get(mSelectedTab));
     }

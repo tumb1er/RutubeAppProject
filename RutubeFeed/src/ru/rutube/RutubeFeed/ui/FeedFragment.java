@@ -76,15 +76,23 @@ public class FeedFragment extends SherlockFragment implements FeedController.Fee
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if (D) Log.d(LOG_TAG, "onCreateOptionsMenu");
         super.onCreateOptionsMenu(menu, inflater);
 
         mMenu = menu;
-        inflater.inflate(R.menu.feed_menu, menu);
+        if (menu.size() == 0)
+            inflater.inflate(R.menu.feed_menu, menu);
         mRefreshItem = menu.findItem(R.id.menu_refresh);
         MenuItem searchItem = menu.findItem(R.id.menu_search);
         assert searchItem != null;
         Activity activity = getActivity();
-        assert activity != null;
+        // Иногда успевает вызваться в момент, когда активити недоступно.
+        if (activity != null)
+            setupSearchMenuItem(searchItem, activity);
+
+    }
+
+    private void setupSearchMenuItem(MenuItem searchItem, Activity activity) {
         // Get the SearchView and set the searchable configuration
         SearchManager searchManager = (SearchManager) activity.getSystemService(Context.SEARCH_SERVICE);
         mSearchView = (SearchView) searchItem.getActionView();
@@ -184,9 +192,8 @@ public class FeedFragment extends SherlockFragment implements FeedController.Fee
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        if (D) Log.d(LOG_TAG, "onPrepareOptionsMenu");
+        if (D) Log.d(LOG_TAG, "onPrepareOptionsMenu" + String.valueOf(getTag()));
         mRefreshItem = menu.findItem(R.id.menu_refresh);
-
         mRotateAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate_icon);
         assert mRotateAnimation != null;
         mRotateAnimation.setRepeatCount(Animation.INFINITE);
