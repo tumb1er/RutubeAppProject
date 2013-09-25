@@ -128,6 +128,9 @@ public class Feed<FeedItemT extends FeedItem> {
         if (mContentUri.equals(FeedContract.MyVideo.CONTENT_URI)) {
             return MyVideoFeedItem.fromJSON(data_item);
         }
+        if (mContentUri.equals(FeedContract.Subscriptions.CONTENT_URI)) {
+            return TagsFeedItem.fromJSON(data_item);
+        }
         if (mContentUri.equals(FeedContract.Editors.CONTENT_URI)) {
             return EditorsFeedItem.fromJSON(data_item);
         }

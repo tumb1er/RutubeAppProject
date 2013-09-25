@@ -73,6 +73,9 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
         try {
             int tagsListIndex = cursor.getColumnIndexOrThrow(FeedContract.Subscriptions.TAGS_JSON);
             String tagsJson = cursor.getString(tagsListIndex);
+            if (tagsJson == null) {
+                tagsJson = "[]";
+            }
             JSONArray tags = new JSONArray(tagsJson);
             VideoTag[] tagValues = new VideoTag[tags.length()];
             for(int i=0;i<tags.length();i++) {

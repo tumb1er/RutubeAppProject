@@ -62,7 +62,7 @@ public class TagsFeedItem extends FeedItem {
         JSONArray tags_json = video.getJSONArray(JSON_TAGS);
         ArrayList<VideoTag> result = new ArrayList<VideoTag>(tags_json.length());
         for (int i=0; i<tags_json.length(); i++) {
-            result.set(i, VideoTag.fromJSON(tags_json.getJSONObject(i)));
+            result.add(i, VideoTag.fromJSON(tags_json.getJSONObject(i)));
         }
         return result;
     }
@@ -106,7 +106,17 @@ public class TagsFeedItem extends FeedItem {
 
     protected void fillRow(ContentValues row) {
         super.fillRow(row);
-        JSONArray tags_json = new JSONArray(tags);
+        JSONArray tags_json = getTagsJSONArray();
         row.put(FeedContract.Subscriptions.TAGS_JSON, tags_json.toString());
+    }
+
+    private JSONArray getTagsJSONArray() {
+        ArrayList<JSONObject> tagsjson = new ArrayList<JSONObject>(tags.size());
+        for (VideoTag tag: tags) {
+            try {
+                tagsjson.add(tag.toJSONObject());
+            } catch (JSONException ignored) {}
+        }
+        return new JSONArray(tagsjson);
     }
 }

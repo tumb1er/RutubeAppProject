@@ -35,11 +35,11 @@ public class VideoTag {
         return new VideoTag(id, tag, message);
     }
 
-    public String toJSONString() throws JSONException {
+    public JSONObject toJSONObject() throws JSONException {
         JSONObject result = new JSONObject();
         result.put(JSON_ID, mId);
         result.put(JSON_NAME, mTag);
         result.put(JSON_COMMENT, mMessage);
-        return result.toString();
+        return result;
     }
 }
