@@ -89,6 +89,12 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
             for (int i=0;i<tagValues.length;i++) {
                 View tagView = tagsListAdapter.getView(i, null, holder.tags);
                 assert tagView != null;
+
+                if (i == 0) {
+                    View line = tagView.findViewById(R.id.commentLine);
+                    line.setVisibility(View.GONE);
+                }
+
                 holder.tags.addView(tagView);
             }
             holder.tags.setVisibility(View.VISIBLE);
