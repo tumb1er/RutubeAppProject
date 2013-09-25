@@ -74,17 +74,13 @@
                     android:src="@drawable/comment_line"
                     android:layout_gravity="left"
                     android:layout_below="@+id/createdTextView"/>
-
-            <ListView
+            <LinearLayout
+                android:orientation="vertical"
+                android:baselineAligned="false"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/tagsList"
-                android:visibility="gone"
+                android:layout_height="match_parent"
                 android:layout_below="@id/commentLine"
-                android:paddingBottom="10dp"
-                android:divider="@drawable/comment_line"
-                android:dividerHeight="1px"
-                />
+                android:id="@+id/tagsListContainer"/>
 
             <com.android.volley.toolbox.NetworkImageView
                     android:layout_width="50dp"
@@ -99,7 +95,7 @@
                     android:src="@drawable/stub"
                     android:layout_alignParentLeft="false"
                     android:layout_alignParentTop="false"
-                    android:layout_below="@+id/tagsList"
+                    android:layout_below="@+id/tagsListContainer"
                 android:layout_margin="5dp" />
 
             <TextView
@@ -111,7 +107,7 @@
                     android:textSize="12dp"
                     android:textStyle="bold"
                     android:layout_toRightOf="@+id/avatarImageView"
-                    android:layout_below="@+id/tagsList"/>
+                    android:layout_below="@+id/tagsListContainer"/>
 
             <TextView
                     android:layout_width="fill_parent"

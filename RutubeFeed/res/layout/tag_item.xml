@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:background="#FFFFFFFF">
 
     <TextView
@@ -13,7 +14,7 @@
         android:layout_gravity="left|center_vertical"
         android:textColor="#FF000000"
         android:textStyle="bold"
-        android:textSize="16dp" />
+        android:textSize="12sp" />
 
     <TextView
         android:layout_width="fill_parent"
@@ -21,6 +22,5 @@
         android:text=""
         android:id="@+id/comment"
         android:textColor="@android:color/primary_text_light_nodisable"
-        android:textSize="12dp"
-        android:layout_below="@id/title"/>
-</RelativeLayout>
+        android:textSize="12sp"/>
+</LinearLayout>

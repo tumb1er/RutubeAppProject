@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -42,7 +43,7 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
     private static final boolean D = BuildConfig.DEBUG;
 
     protected static class ViewHolder extends FeedCursorAdapter.ViewHolder {
-        public ListView tags;
+        public LinearLayout tags;
     }
 
     public SubscriptionsCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
@@ -63,7 +64,7 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
 
     protected ViewHolder initHolder(View view, ViewHolder holder) {
         super.initHolder(view, holder);
-        holder.tags = (ListView)view.findViewById(R.id.tagsList);
+        holder.tags = (LinearLayout)view.findViewById(R.id.tagsListContainer);
         return holder;
     }
 
@@ -83,8 +84,15 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
                 tagValues[i] = tag;
             }
             ViewHolder holder = (ViewHolder)view.getTag();
-            holder.tags.setAdapter(new TagsListAdapter(mContext, R.layout.tag_item, tagValues));
+            TagsListAdapter tagsListAdapter = new TagsListAdapter(mContext, R.layout.tag_item, tagValues);
+            holder.tags.removeAllViews();
+            for (int i=0;i<tagValues.length;i++) {
+                View tagView = tagsListAdapter.getView(i, null, holder.tags);
+                assert tagView != null;
+                holder.tags.addView(tagView);
+            }
             holder.tags.setVisibility(View.VISIBLE);
+
             holder.description.setVisibility(View.GONE);
 
         } catch (IllegalArgumentException e) {
