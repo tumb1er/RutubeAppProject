@@ -27,9 +27,9 @@ import ru.rutube.RutubeAPI.requests.RequestListener;
  * Created by tumbler on 14.07.13.
  */
 public class MainPageController implements Parcelable, RequestListener {
-    private static final String TAB_EDITORS = "editors";
-    private static final String TAB_MY_VIDEO = "my_video";
-    private static final String TAB_SUBSCRIPTIONS = "subscription";
+    public static final String TAB_EDITORS = "editors";
+    public static final String TAB_MY_VIDEO = "my_video";
+    public static final String TAB_SUBSCRIPTIONS = "subscription";
     private static final String LOG_TAG = MainPageController.class.getName();
     private static final boolean D = BuildConfig.DEBUG;
 

@@ -46,6 +46,8 @@ public class FeedController implements Parcelable {
         public void showError();
         public LoaderManager getLoaderManager();
         public void openPlayer(Uri uri, Uri thumbnailUri);
+
+        public FeedCursorAdapter initAdapter();
     }
 
     private static final int LOADER_ID = 1;
@@ -157,16 +159,10 @@ public class FeedController implements Parcelable {
      * @return
      */
     private FeedCursorAdapter prepareFeedCursorAdapter() {
-        FeedCursorAdapter adapter = new FeedCursorAdapter(mContext,
-                R.layout.feed_item,
-                null,
-                new String[]{FeedContract.FeedColumns.TITLE, FeedContract.FeedColumns.THUMBNAIL_URI},
-                new int[]{R.id.titleTextView, R.id.thumbnailImageView},
-                0);
+        FeedCursorAdapter adapter = mView.initAdapter();
         adapter.setLoadMoreListener(loadMoreListener);
         return adapter;
     }
-
 
     /**
      * Обрабатывает события "нужно загрузить следующую страницу", приходящие от адаптера

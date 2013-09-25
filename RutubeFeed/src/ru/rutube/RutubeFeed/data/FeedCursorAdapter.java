@@ -48,7 +48,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         mHasMore = hasMore;
     }
 
-    static class ViewHolder {
+    protected static class ViewHolder {
         TextView title;
         TextView created;
         TextView description;
@@ -92,6 +92,12 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         View view = inflater.inflate(item_layout_id, null);
         assert view != null;
         ViewHolder holder = new ViewHolder();
+        initHolder(view, holder);
+        view.setTag(holder);
+        return view;
+    }
+
+    protected ViewHolder initHolder(View view, ViewHolder holder) {
         holder.title = (TextView)view.findViewById(R.id.titleTextView);
         holder.description = (TextView)view.findViewById(R.id.descriptionTextView);
         holder.author = (TextView)view.findViewById(R.id.authorTextView);
@@ -100,8 +106,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         holder.avatar = (NetworkImageView)view.findViewById(R.id.avatarImageView);
         holder.thumbnail = (NetworkImageView)view.findViewById(R.id.thumbnailImageView);
         holder.thumbnail.setDefaultImageResId(R.drawable.stub);
-        view.setTag(holder);
-        return view;
+        return holder;
     }
 
     @Override

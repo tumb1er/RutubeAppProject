@@ -21,6 +21,7 @@ import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubeApp.ctrl.MainPageController;
 import ru.rutube.RutubeApp.ui.dialog.LoginDialogFragment;
 import ru.rutube.RutubeApp.ui.feed.PlaFeedFragment;
+import ru.rutube.RutubeApp.ui.feed.PlaSubscriptionsFragment;
 
 import java.util.HashMap;
 
@@ -220,7 +221,7 @@ public class StartActivity extends SherlockFragmentActivity implements MainPageC
         // не нашли, конструируем новый фрагмент с feedUri
         if (fragment == null) {
             if (D) Log.d(LOG_TAG, "Not in cache, creating");
-                    fragment = createFeedFragment(feedUri);
+                    fragment = createFeedFragment(feedUri, tag);
             // добавляем в кэш
             mFragmentMap.put(tag, fragment);
         }
@@ -244,8 +245,13 @@ public class StartActivity extends SherlockFragmentActivity implements MainPageC
      * @param feedUri uri ленты
      * @return готовый к использованию фрагмент ленты
      */
-    private Fragment createFeedFragment(Uri feedUri) {
-        Fragment fragment = new PlaFeedFragment();
+    private Fragment createFeedFragment(Uri feedUri, String tag) {
+        Fragment fragment;
+        if (tag.equals(MainPageController.TAB_SUBSCRIPTIONS))
+            fragment = new PlaSubscriptionsFragment();
+        else
+            fragment = new PlaFeedFragment();
+
         Bundle args = new Bundle();
         args.putParcelable(Constants.Params.FEED_URI, feedUri);
         fragment.setArguments(args);

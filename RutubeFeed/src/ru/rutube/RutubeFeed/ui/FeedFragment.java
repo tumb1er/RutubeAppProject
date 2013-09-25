@@ -26,9 +26,11 @@ import com.actionbarsherlock.widget.SearchView;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.RutubeApp;
+import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeFeed.R;
 import ru.rutube.RutubeFeed.ctrl.FeedController;
+import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
 
 /**
  * Created with IntelliJ IDEA.
@@ -122,6 +124,16 @@ public class FeedFragment extends SherlockFragment implements FeedController.Fee
         if (D) Log.d(LOG_TAG, "Starting player");
         startActivityForResult(intent, 0);
         if (D) Log.d(LOG_TAG, "Player started");
+    }
+
+    @Override
+    public FeedCursorAdapter initAdapter() {
+        return new FeedCursorAdapter(getActivity(),
+            R.layout.feed_item,
+            null,
+            new String[]{FeedContract.FeedColumns.TITLE, FeedContract.FeedColumns.THUMBNAIL_URI},
+            new int[]{R.id.titleTextView, R.id.thumbnailImageView},
+            0);
     }
 
     public void showError() {

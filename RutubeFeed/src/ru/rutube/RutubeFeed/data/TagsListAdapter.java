@@ -20,6 +20,10 @@ public class TagsListAdapter extends ArrayAdapter<VideoTag> {
         super(context, resourceId);
     }
 
+    public TagsListAdapter(Context mContext, int tag_item, VideoTag[] values) {
+        super(mContext, tag_item, values);
+    }
+
     @Nullable
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
