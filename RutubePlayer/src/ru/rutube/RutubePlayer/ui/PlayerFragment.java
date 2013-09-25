@@ -173,6 +173,16 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         }
     };
 
+    protected MediaPlayer.OnErrorListener mOnErrorListener = new MediaPlayer.OnErrorListener() {
+        @Override
+        public boolean onError(MediaPlayer mediaPlayer, int i, int i2) {
+            if (D) Log.d(LOG_TAG, "onError");
+            mController.onPlaybackError();
+            return true;
+        }
+    };
+
+
     protected MediaPlayer.OnPreparedListener mOnPreparedListener = new MediaPlayer.OnPreparedListener() {
         @Override
         public void onPrepared(MediaPlayer mediaPlayer) {
@@ -281,6 +291,7 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         mPlayer.setOnCompletionListener(mOnCompletionListener);
         mPlayer.setOnBufferingUpdateListener(mOnBufferingUpdateListener);
         mPlayer.setOnVideoSizeChangedListener(mOnVideoSizeChanged);
+        mPlayer.setOnErrorListener(mOnErrorListener);
     }
 
     @Override

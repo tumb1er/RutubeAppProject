@@ -355,6 +355,16 @@ public class PlayerController implements Parcelable, RequestListener {
     }
 
     /**
+     * Обрабатывает событие ошибки воспроизведения видео
+     */
+    public void onPlaybackError() {
+        setState(STATE_ERROR);
+        mView.showError(mContext.getString(R.string.video_playback_error));
+        mView.toggleThumbnail(true);
+    }
+
+
+    /**
      * Обработка события инициализации VideoView
      */
     public void onViewReady() {
