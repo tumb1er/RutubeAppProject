@@ -7,6 +7,8 @@ import android.test.ActivityInstrumentationTestCase2;
 
 import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubePlayer.ctrl.PlayerController;
+import ru.rutube.RutubePlayer.ui.PlayerActivity;
+import ru.rutube.RutubePlayer.ui.PlayerFragment;
 
 /**
  * This is a simple framework for a test of an Application.  See
@@ -18,16 +20,16 @@ import ru.rutube.RutubePlayer.ctrl.PlayerController;
  * -e class ru.rutube.RutubeApp.ui.player.VitamioPlayerActivityTest \
  * ru.rutube.RutubeApp.tests/android.test.InstrumentationTestRunner
  */
-public class VitamioPlayerActivityTest extends ActivityInstrumentationTestCase2<VitamioPlayerActivity> {
+public class VitamioPlayerActivityTest extends ActivityInstrumentationTestCase2<PlayerActivity> {
 
     private Intent intent;
     private Uri videoUri;
     private Uri thumbnailUri;
-    private VitamioPlayerActivity mActivity;
-    private VitamioPlayerFragment mFragment;
+    private PlayerActivity mActivity;
+    private PlayerFragment mFragment;
 
     public VitamioPlayerActivityTest() {
-        super(VitamioPlayerActivity.class);
+        super(PlayerActivity.class);
     }
 
 
@@ -44,7 +46,7 @@ public class VitamioPlayerActivityTest extends ActivityInstrumentationTestCase2<
      * Проверяет, что PlayerFragment корректно обрабатывает процесс сохранения и загрузки состояния
      */
     public void testPlayerFragmentSaveLoad() {
-        mFragment = (VitamioPlayerFragment)(mActivity.getSupportFragmentManager().findFragmentById(R.id.player_fragment));
+        mFragment = (PlayerFragment)(mActivity.getSupportFragmentManager().findFragmentById(R.id.player_fragment));
         assertNotNull(mFragment);
         Bundle state = new Bundle();
         mFragment.onSaveInstanceState(state);
@@ -57,7 +59,7 @@ public class VitamioPlayerActivityTest extends ActivityInstrumentationTestCase2<
      * @throws Throwable
      */
     public void testControllerSaveLoad() throws Throwable {
-        mFragment = (VitamioPlayerFragment)(mActivity.getSupportFragmentManager().findFragmentById(R.id.player_fragment));
+        mFragment = (PlayerFragment)(mActivity.getSupportFragmentManager().findFragmentById(R.id.player_fragment));
         assertNotNull(mFragment);
         final PlayerController controller = new PlayerController(videoUri, thumbnailUri);
         runTestOnUiThread(new Runnable() {
