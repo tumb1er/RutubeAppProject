@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -194,11 +195,15 @@ public class FeedFragment extends SherlockFragment implements FeedController.Fee
     public void onPrepareOptionsMenu(Menu menu) {
         if (D) Log.d(LOG_TAG, "onPrepareOptionsMenu" + String.valueOf(getTag()));
         mRefreshItem = menu.findItem(R.id.menu_refresh);
-        mRotateAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate_icon);
+        FragmentActivity activity = getActivity();
+        // NPE, куда же без него
+        if (activity == null)
+            return;
+        mRotateAnimation = AnimationUtils.loadAnimation(activity, R.anim.rotate_icon);
         assert mRotateAnimation != null;
         mRotateAnimation.setRepeatCount(Animation.INFINITE);
 
-        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         ImageView iv = (ImageView) inflater.inflate(R.layout.refresh_btn, null);
         iv.setOnClickListener(mRefreshClickListener);
         mRefreshItem.setActionView(iv);
