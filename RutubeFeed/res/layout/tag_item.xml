@@ -12,7 +12,6 @@
         android:layout_height="wrap_content"
         android:id="@+id/commentLine"
         android:src="@drawable/comment_line_right"
-        android:adjustViewBounds="true"
         android:contentDescription="@string/empty"
         android:scaleType="fitXY"/>
 
