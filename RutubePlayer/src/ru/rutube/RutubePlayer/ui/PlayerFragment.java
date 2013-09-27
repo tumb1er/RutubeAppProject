@@ -2,11 +2,13 @@ package ru.rutube.RutubePlayer.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,6 +39,8 @@ import ru.rutube.RutubePlayer.ctrl.PlayerController;
  * To change this template use File | Settings | File Templates.
  */
 public class PlayerFragment extends Fragment implements PlayerController.PlayerView {
+
+    private PowerManager.WakeLock mWakeLock;
 
     /**
      * Интерфейс общения с активити, в которое встроен фрагмент с плеером
@@ -276,6 +280,7 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
             initMediaPlayer();
         mController.onResume();
         mMediaController.setMediaPlayer(mMediaPlayerControl);
+        mWakeLock.acquire();
     }
 
     private void initMediaPlayer() {
@@ -307,6 +312,7 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         // messageHandler после детача получает очередное сообщение о прогрессе и пытается вызвать
         // у деинициализированного плеера getDuration. Результат - ISE/NPE.
         mMediaController.setMediaPlayer(null);
+        mWakeLock.release();
     }
 
     @Override
@@ -473,8 +479,7 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         mMediaController = new RutubeMediaController(getActivity());
         //mVideoView.setMediaController(mMediaController);
         //mMediaController.setMediaPlayer();
-        mMediaController.setAnchorView((FrameLayout)view.findViewById(R.id.center_video_view));
-        mVideoView.setPadding(10, 0, 0, 0);
+        mMediaController.setAnchorView((FrameLayout) view.findViewById(R.id.center_video_view));
         initMediaPlayer();
 //        mVideoView.setOnCompletionListener(this);
 //        mVideoView.setOnPreparedListener(this);
@@ -520,6 +525,9 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         Intent intent = activity.getIntent();
         Uri videoUri = intent.getData();
         Uri thumbnailUri = intent.getParcelableExtra(Constants.Params.THUMBNAIL_URI);
+        PowerManager pm = (PowerManager) getActivity().getSystemService(Context.POWER_SERVICE);
+        mWakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "VideoPlayer");
+
         initVideoView();
         mController = null;
         if (savedInstanceState != null) {
