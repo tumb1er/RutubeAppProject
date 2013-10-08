@@ -22,9 +22,24 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="http"
-                    android:host="rutube.ru"
-                    android:pathPrefix="/video/" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/embed/" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/private/" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/0" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/1" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/2" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/3" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/4" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/5" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/6" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/7" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/8" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/9" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/a" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/b" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/c" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/d" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/e" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/f" />
             </intent-filter>
             <intent-filter android:label="@string/app_name">
                 <action android:name="ru.rutube.player.play"/>

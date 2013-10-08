@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="ru.rutube.RutubeApp"
-          android:versionCode="18"
-          android:versionName="1.0.0-18">
+          android:versionCode="19"
+          android:versionName="1.0.0-19">
 
     <uses-sdk
         android:minSdkVersion="9"
@@ -37,21 +37,37 @@
         <activity
             android:name="ru.rutube.RutubePlayer.ui.PlayerActivity"
             android:label="@string/app_name">
-                <intent-filter>
-                    <action android:name="android.intent.action.VIEW" />
-                    <category android:name="android.intent.category.DEFAULT" />
-                    <category android:name="android.intent.category.BROWSABLE" />
-                    <data android:scheme="http"
-                          android:host="rutube.ru"
-                          android:pathPrefix="/video/" />
-                </intent-filter>
-                <intent-filter android:label="@string/app_name">
-                    <action android:name="ru.rutube.player.play"/>
-                    <category android:name="android.intent.category.DEFAULT"/>
-                    <data android:scheme="http"
-                          android:host="rutube.ru"
-                          android:pathPrefix="/video/" />
-                </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="ru.rutube.player.play"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/embed/" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/private/" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/0" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/1" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/2" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/3" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/4" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/5" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/6" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/7" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/8" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/9" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/a" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/b" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/c" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/d" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/e" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/f" />
+            </intent-filter>
+            <!--<intent-filter android:label="@string/app_name">-->
+                <!--<action android:name="ru.rutube.player.play"/>-->
+                <!--<category android:name="android.intent.category.DEFAULT"/>-->
+                <!--<data android:scheme="http"-->
+                    <!--android:host="rutube.ru"-->
+                    <!--android:pathPrefix="/video/" />-->
+            <!--</intent-filter>-->
         </activity>
         <activity
             android:name="ru.rutube.RutubeFeed.ui.FeedActivity"

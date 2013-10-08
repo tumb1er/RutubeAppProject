@@ -1,12 +1,17 @@
 package ru.rutube.RutubePlayer;
 
+import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.UiThreadTest;
 import android.util.Log;
+
+import java.util.List;
 
 import ru.rutube.RutubePlayer.ctrl.PlayerController;
 import ru.rutube.RutubePlayer.ui.PlayerActivity;
@@ -24,6 +29,7 @@ public class PlayerActivityTest extends ActivityInstrumentationTestCase2<PlayerA
     private Uri videoUri;
     private Uri thumbnailUri;
     private Intent intent;
+    private PlayerController ctrl;
 
     public PlayerActivityTest() {
         super(PlayerActivity.class);
@@ -44,37 +50,51 @@ public class PlayerActivityTest extends ActivityInstrumentationTestCase2<PlayerA
 
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        super.tearDown();
+        if (ctrl != null)
+            try {
+                ctrl.detach();
+            } catch (NullPointerException ignored) {}
+    }
+
     /**
      * Проверяет, что PlayerFragment корректно обрабатывает процесс сохранения и загрузки состояния
      */
+    @UiThreadTest
     public void testPlayerFragmentSaveLoad() {
-        mFragment = (PlayerFragment)(mActivity.getSupportFragmentManager().findFragmentById(R.id.player_fragment));
+        if (D)Log.d(LOG_TAG, "START");
+        mFragment = (PlayerFragment)(mActivity.getSupportFragmentManager().findFragmentById(
+                R.id.player_fragment));
         assertNotNull(mFragment);
         Bundle state = new Bundle();
+        if (D) Log.d(LOG_TAG, "onSaveInstanceState");
         mFragment.onSaveInstanceState(state);
+        if (D) Log.d(LOG_TAG, "1onPause");
         mFragment.onPause();
+        if (D) Log.d(LOG_TAG, "onActivityCreated");
         mFragment.onActivityCreated(state);
+        if (D) Log.d(LOG_TAG, "getController");
+        ctrl = mFragment.getController();
     }
 
     /**
      * Проверяет, что PlayerController корректно обрабатывает процесс сохранения и загрузки состояния
      * @throws Throwable
      */
+    @UiThreadTest
     public void testControllerSaveLoad() throws Throwable {
-        mFragment = (PlayerFragment)(mActivity.getSupportFragmentManager().findFragmentById(R.id.player_fragment));
+        mFragment = (PlayerFragment)(mActivity.getSupportFragmentManager().findFragmentById(
+                R.id.player_fragment));
         assertNotNull(mFragment);
-        final PlayerController controller = new PlayerController(videoUri, thumbnailUri);
-        runTestOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                controller.attach(mActivity, mFragment);
-            }
-        });
+        ctrl = new PlayerController(videoUri, thumbnailUri);
+        ctrl.attach(mActivity, mFragment);
         Bundle b = new Bundle();
-        b.putParcelable("KEY", controller);
+        b.putParcelable("KEY", ctrl);
         Object res  = b.getParcelable("KEY");
         assertNotNull(res);
-        assertTrue(res.equals(controller));
+        assertTrue(res.equals(ctrl));
     }
 
     /**
@@ -95,8 +115,9 @@ public class PlayerActivityTest extends ActivityInstrumentationTestCase2<PlayerA
      */
     @UiThreadTest
     public void testChangeState() {
-        mFragment = (PlayerFragment)(mActivity.getSupportFragmentManager().findFragmentById(R.id.player_fragment));
-        PlayerController ctrl = mFragment.getController();
+        mFragment = (PlayerFragment)(mActivity.getSupportFragmentManager().findFragmentById(
+                R.id.player_fragment));
+        ctrl = mFragment.getController();
         ctrl.onPlaybackError();
         assertEquals(PlayerController.STATE_ERROR, ctrl.getState());
         mFragment.getDialog().dismiss();
@@ -108,4 +129,49 @@ public class PlayerActivityTest extends ActivityInstrumentationTestCase2<PlayerA
         assertEquals(PlayerController.STATE_STARTING, ctrl.getState());
     }
 
+    /**
+     * Проверяет корректность определения плеера по URL.
+     */
+    public void testIntentFilters() {
+        Instrumentation.ActivityMonitor m = getInstrumentation().addMonitor(
+                PlayerActivity.class.getName(), null, true);
+        Intent intent = new Intent();
+        intent.setAction("android.intent.action.VIEW");
+        String[] playerUrls = new String[] {
+                "http://rutube.ru/video/embed/6550500/",
+                "http://rutube.ru/video/private/c667beb7752cf85deaed08e4fd3e9372/?p=bBuEb_zFgMBx75k5OaSm_A",
+                "http://rutube.ru/video/411228a1ff96f0a3c296f5c437cb4907/"
+        };
+        PackageManager packageManager = getActivity().getPackageManager();
+        assert packageManager != null;
+        for (String playerUrl : playerUrls) {
+            intent.setData(Uri.parse(playerUrl));
+            List<ResolveInfo> resolution = packageManager.queryIntentActivities(
+                    intent, PackageManager.MATCH_DEFAULT_ONLY);
+            boolean rutubeFound = false;
+            for (ResolveInfo value : resolution) {
+                rutubeFound = rutubeFound || String.valueOf(value.activityInfo).contains(
+                        PlayerActivity.class.getName());
+            }
+            assertTrue(playerUrl, rutubeFound);
+        }
+
+        String[] otherUrls = new String[] {
+                "http://rutube.ru/api/video/editors/",
+                "http://rutube.ru/video/person/",
+                "http://rutube.ru/video/person/350/",
+        };
+        for (String otherUrl : otherUrls) {
+            intent.setData(Uri.parse(otherUrl));
+            List<ResolveInfo> resolution = packageManager.queryIntentActivities(
+                    intent, PackageManager.MATCH_DEFAULT_ONLY);
+            boolean rutubeFound = false;
+            for (ResolveInfo value : resolution) {
+                rutubeFound = rutubeFound || String.valueOf(value.activityInfo).contains(
+                        PlayerActivity.class.getName());
+                Log.d(LOG_TAG, String.valueOf(value));
+            }
+            assertFalse(otherUrl, rutubeFound);
+        }
+    }
 }
