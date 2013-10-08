@@ -2,6 +2,7 @@ package ru.rutube.RutubePlayer.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -40,8 +41,6 @@ import ru.rutube.RutubePlayer.ctrl.PlayerController;
  */
 public class PlayerFragment extends Fragment implements PlayerController.PlayerView {
 
-    private PowerManager.WakeLock mWakeLock;
-
     /**
      * Интерфейс общения с активити, в которое встроен фрагмент с плеером
      */
@@ -75,6 +74,9 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
     protected RutubeMediaController mMediaController;
     protected int mBufferingPercent = 0;
     protected boolean mPrepared = false;
+
+    protected PowerManager.WakeLock mWakeLock;
+    private Dialog mDialog;
 
 
     /**
@@ -312,7 +314,8 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         // messageHandler после детача получает очередное сообщение о прогрессе и пытается вызвать
         // у деинициализированного плеера getDuration. Результат - ISE/NPE.
         mMediaController.setMediaPlayer(null);
-        mWakeLock.release();
+        if (mWakeLock.isHeld())
+            mWakeLock.release();
     }
 
     @Override
@@ -384,12 +387,12 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         if (activity == null)
             return;
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        AlertDialog dialog = builder.
+        mDialog = builder.
                 setTitle(android.R.string.dialog_alert_title).
                 setMessage(error).
                 create();
-        dialog.setOnDismissListener(mErrorListener);
-        dialog.show();
+        mDialog.setOnDismissListener(mErrorListener);
+        mDialog.show();
     }
 
     @Override
@@ -437,6 +440,14 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
     //
     // Собственные публичные методы
     //
+
+    public PlayerController getController() {
+        return mController;
+    }
+
+    public Dialog getDialog() {
+        return mDialog;
+    }
 
     /**
      * Повторное воспроизведение видео
@@ -492,6 +503,8 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
     protected void setVideoUri(Uri uri) {
         if (uri != null)
             try {
+                if (mPlayer == null)
+                    initMediaPlayer();
                 mPlayer.reset();
                 mPrepared = false;
                 if (D) Log.d(LOG_TAG, "Preparing!");

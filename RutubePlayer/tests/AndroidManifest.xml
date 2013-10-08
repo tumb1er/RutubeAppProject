@@ -7,8 +7,12 @@
     <!-- We add an application tag here just so that we can indicate that
          this package needs to link against the android.test library,
          which is needed when building test cases. -->
-    <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="17"/>
-    <application>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="18"/>
+    <application
+        android:name="ru.rutube.RutubeAPI.RutubeApp">
+        <!--android:theme="@style/Theme.Sherlock">-->
         <uses-library android:name="android.test.runner" />
         <activity
             android:screenOrientation="landscape"

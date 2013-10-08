@@ -429,6 +429,14 @@ public class PlayerController implements Parcelable, RequestListener {
     }
 
     /**
+     * Возвращает текущее состояние контроллера
+     * @return PlayerController.STATE_*
+     */
+    public int getState() {
+        return mState;
+    }
+
+    /**
      * Осуществляет разбор ссылки на видео с целью получить ID видео
      * и подпись для приватного видео.
      */
@@ -466,6 +474,7 @@ public class PlayerController implements Parcelable, RequestListener {
         if (D) Log.d(LOG_TAG, "Restoring from state " + String.valueOf(mState));
         switch(mState) {
             case STATE_STARTING:
+            case STATE_ERROR:
                 // на момент сохранения запросы еще не были обработаны, запускаем их заново
                 mState = STATE_NEW;
                 requestStream();
