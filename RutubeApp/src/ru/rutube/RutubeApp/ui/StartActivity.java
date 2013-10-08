@@ -243,7 +243,11 @@ public class StartActivity extends SherlockFragmentActivity implements MainPageC
             if (old != null)
                 ft.remove(old);
         }
-        ft.add(R.id.feed_fragment_container, fragment, tag);
+        prevFragment = getSupportFragmentManager().findFragmentByTag(tag);
+        // История с IndexError внутри FragmentActivity - в интернетах пишут это из-за того, что
+        // идентичные фрагменты задваиваются при повторном добавлении.
+        if (prevFragment == null)
+            ft.add(R.id.feed_fragment_container, fragment, tag);
         mCurrentFragmentTag = tag;
     }
     /**
