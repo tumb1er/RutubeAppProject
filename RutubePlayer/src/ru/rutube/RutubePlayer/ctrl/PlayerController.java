@@ -244,6 +244,9 @@ public class PlayerController implements Parcelable, RequestListener {
     // Реализация Parcelable
 
     public static PlayerController fromParcel(Parcel in) {
+        int checksum = in.readInt();
+        if (checksum != 100500) throw new IllegalArgumentException(
+                "Invalid parcel for PlayerController: " + String.valueOf(in));
         Uri videoUri = in.readParcelable(Uri.class.getClassLoader());
         TrackInfo trackInfo = in.readParcelable(TrackInfo.class.getClassLoader());
         Uri thumbnailUri = in.readParcelable(Uri.class.getClassLoader());
@@ -259,6 +262,7 @@ public class PlayerController implements Parcelable, RequestListener {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(100500);
         parcel.writeParcelable(mVideoUri, i);
         parcel.writeParcelable(mTrackInfo, i);
         parcel.writeParcelable(mThumbnailUri, i);
