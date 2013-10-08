@@ -5,4 +5,9 @@
     <color name="seekbar_progress">#FF0090FF</color>
     <color name="seekbar_secondary">#FFFFFFFF</color>
     <color name="feed_bg">#FFF3F3F3</color>
+    <!-- Theme.Rutube -->
+    <color name="action_bar_background">#FFFCFCFC</color>
+    <color name="tab_bar_background">#FFEFEFEF</color>
+    <color name="tab_text">#FF555555</color>
+    <color name="tab_selected_marker">#FF33B5E5</color>
 </resources>

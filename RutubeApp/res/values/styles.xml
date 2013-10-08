@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="NewApi">
 
     <style name="MediaController_Container">
         <item name="android:background">@color/transparent</item>
@@ -22,4 +23,31 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <!-- Переопределение ссылок на стили в теме -->
+    <style name="Theme.Rutube" parent="Theme.Sherlock">
+        <item name="actionBarStyle">@style/Rutube.ActionBarStyle</item>
+        <item name="android:actionBarStyle">@style/Rutube.ActionBarStyle</item>
+        <item name="actionBarTabBarStyle">@style/Rutube.TabBar</item>
+        <item name="android:actionBarTabBarStyle">@style/Rutube.TabBar</item>
+        <item name="actionBarTabTextStyle">@style/Rutube.TabText</item>
+        <item name="android:actionBarTabTextStyle">@style/Rutube.TabText</item>
+    </style>
+
+    <style name="Rutube.ActionBarStyle" parent="Widget.Sherlock.Light.ActionBar.Solid.Inverse">
+        <!-- Фон ActionBar -->
+        <item name="background">@color/action_bar_background</item>
+        <item name="android:background">@color/action_bar_background</item>
+        <!-- не показывать Title -->
+        <item name="displayOptions">useLogo|showHome</item>
+        <item name="android:displayOptions">useLogo|showHome</item>
+    </style>
+
+    <style name="Rutube.TabBar" parent="Widget.Sherlock.ActionBar.TabBar">
+        <!-- Фон заголовков вкладок -->
+        <item name="background">@color/tab_bar_background</item>
+        <item name="android:background">@color/tab_bar_background</item>
+    </style>
+    <style name="Rutube.TabText" parent="Widget.Sherlock.ActionBar.TabText">
+        <item name="android:textColor">@color/tab_text</item>
+    </style>
 </resources>
