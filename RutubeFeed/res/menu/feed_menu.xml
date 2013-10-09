@@ -10,7 +10,7 @@
         android:id="@+id/menu_refresh"
         android:showAsAction="ifRoom"
         android:title="@string/refresh"
-        android:icon="@drawable/ic_menu_refresh"
+        android:icon="@drawable/ic_navigation_refresh"
         >
     </item>
     <item
