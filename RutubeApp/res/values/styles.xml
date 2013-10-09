@@ -24,7 +24,7 @@
     </style>
 
     <!-- Переопределение ссылок на стили в теме -->
-    <style name="Theme.Rutube" parent="Theme.Sherlock">
+    <style name="Theme.Rutube" parent="Theme.Rutube.Base">
         <item name="actionBarStyle">@style/Rutube.ActionBarStyle</item>
         <item name="android:actionBarStyle">@style/Rutube.ActionBarStyle</item>
         <item name="actionBarTabBarStyle">@style/Rutube.TabBar</item>
@@ -33,8 +33,19 @@
         <item name="android:actionBarTabStyle">@style/Widget.Sherlock.ActionBar.TabView</item>
         <item name="actionBarTabTextStyle">@style/Rutube.TabText</item>
         <item name="android:actionBarTabTextStyle">@style/Rutube.TabText</item>
-        <!-- иконка в элементе поиска -->
+
+    </style>
+
+    <style name="Theme.Rutube.Base" parent="Theme.Sherlock.Light">
+        <!-- иконка поиска в элементе поиска -->
         <item name="searchViewSearchIcon">@drawable/ic_action_search</item>
+        <!-- иконка приложения (не лого) -->
+        <item name="rutubeAppIcon">@drawable/abs__ic_voice_search</item>
+
+        <!-- иконка HomeAsUp при активном поле поиска-->
+        <item name="icon">?attr/rutubeAppIcon</item>
+        <item name="android:icon">?attr/rutubeAppIcon</item>
+
     </style>
 
     <style name="Rutube.ActionBarStyle" parent="Widget.Sherlock.Light.ActionBar.Solid.Inverse">
@@ -64,5 +75,11 @@
 
     <style name="Rutube.TabText" parent="Widget.Sherlock.ActionBar.TabText">
         <item name="android:textColor">@color/tab_text</item>
+    </style>
+
+    <!-- Тема для лент в новом окне -->
+    <style name="Theme.Rutube.Feed" parent="Theme.Rutube">
+        <item name="logo">?attr/rutubeAppIcon</item>
+        <item name="android:logo">?attr/rutubeAppIcon</item>
     </style>
 </resources>

@@ -27,7 +27,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="ru.rutube.RutubeApp.ui.SearchFeedActivity">
+            android:name="ru.rutube.RutubeApp.ui.SearchFeedActivity"
+            android:theme="@style/Theme.Rutube.Feed">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH"/>
             </intent-filter>
