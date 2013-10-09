@@ -487,6 +487,7 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         SurfaceHolder holder = mVideoView.getHolder();
         assert holder != null;
         holder.addCallback(mSurfaceCallbackListener);
+        holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         mMediaController = new RutubeMediaController(getActivity());
         //mVideoView.setMediaController(mMediaController);
         //mMediaController.setMediaPlayer();
