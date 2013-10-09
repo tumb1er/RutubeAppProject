@@ -39,6 +39,7 @@
 
     <style name="Rutube.ActionBarStyle" parent="Widget.Sherlock.Light.ActionBar.Solid.Inverse">
         <!-- Фон ActionBar -->
+        <item name="background">@drawable/action_bar</item>
         <item name="android:background">@drawable/action_bar</item>
         <!-- не показывать Title -->
         <item name="displayOptions">useLogo|showHome</item>
@@ -47,6 +48,7 @@
 
     <style name="Rutube.TabBar" parent="Widget.Sherlock.ActionBar.TabBar">
         <!-- Фон заголовков вкладок -->
+        <item name="background">@drawable/tab_bar_background</item>
         <item name="android:background">@drawable/tab_bar_background</item>
         <!--<item name="background">@color/tab_bar_background</item>-->
         <!--<item name="android:background">@color/tab_bar_background</item>-->
