@@ -74,7 +74,7 @@
 
                 <SeekBar
                     android:id="@+id/mediacontroller_seekbar"
-                    android:layout_width="match_parent"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_toLeftOf="@+id/mediacontroller_time_total"
                     android:layout_toRightOf="@+id/mediacontroller_time_current"
@@ -82,7 +82,9 @@
                     android:max="1000"
                     android:progressDrawable="@drawable/seekbar_progress"
                     android:thumb="@drawable/seekbar_circle"
-                    android:layout_marginTop="8dp"/>
+                    android:layout_centerVertical="true"
+                    android:minHeight="1dp"
+                    android:maxHeight="5dp" />
 
 
                 <TextView
