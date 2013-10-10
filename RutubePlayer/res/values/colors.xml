@@ -7,4 +7,6 @@
     <color name="seekbar_secondary">#FFFFFFFF</color>
     <!-- MediaController timeline text color -->
     <color name="dim_foreground_dark">#FFFFFFFF</color>
+    <color name="fader_dark">#77000000</color>
+    <color name="fader_light">#33000000</color>
 </resources>
