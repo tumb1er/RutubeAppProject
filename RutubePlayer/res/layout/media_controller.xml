@@ -29,13 +29,15 @@
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/date_time"
+            <ImageButton
+                android:id="@+id/menu_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingRight="12dp"
-                android:textColor="@android:color/white" />
-
+                android:layout_gravity="right"
+                android:visibility="visible"
+                android:src="@drawable/ic_action_overflow"
+                android:background="@color/transparent"
+                />
         </LinearLayout>
 
         <LinearLayout
@@ -92,38 +94,7 @@
                     android:layout_centerVertical="true" />
             </RelativeLayout>
 
-            <RelativeLayout
-                android:id="@+id/mediacontroller_controls_buttons"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/mediacontroller_buttons_bottom_margin"
-                android:layout_marginTop="@dimen/mediacontroller_buttons_top_margin"
-                android:orientation="horizontal" >
-
-            </RelativeLayout>
         </LinearLayout>
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/operation_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal" >
-
-        <TextView
-            android:id="@+id/operation_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:paddingBottom="0dip"
-            android:paddingLeft="8dip"
-            android:paddingRight="8dip"
-            android:paddingTop="0dip"
-            android:textColor="@android:color/white"
-            android:textSize="46sp"
-            android:textStyle="bold"
-            android:visibility="gone" />
-
     </RelativeLayout>
 
 </FrameLayout>
