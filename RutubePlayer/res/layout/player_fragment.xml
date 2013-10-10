@@ -6,27 +6,18 @@
     <FrameLayout android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:id="@+id/center_video_view">
-    <SurfaceView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_gravity="center"
+        <SurfaceView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center"
 
-        android:id="@+id/video_view"/>
+            android:id="@+id/video_view"/>
     </FrameLayout>
 
     <com.android.volley.toolbox.NetworkImageView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:id="@+id/thumbnail" />
-
-    <RelativeLayout
-        android:id="@+id/adLayout"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:layout_alignParentBottom="true"
-
-        ></RelativeLayout>
 
     <ProgressBar
         android:id="@+id/load"
@@ -35,17 +26,6 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:visibility="visible" />
-
-    <TextView
-        android:id="@+id/empty"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text=""
-        android:textSize="18sp"
-        android:textStyle="bold"
         android:visibility="visible" />
 
 </RelativeLayout>
