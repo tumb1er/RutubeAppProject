@@ -43,7 +43,8 @@ import android.widget.TextView;
  *
  *
  */
-public class LoginDialogFragment extends DialogFragment implements TextView.OnEditorActionListener, DialogInterface.OnClickListener, View.OnClickListener, View.OnFocusChangeListener {
+public class LoginDialogFragment extends DialogFragment implements TextView.OnEditorActionListener,
+        DialogInterface.OnClickListener, View.OnClickListener, View.OnFocusChangeListener {
 
     private static LoginDialogFragment newInstance(String title,
                                                    OnClickListener onClickListener,
@@ -112,22 +113,26 @@ public class LoginDialogFragment extends DialogFragment implements TextView.OnEd
         if (onClickListener != null) {
             onClickListener.onClick(dialog, which);
         } else {
-            onDoneListener.onFinishInputDialog(txtEmailInput.getText().toString(), txtPasswordInput.getText().toString());
+            onDoneListener.onFinishInputDialog(txtEmailInput.getText().toString(),
+                    txtPasswordInput.getText().toString());
             this.dismiss();
         }
     }
 
     @Override
     public void onClick(View v) {
-        txtEmailInput.setText("");
-        txtEmailInput.requestFocus();
+        if (onCancelListener != null) {
+            onCancelListener.onCancel();
+        }
+        dismiss();
     }
 
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         if (onDoneListener != null) {
             if (EditorInfo.IME_ACTION_DONE == actionId) {
-                onDoneListener.onFinishInputDialog(txtEmailInput.getText().toString(), txtPasswordInput.getText().toString());
+                onDoneListener.onFinishInputDialog(txtEmailInput.getText().toString(),
+                        txtPasswordInput.getText().toString());
                 this.dismiss();
                 return true;
             }
@@ -138,7 +143,8 @@ public class LoginDialogFragment extends DialogFragment implements TextView.OnEd
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
         if (hasFocus) {
-            getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+            getDialog().getWindow().setSoftInputMode(
+                    WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         }
     }
 
@@ -207,7 +213,8 @@ public class LoginDialogFragment extends DialogFragment implements TextView.OnEd
             }
             fragmentTransaction.addToBackStack(null);
 
-            LoginDialogFragment.newInstance(mTitle, mOnClickListener, mOnCancelListener, mOnDoneListener)
+            LoginDialogFragment.newInstance(mTitle, mOnClickListener, mOnCancelListener,
+                    mOnDoneListener)
                     .show(fragmentManager, FRAGMENT_TAG);
         }
     }
