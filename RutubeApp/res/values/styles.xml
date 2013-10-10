@@ -40,7 +40,7 @@
         <!-- иконка поиска в элементе поиска -->
         <item name="searchViewSearchIcon">@drawable/ic_action_search</item>
         <!-- иконка приложения (не лого) -->
-        <item name="rutubeAppIcon">@drawable/abs__ic_voice_search</item>
+        <item name="rutubeAppIcon">@drawable/logo_cut</item>
 
         <!-- иконка HomeAsUp при активном поле поиска-->
         <item name="icon">?attr/rutubeAppIcon</item>
@@ -48,7 +48,7 @@
 
     </style>
 
-    <style name="Rutube.ActionBarStyle" parent="Widget.Sherlock.Light.ActionBar.Solid.Inverse">
+    <style name="Rutube.ActionBarStyle" parent="Widget.Sherlock.Light.ActionBar.Solid">
         <!-- Фон ActionBar -->
         <item name="background">@drawable/action_bar</item>
         <item name="android:background">@drawable/action_bar</item>
@@ -79,7 +79,15 @@
 
     <!-- Тема для лент в новом окне -->
     <style name="Theme.Rutube.Feed" parent="Theme.Rutube">
-        <item name="logo">?attr/rutubeAppIcon</item>
-        <item name="android:logo">?attr/rutubeAppIcon</item>
+        <item name="logo">@drawable/logo_cut</item>
+        <item name="android:logo">@drawable/logo_cut</item>
+        <item name="actionBarStyle">@style/Rutube.Feed.ActionBarStyle</item>
+        <item name="android:actionBarStyle">@style/Rutube.Feed.ActionBarStyle</item>
+    </style>
+
+    <style name="Rutube.Feed.ActionBarStyle" parent="Rutube.ActionBarStyle">
+        <!-- показывать Title -->
+        <item name="displayOptions">useLogo|showHome|showTitle</item>
+        <item name="android:displayOptions">useLogo|showHome|showTitle</item>
     </style>
 </resources>

@@ -10,8 +10,8 @@ import android.util.Log;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.MenuItem;
 
-import ru.rutube.RutubeAPI.R;
 import ru.rutube.RutubeAPI.RutubeApp;
+import ru.rutube.RutubeFeed.R;
 import ru.rutube.RutubeFeed.content.SearchSuggestProvider;
 
 /**
@@ -57,7 +57,7 @@ public class SearchFeedActivity extends FeedActivity {
         assert actionBar != null;
         actionBar.setDisplayHomeAsUpEnabled(true);
         if (mQuery != null)
-            setTitle(mQuery);
+            setTitle(String.format(getResources().getString(R.string.search_title_format), mQuery));
     }
 
 
