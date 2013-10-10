@@ -61,7 +61,7 @@
                     android:background="@color/transparent"
                     android:contentDescription="@string/mediacontroller_play_pause"
                     android:gravity="center"
-                    android:src="@drawable/mediacontroller_pause_button" />
+                    android:src="@drawable/mediacontroller_pause_btn" />
 
                 <TextView
                     android:id="@+id/mediacontroller_time_current"
@@ -81,7 +81,7 @@
                     android:focusable="true"
                     android:max="1000"
                     android:progressDrawable="@drawable/seekbar_progress"
-                    android:thumb="@drawable/seekbar_thumb"
+                    android:thumb="@drawable/seekbar_circle"
                     android:layout_marginTop="8dp"/>
 
 

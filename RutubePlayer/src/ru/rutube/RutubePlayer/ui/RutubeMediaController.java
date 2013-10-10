@@ -408,9 +408,9 @@ public class RutubeMediaController extends FrameLayout {
         }
 
         if (mPlayer.isPlaying()) {
-            mPauseButton.setImageResource(R.drawable.btn_pause_normal);
+            mPauseButton.setImageResource(R.drawable.mediacontroller_pause_btn);
         } else {
-            mPauseButton.setImageResource(R.drawable.btn_play_normal);
+            mPauseButton.setImageResource(R.drawable.mediacontroller_play_btn);
         }
     }
 
