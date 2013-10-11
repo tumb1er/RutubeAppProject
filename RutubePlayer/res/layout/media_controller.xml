@@ -4,19 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    style="@style/Rutube.MediaController">
+    style="@style/MediaController.Base">
 
     <LinearLayout
         android:id="@+id/info_panel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:paddingLeft="30dp"
-        android:paddingRight="20dp"
-        android:paddingTop="20dp">
+        style="@style/MediaController.InfoPanel">
 
 
         <TextView
