@@ -6,5 +6,10 @@
         <attr name="VideoTitleStyle" format="reference"/>
         <attr name="MenuButtonStyle" format="reference"/>
         <attr name="ControlPanelStyle" format="reference"/>
+        <attr name="PlayButtonStyle" format="reference"/>
+        <attr name="TimeTextStyle" format="reference"/>
+        <attr name="SeekBarStyle" format="reference"/>
+        <attr name="SeekBarThumbDrawable" format="reference"/>
+        <attr name="SeekBarDrawable" format="reference"/>
     </declare-styleable>
 </resources>

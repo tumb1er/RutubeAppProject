@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/mediacontroller"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:orientation="horizontal"
-    style="?attr/MediaControllerStyle"
-    android:background="@drawable/fader_bg">
+    style="?attr/MediaControllerStyle">
 
     <LinearLayout
         android:id="@+id/info_panel"
@@ -39,21 +38,15 @@
             android:id="@+id/mediacontroller_play_pause"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/transparent"
-            android:contentDescription="@string/mediacontroller_play_pause"
-            android:gravity="center"
-            android:src="@drawable/mediacontroller_pause_btn"
-            android:layout_marginRight="24dp" />
+            android:layout_marginRight="24dp"
+            style="?attr/PlayButtonStyle" />
 
         <TextView
             android:id="@+id/mediacontroller_time_current"
-            style="@style/MediaController_Text"
+            style="?attr/TimeTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="false"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/mediacontroller_play_pause"
-            android:text="12:04" />
+            android:layout_toRightOf="@+id/mediacontroller_play_pause"/>
 
         <SeekBar
             android:id="@+id/mediacontroller_seekbar"
@@ -61,24 +54,14 @@
             android:layout_height="wrap_content"
             android:layout_toLeftOf="@+id/mediacontroller_time_total"
             android:layout_toRightOf="@+id/mediacontroller_time_current"
-            android:focusable="true"
-            android:max="1000"
-            android:progressDrawable="@drawable/seekbar_progress"
-            android:thumb="@drawable/seekbar_circle"
-            android:layout_centerVertical="true"
-            android:minHeight="1dp"
-            android:maxHeight="5dp"
-            android:progress="200" />
-
+            style="@style/MediaController.ProgressBar" />
 
         <TextView
             android:id="@+id/mediacontroller_time_total"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:text="16:05"
-            style="@style/MediaController_Text"
-            android:layout_centerVertical="true" />
+            style="?attr/TimeTextStyle"/>
     </RelativeLayout>
 
 </RelativeLayout>
