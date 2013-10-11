@@ -46,7 +46,8 @@
             style="?attr/TimeTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/mediacontroller_play_pause"/>
+            android:layout_toRightOf="@+id/mediacontroller_play_pause"
+            android:text="1111" />
 
         <SeekBar
             android:id="@+id/mediacontroller_seekbar"
