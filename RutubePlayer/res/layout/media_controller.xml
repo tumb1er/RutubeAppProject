@@ -18,31 +18,22 @@
             android:id="@+id/mediacontroller_file_name"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            style="@style/MediaController.VideoTitle" />
+            style="?attr/VideoTitleStyle" />
 
         <ImageButton
             android:id="@+id/menu_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right|top"
             android:visibility="visible"
-            android:src="@drawable/ic_action_overflow"
-            android:background="@color/transparent"
-            />
+            style="?attr/MenuButtonStyle" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/mediacontroller_controls"
-        style="@style/MediaController_Container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:orientation="vertical"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:paddingLeft="30dp"
-        android:paddingRight="30dp"
-        android:paddingBottom="20dp">
+        style="?attr/ControlPanelStyle">
 
         <RelativeLayout
             android:layout_width="match_parent"

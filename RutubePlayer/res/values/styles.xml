@@ -25,6 +25,8 @@
         <item name="MediaControllerStyle">@style/MediaController</item>
         <item name="InfoPanelStyle">@style/MediaController.InfoPanel</item>
         <item name="VideoTitleStyle">@style/MediaController.VideoTitle</item>
+        <item name="MenuButtonStyle">@style/MediaController.MenuButton</item>
+        <item name="ControlPanelStyle">@style/MediaController.ControlPanel</item>
     </style>
 
     <style name="MediaController" parent="Widget">
@@ -52,6 +54,22 @@
         <item name="android:layout_weight">1</item>
         <item name="android:layout_gravity">top</item>
         <item name="android:paddingTop">1dp</item>
+    </style>
+
+    <style name="MediaController.MenuButton" parent="Widget">
+        <item name="android:layout_gravity">right|top</item>
+        <item name="android:background">@color/transparent</item>
+        <item name="android:src">@drawable/ic_action_overflow</item>
+    </style>
+
+    <style name="MediaController.ControlPanel" parent="Widget">
+        <item name="android:background">@color/transparent</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:paddingLeft">30dp</item>
+        <item name="android:paddingRight">30dp</item>
+        <item name="android:paddingBottom">20dp</item>
     </style>
 
 </resources>

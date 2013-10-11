@@ -4,5 +4,7 @@
         <attr name="MediaControllerStyle" format="reference"/>
         <attr name="InfoPanelStyle" format="reference"/>
         <attr name="VideoTitleStyle" format="reference"/>
+        <attr name="MenuButtonStyle" format="reference"/>
+        <attr name="ControlPanelStyle" format="reference"/>
     </declare-styleable>
 </resources>
