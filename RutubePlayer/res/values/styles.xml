@@ -15,4 +15,12 @@
         <!--<item name="android:paddingRight">8dip</item>-->
     </style>
 
+    <style name="Rutube.MediaController.Base">
+        <item name="android:background">@drawable/fader_bg</item>
+    </style>
+
+    <style name="Rutube.MediaController" parent="Rutube.MediaController.Base">
+
+    </style>
+
 </resources>

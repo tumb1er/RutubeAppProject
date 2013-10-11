@@ -1,117 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mediacontroller"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    style="@style/Rutube.MediaController">
 
-    <RelativeLayout
-        android:id="@+id/mediacontroller"
+    <LinearLayout
+        android:id="@+id/info_panel"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="@drawable/fader_bg">
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:paddingLeft="30dp"
+        android:paddingRight="20dp"
+        android:paddingTop="20dp">
 
-        <LinearLayout
-            android:id="@+id/info_panel"
+
+        <TextView
+            android:id="@+id/mediacontroller_file_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:textColor="@android:color/white"
+            android:textSize="13dp"
+            android:text="Малышева как правильно какать"
+            android:typeface="sans"
+            android:layout_gravity="top"
+            android:paddingTop="1dp" />
+
+        <ImageButton
+            android:id="@+id/menu_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|top"
+            android:visibility="visible"
+            android:src="@drawable/ic_action_overflow"
+            android:background="@color/transparent"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/mediacontroller_controls"
+        style="@style/MediaController_Container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:paddingBottom="20dp">
+
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:paddingLeft="30dp"
-            android:paddingRight="20dp"
-            android:paddingTop="20dp">
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/mediacontroller_play_pause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/transparent"
+                android:contentDescription="@string/mediacontroller_play_pause"
+                android:gravity="center"
+                android:src="@drawable/mediacontroller_pause_btn"
+                android:layout_marginRight="24dp" />
+
+            <TextView
+                android:id="@+id/mediacontroller_time_current"
+                style="@style/MediaController_Text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="false"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/mediacontroller_play_pause"
+                android:text="12:04" />
+
+            <SeekBar
+                android:id="@+id/mediacontroller_seekbar"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@+id/mediacontroller_time_total"
+                android:layout_toRightOf="@+id/mediacontroller_time_current"
+                android:focusable="true"
+                android:max="1000"
+                android:progressDrawable="@drawable/seekbar_progress"
+                android:thumb="@drawable/seekbar_circle"
+                android:layout_centerVertical="true"
+                android:minHeight="1dp"
+                android:maxHeight="5dp"
+                android:progress="200" />
 
 
             <TextView
-                android:id="@+id/mediacontroller_file_name"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:singleLine="true"
-                android:textColor="@android:color/white"
-                android:textSize="13dp"
-                android:text="Малышева как правильно какать"
-                android:typeface="sans"
-                android:layout_gravity="top"
-                android:paddingTop="1dp" />
-
-            <ImageButton
-                android:id="@+id/menu_btn"
+                android:id="@+id/mediacontroller_time_total"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right|top"
-                android:visibility="visible"
-                android:src="@drawable/ic_action_overflow"
-                android:background="@color/transparent"
-                />
-        </LinearLayout>
+                android:layout_alignParentRight="true"
+                android:text="16:05"
+                style="@style/MediaController_Text"
+                android:layout_centerVertical="true" />
+        </RelativeLayout>
 
-        <LinearLayout
-            android:id="@+id/mediacontroller_controls"
-            style="@style/MediaController_Container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:orientation="vertical"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:paddingLeft="30dp"
-            android:paddingRight="30dp"
-            android:paddingBottom="20dp">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <ImageButton
-                    android:id="@+id/mediacontroller_play_pause"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@color/transparent"
-                    android:contentDescription="@string/mediacontroller_play_pause"
-                    android:gravity="center"
-                    android:src="@drawable/mediacontroller_pause_btn"
-                    android:layout_marginRight="24dp" />
-
-                <TextView
-                    android:id="@+id/mediacontroller_time_current"
-                    style="@style/MediaController_Text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="false"
-                    android:layout_centerVertical="true"
-                    android:layout_toRightOf="@+id/mediacontroller_play_pause"
-                    android:text="12:04" />
-
-                <SeekBar
-                    android:id="@+id/mediacontroller_seekbar"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_toLeftOf="@+id/mediacontroller_time_total"
-                    android:layout_toRightOf="@+id/mediacontroller_time_current"
-                    android:focusable="true"
-                    android:max="1000"
-                    android:progressDrawable="@drawable/seekbar_progress"
-                    android:thumb="@drawable/seekbar_circle"
-                    android:layout_centerVertical="true"
-                    android:minHeight="1dp"
-                    android:maxHeight="5dp"
-                    android:progress="200" />
-
-
-                <TextView
-                    android:id="@+id/mediacontroller_time_total"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:text="16:05"
-                    style="@style/MediaController_Text"
-                    android:layout_centerVertical="true" />
-            </RelativeLayout>
-
-        </LinearLayout>
-    </RelativeLayout>
-
-</FrameLayout>
+    </LinearLayout>
+</RelativeLayout>
