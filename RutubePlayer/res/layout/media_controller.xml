@@ -4,14 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    style="@style/MediaController">
+    style="?attr/MediaControllerStyle">
 
     <LinearLayout
         android:id="@+id/info_panel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        style="@style/MediaController.InfoPanel">
+        style="?attr/InfoPanelStyle">
 
 
         <TextView

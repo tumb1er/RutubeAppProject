@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="MediaController">
+        <attr name="MediaControllerStyle" format="reference"/>
+        <attr name="InfoPanelStyle" format="reference"/>
+    </declare-styleable>
+</resources>

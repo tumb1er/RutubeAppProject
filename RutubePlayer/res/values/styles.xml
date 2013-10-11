@@ -16,7 +16,14 @@
     </style>
 
     <style name="Widget">
+    </style>
 
+    <style name="MediaController.__Theme" parent="Widget">
+    </style>
+
+    <style name="Theme.MediaController" parent="MediaController.__Theme">
+        <item name="MediaControllerStyle">@style/MediaController</item>
+        <item name="InfoPanelStyle">@style/MediaController.InfoPanel</item>
     </style>
 
     <style name="MediaController" parent="Widget">
