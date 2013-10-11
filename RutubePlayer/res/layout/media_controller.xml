@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    style="?attr/MediaControllerStyle">
+    style="?attr/MediaControllerStyle"
+    android:background="@drawable/fader_bg">
 
     <LinearLayout
         android:id="@+id/info_panel"
@@ -28,63 +29,56 @@
             style="?attr/MenuButtonStyle" />
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/mediacontroller_controls"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         style="?attr/ControlPanelStyle">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
+        <ImageButton
+            android:id="@+id/mediacontroller_play_pause"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:background="@color/transparent"
+            android:contentDescription="@string/mediacontroller_play_pause"
+            android:gravity="center"
+            android:src="@drawable/mediacontroller_pause_btn"
+            android:layout_marginRight="24dp" />
 
-            <ImageButton
-                android:id="@+id/mediacontroller_play_pause"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/transparent"
-                android:contentDescription="@string/mediacontroller_play_pause"
-                android:gravity="center"
-                android:src="@drawable/mediacontroller_pause_btn"
-                android:layout_marginRight="24dp" />
+        <TextView
+            android:id="@+id/mediacontroller_time_current"
+            style="@style/MediaController_Text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="false"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/mediacontroller_play_pause"
+            android:text="12:04" />
 
-            <TextView
-                android:id="@+id/mediacontroller_time_current"
-                style="@style/MediaController_Text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="false"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@+id/mediacontroller_play_pause"
-                android:text="12:04" />
-
-            <SeekBar
-                android:id="@+id/mediacontroller_seekbar"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_toLeftOf="@+id/mediacontroller_time_total"
-                android:layout_toRightOf="@+id/mediacontroller_time_current"
-                android:focusable="true"
-                android:max="1000"
-                android:progressDrawable="@drawable/seekbar_progress"
-                android:thumb="@drawable/seekbar_circle"
-                android:layout_centerVertical="true"
-                android:minHeight="1dp"
-                android:maxHeight="5dp"
-                android:progress="200" />
+        <SeekBar
+            android:id="@+id/mediacontroller_seekbar"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/mediacontroller_time_total"
+            android:layout_toRightOf="@+id/mediacontroller_time_current"
+            android:focusable="true"
+            android:max="1000"
+            android:progressDrawable="@drawable/seekbar_progress"
+            android:thumb="@drawable/seekbar_circle"
+            android:layout_centerVertical="true"
+            android:minHeight="1dp"
+            android:maxHeight="5dp"
+            android:progress="200" />
 
 
-            <TextView
-                android:id="@+id/mediacontroller_time_total"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:text="16:05"
-                style="@style/MediaController_Text"
-                android:layout_centerVertical="true" />
-        </RelativeLayout>
+        <TextView
+            android:id="@+id/mediacontroller_time_total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="16:05"
+            style="@style/MediaController_Text"
+            android:layout_centerVertical="true" />
+    </RelativeLayout>
 
-    </LinearLayout>
 </RelativeLayout>
