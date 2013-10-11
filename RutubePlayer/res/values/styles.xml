@@ -24,6 +24,7 @@
     <style name="Theme.MediaController" parent="MediaController.__Theme">
         <item name="MediaControllerStyle">@style/MediaController</item>
         <item name="InfoPanelStyle">@style/MediaController.InfoPanel</item>
+        <item name="VideoTitleStyle">@style/MediaController.VideoTitle</item>
     </style>
 
     <style name="MediaController" parent="Widget">
@@ -37,6 +38,20 @@
         <item name="android:paddingLeft">30dp</item>
         <item name="android:paddingRight">20dp</item>
         <item name="android:paddingTop">20dp</item>
+    </style>
+
+
+    <style name="MediaController.TextStyle" parent="Widget">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:typeface">sans</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="MediaController.VideoTitle" parent="MediaController.TextStyle">
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_gravity">top</item>
+        <item name="android:paddingTop">1dp</item>
     </style>
 
 </resources>

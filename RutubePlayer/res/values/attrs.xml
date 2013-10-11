@@ -3,5 +3,6 @@
     <declare-styleable name="MediaController">
         <attr name="MediaControllerStyle" format="reference"/>
         <attr name="InfoPanelStyle" format="reference"/>
+        <attr name="VideoTitleStyle" format="reference"/>
     </declare-styleable>
 </resources>

@@ -16,16 +16,9 @@
 
         <TextView
             android:id="@+id/mediacontroller_file_name"
-            android:layout_width="0dp"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:singleLine="true"
-            android:textColor="@android:color/white"
-            android:textSize="13dp"
-            android:text="Малышева как правильно какать"
-            android:typeface="sans"
-            android:layout_gravity="top"
-            android:paddingTop="1dp" />
+            style="@style/MediaController.VideoTitle" />
 
         <ImageButton
             android:id="@+id/menu_btn"
