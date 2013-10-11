@@ -7,4 +7,5 @@
     <string name="login">Авторизация</string>
     <string name="no_data">Лента пуста</string>
     <string name="logout">Выйти</string>
+    <string name="search_title_format">Поиск: %s</string>
 </resources>
