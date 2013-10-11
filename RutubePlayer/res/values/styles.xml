@@ -4,29 +4,29 @@
     <style name="Widget">
     </style>
 
-    <style name="MediaController.__Theme" parent="android:Theme.NoTitleBar.Fullscreen">
+    <style name="Player.__Theme" parent="android:Theme.NoTitleBar.Fullscreen">
     </style>
 
-    <style name="Theme.MediaController" parent="MediaController.__Theme">
-        <item name="MediaControllerStyle">@style/MediaController</item>
-        <item name="InfoPanelStyle">@style/MediaController.InfoPanel</item>
-        <item name="VideoTitleStyle">@style/MediaController.VideoTitle</item>
-        <item name="MenuButtonStyle">@style/MediaController.MenuButton</item>
-        <item name="ControlPanelStyle">@style/MediaController.ControlPanel</item>
-        <item name="PlayButtonStyle">@style/MediaController.PlayButton</item>
-        <item name="TimeTextStyle">@style/MediaController.TimeText</item>
-        <item name="SeekBarStyle">@style/MediaController.ProgressBar</item>
+    <style name="Theme.Player" parent="Player.__Theme">
+        <item name="MediaControllerStyle">@style/Player.MediaController</item>
+        <item name="InfoPanelStyle">@style/Player.MediaController.InfoPanel</item>
+        <item name="VideoTitleStyle">@style/Player.MediaController.VideoTitle</item>
+        <item name="MenuButtonStyle">@style/Player.MediaController.MenuButton</item>
+        <item name="ControlPanelStyle">@style/Player.MediaController.ControlPanel</item>
+        <item name="PlayButtonStyle">@style/Player.MediaController.PlayButton</item>
+        <item name="TimeTextStyle">@style/Player.MediaController.TimeText</item>
+        <item name="SeekBarStyle">@style/Player.MediaController.ProgressBar</item>
 
         <item name="SeekBarThumbDrawable">@drawable/seekbar_circle</item>
         <item name="SeekBarDrawable">@drawable/seekbar_progress</item>
     </style>
 
-    <style name="MediaController" parent="Widget">
+    <style name="Player.MediaController" parent="Widget">
         <item name="android:background">@drawable/fader_bg</item>
         <item name="android:paddingBottom">20dp</item>
     </style>
 
-    <style name="MediaController.InfoPanel" parent="Widget">
+    <style name="Player.MediaController.InfoPanel" parent="Widget">
         <item name="android:layout_alignParentLeft">true</item>
         <item name="android:layout_alignParentRight">true</item>
         <item name="android:layout_alignParentTop">true</item>
@@ -36,26 +36,26 @@
     </style>
 
 
-    <style name="MediaController.TextStyle" parent="Widget">
+    <style name="Player.MediaController.TextStyle" parent="Widget">
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textSize">13sp</item>
         <item name="android:typeface">sans</item>
         <item name="android:singleLine">true</item>
     </style>
 
-    <style name="MediaController.VideoTitle" parent="MediaController.TextStyle">
+    <style name="Player.MediaController.VideoTitle" parent="Player.MediaController.TextStyle">
         <item name="android:layout_weight">1</item>
         <item name="android:layout_gravity">top</item>
         <item name="android:paddingTop">1dp</item>
     </style>
 
-    <style name="MediaController.MenuButton" parent="Widget">
+    <style name="Player.MediaController.MenuButton" parent="Widget">
         <item name="android:layout_gravity">right|top</item>
         <item name="android:background">@color/transparent</item>
         <item name="android:src">@drawable/ic_action_overflow</item>
     </style>
 
-    <style name="MediaController.ControlPanel" parent="Widget">
+    <style name="Player.MediaController.ControlPanel" parent="Widget">
         <item name="android:background">@color/transparent</item>
         <item name="android:layout_alignParentBottom">true</item>
         <item name="android:layout_alignParentLeft">true</item>
@@ -65,19 +65,19 @@
         <item name="android:layout_marginBottom">20dp</item>
     </style>
 
-    <style name="MediaController.PlayButton" parent="Widget">
+    <style name="Player.MediaController.PlayButton" parent="Widget">
         <item name="android:background">@color/transparent</item>
         <item name="android:src">@drawable/mediacontroller_pause_btn</item>
     </style>
 
-    <style name="MediaController.TimeText" parent="MediaController.TextStyle">
+    <style name="Player.MediaController.TimeText" parent="Player.MediaController.TextStyle">
         <item name="android:layout_centerVertical">true</item>
         <item name="android:textSize">10sp</item>
         <item name="android:paddingLeft">5dp</item>
         <item name="android:paddingRight">5dp</item>
     </style>
 
-    <style name="MediaController.ProgressBar" parent="Widget">
+    <style name="Player.MediaController.ProgressBar" parent="Widget">
         <item name="android:focusable">true</item>
         <item name="android:max">1000</item>
         <item name="android:progressDrawable">?attr/SeekBarDrawable</item>
