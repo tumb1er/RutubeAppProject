@@ -96,6 +96,7 @@ public class RutubeMediaController extends FrameLayout {
     private ImageButton         mNextButton;
     private ImageButton         mPrevButton;
     private ImageButton         mFullscreenButton;
+    private TextView            mVideoTitle;
     private Handler             mHandler = new MessageHandler(this);
 
     public RutubeMediaController(Context context, AttributeSet attrs) {
@@ -185,6 +186,7 @@ public class RutubeMediaController extends FrameLayout {
 
         mEndTime = (TextView) v.findViewById(R.id.mediacontroller_time_total);
         mCurrentTime = (TextView) v.findViewById(R.id.mediacontroller_time_current);
+        mVideoTitle = (TextView) v.findViewById(R.id.mediacontroller_file_name);
         mFormatBuilder = new StringBuilder();
         mFormatter = new Formatter(mFormatBuilder, Locale.getDefault());
 
@@ -596,6 +598,10 @@ public class RutubeMediaController extends FrameLayout {
                 mPrevButton.setVisibility(View.VISIBLE);
             }
         }
+    }
+
+    public void setVideoTitle(String title) {
+        mVideoTitle.setText(title);
     }
 
 //    public interface MediaPlayerControl {
