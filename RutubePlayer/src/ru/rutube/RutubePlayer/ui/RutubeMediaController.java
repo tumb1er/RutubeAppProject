@@ -240,11 +240,7 @@ public class RutubeMediaController extends FrameLayout {
             }
             disableUnsupportedButtons();
 
-            FrameLayout.LayoutParams tlp = new FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    Gravity.BOTTOM
-            );
+            FrameLayout.LayoutParams tlp = getSelfLayoutParams();
 
             mAnchor.addView(this, tlp);
             mShowing = true;
@@ -262,6 +258,28 @@ public class RutubeMediaController extends FrameLayout {
             mHandler.removeMessages(FADE_OUT);
             mHandler.sendMessageDelayed(msg, timeout);
         }
+    }
+
+
+    /**
+     *
+     * Возвращает LayoutParams для самого RutubeMediaController
+     *
+     * MediaController сам по себе является View, и находится в дереве представления между
+     * т.н. AnchorView (к чему приклеиваться) и ControllerView - собственно, результат
+     * Inflate из XML.
+     * Контролировать параметры размещения для самого RutubeMediaController через XML нельзя,
+     * поэтому их определение вынесено в отдельный метод
+     *
+     * @return
+     */
+
+    public LayoutParams getSelfLayoutParams() {
+        return new LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                Gravity.FILL
+        );
     }
 
     public boolean isShowing() {
