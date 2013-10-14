@@ -20,7 +20,8 @@
         <item name="searchViewSearchIcon">@drawable/ic_action_search</item>
         <!-- иконка приложения (не лого) -->
         <item name="rutubeAppIcon">@drawable/logo_cut</item>
-
+        <!-- фон для кнопки "домой" -->
+        <item name="actionBarItemBackground">@drawable/home_widget_background</item>
         <!-- иконка HomeAsUp при активном поле поиска-->
         <item name="icon">?attr/rutubeAppIcon</item>
         <item name="android:icon">?attr/rutubeAppIcon</item>
