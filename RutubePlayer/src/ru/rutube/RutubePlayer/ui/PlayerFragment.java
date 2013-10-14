@@ -423,7 +423,7 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
 
     @Override
     public void setVideoTitle(String title) {
-
+        mMediaController.setVideoTitle(title);
     }
 
     @Override

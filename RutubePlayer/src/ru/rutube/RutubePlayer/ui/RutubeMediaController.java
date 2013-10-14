@@ -96,6 +96,7 @@ public class RutubeMediaController extends FrameLayout {
     private ImageButton         mNextButton;
     private ImageButton         mPrevButton;
     private ImageButton         mFullscreenButton;
+    private TextView            mVideoTitle;
     private Handler             mHandler = new MessageHandler(this);
 
     public RutubeMediaController(Context context, AttributeSet attrs) {
@@ -185,6 +186,7 @@ public class RutubeMediaController extends FrameLayout {
 
         mEndTime = (TextView) v.findViewById(R.id.mediacontroller_time_total);
         mCurrentTime = (TextView) v.findViewById(R.id.mediacontroller_time_current);
+        mVideoTitle = (TextView) v.findViewById(R.id.mediacontroller_file_name);
         mFormatBuilder = new StringBuilder();
         mFormatter = new Formatter(mFormatBuilder, Locale.getDefault());
 
@@ -240,11 +242,7 @@ public class RutubeMediaController extends FrameLayout {
             }
             disableUnsupportedButtons();
 
-            FrameLayout.LayoutParams tlp = new FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    Gravity.BOTTOM
-            );
+            FrameLayout.LayoutParams tlp = getSelfLayoutParams();
 
             mAnchor.addView(this, tlp);
             mShowing = true;
@@ -262,6 +260,28 @@ public class RutubeMediaController extends FrameLayout {
             mHandler.removeMessages(FADE_OUT);
             mHandler.sendMessageDelayed(msg, timeout);
         }
+    }
+
+
+    /**
+     *
+     * Возвращает LayoutParams для самого RutubeMediaController
+     *
+     * MediaController сам по себе является View, и находится в дереве представления между
+     * т.н. AnchorView (к чему приклеиваться) и ControllerView - собственно, результат
+     * Inflate из XML.
+     * Контролировать параметры размещения для самого RutubeMediaController через XML нельзя,
+     * поэтому их определение вынесено в отдельный метод
+     *
+     * @return
+     */
+
+    public LayoutParams getSelfLayoutParams() {
+        return new LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                Gravity.FILL
+        );
     }
 
     public boolean isShowing() {
@@ -578,6 +598,10 @@ public class RutubeMediaController extends FrameLayout {
                 mPrevButton.setVisibility(View.VISIBLE);
             }
         }
+    }
+
+    public void setVideoTitle(String title) {
+        mVideoTitle.setText(title);
     }
 
 //    public interface MediaPlayerControl {
