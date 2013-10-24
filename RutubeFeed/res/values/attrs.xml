@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="Feed">
+        <attr name="FeedListStyle" format="reference"/>
+        <attr name="FeedContainerStyle" format="reference"/>
+        <attr name="FeedDurationStyle" format="reference"/>
+        <attr name="FeedTitleStyle" format="reference"/>
+        <attr name="FeedDescriptionStyle" format="reference"/>
+        <attr name="FeedThumbnailStyle" format="reference"/>
+        <attr name="FeedCardStyle" format="reference"/>
+        <attr name="FeedCreatedStyle" format="reference"/>
+        <attr name="FeedAvatarStyle" format="reference"/>
+        <attr name="FeedAuthorStyle" format="reference"/>
+    </declare-styleable>
+</resources>

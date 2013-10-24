@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    style="@style/Rutube.Feed.List">
+    style="?attr/FeedListStyle">
 
 
     <ru.rutube.RutubeFeed.views.ThumbnailView
@@ -10,7 +10,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:contentDescription="@string/thumbnail"
-        style="@style/Rutube.Feed.Thumbnail" />
+        style="?attr/FeedThumbnailStyle" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -20,14 +20,14 @@
         android:layout_alignRight="@+id/thumbnailImageView"
         android:layout_alignBottom="@+id/thumbnailImageView"
         android:visibility="gone"
-        style="@style/Rutube.Feed.Duration" />
+        style="?attr/FeedDurationStyle" />
 
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/videoInfoLayout"
         android:layout_below="@+id/thumbnailImageView"
-        style="@style/Rutube.Feed.Card">
+        style="?attr/FeedCardStyle">
 
         <TextView
             android:id="@+id/titleTextView"
@@ -36,7 +36,7 @@
             android:text="Title"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            style="@style/Rutube.Feed.Title" />
+            style="?attr/FeedTitleStyle" />
 
         <TextView
             android:id="@+id/createdTextView"
@@ -44,7 +44,7 @@
             android:layout_height="wrap_content"
             android:text="Created"
             android:layout_below="@+id/titleTextView"
-            style="@style/Rutube.Feed.Created" />
+            style="?attr/FeedCreatedStyle" />
 
         <LinearLayout
             android:orientation="vertical"
@@ -61,7 +61,7 @@
             android:layout_alignParentLeft="false"
             android:layout_alignParentTop="false"
             android:layout_below="@+id/tagsListContainer"
-            style="@style/Rutube.Feed.Avatar" />
+            style="?attr/FeedAvatarStyle" />
 
         <TextView
             android:layout_width="fill_parent"
@@ -70,7 +70,7 @@
             android:id="@+id/authorTextView"
             android:layout_toRightOf="@+id/avatarImageView"
             android:layout_below="@+id/tagsListContainer"
-            style="@style/Rutube.Feed.Author" />
+            style="?attr/FeedAuthorStyle" />
 
         <TextView
             android:layout_height="wrap_content"
@@ -78,7 +78,7 @@
             android:id="@+id/descriptionTextView"
             android:layout_below="@+id/authorTextView"
             android:layout_toRightOf="@+id/avatarImageView"
-            style="@style/Rutube.Feed.Description" />
+            style="?attr/FeedDescriptionStyle" />
 
     </RelativeLayout>
 </RelativeLayout>

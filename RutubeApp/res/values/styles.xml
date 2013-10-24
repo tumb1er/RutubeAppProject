@@ -13,6 +13,18 @@
         <item name="actionBarTabTextStyle">@style/Rutube.TabText</item>
         <item name="android:actionBarTabTextStyle">@style/Rutube.TabText</item>
 
+        <!-- Обязательные ссылки на названия стилей для лент -->
+        <item name="FeedListStyle">@style/Rutube.Feed.List</item>
+        <item name="FeedContainerStyle">@style/Rutube.Feed.Container</item>
+        <item name="FeedDurationStyle">@style/Rutube.Feed.Duration</item>
+        <item name="FeedTitleStyle">@style/Rutube.Feed.Title</item>
+        <item name="FeedDescriptionStyle">@style/Rutube.Feed.Description</item>
+        <item name="FeedThumbnailStyle">@style/Rutube.Feed.Thumbnail</item>
+        <item name="FeedCardStyle">@style/Rutube.Feed.Card</item>
+        <item name="FeedCreatedStyle">@style/Rutube.Feed.Created</item>
+        <item name="FeedAvatarStyle">@style/Rutube.Feed.Avatar</item>
+        <item name="FeedAuthorStyle">@style/Rutube.Feed.Author</item>
+
     </style>
 
     <style name="Theme.Rutube.Base" parent="Theme.Sherlock.Light">
