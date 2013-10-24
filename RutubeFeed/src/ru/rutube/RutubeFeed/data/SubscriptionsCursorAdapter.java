@@ -91,15 +91,15 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
                 assert tagView != null;
 
                 if (i == 0) {
-                    View line = tagView.findViewById(R.id.commentLine);
-                    line.setVisibility(View.GONE);
+//                    View line = tagView.findViewById(R.id.commentLine);
+//                    line.setVisibility(View.GONE);
                 }
 
                 holder.tags.addView(tagView);
             }
             holder.tags.setVisibility(View.VISIBLE);
 
-            holder.description.setVisibility(View.GONE);
+//            holder.description.setVisibility(View.GONE);
 
         } catch (IllegalArgumentException e) {
             e.printStackTrace();

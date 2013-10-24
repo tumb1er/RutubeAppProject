@@ -31,10 +31,11 @@ public class TopRoundCornerBitmapProcessor implements BitmapProcessor {
         if (bitmap == null)
             return null;
         Bitmap cropped = cropAspect(bitmap, mCropAspect);
-        Bitmap round = roundCorners(cropped, imageView, (int)(cropped.getWidth() * mRoundPercent));
-        if (cropped != null)
-            cropped.recycle();
-        return round;
+//        Bitmap round = roundCorners(cropped, imageView, (int)(cropped.getWidth() * mRoundPercent));
+//        if (cropped != null)
+//            cropped.recycle();
+//        return round;
+        return cropped;
     }
 
     private static Bitmap cropAspect(Bitmap bitmap, double cropAspect) {

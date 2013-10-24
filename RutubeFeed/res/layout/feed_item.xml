@@ -2,138 +2,94 @@
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            >
+    style="@style/Rutube.Feed.List">
 
 
         <ru.rutube.RutubeFeed.views.ThumbnailView
                 android:id="@+id/thumbnailImageView"
                 android:layout_width="fill_parent"
-                android:layout_height="0dp"
-                android:minHeight="100dp"
-                android:adjustViewBounds="true"
-                android:layout_marginLeft="-1dp"
-                android:layout_marginRight="-1dp"
-                android:contentDescription="@string/thumbnail"
-                android:scaleType="centerCrop"
-                android:src="@drawable/stub"/>
+                android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/thumbnail"
+            style="@style/Rutube.Feed.Thumbnail" />
+
+        <TextView android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/durationTextView"
+            android:text="4:24"
+            android:layout_alignRight="@+id/thumbnailImageView"
+            android:layout_alignBottom="@+id/thumbnailImageView"
+            style="@style/Rutube.Feed.Duration" />
 
         <RelativeLayout
-                android:orientation="vertical"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/videoInfoLayout"
-                android:background="#ffffffff"
-                android:paddingBottom="0dp"
-                android:paddingRight="10dp"
-                android:paddingTop="10dp"
-                android:paddingLeft="10dp"
-                android:layout_below="@+id/thumbnailImageView">
+            android:layout_below="@+id/thumbnailImageView"
+            style="@style/Rutube.Feed.Card">
 
             <TextView
                     android:id="@+id/titleTextView"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="18dp"
-                    android:text="Title"
-                    android:textStyle="bold"
-                    android:textColor="@android:color/primary_text_light_nodisable"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentTop="true"
-                    />
+                android:text="Title"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                style="@style/Rutube.Feed.Title" />
 
             <TextView
                     android:id="@+id/createdTextView"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="10dp"
                     android:text="Created"
-                    android:textColor="@android:color/secondary_text_light"
-                    android:layout_alignParentLeft="false"
-                    android:layout_alignParentTop="false"
-                    android:layout_below="@+id/titleTextView"/>
+                    android:layout_below="@+id/titleTextView"
+                style="@style/Rutube.Feed.Created" />
 
-            <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/commentLine"
-                    android:src="@drawable/comment_line_right"
-                    android:contentDescription="@string/empty"
-                    android:layout_below="@+id/createdTextView"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentLeft="true"
-                    android:scaleType="fitXY"/>
-
-            <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/commentBaloon"
-                    android:contentDescription="@string/empty"
-                    android:focusable="false"
-                    android:src="@drawable/comment_line"
-                    android:layout_gravity="left"
-                    android:layout_below="@+id/createdTextView"/>
             <LinearLayout
                 android:orientation="vertical"
                 android:baselineAligned="false"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/commentLine"
+                android:layout_below="@id/createdTextView"
                 android:id="@+id/tagsListContainer"/>
 
-            <com.android.volley.toolbox.NetworkImageView
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:id="@+id/avatarImageView"
-                    android:minWidth="50dp"
-                    android:minHeight="50dp"
-                    android:maxHeight="50dp"
-                    android:maxWidth="50dp"
-                    android:scaleType="centerCrop"
-                    android:adjustViewBounds="true"
-                    android:src="@drawable/stub"
-                    android:layout_alignParentLeft="false"
-                    android:layout_alignParentTop="false"
-                    android:layout_below="@+id/tagsListContainer"
-                android:layout_margin="5dp" />
+            <!--<com.android.volley.toolbox.NetworkImageView-->
+                    <!--android:layout_width="50dp"-->
+                    <!--android:layout_height="50dp"-->
+                    <!--android:id="@+id/avatarImageView"-->
+                    <!--android:minWidth="50dp"-->
+                    <!--android:minHeight="50dp"-->
+                    <!--android:maxHeight="50dp"-->
+                    <!--android:maxWidth="50dp"-->
+                    <!--android:scaleType="centerCrop"-->
+                    <!--android:adjustViewBounds="true"-->
+                    <!--android:src="@drawable/stub"-->
+                    <!--android:layout_alignParentLeft="false"-->
+                    <!--android:layout_alignParentTop="false"-->
+                    <!--android:layout_below="@+id/tagsListContainer"-->
+                <!--android:layout_margin="5dp" />-->
 
-            <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Author"
-                    android:id="@+id/authorTextView"
-                    android:textColor="#000"
-                    android:textSize="12dp"
-                    android:textStyle="bold"
-                    android:layout_toRightOf="@+id/avatarImageView"
-                    android:layout_below="@+id/tagsListContainer"/>
+            <!--<TextView-->
+                    <!--android:layout_width="fill_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="Author"-->
+                    <!--android:id="@+id/authorTextView"-->
+                    <!--android:textColor="#000"-->
+                    <!--android:textSize="12dp"-->
+                    <!--android:textStyle="bold"-->
+                    <!--android:layout_toRightOf="@+id/avatarImageView"-->
+                    <!--android:layout_below="@+id/tagsListContainer"/>-->
 
-            <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Description"
-                    android:id="@+id/descriptionTextView"
-                    android:textColor="#000"
-                    android:textSize="12dp"
-                    android:textIsSelectable="false"
-                    android:layout_below="@+id/authorTextView"
-                    android:layout_toRightOf="@+id/avatarImageView"/>
+            <!--<TextView-->
+                    <!--android:layout_width="fill_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="Description"-->
+                    <!--android:id="@+id/descriptionTextView"-->
+                    <!--android:textColor="#000"-->
+                    <!--android:textSize="12dp"-->
+                    <!--android:textIsSelectable="false"-->
+                    <!--android:layout_below="@+id/authorTextView"-->
+                    <!--android:layout_toRightOf="@+id/avatarImageView"/>-->
 
         </RelativeLayout>
-
-        <View
-                android:layout_below="@id/videoInfoLayout"
-                android:layout_width="fill_parent"
-                android:layout_height="10dp"
-                android:background="@drawable/card_shadow"
-                android:id="@+id/cardShadow">
-        </View>
-
-        <View
-                android:layout_below="@id/videoInfoLayout"
-                android:layout_width="fill_parent"
-                android:layout_height="5dp"
-                android:background="@drawable/card_footer"
-                android:id="@+id/cardFooter">
-        </View>
     </RelativeLayout>

@@ -137,23 +137,23 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
             if (created != null)
                 holder.created.setText(getCreatedText(created));
             assert description!=null;
-            if (description.indexOf('<') >= 0)
-                holder.description.setText(Html.fromHtml(description));
-            else
-                holder.description.setText(description);
+//            if (description.indexOf('<') >= 0)
+//                holder.description.setText(Html.fromHtml(description));
+//            else
+//                holder.description.setText(description);
 
             // При отсутствии имени автора скрываем соответствующий TextField
             int visibility = (authorName == null) ? View.GONE : View.VISIBLE;
-            holder.author.setVisibility(visibility);
-            holder.author.setText(authorName);
+//            holder.author.setVisibility(visibility);
+//            holder.author.setText(authorName);
 
             holder.thumbnail.setImageUrl(thumbnailUri, imageLoader);
 
             // При отсутствии аватара скрываем его ImageView и стрелочку вниз
             visibility = (avatarUri == null) ? View.GONE : View.VISIBLE;
-            holder.avatar.setVisibility(visibility);
-            holder.avatar.setImageUrl(avatarUri, imageLoader);
-            holder.commentBalloon.setVisibility(visibility);
+//            holder.avatar.setVisibility(visibility);
+//            holder.avatar.setImageUrl(avatarUri, imageLoader);
+//            holder.commentBalloon.setVisibility(visibility);
 
         } catch (IllegalArgumentException e) {
             e.printStackTrace();

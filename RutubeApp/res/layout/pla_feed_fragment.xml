@@ -12,9 +12,9 @@
     <com.huewu.pla.lib.MultiColumnListView
         xmlns:pla="http://schemas.android.com/apk/res-auto"
         android:id="@+id/feed_item_list"
-        android:background="@color/feed_bg"
         pla:plaColumnNumber="@integer/columns_portrait"
         pla:plaLandscapeColumnNumber="@integer/columns_landscape"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        style="@style/Rutube.Feed.Container"/>
 </RelativeLayout>

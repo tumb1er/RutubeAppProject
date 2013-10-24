@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Rutube"/>
+    <style name="Rutube.Feed"/>
+
+    <style name="Rutube.Feed.Text">
+        <item name="android:textSize">12sp</item>
+        <item name="android:typeface">sans</item>
+    </style>
+    <style name="Rutube.Feed.List" parent="Widget">
+        <!-- стиль контейнера ленты -->
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingLeft">3dp</item>
+        <item name="android:paddingRight">3dp</item>
+        <item name="android:paddingBottom">6dp</item>
+        <item name="android:background">@color/feed_background</item>
+    </style>
+
+    <style name="Rutube.Feed.Duration" parent="Rutube.Feed.Text">
+        <!-- стиль плашки с длительностью -->
+        <item name="android:textColor">@color/duration_color</item>
+
+        <item name="android:background">@color/duration_background</item>
+        <item name="android:layout_marginRight">13dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:paddingLeft">6dp</item>
+        <item name="android:paddingRight">6dp</item>
+    </style>
+
+    <style name="Rutube.Feed.Thumbnail" parent="Widget">
+        <item name="android:src">@drawable/stub</item>
+        <item name="android:minHeight">100dp</item>
+        <item name="android:layout_marginLeft">-1dp</item>
+        <item name="android:layout_marginRight">-1dp</item>
+        <item name="android:scaleType">centerCrop</item>
+    </style>
+
+    <style name="Rutube.Feed.Card" parent="Widget">
+        <item name="android:background">@color/card_background</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:paddingRight">12dp</item>
+        <item name="android:paddingTop">11dp</item>
+        <item name="android:paddingLeft">12dp</item>
+    </style>
+
+    <style name="Rutube.Feed.Title" parent="Rutube.Feed.Text">
+        <item name="android:textColor">@color/video_title</item>
+    </style>
+
+    <style name="Rutube.Feed.Created" parent="Rutube.Feed.Text">
+        <item name="android:textColor">@color/created</item>
+    </style>
+
+    <style name="Rutube.Feed.Container" parent="Widget">
+        <item name="android:paddingLeft">3dp</item>
+        <item name="android:paddingRight">3dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:paddingTop">6dp</item>
+        <item name="android:background">@color/feed_background</item>
+        <item name="android:divider">@android:color/transparent</item>
+        <item name="android:drawSelectorOnTop">false</item>
+        <item name="android:cacheColorHint">@color/feed_background</item>
+        <item name="android:listSelector">@android:color/transparent</item>
+    </style>
+
+</resources>
