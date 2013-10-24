@@ -99,7 +99,7 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
             }
             holder.tags.setVisibility(View.VISIBLE);
 
-//            holder.description.setVisibility(View.GONE);
+            holder.description.setVisibility(View.GONE);
 
         } catch (IllegalArgumentException e) {
             e.printStackTrace();

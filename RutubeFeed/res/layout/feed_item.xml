@@ -1,95 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
     style="@style/Rutube.Feed.List">
 
 
-        <ru.rutube.RutubeFeed.views.ThumbnailView
-                android:id="@+id/thumbnailImageView"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:contentDescription="@string/thumbnail"
-            style="@style/Rutube.Feed.Thumbnail" />
+    <ru.rutube.RutubeFeed.views.ThumbnailView
+        android:id="@+id/thumbnailImageView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/thumbnail"
+        style="@style/Rutube.Feed.Thumbnail" />
 
-        <TextView android:layout_width="wrap_content"
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/durationTextView"
+        android:text="4:24"
+        android:layout_alignRight="@+id/thumbnailImageView"
+        android:layout_alignBottom="@+id/thumbnailImageView"
+        android:visibility="gone"
+        style="@style/Rutube.Feed.Duration" />
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/videoInfoLayout"
+        android:layout_below="@+id/thumbnailImageView"
+        style="@style/Rutube.Feed.Card">
+
+        <TextView
+            android:id="@+id/titleTextView"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/durationTextView"
-            android:text="4:24"
-            android:layout_alignRight="@+id/thumbnailImageView"
-            android:layout_alignBottom="@+id/thumbnailImageView"
-            style="@style/Rutube.Feed.Duration" />
+            android:text="Title"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            style="@style/Rutube.Feed.Title" />
 
-        <RelativeLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/videoInfoLayout"
-            android:layout_below="@+id/thumbnailImageView"
-            style="@style/Rutube.Feed.Card">
+        <TextView
+            android:id="@+id/createdTextView"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Created"
+            android:layout_below="@+id/titleTextView"
+            style="@style/Rutube.Feed.Created" />
 
-            <TextView
-                    android:id="@+id/titleTextView"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                android:text="Title"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                style="@style/Rutube.Feed.Title" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:baselineAligned="false"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/createdTextView"
+            android:id="@+id/tagsListContainer" />
 
-            <TextView
-                    android:id="@+id/createdTextView"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Created"
-                    android:layout_below="@+id/titleTextView"
-                style="@style/Rutube.Feed.Created" />
+        <com.android.volley.toolbox.NetworkImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/avatarImageView"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_below="@+id/tagsListContainer"
+            style="@style/Rutube.Feed.Avatar" />
 
-            <LinearLayout
-                android:orientation="vertical"
-                android:baselineAligned="false"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/createdTextView"
-                android:id="@+id/tagsListContainer"/>
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Author"
+            android:id="@+id/authorTextView"
+            android:layout_toRightOf="@+id/avatarImageView"
+            android:layout_below="@+id/tagsListContainer"
+            style="@style/Rutube.Feed.Author" />
 
-            <!--<com.android.volley.toolbox.NetworkImageView-->
-                    <!--android:layout_width="50dp"-->
-                    <!--android:layout_height="50dp"-->
-                    <!--android:id="@+id/avatarImageView"-->
-                    <!--android:minWidth="50dp"-->
-                    <!--android:minHeight="50dp"-->
-                    <!--android:maxHeight="50dp"-->
-                    <!--android:maxWidth="50dp"-->
-                    <!--android:scaleType="centerCrop"-->
-                    <!--android:adjustViewBounds="true"-->
-                    <!--android:src="@drawable/stub"-->
-                    <!--android:layout_alignParentLeft="false"-->
-                    <!--android:layout_alignParentTop="false"-->
-                    <!--android:layout_below="@+id/tagsListContainer"-->
-                <!--android:layout_margin="5dp" />-->
+        <TextView
+            android:layout_height="wrap_content"
+            android:text="Description"
+            android:id="@+id/descriptionTextView"
+            android:layout_below="@+id/authorTextView"
+            android:layout_toRightOf="@+id/avatarImageView"
+            style="@style/Rutube.Feed.Description" />
 
-            <!--<TextView-->
-                    <!--android:layout_width="fill_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text="Author"-->
-                    <!--android:id="@+id/authorTextView"-->
-                    <!--android:textColor="#000"-->
-                    <!--android:textSize="12dp"-->
-                    <!--android:textStyle="bold"-->
-                    <!--android:layout_toRightOf="@+id/avatarImageView"-->
-                    <!--android:layout_below="@+id/tagsListContainer"/>-->
-
-            <!--<TextView-->
-                    <!--android:layout_width="fill_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text="Description"-->
-                    <!--android:id="@+id/descriptionTextView"-->
-                    <!--android:textColor="#000"-->
-                    <!--android:textSize="12dp"-->
-                    <!--android:textIsSelectable="false"-->
-                    <!--android:layout_below="@+id/authorTextView"-->
-                    <!--android:layout_toRightOf="@+id/avatarImageView"/>-->
-
-        </RelativeLayout>
     </RelativeLayout>
+</RelativeLayout>

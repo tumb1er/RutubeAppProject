@@ -33,6 +33,7 @@
         <item name="android:layout_marginLeft">-1dp</item>
         <item name="android:layout_marginRight">-1dp</item>
         <item name="android:scaleType">centerCrop</item>
+        <item name="android:adjustViewBounds">true</item>
     </style>
 
     <style name="Rutube.Feed.Card" parent="Widget">
@@ -61,6 +62,26 @@
         <item name="android:drawSelectorOnTop">false</item>
         <item name="android:cacheColorHint">@color/feed_background</item>
         <item name="android:listSelector">@android:color/transparent</item>
+    </style>
+
+    <style name="Rutube.Feed.Avatar" parent="Widget">
+        <item name="android:minWidth">50dp</item>
+        <item name="android:minHeight">50dp</item>
+        <item name="android:maxHeight">50dp</item>
+        <item name="android:maxWidth">50dp</item>
+        <item name="android:scaleType">centerCrop</item>
+        <item name="android:adjustViewBounds">true</item>
+        <item name="android:layout_margin">5dp</item>
+        <item name="android:src">@drawable/stub</item>
+    </style>
+
+    <style name="Rutube.Feed.Author" parent="Rutube.Feed.Text">
+        <item name="android:textColor">@color/author</item>
+    </style>
+
+    <style name="Rutube.Feed.Description" parent="Rutube.Feed.Text">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:textColor">@color/description</item>
     </style>
 
 </resources>
