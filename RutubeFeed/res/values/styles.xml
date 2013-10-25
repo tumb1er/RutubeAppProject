@@ -7,12 +7,26 @@
         <item name="android:textSize">12sp</item>
         <item name="android:typeface">sans</item>
     </style>
-    <style name="Rutube.Feed.List" parent="Widget">
-        <!-- стиль контейнера ленты -->
+
+    <style name="Rutube.Feed.Container" parent="Widget">
+        <!-- стиль фрагмента с лентой -->
+        <item name="android:paddingLeft">@dimen/card_padding</item>
+        <item name="android:paddingRight">@dimen/card_padding</item>
+        <item name="android:paddingBottom">0dp</item>
         <item name="android:paddingTop">0dp</item>
-        <item name="android:paddingLeft">3dp</item>
-        <item name="android:paddingRight">3dp</item>
-        <item name="android:paddingBottom">6dp</item>
+        <item name="android:background">@color/feed_background</item>
+        <item name="android:divider">@android:color/transparent</item>
+        <item name="android:drawSelectorOnTop">false</item>
+        <item name="android:cacheColorHint">@color/feed_background</item>
+        <item name="android:listSelector">@android:color/transparent</item>
+    </style>
+
+    <style name="Rutube.Feed.List" parent="Widget">
+        <!-- стиль списка карточек -->
+        <item name="android:paddingTop">@dimen/card_padding_2x</item>
+        <item name="android:paddingLeft">@dimen/card_padding</item>
+        <item name="android:paddingRight">@dimen/card_padding</item>
+        <item name="android:paddingBottom">0dp</item>
         <item name="android:background">@color/feed_background</item>
     </style>
 
@@ -50,18 +64,6 @@
 
     <style name="Rutube.Feed.Created" parent="Rutube.Feed.Text">
         <item name="android:textColor">@color/created</item>
-    </style>
-
-    <style name="Rutube.Feed.Container" parent="Widget">
-        <item name="android:paddingLeft">3dp</item>
-        <item name="android:paddingRight">3dp</item>
-        <item name="android:paddingBottom">0dp</item>
-        <item name="android:paddingTop">6dp</item>
-        <item name="android:background">@color/feed_background</item>
-        <item name="android:divider">@android:color/transparent</item>
-        <item name="android:drawSelectorOnTop">false</item>
-        <item name="android:cacheColorHint">@color/feed_background</item>
-        <item name="android:listSelector">@android:color/transparent</item>
     </style>
 
     <style name="Rutube.Feed.Avatar" parent="Widget">
