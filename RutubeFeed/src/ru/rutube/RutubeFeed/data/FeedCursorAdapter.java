@@ -55,7 +55,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         TextView author;
         NetworkImageView thumbnail;
         NetworkImageView avatar;
-        ImageView commentBalloon;
+        View commentLine;
     }
 
     public int getPerPage() {
@@ -93,6 +93,8 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         assert view != null;
         ViewHolder holder = new ViewHolder();
         initHolder(view, holder);
+        holder.avatar.setDefaultImageResId(R.drawable.editors_av);
+        holder.avatar.setImageResource(R.drawable.editors_av);
         view.setTag(holder);
         return view;
     }
@@ -102,8 +104,9 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         holder.description = (TextView)view.findViewById(R.id.descriptionTextView);
         holder.author = (TextView)view.findViewById(R.id.authorTextView);
         holder.created = (TextView)view.findViewById(R.id.createdTextView);
-        holder.commentBalloon = (ImageView)view.findViewById(R.id.commentBaloon);
+        holder.commentLine = view.findViewById(R.id.commentLine);
         holder.avatar = (NetworkImageView)view.findViewById(R.id.avatarImageView);
+        holder.avatar.setDefaultImageResId(R.drawable.stub);
         holder.thumbnail = (NetworkImageView)view.findViewById(R.id.thumbnailImageView);
         holder.thumbnail.setDefaultImageResId(R.drawable.stub);
         return holder;
@@ -112,52 +115,71 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     @Override
     public void bindView(@NotNull View view, Context context, @NotNull Cursor cursor) {
         try {
-            int titleIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.TITLE);
-            int thumbnailUriIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.THUMBNAIL_URI);
-            int descriptionIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.DESCRIPTION);
-            int createdIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.CREATED);
-            int authorNameIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.AUTHOR_NAME);
-            int avatarIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.AVATAR_URI);
-
-            String title = cursor.getString(titleIndex);
-            String thumbnailUri = cursor.getString(thumbnailUriIndex);
-            String description = cursor.getString(descriptionIndex);
-            Date created = null;
-            try {
-                String created_str = cursor.getString(createdIndex);
-                created = sqlDateFormat.parse(created_str);
-            } catch (ParseException ignored) {
-                if (D) Log.e(getClass().getName(), "CR Parse error");
-            }
-            String authorName = cursor.getString(authorNameIndex);
-            String avatarUri = cursor.getString(avatarIndex);
-
             ViewHolder holder = (ViewHolder)view.getTag();
-            holder.title.setText(title);
-            if (created != null)
-                holder.created.setText(getCreatedText(created));
-            assert description!=null;
-            if (description.indexOf('<') >= 0)
-                holder.description.setText(Html.fromHtml(description));
-            else
-                holder.description.setText(description);
-
-            // При отсутствии имени автора скрываем соответствующий TextField
-            int visibility = (authorName == null) ? View.GONE : View.VISIBLE;
-            holder.author.setVisibility(visibility);
-            holder.author.setText(authorName);
-
-            holder.thumbnail.setImageUrl(thumbnailUri, imageLoader);
-
-            // При отсутствии аватара скрываем его ImageView и стрелочку вниз
-            visibility = (avatarUri == null) ? View.GONE : View.VISIBLE;
-            holder.avatar.setVisibility(visibility);
-            holder.avatar.setImageUrl(avatarUri, imageLoader);
-//            holder.commentBalloon.setVisibility(visibility);
-
+            bindTitle(cursor, holder);
+            bindCreated(cursor, holder);
+            bindDescription(cursor, holder);
+            bindAuthor(cursor, holder);
+            bindThumbnail(cursor, holder);
+            bindAvatar(cursor, holder);
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
+    }
+
+    protected void bindAvatar(Cursor cursor, ViewHolder holder) {
+        int avatarIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.AVATAR_URI);
+        String avatarUri = cursor.getString(avatarIndex);
+        int visibility;
+        // При отсутствии аватара скрываем его ImageView и горизонтальную черту
+        visibility = (avatarUri == null) ? View.GONE : View.VISIBLE;
+        holder.avatar.setVisibility(visibility);
+        holder.commentLine.setVisibility(visibility);
+        holder.avatar.setImageUrl(avatarUri, imageLoader);
+    }
+
+    protected void bindAuthor(Cursor cursor, ViewHolder holder) {
+        int authorNameIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.AUTHOR_NAME);
+        String authorName = cursor.getString(authorNameIndex);
+        // При отсутствии имени автора скрываем соответствующий TextField
+        int visibility = (authorName == null) ? View.GONE : View.VISIBLE;
+        holder.author.setVisibility(visibility);
+        holder.author.setText(authorName);
+    }
+
+    protected void bindCreated(Cursor cursor, ViewHolder holder) {
+        int createdIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.CREATED);
+        Date created = null;
+        try {
+            String created_str = cursor.getString(createdIndex);
+            created = sqlDateFormat.parse(created_str);
+        } catch (ParseException ignored) {
+            if (D) Log.e(getClass().getName(), "CR Parse error");
+        }
+        if (created != null)
+            holder.created.setText(getCreatedText(created));
+    }
+
+    protected void bindDescription(Cursor cursor, ViewHolder holder) {
+        int descriptionIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.DESCRIPTION);
+        String description = cursor.getString(descriptionIndex);
+        assert description!=null;
+        if (description.indexOf('<') >= 0)
+            holder.description.setText(Html.fromHtml(description));
+        else
+            holder.description.setText(description);
+    }
+
+    protected void bindThumbnail(Cursor cursor, ViewHolder holder) {
+        int thumbnailUriIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.THUMBNAIL_URI);
+        String thumbnailUri = cursor.getString(thumbnailUriIndex);
+        holder.thumbnail.setImageUrl(thumbnailUri, imageLoader);
+    }
+
+    protected void bindTitle(Cursor cursor, ViewHolder holder) {
+        int titleIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.TITLE);
+        String title = cursor.getString(titleIndex);
+        holder.title.setText(title);
     }
 
     protected String getCreatedText(Date created) {
@@ -182,6 +204,10 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
 
     protected void initImageLoader(Context context) {
         imageLoader = new ImageLoader(Volley.newRequestQueue(context), RutubeApp.getBitmapCache());
+    }
+
+    protected ImageLoader getImageLoader(){
+        return imageLoader;
     }
 
     @Override

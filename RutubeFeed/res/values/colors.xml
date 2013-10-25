@@ -5,8 +5,9 @@
     <color name="duration_color">#FF323232</color>
     <color name="card_background">#FFFFFFFF</color>
     <color name="video_title">#FF353535</color>
-    <color name="created">#FFA9A9A9</color>
+    <color name="created">#FFABABAB</color>
     <color name="tag_bullet">#FF323232</color>
-    <color name="author">#FF000000</color>
-    <color name="description">#FFA9A9A9</color>
+    <color name="author">#FFABABAB</color>
+    <color name="description">#FF6C6C6C</color>
+    <color name="commentLine">#FFCCCCCC</color>
 </resources>

@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     style="?attr/FeedListStyle">
 
-
+    <!-- Тамнейл -->
     <ru.rutube.RutubeFeed.views.ThumbnailView
         android:id="@+id/thumbnailImageView"
         android:layout_width="fill_parent"
@@ -12,6 +12,7 @@
         android:contentDescription="@string/thumbnail"
         style="?attr/FeedThumbnailStyle" />
 
+    <!-- Длительность поверх тамнейла -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -22,6 +23,7 @@
         android:visibility="gone"
         style="?attr/FeedDurationStyle" />
 
+    <!-- Карточка видео под тамнейлом -->
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -29,6 +31,7 @@
         android:layout_below="@+id/thumbnailImageView"
         style="?attr/FeedCardStyle">
 
+        <!-- Название ролика-->
         <TextView
             android:id="@+id/titleTextView"
             android:layout_width="fill_parent"
@@ -38,6 +41,7 @@
             android:layout_alignParentTop="true"
             style="?attr/FeedTitleStyle" />
 
+        <!-- когда загружен -->
         <TextView
             android:id="@+id/createdTextView"
             android:layout_width="fill_parent"
@@ -46,6 +50,7 @@
             android:layout_below="@+id/titleTextView"
             style="?attr/FeedCreatedStyle" />
 
+        <!-- Контейнер списка тегов -->
         <LinearLayout
             android:orientation="vertical"
             android:baselineAligned="false"
@@ -54,31 +59,48 @@
             android:layout_below="@id/createdTextView"
             android:id="@+id/tagsListContainer" />
 
-        <com.android.volley.toolbox.NetworkImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:id="@+id/avatarImageView"
-            android:layout_alignParentLeft="false"
-            android:layout_alignParentTop="false"
-            android:layout_below="@+id/tagsListContainer"
-            style="?attr/FeedAvatarStyle" />
-
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="Author"
-            android:id="@+id/authorTextView"
-            android:layout_toRightOf="@+id/avatarImageView"
-            android:layout_below="@+id/tagsListContainer"
-            style="?attr/FeedAuthorStyle" />
-
+        <!-- Описание ролика -->
         <TextView
             android:layout_height="wrap_content"
             android:text="Description"
             android:id="@+id/descriptionTextView"
-            android:layout_below="@+id/authorTextView"
-            android:layout_toRightOf="@+id/avatarImageView"
-            style="?attr/FeedDescriptionStyle" />
+            android:layout_below="@+id/tagsListContainer"
+            style="?attr/FeedDescriptionStyle"
+            android:layout_width="wrap_content" />
 
+        <!-- Горизонтальная черта -->
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:id="@+id/commentLine"
+            android:layout_below="@+id/descriptionTextView"
+            android:background="@color/commentLine"
+            style="?attr/FeedHorizontalLineStyle"/>
+
+        <!-- Футер карточки-->
+        <RelativeLayout
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_below="@+id/commentLine"
+            style="?attr/FeedFooterStyle">
+
+            <!-- Аватар -->
+            <com.android.volley.toolbox.NetworkImageView
+                android:id="@+id/avatarImageView"
+                style="?attr/FeedAvatarStyle"
+                android:layout_centerVertical="true"
+            />
+
+            <!-- Имя автора справа от аватара -->
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:text="Author"
+                android:id="@+id/authorTextView"
+                android:layout_toRightOf="@+id/avatarImageView"
+                android:layout_centerVertical="true"
+                style="?attr/FeedAuthorStyle"
+                />
+        </RelativeLayout>
     </RelativeLayout>
 </RelativeLayout>

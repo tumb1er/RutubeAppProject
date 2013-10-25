@@ -5,4 +5,5 @@
     <item name="round_corners" type="dimen">3%</item>
     <item name="card_padding" type="dimen">5dp</item>
     <item name="card_padding_2x" type="dimen">10dp</item>
+    <dimen name="avatar">30dp</dimen>
 </resources>

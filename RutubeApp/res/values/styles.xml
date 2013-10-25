@@ -24,7 +24,8 @@
         <item name="FeedCreatedStyle">@style/Rutube.Feed.Created</item>
         <item name="FeedAvatarStyle">@style/Rutube.Feed.Avatar</item>
         <item name="FeedAuthorStyle">@style/Rutube.Feed.Author</item>
-
+        <item name="FeedFooterStyle">@style/Rutube.Feed.Footer</item>
+        <item name="FeedHorizontalLineStyle">@style/Rutube.Feed.Line</item>
     </style>
 
     <style name="Theme.Rutube.Base" parent="Theme.Sherlock.Light">

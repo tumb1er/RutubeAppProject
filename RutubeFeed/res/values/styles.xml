@@ -4,7 +4,7 @@
     <style name="Rutube.Feed"/>
 
     <style name="Rutube.Feed.Text">
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">16dp</item>
         <item name="android:typeface">sans</item>
     </style>
 
@@ -33,7 +33,7 @@
     <style name="Rutube.Feed.Duration" parent="Rutube.Feed.Text">
         <!-- стиль плашки с длительностью -->
         <item name="android:textColor">@color/duration_color</item>
-
+        <item name="android:textSize">12dp</item>
         <item name="android:background">@color/duration_background</item>
         <item name="android:layout_marginRight">13dp</item>
         <item name="android:layout_marginBottom">10dp</item>
@@ -51,39 +51,52 @@
     </style>
 
     <style name="Rutube.Feed.Card" parent="Widget">
-        <item name="android:background">@color/card_background</item>
-        <item name="android:paddingBottom">12dp</item>
-        <item name="android:paddingRight">12dp</item>
+        <item name="android:background">@drawable/card_shadow</item>
         <item name="android:paddingTop">11dp</item>
+        <item name="android:paddingBottom">16dp</item>
         <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">12dp</item>
     </style>
 
     <style name="Rutube.Feed.Title" parent="Rutube.Feed.Text">
         <item name="android:textColor">@color/video_title</item>
+        <item name="android:textSize">20dp</item>
     </style>
 
     <style name="Rutube.Feed.Created" parent="Rutube.Feed.Text">
         <item name="android:textColor">@color/created</item>
+        <item name="android:textSize">12dp</item>
+        <item name="android:paddingTop">3dp</item>
+        <item name="android:paddingBottom">3dp</item>
     </style>
 
     <style name="Rutube.Feed.Avatar" parent="Widget">
-        <item name="android:minWidth">50dp</item>
-        <item name="android:minHeight">50dp</item>
-        <item name="android:maxHeight">50dp</item>
-        <item name="android:maxWidth">50dp</item>
-        <item name="android:scaleType">centerCrop</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minWidth">@dimen/avatar</item>
+        <item name="android:minHeight">@dimen/avatar</item>
+        <item name="android:maxHeight">@dimen/avatar</item>
+        <item name="android:maxWidth">@dimen/avatar</item>
+        <item name="android:scaleType">fitXY</item>
         <item name="android:adjustViewBounds">true</item>
-        <item name="android:layout_margin">5dp</item>
         <item name="android:src">@drawable/stub</item>
     </style>
 
     <style name="Rutube.Feed.Author" parent="Rutube.Feed.Text">
         <item name="android:textColor">@color/author</item>
+        <item name="android:paddingLeft">10dp</item>
     </style>
 
     <style name="Rutube.Feed.Description" parent="Rutube.Feed.Text">
         <item name="android:layout_width">fill_parent</item>
         <item name="android:textColor">@color/description</item>
+    </style>
+
+    <style name="Rutube.Feed.Footer" parent="Widget" >
+    </style>
+    <style name="Rutube.Feed.Line" parent="Widget">
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
     </style>
 
 </resources>

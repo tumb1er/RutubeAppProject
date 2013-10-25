@@ -69,43 +69,50 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
     }
 
     @Override
+    protected void bindDescription(Cursor cursor, FeedCursorAdapter.ViewHolder holder) {
+        holder.description.setVisibility(View.GONE);
+    }
+
+    @Override
     public void bindView(@NotNull View view, Context context, @NotNull Cursor cursor) {
         super.bindView(view, context, cursor);
         try {
-            int tagsListIndex = cursor.getColumnIndexOrThrow(FeedContract.Subscriptions.TAGS_JSON);
-            String tagsJson = cursor.getString(tagsListIndex);
-            if (tagsJson == null) {
-                tagsJson = "[]";
-            }
-            JSONArray tags = new JSONArray(tagsJson);
-            VideoTag[] tagValues = new VideoTag[tags.length()];
-            for(int i=0;i<tags.length();i++) {
-                VideoTag tag = VideoTag.fromJSON(tags.getJSONObject(i));
-                tagValues[i] = tag;
-            }
             ViewHolder holder = (ViewHolder)view.getTag();
-            TagsListAdapter tagsListAdapter = new TagsListAdapter(mContext, R.layout.tag_item, tagValues);
-            holder.tags.removeAllViews();
-            for (int i=0;i<tagValues.length;i++) {
-                View tagView = tagsListAdapter.getView(i, null, holder.tags);
-                assert tagView != null;
-
-                if (i == 0) {
-//                    View line = tagView.findViewById(R.id.commentLine);
-//                    line.setVisibility(View.GONE);
-                }
-
-                holder.tags.addView(tagView);
-            }
-            holder.tags.setVisibility(View.VISIBLE);
-
-            holder.description.setVisibility(View.GONE);
+            bindTags(holder, cursor);
 
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private ViewHolder bindTags(ViewHolder holder, Cursor cursor) throws JSONException {
+        int tagsListIndex = cursor.getColumnIndexOrThrow(FeedContract.Subscriptions.TAGS_JSON);
+        String tagsJson = cursor.getString(tagsListIndex);
+        if (tagsJson == null) {
+            tagsJson = "[]";
+        }
+        JSONArray tags = new JSONArray(tagsJson);
+        VideoTag[] tagValues = new VideoTag[tags.length()];
+        for(int i=0;i<tags.length();i++) {
+            VideoTag tag = VideoTag.fromJSON(tags.getJSONObject(i));
+            tagValues[i] = tag;
+        }
+        TagsListAdapter tagsListAdapter = new TagsListAdapter(mContext, R.layout.tag_item, tagValues);
+        holder.tags.removeAllViews();
+        for (int i=0;i<tagValues.length;i++) {
+            View tagView = tagsListAdapter.getView(i, null, holder.tags);
+            assert tagView != null;
+
+//            if (i == 0) {
+//                holder.commentLine.setVisibility(View.GONE);
+//            }
+
+            holder.tags.addView(tagView);
+        }
+        holder.tags.setVisibility(View.VISIBLE);
+        return holder;
     }
 
 }

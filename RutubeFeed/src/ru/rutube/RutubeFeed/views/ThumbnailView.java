@@ -9,15 +9,15 @@ import com.android.volley.toolbox.NetworkImageView;
 import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeFeed.R;
 import ru.rutube.RutubeFeed.helpers.BitmapProcessor;
+import ru.rutube.RutubeFeed.helpers.CropBitmapProcessor;
 import ru.rutube.RutubeFeed.helpers.TopRoundCornerBitmapProcessor;
 
 /**
  * Created by tumbler on 07.07.13.
  */
 public class ThumbnailView extends NetworkImageView {
-    private static double ROUND_PERCENT = RutubeApp.getContext().getResources().getFraction(R.dimen.round_corners, 1, 1);
     private static double ASPECT = 0.668;
-    private static final BitmapProcessor sBitmapProcessor = new TopRoundCornerBitmapProcessor(ROUND_PERCENT, ASPECT);
+    private static final BitmapProcessor sBitmapProcessor = new CropBitmapProcessor(ASPECT);
     public ThumbnailView(Context context) {
         super(context);
     }

@@ -11,5 +11,7 @@
         <attr name="FeedCreatedStyle" format="reference"/>
         <attr name="FeedAvatarStyle" format="reference"/>
         <attr name="FeedAuthorStyle" format="reference"/>
+        <attr name="FeedHorizontalLineStyle" format="reference"/>
+        <attr name="FeedFooterStyle" format="reference"/>
     </declare-styleable>
 </resources>

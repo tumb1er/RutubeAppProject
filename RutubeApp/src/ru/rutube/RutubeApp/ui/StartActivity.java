@@ -21,6 +21,7 @@ import ru.rutube.RutubeAPI.models.User;
 import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubeApp.ctrl.MainPageController;
 import ru.rutube.RutubeApp.ui.dialog.LoginDialogFragment;
+import ru.rutube.RutubeApp.ui.feed.PlaEditorsFragment;
 import ru.rutube.RutubeApp.ui.feed.PlaFeedFragment;
 import ru.rutube.RutubeApp.ui.feed.PlaSubscriptionsFragment;
 
@@ -260,6 +261,8 @@ public class StartActivity extends SherlockFragmentActivity implements MainPageC
         Fragment fragment;
         if (tag.equals(MainPageController.TAB_SUBSCRIPTIONS))
             fragment = new PlaSubscriptionsFragment();
+        else if (tag.equals(MainPageController.TAB_EDITORS))
+            fragment = new PlaEditorsFragment();
         else
             fragment = new PlaFeedFragment();
 
