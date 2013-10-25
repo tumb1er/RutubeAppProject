@@ -65,9 +65,6 @@
 
     <style name="Rutube.Feed.Created" parent="Rutube.Feed.Text">
         <item name="android:textColor">@color/created</item>
-        <item name="android:textSize">12dp</item>
-        <item name="android:paddingTop">3dp</item>
-        <item name="android:paddingBottom">3dp</item>
     </style>
 
     <style name="Rutube.Feed.Avatar" parent="Widget">

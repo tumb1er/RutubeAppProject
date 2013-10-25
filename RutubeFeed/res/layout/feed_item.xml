@@ -41,22 +41,13 @@
             android:layout_alignParentTop="true"
             style="?attr/FeedTitleStyle" />
 
-        <!-- когда загружен -->
-        <TextView
-            android:id="@+id/createdTextView"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="Created"
-            android:layout_below="@+id/titleTextView"
-            style="?attr/FeedCreatedStyle" />
-
         <!-- Контейнер списка тегов -->
         <LinearLayout
             android:orientation="vertical"
             android:baselineAligned="false"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/createdTextView"
+            android:layout_below="@id/titleTextView"
             android:id="@+id/tagsListContainer" />
 
         <!-- Описание ролика -->
@@ -101,6 +92,19 @@
                 android:layout_centerVertical="true"
                 style="?attr/FeedAuthorStyle"
                 />
+
+            <!-- когда загружен -->
+            <TextView
+                android:id="@+id/createdTextView"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Created"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:gravity="right"
+                style="?attr/FeedCreatedStyle" />
+
+
         </RelativeLayout>
     </RelativeLayout>
 </RelativeLayout>
