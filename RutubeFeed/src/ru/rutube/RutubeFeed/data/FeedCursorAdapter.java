@@ -2,13 +2,13 @@ package ru.rutube.RutubeFeed.data;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
@@ -21,6 +21,7 @@ import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeFeed.R;
+import ru.rutube.RutubeFeed.helpers.Typefaces;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -40,9 +41,10 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     protected static int item_layout_id = R.layout.feed_item;
     private final String LOG_TAG = getClass().getName();
     private static final boolean D = BuildConfig.DEBUG;
-    private Context context;
     private int mPerPage;
     private boolean mHasMore;
+    protected Typeface mNormalFont;
+    protected Typeface mLightFont;
 
     public void setHasMore(boolean hasMore) {
         mHasMore = hasMore;
@@ -79,10 +81,11 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     }
     public FeedCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
         super(context, layout, c, from, to, flags);
-        this.context = context;
         mPerPage = 20;
         mHasMore = true;
         initImageLoader(context);
+        mNormalFont = Typefaces.get(mContext, "fonts/opensansregular.ttf");
+        mLightFont = Typefaces.get(mContext, "fonts/opensanslight.ttf");
     }
 
     @Override
@@ -91,25 +94,36 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(item_layout_id, null);
         assert view != null;
-        ViewHolder holder = new ViewHolder();
-        initHolder(view, holder);
-        holder.avatar.setDefaultImageResId(R.drawable.editors_av);
-        holder.avatar.setImageResource(R.drawable.editors_av);
+        ViewHolder holder = getHolder(view);
+        initView(holder);
         view.setTag(holder);
         return view;
     }
 
-    protected ViewHolder initHolder(View view, ViewHolder holder) {
+    protected void initView(ViewHolder holder) {
+        holder.avatar.setDefaultImageResId(R.drawable.editors_av);
+        holder.title.setTypeface(mNormalFont);
+        holder.description.setTypeface(mLightFont);
+        holder.created.setTypeface(mLightFont);
+        holder.author.setTypeface(mLightFont);
+        holder.thumbnail.setDefaultImageResId(R.drawable.stub);
+        holder.avatar.setDefaultImageResId(R.drawable.stub);
+    }
+
+    protected ViewHolder getHolder(View view) {
+        ViewHolder holder = new ViewHolder();
+        initHolder(view, holder);
+        return holder;
+    }
+
+    protected void initHolder(View view, ViewHolder holder) {
         holder.title = (TextView)view.findViewById(R.id.titleTextView);
         holder.description = (TextView)view.findViewById(R.id.descriptionTextView);
         holder.author = (TextView)view.findViewById(R.id.authorTextView);
         holder.created = (TextView)view.findViewById(R.id.createdTextView);
         holder.footer = view.findViewById(R.id.footer);
         holder.avatar = (NetworkImageView)view.findViewById(R.id.avatarImageView);
-        holder.avatar.setDefaultImageResId(R.drawable.stub);
         holder.thumbnail = (NetworkImageView)view.findViewById(R.id.thumbnailImageView);
-        holder.thumbnail.setDefaultImageResId(R.drawable.stub);
-        return holder;
     }
 
     @Override
@@ -186,19 +200,19 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         Date now = new Date();
         long seconds = (now.getTime() - created.getTime()) / 1000;
         if (seconds < 3600)
-            return context.getString(R.string.now);
+            return mContext.getString(R.string.now);
         if (seconds < 24 * 3600)
-            return context.getString(R.string.today);
+            return mContext.getString(R.string.today);
         if (seconds < 2 * 24 * 3600)
-            return context.getString(R.string.yesterday);
+            return mContext.getString(R.string.yesterday);
         if (seconds < 5 * 24 * 3600)
-            return String.format(context.getString(R.string.days_ago_24, seconds / (24 * 3600)));
+            return String.format(mContext.getString(R.string.days_ago_24, seconds / (24 * 3600)));
         if (seconds < 7 * 24 * 3600)
-            return String.format(context.getString(R.string.days_ago_59, seconds / (24 * 3600)));
+            return String.format(mContext.getString(R.string.days_ago_59, seconds / (24 * 3600)));
         if (seconds < 14 * 24 * 3600)
-            return String.format(context.getString(R.string.week_ago, seconds / (7 * 24 * 3600)));
+            return String.format(mContext.getString(R.string.week_ago, seconds / (7 * 24 * 3600)));
         if (seconds < 31 * 24 * 3600)
-            return String.format(context.getString(R.string.weeks_ago, seconds / (7 * 24 * 3600)));
+            return String.format(mContext.getString(R.string.weeks_ago, seconds / (7 * 24 * 3600)));
         return reprDateFormat.format(created);
     }
 

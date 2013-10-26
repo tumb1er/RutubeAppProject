@@ -2,6 +2,7 @@ package ru.rutube.RutubeFeed.data;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.models.VideoTag;
 import ru.rutube.RutubeFeed.R;
+import ru.rutube.RutubeFeed.helpers.Typefaces;
 
 /**
  * Created with IntelliJ IDEA.
@@ -39,18 +41,8 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
     }
 
     @Override
-    public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        LayoutInflater inflater = (LayoutInflater) context
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(item_layout_id, null);
-        assert view != null;
+    protected FeedCursorAdapter.ViewHolder getHolder(View view) {
         ViewHolder holder = new ViewHolder();
-        initHolder(view, holder);
-        view.setTag(holder);
-        return view;
-    }
-
-    protected ViewHolder initHolder(View view, ViewHolder holder) {
         super.initHolder(view, holder);
         holder.tags = (LinearLayout)view.findViewById(R.id.tagsListContainer);
         return holder;
@@ -117,6 +109,7 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
             // Первый тег переносится на место имени автора
             if (i == 0) {
                 holder.author.setText(tag_holder.title.getText());
+                holder.author.setTypeface(mNormalFont);
                 holder.avatar.setVisibility(View.GONE);
                 holder.footer.setVisibility(View.VISIBLE);
             } else {
@@ -127,5 +120,4 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
         holder.tags.setVisibility(View.VISIBLE);
         return holder;
     }
-
 }
