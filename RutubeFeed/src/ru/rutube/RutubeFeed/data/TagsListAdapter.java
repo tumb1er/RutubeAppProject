@@ -24,6 +24,18 @@ public class TagsListAdapter extends ArrayAdapter<VideoTag> {
         super(mContext, resource_id, values);
     }
 
+    public class ViewHolder {
+        public TextView title;
+        public TextView comment;
+    }
+
+    protected ViewHolder init_holder(View view) {
+        ViewHolder holder = new ViewHolder();
+        holder.title = (TextView) view.findViewById(R.id.title);
+        holder.comment = (TextView) view.findViewById(R.id.comment);
+        return holder;
+    }
+
     @Nullable
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -31,19 +43,20 @@ public class TagsListAdapter extends ArrayAdapter<VideoTag> {
         if (view == null) {
             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.tag_item, null);
+            assert view != null;
+            view.setTag(init_holder(view));
         }
+        ViewHolder holder = (ViewHolder)view.getTag();
 
         VideoTag item = getItem(position);
         if (item != null) {
-            TextView tv = (TextView) view.findViewById(R.id.title);
-            tv.setText("#" + item.getTag());
-            tv = (TextView)view.findViewById(R.id.comment);
+            holder.title.setText("#" + item.getTag());
             String message = item.getMessage();
-            tv.setText(message);
+            holder.comment.setText(message);
             if (message == null || message.isEmpty()) {
-                tv.setVisibility(View.GONE);
+                holder.comment.setVisibility(View.GONE);
             } else {
-                tv.setVisibility(View.VISIBLE);
+                holder.comment.setVisibility(View.VISIBLE);
             }
         }
 

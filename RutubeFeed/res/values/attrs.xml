@@ -13,5 +13,11 @@
         <attr name="FeedAuthorStyle" format="reference"/>
         <attr name="FeedHorizontalLineStyle" format="reference"/>
         <attr name="FeedFooterStyle" format="reference"/>
+
+        <attr name="FeedTagListStyle" format="reference"/>
+        <attr name="FeedTagStyle" format="reference"/>
+        <attr name="FeedTagTitleStyle" format="reference"/>
+        <attr name="FeedTagCommentStyle" format="reference"/>
+
     </declare-styleable>
 </resources>

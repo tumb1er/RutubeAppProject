@@ -10,7 +10,10 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:contentDescription="@string/thumbnail"
-        style="?attr/FeedThumbnailStyle" />
+        style="?attr/FeedThumbnailStyle"
+        android:src="@drawable/stub"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true" />
 
     <!-- Длительность поверх тамнейла -->
     <TextView
@@ -40,58 +43,52 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             style="?attr/FeedTitleStyle" />
-
-        <!-- Контейнер списка тегов -->
-        <LinearLayout
-            android:orientation="vertical"
-            android:baselineAligned="false"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/titleTextView"
-            android:id="@+id/tagsListContainer" />
-
         <!-- Описание ролика -->
         <TextView
             android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
             android:text="Description"
             android:id="@+id/descriptionTextView"
-            android:layout_below="@+id/tagsListContainer"
+            android:layout_below="@+id/titleTextView"
             style="?attr/FeedDescriptionStyle"
-            android:layout_width="wrap_content" />
+            />
 
-        <!-- Горизонтальная черта -->
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:id="@+id/commentLine"
-            android:layout_below="@+id/descriptionTextView"
-            android:background="@color/commentLine"
-            style="?attr/FeedHorizontalLineStyle"/>
 
         <!-- Футер карточки-->
         <RelativeLayout
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:layout_below="@+id/commentLine"
+            android:layout_below="@+id/descriptionTextView"
+            android:id="@+id/footer"
             style="?attr/FeedFooterStyle">
+
+            <!-- Горизонтальная черта -->
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:id="@+id/commentLine"
+                android:background="@drawable/hor_line"
+                style="?attr/FeedHorizontalLineStyle"/>
 
             <!-- Аватар -->
             <com.android.volley.toolbox.NetworkImageView
                 android:id="@+id/avatarImageView"
                 style="?attr/FeedAvatarStyle"
                 android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/commentLine"
             />
 
             <!-- Имя автора справа от аватара -->
             <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="Author"
                 android:id="@+id/authorTextView"
-                android:layout_toRightOf="@+id/avatarImageView"
                 android:layout_centerVertical="true"
                 style="?attr/FeedAuthorStyle"
-                />
+                android:layout_toRightOf="@+id/avatarImageView" />
 
             <!-- когда загружен -->
             <TextView
@@ -99,12 +96,30 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="Created"
-                android:layout_alignParentRight="true"
+                android:layout_alignParentRight="false"
                 android:layout_centerVertical="true"
                 android:gravity="right"
-                style="?attr/FeedCreatedStyle" />
+                style="?attr/FeedCreatedStyle"
+                android:layout_toRightOf="@+id/authorTextView" />
 
+            <!-- Стрелка вниз поверх всего -->
+            <ImageView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:src="@drawable/balloon"
+                android:layout_marginLeft="60dp"/>
 
         </RelativeLayout>
+
+        <!-- Контейнер списка тегов -->
+        <LinearLayout
+            android:orientation="vertical"
+            android:baselineAligned="false"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/footer"
+            android:id="@+id/tagsListContainer"/>
+
+
     </RelativeLayout>
 </RelativeLayout>

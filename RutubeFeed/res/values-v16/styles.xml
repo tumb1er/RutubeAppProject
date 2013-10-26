@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Rutube.Feed.Text">
+    <style name="Rutube.Feed.LightText">
         <item name="android:fontFamily">sans-serif-light</item>
     </style>
-    <style name="Rutube.Feed.Title" parent="Rutube.Feed.Text">
+    <style name="Rutube.Feed.Text">
         <item name="android:fontFamily">sans-serif</item>
     </style>
 

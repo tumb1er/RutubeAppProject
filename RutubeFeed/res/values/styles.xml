@@ -4,8 +4,34 @@
     <style name="Rutube.Feed"/>
 
     <style name="Rutube.Feed.Text">
-        <item name="android:textSize">16dp</item>
+        <item name="android:textSize">14sp</item>
         <item name="android:typeface">sans</item>
+    </style>
+
+    <style name="Rutube.Feed.LightText">
+        <item name="android:textSize">14sp</item>
+        <item name="android:typeface">sans</item>
+    </style>
+
+    <style name="Theme.Rutube.Feed" parent="Theme.Sherlock.Light">
+        <item name="FeedListStyle">@style/Rutube.Feed.List</item>
+        <item name="FeedContainerStyle">@style/Rutube.Feed.Container</item>
+        <item name="FeedDurationStyle">@style/Rutube.Feed.Duration</item>
+        <item name="FeedTitleStyle">@style/Rutube.Feed.Title</item>
+        <item name="FeedDescriptionStyle">@style/Rutube.Feed.Description</item>
+        <item name="FeedThumbnailStyle">@style/Rutube.Feed.Thumbnail</item>
+        <item name="FeedCardStyle">@style/Rutube.Feed.Card</item>
+        <item name="FeedCreatedStyle">@style/Rutube.Feed.Created</item>
+        <item name="FeedAvatarStyle">@style/Rutube.Feed.Avatar</item>
+        <item name="FeedAuthorStyle">@style/Rutube.Feed.Author</item>
+        <item name="FeedFooterStyle">@style/Rutube.Feed.Footer</item>
+        <item name="FeedHorizontalLineStyle">@style/Rutube.Feed.Line</item>
+
+        <item name="FeedTagListStyle">@style/Rutube.Feed.TagList</item>
+        <item name="FeedTagStyle">@style/Rutube.Feed.Tag</item>
+        <item name="FeedTagTitleStyle">@style/Rutube.Feed.TagTitle</item>
+        <item name="FeedTagCommentStyle">@style/Rutube.Feed.TagComment</item>
+
     </style>
 
     <style name="Rutube.Feed.Container" parent="Widget">
@@ -30,10 +56,9 @@
         <item name="android:background">@color/feed_background</item>
     </style>
 
-    <style name="Rutube.Feed.Duration" parent="Rutube.Feed.Text">
+    <style name="Rutube.Feed.Duration" parent="Rutube.Feed.LightText">
         <!-- стиль плашки с длительностью -->
         <item name="android:textColor">@color/duration_color</item>
-        <item name="android:textSize">12dp</item>
         <item name="android:background">@color/duration_background</item>
         <item name="android:layout_marginRight">13dp</item>
         <item name="android:layout_marginBottom">10dp</item>
@@ -52,19 +77,25 @@
 
     <style name="Rutube.Feed.Card" parent="Widget">
         <item name="android:background">@drawable/card_shadow</item>
-        <item name="android:paddingTop">11dp</item>
-        <item name="android:paddingBottom">16dp</item>
-        <item name="android:paddingLeft">12dp</item>
-        <item name="android:paddingRight">12dp</item>
     </style>
 
     <style name="Rutube.Feed.Title" parent="Rutube.Feed.Text">
         <item name="android:textColor">@color/video_title</item>
-        <item name="android:textSize">20dp</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:paddingTop">@dimen/title_padding_top</item>
+        <item name="android:paddingLeft">@dimen/card_inner_padding</item>
+        <item name="android:paddingRight">@dimen/card_inner_padding</item>
+        <item name="android:paddingBottom">@dimen/title_padding_bottom</item>
     </style>
 
-    <style name="Rutube.Feed.Created" parent="Rutube.Feed.Text">
+    <style name="Rutube.Feed.Created" parent="Rutube.Feed.LightText">
         <item name="android:textColor">@color/created</item>
+        <item name="android:paddingTop">@dimen/footer_inner_padding</item>
+        <item name="android:paddingBottom">@dimen/footer_inner_padding</item>
+        <item name="android:paddingLeft">@dimen/card_inner_padding</item>
+        <item name="android:paddingRight">@dimen/card_inner_padding</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:singleLine">true</item>
     </style>
 
     <style name="Rutube.Feed.Avatar" parent="Widget">
@@ -77,23 +108,58 @@
         <item name="android:scaleType">fitXY</item>
         <item name="android:adjustViewBounds">true</item>
         <item name="android:src">@drawable/stub</item>
+        <item name="android:layout_marginTop">@dimen/footer_inner_padding</item>
+        <item name="android:layout_marginBottom">@dimen/footer_inner_padding</item>
+        <item name="android:layout_marginLeft">@dimen/card_inner_padding</item>
     </style>
 
-    <style name="Rutube.Feed.Author" parent="Rutube.Feed.Text">
+    <style name="Rutube.Feed.Author" parent="Rutube.Feed.LightText">
         <item name="android:textColor">@color/author</item>
-        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingTop">@dimen/footer_inner_padding</item>
+        <item name="android:paddingBottom">@dimen/footer_inner_padding</item>
+        <item name="android:paddingLeft">@dimen/card_inner_padding</item>
+        <item name="android:paddingRight">@dimen/card_inner_padding</item>
+        <item name="android:gravity">center_vertical</item>
     </style>
 
-    <style name="Rutube.Feed.Description" parent="Rutube.Feed.Text">
+    <style name="Rutube.Feed.Description" parent="Rutube.Feed.LightText">
         <item name="android:layout_width">fill_parent</item>
         <item name="android:textColor">@color/description</item>
+        <item name="android:paddingLeft">@dimen/card_inner_padding</item>
+        <item name="android:paddingRight">@dimen/card_inner_padding</item>
+        <item name="android:paddingBottom">@dimen/description_padding_bottom</item>
     </style>
 
     <style name="Rutube.Feed.Footer" parent="Widget" >
+        <item name="android:background">@color/footer_background</item>
+        <item name="android:paddingBottom">@dimen/footer_padding_bottom</item>
     </style>
     <style name="Rutube.Feed.Line" parent="Widget">
-        <item name="android:layout_marginTop">10dp</item>
-        <item name="android:layout_marginBottom">10dp</item>
+    </style>
+
+    <style name="Rutube.Feed.TagList" parent="Widget">
+        <item name="android:paddingTop">@dimen/tag_list_padding_top</item>
+        <item name="android:paddingBottom">@dimen/tag_list_padding_bottom</item>
+    </style>
+
+    <style name="Rutube.Feed.Tag" parent="Widget">
+        <item name="android:background">@color/footer_background</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">12dp</item>
+    </style>
+
+    <style name="Rutube.Feed.TagTitle" parent="Rutube.Feed.Text">
+        <item name="android:textColor">@color/tag_title</item>
+        <item name="android:background">@color/footer_background</item>
+        <item name="android:paddingLeft">@dimen/card_inner_padding</item>
+        <item name="android:paddingRight">@dimen/card_inner_padding</item>
+    </style>
+
+    <style name="Rutube.Feed.TagComment" parent="Rutube.Feed.LightText">
+        <item name="android:textColor">@color/description</item>
+        <item name="android:background">@color/footer_background</item>
+        <item name="android:paddingLeft">@dimen/tag_comment_padding_left</item>
+        <item name="android:paddingRight">@dimen/card_inner_padding</item>
     </style>
 
 </resources>

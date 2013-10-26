@@ -4,23 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#FFFFFFFF"
-    android:paddingTop="8dp">
-
-    <!--<ImageView-->
-        <!--android:layout_width="fill_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:id="@+id/commentLine"-->
-        <!--android:src="@drawable/comment_line_right"-->
-        <!--android:contentDescription="@string/empty"-->
-        <!--android:scaleType="fitXY"/>-->
-    <ImageView
-        android:layout_height="16dp"
-        android:layout_width="16dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="2dp"
-        android:id="@+id/tag_bullet"
-        android:src="@drawable/tag_bullet" />
+    style="?attr/FeedTagStyle">
 
     <TextView
         android:layout_width="wrap_content"
@@ -28,17 +12,15 @@
         android:text=""
         android:id="@+id/title"
         android:layout_gravity="left|center_vertical"
-        android:textColor="#FF000000"
-        android:textSize="12sp"
-        android:paddingLeft="5dp"
-        android:layout_toRightOf="@id/tag_bullet"/>
+        style="?attr/FeedTagTitleStyle"
+        />
 
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text=""
         android:id="@+id/comment"
-        android:textColor="#FF999999"
-        android:textSize="12sp"
+        style="?attr/FeedTagCommentStyle"
         android:layout_below="@id/title"/>
+
 </RelativeLayout>

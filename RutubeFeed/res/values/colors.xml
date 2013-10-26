@@ -10,4 +10,6 @@
     <color name="author">#FFABABAB</color>
     <color name="description">#FF6C6C6C</color>
     <color name="commentLine">#FFCCCCCC</color>
+    <color name="footer_background">#FFFCFCFC</color>
+    <color name="tag_title">#FF353535</color>
 </resources>

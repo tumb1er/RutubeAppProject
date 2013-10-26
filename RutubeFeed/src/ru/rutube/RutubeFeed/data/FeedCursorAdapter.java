@@ -55,7 +55,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         TextView author;
         NetworkImageView thumbnail;
         NetworkImageView avatar;
-        View commentLine;
+        View footer;
     }
 
     public int getPerPage() {
@@ -104,7 +104,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         holder.description = (TextView)view.findViewById(R.id.descriptionTextView);
         holder.author = (TextView)view.findViewById(R.id.authorTextView);
         holder.created = (TextView)view.findViewById(R.id.createdTextView);
-        holder.commentLine = view.findViewById(R.id.commentLine);
+        holder.footer = view.findViewById(R.id.footer);
         holder.avatar = (NetworkImageView)view.findViewById(R.id.avatarImageView);
         holder.avatar.setDefaultImageResId(R.drawable.stub);
         holder.thumbnail = (NetworkImageView)view.findViewById(R.id.thumbnailImageView);
@@ -134,7 +134,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         // При отсутствии аватара скрываем его ImageView и горизонтальную черту
         visibility = (avatarUri == null) ? View.GONE : View.VISIBLE;
         holder.avatar.setVisibility(visibility);
-        holder.commentLine.setVisibility(visibility);
+        holder.footer.setVisibility(visibility);
         holder.avatar.setImageUrl(avatarUri, imageLoader);
     }
 
