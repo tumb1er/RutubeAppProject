@@ -38,7 +38,6 @@
             android:id="@+id/mediacontroller_play_pause"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="24dp"
             style="?attr/PlayButtonStyle" />
 
         <TextView

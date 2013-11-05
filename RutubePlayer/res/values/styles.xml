@@ -23,14 +23,13 @@
 
     <style name="Player.MediaController" parent="Widget">
         <item name="android:background">@drawable/fader_bg</item>
-        <item name="android:paddingTop">20dp</item>
-        <item name="android:paddingBottom">20dp</item>
     </style>
 
     <style name="Player.MediaController.InfoPanel" parent="Widget">
         <item name="android:layout_alignParentLeft">true</item>
         <item name="android:layout_alignParentRight">true</item>
         <item name="android:layout_alignParentTop">true</item>
+        <item name="android:paddingTop">20dp</item>
         <item name="android:paddingLeft">30dp</item>
         <item name="android:paddingRight">20dp</item>
     </style>
@@ -60,18 +59,22 @@
         <item name="android:layout_alignParentBottom">true</item>
         <item name="android:layout_alignParentLeft">true</item>
         <item name="android:layout_alignParentRight">true</item>
-        <item name="android:layout_marginLeft">30dp</item>
-        <item name="android:layout_marginRight">30dp</item>
+        <item name="android:paddingRight">30dp</item>
     </style>
 
     <style name="Player.MediaController.PlayButton" parent="Widget">
         <item name="android:background">@color/transparent</item>
         <item name="android:src">@drawable/mediacontroller_pause_btn</item>
+        <item name="android:paddingTop">20dp</item>
+        <item name="android:paddingBottom">20dp</item>
+        <item name="android:paddingLeft">30dp</item>
+        <item name="android:paddingRight">20dp</item>
+
     </style>
 
     <style name="Player.MediaController.TimeText" parent="Player.MediaController.TextStyle">
         <item name="android:layout_centerVertical">true</item>
-        <item name="android:textSize">10sp</item>
+        <!--<item name="android:textSize">10sp</item>-->
         <item name="android:paddingLeft">5dp</item>
         <item name="android:paddingRight">5dp</item>
     </style>
@@ -86,7 +89,7 @@
         <item name="android:paddingRight">8dp</item>
         <item name="android:paddingTop">3dp</item>
         <item name="android:minHeight">1dp</item>
-        <item name="android:maxHeight">5dp</item>
+        <item name="android:maxHeight">8dp</item>
     </style>
 
 </resources>
