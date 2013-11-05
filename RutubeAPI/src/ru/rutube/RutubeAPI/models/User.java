@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -16,6 +17,7 @@ import org.json.JSONObject;
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.R;
 import ru.rutube.RutubeAPI.RutubeApp;
+import ru.rutube.RutubeAPI.requests.AuthJsonObjectRequest;
 import ru.rutube.RutubeAPI.requests.RequestListener;
 import ru.rutube.RutubeAPI.requests.Requests;
 
@@ -90,6 +92,28 @@ public class User {
         request.setShouldCache(true);
         request.setTag(Requests.TOKEN);
         return request;
+    }
+
+    /**
+     * Конструирует запрос к API Visitor для отслеживания пользовательской активности на сайте.
+     * @return запрос Volley для получения данных о пользователе
+     */
+    public JsonObjectRequest getVisitorRequest() {
+        String visitorUri = RutubeApp.getUrl(R.string.visitor_uri);
+        JsonObjectRequest request = new AuthJsonObjectRequest(visitorUri, null,
+                getVisitorListener(), null, mToken);
+        request.setShouldCache(false);
+        request.setTag(Requests.VISITOR);
+        return request;
+    }
+
+    private Response.Listener<JSONObject> getVisitorListener() {
+        return new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+            }
+        };
     }
 
     /**

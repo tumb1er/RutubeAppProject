@@ -66,6 +66,12 @@ public class StartActivity extends SherlockFragmentActivity implements MainPageC
     }
 
     @Override
+    protected void onDestroy() {
+        mController.detach();
+        super.onDestroy();
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         if (savedInstanceState != null)
             mController = savedInstanceState.getParcelable(CONTROLLER);

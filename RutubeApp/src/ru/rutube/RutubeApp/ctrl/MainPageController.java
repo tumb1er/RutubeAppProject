@@ -22,6 +22,7 @@ import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeAPI.models.User;
 import ru.rutube.RutubeAPI.requests.RequestListener;
+import ru.rutube.RutubeAPI.requests.Requests;
 
 /**
  * Created by tumbler on 14.07.13.
@@ -129,7 +130,13 @@ public class MainPageController implements Parcelable, RequestListener {
             new HttpClientStack(HttpTransport.getHttpClient()));
         mUser = User.load(context);
         initFeedUriMap();
+        requestVisitor();
         mAttached = true;
+    }
+
+    private void requestVisitor() {
+        if (!mUser.isAnonymous())
+            mRequestQueue.add(mUser.getVisitorRequest());
     }
 
     private void initFeedUriMap() {
@@ -140,6 +147,8 @@ public class MainPageController implements Parcelable, RequestListener {
     }
 
     public  void detach() {
+        mRequestQueue.cancelAll(Requests.VISITOR);
+        mRequestQueue.cancelAll(Requests.TOKEN);
         mContext = null;
         mView = null;
         mAttached = false;
