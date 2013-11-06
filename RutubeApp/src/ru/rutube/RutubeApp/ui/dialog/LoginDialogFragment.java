@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.Editable;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.KeyEvent;
@@ -113,8 +114,13 @@ public class LoginDialogFragment extends DialogFragment implements TextView.OnEd
         if (onClickListener != null) {
             onClickListener.onClick(dialog, which);
         } else {
-            onDoneListener.onFinishInputDialog(txtEmailInput.getText().toString(),
-                    txtPasswordInput.getText().toString());
+            if (onDoneListener != null) {
+                Editable email = txtEmailInput.getText();
+                Editable password = txtPasswordInput.getText();
+                assert email != null;
+                assert password != null;
+                onDoneListener.onFinishInputDialog(email.toString(), password.toString());
+            }
             this.dismiss();
         }
     }
@@ -131,8 +137,11 @@ public class LoginDialogFragment extends DialogFragment implements TextView.OnEd
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         if (onDoneListener != null) {
             if (EditorInfo.IME_ACTION_DONE == actionId) {
-                onDoneListener.onFinishInputDialog(txtEmailInput.getText().toString(),
-                        txtPasswordInput.getText().toString());
+                Editable email = txtEmailInput.getText();
+                Editable password = txtPasswordInput.getText();
+                assert email != null;
+                assert password != null;
+                onDoneListener.onFinishInputDialog(email.toString(), password.toString());
                 this.dismiss();
                 return true;
             }
