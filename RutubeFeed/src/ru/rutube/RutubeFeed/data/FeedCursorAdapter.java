@@ -22,6 +22,7 @@ import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeFeed.R;
 import ru.rutube.RutubeFeed.helpers.Typefaces;
+import ru.rutube.RutubeFeed.views.AvatarView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -56,7 +57,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         TextView description;
         TextView author;
         NetworkImageView thumbnail;
-        NetworkImageView avatar;
+        AvatarView avatar;
         View footer;
     }
 
@@ -101,13 +102,11 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     }
 
     protected void initView(ViewHolder holder) {
-        holder.avatar.setDefaultImageResId(R.drawable.editors_av);
         holder.title.setTypeface(mNormalFont);
         holder.description.setTypeface(mLightFont);
         holder.created.setTypeface(mLightFont);
         holder.author.setTypeface(mLightFont);
-        holder.thumbnail.setDefaultImageResId(R.drawable.stub);
-        holder.avatar.setDefaultImageResId(R.drawable.stub);
+        holder.thumbnail.setDefaultImageResId(R.drawable.thumbnail_stub);
     }
 
     protected ViewHolder getHolder(View view) {
@@ -122,7 +121,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         holder.author = (TextView)view.findViewById(R.id.authorTextView);
         holder.created = (TextView)view.findViewById(R.id.createdTextView);
         holder.footer = view.findViewById(R.id.footer);
-        holder.avatar = (NetworkImageView)view.findViewById(R.id.avatarImageView);
+        holder.avatar = (AvatarView)view.findViewById(R.id.avatarImageView);
         holder.thumbnail = (NetworkImageView)view.findViewById(R.id.thumbnailImageView);
     }
 
@@ -144,11 +143,14 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     protected void bindAvatar(Cursor cursor, ViewHolder holder) {
         int avatarIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.AVATAR_URI);
         String avatarUri = cursor.getString(avatarIndex);
+        int authorIdIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.AUTHOR_ID);
+        int authorId = cursor.getInt(authorIdIndex);
         int visibility;
         // При отсутствии аватара скрываем его ImageView и горизонтальную черту
         visibility = (avatarUri == null) ? View.GONE : View.VISIBLE;
         holder.avatar.setVisibility(visibility);
         holder.footer.setVisibility(visibility);
+        holder.avatar.setDefaultImageRes(authorId);
         holder.avatar.setImageUrl(avatarUri, imageLoader);
     }
 

@@ -2,8 +2,6 @@ package ru.rutube.RutubeFeed.data;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Typeface;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -16,7 +14,6 @@ import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.models.VideoTag;
 import ru.rutube.RutubeFeed.R;
-import ru.rutube.RutubeFeed.helpers.Typefaces;
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,6 +30,7 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
 
     protected static class ViewHolder extends FeedCursorAdapter.ViewHolder {
         public LinearLayout tags;
+        public View balloon;
     }
 
     public SubscriptionsCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
@@ -45,6 +43,7 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
         ViewHolder holder = new ViewHolder();
         super.initHolder(view, holder);
         holder.tags = (LinearLayout)view.findViewById(R.id.tagsListContainer);
+        holder.balloon = view.findViewById(R.id.balloon);
         return holder;
     }
 
@@ -77,6 +76,17 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
 
     }
 
+    @Override
+    public View newView(Context context, Cursor cursor, ViewGroup parent) {
+        View view = super.newView(context, cursor, parent);
+        ViewHolder holder = (ViewHolder)getHolder(view);
+        holder.author.setTypeface(mNormalFont);
+        holder.footer.setVisibility(View.VISIBLE);
+        holder.avatar.setVisibility(View.GONE);
+        holder.tags.setVisibility(View.VISIBLE);
+        return view;
+    }
+
     private ViewHolder bindTags(ViewHolder holder, Cursor cursor) throws JSONException {
         int tagsListIndex = cursor.getColumnIndexOrThrow(FeedContract.Subscriptions.TAGS_JSON);
         String tagsJson = cursor.getString(tagsListIndex);
@@ -91,7 +101,8 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
         }
         TagsListAdapter tagsListAdapter = new TagsListAdapter(mContext, R.layout.tag_item, tagValues);
         holder.tags.removeAllViews();
-
+        holder.author.setText(null);
+        holder.description.setText(null);
         boolean description_set = false;
         for (int i=0;i<tagValues.length;i++) {
             View tagView = tagsListAdapter.getView(i, null, holder.tags);
@@ -109,15 +120,12 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
             // Первый тег переносится на место имени автора
             if (i == 0) {
                 holder.author.setText(tag_holder.title.getText());
-                holder.author.setTypeface(mNormalFont);
-                holder.avatar.setVisibility(View.GONE);
-                holder.footer.setVisibility(View.VISIBLE);
             } else {
                 holder.tags.addView(tagView);
             }
         }
         holder.description.setVisibility(description_set ? View.VISIBLE : View.GONE);
-        holder.tags.setVisibility(View.VISIBLE);
+        holder.balloon.setVisibility(tagValues.length > 0 ? View.VISIBLE : View.GONE);
         return holder;
     }
 }

@@ -11,7 +11,8 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/thumbnail"
         style="?attr/FeedThumbnailStyle"
-        android:src="@drawable/stub"
+        android:src="@drawable/thumbnail_stub"
+        android:scaleType="fitXY"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true" />
 
@@ -71,13 +72,15 @@
                 style="?attr/FeedHorizontalLineStyle"/>
 
             <!-- Аватар -->
-            <com.android.volley.toolbox.NetworkImageView
+            <ru.rutube.RutubeFeed.views.AvatarView
                 android:id="@+id/avatarImageView"
                 style="?attr/FeedAvatarStyle"
                 android:layout_centerVertical="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/commentLine"
+                android:scaleType="fitXY"
+                android:adjustViewBounds="true"
             />
 
             <!-- Имя автора справа от аватара -->
@@ -106,6 +109,7 @@
             <ImageView
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
+                android:id="@+id/balloon"
                 android:src="@drawable/balloon"
                 android:layout_marginLeft="60dp"/>
 

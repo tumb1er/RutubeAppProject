@@ -3,6 +3,7 @@ package ru.rutube.RutubeFeed.views;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
+import android.util.Log;
 
 import com.android.volley.toolbox.NetworkImageView;
 
@@ -38,6 +39,7 @@ public class ThumbnailView extends NetworkImageView {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
+        Log.d(ThumbnailView.class.getName(), String.format("%dx%d", MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.getSize(heightMeasureSpec)));
         setMeasuredDimension(parentWidth, (int)(parentWidth * ASPECT));
     }
 }

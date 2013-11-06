@@ -12,4 +12,5 @@
     <color name="commentLine">#FFCCCCCC</color>
     <color name="footer_background">#FFFCFCFC</color>
     <color name="tag_title">#FF353535</color>
+    <color name="stub_bg">#FFE5E5E5</color>
 </resources>
