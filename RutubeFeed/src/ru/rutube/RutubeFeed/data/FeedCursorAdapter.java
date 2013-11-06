@@ -106,7 +106,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         holder.description.setTypeface(mLightFont);
         holder.created.setTypeface(mLightFont);
         holder.author.setTypeface(mLightFont);
-        holder.thumbnail.setDefaultImageResId(R.drawable.thumbnail_stub);
+     //   holder.thumbnail.setDefaultImageResId(R.drawable.thumbnail_stub);
     }
 
     protected ViewHolder getHolder(View view) {

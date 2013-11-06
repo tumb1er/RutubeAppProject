@@ -31,15 +31,14 @@ public class ThumbnailView extends NetworkImageView {
         super(context, attrs, defStyle);
     }
 
-    @Override
-    public void setImageBitmap(Bitmap bm) {
-        super.setImageBitmap(sBitmapProcessor.process(bm, this));
-    }
+//    @Override
+//    public void setImageBitmap(Bitmap bm) {
+//        super.setImageBitmap(sBitmapProcessor.process(bm, this));
+//    }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
-        Log.d(ThumbnailView.class.getName(), String.format("%dx%d", MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.getSize(heightMeasureSpec)));
         setMeasuredDimension(parentWidth, (int)(parentWidth * ASPECT));
     }
 }

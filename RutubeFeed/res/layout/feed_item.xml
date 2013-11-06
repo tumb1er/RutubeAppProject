@@ -4,6 +4,16 @@
     android:layout_height="wrap_content"
     style="?attr/FeedListStyle">
 
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@drawable/thumbnail_stub"
+        android:layout_alignRight="@+id/thumbnailImageView"
+        android:layout_alignLeft="@+id/thumbnailImageView"
+        android:layout_alignTop="@+id/thumbnailImageView"
+        android:layout_alignBottom="@+id/thumbnailImageView"
+    />
+
     <!-- Тамнейл -->
     <ru.rutube.RutubeFeed.views.ThumbnailView
         android:id="@+id/thumbnailImageView"
@@ -11,8 +21,7 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/thumbnail"
         style="?attr/FeedThumbnailStyle"
-        android:src="@drawable/thumbnail_stub"
-        android:scaleType="fitXY"
+        android:scaleType="centerCrop"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true" />
 
