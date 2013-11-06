@@ -8,15 +8,16 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 
 import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.ImageLoader;
 
-import ru.rutube.RutubeAPI.tools.BitmapLruCache;
+import ru.rutube.RutubeAPI.tools.MemDiskBitmapCache;
 
 /**
  * Created by tumbler on 22.06.13.
  */
 public class RutubeApp extends Application {
 
-    public static BitmapLruCache sBitmapCache = new BitmapLruCache();
+    private static ImageLoader.ImageCache sBitmapCache;
 
     private static RutubeApp instance;
 
@@ -86,7 +87,12 @@ public class RutubeApp extends Application {
         super.onTerminate();
     }
 
-    public static BitmapLruCache getBitmapCache() {
+    public static ImageLoader.ImageCache getBitmapCache() {
+        if (sBitmapCache != null)
+            return sBitmapCache;
+        Context context = instance.getApplicationContext();
+        assert context != null;
+        sBitmapCache = new MemDiskBitmapCache(getContext().getExternalCacheDir());
         return sBitmapCache;
     }
 
