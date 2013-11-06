@@ -8,5 +8,5 @@
     <string name="no_data">Лента пуста</string>
     <string name="logout">Выйти</string>
     <string name="search_title_format">Поиск: %s</string>
-    <string name="editors_comment">от редакции</string>
+    <string name="editors_choice">выбор редакции</string>
 </resources>

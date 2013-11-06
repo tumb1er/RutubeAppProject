@@ -16,5 +16,5 @@
     <string name="no_data">Feed is empty</string>
     <string name="logout">Logout</string>
     <string name="search_title_format">Search: %s</string>
-    <string name="editors_comment">Editors comment</string>
+    <string name="editors_choice">Editors choice</string>
 </resources>

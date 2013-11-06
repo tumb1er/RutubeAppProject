@@ -1,30 +1,11 @@
 package ru.rutube.RutubeFeed.data;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.text.Html;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-
-import org.jetbrains.annotations.NotNull;
-import org.json.JSONArray;
-import org.json.JSONException;
-
-import java.text.ParseException;
-import java.util.Date;
 
 import ru.rutube.RutubeAPI.BuildConfig;
-import ru.rutube.RutubeAPI.content.FeedContract;
-import ru.rutube.RutubeAPI.models.VideoTag;
 import ru.rutube.RutubeFeed.R;
 
 /**
@@ -57,7 +38,7 @@ public class EditorsCursorAdapter extends FeedCursorAdapter {
 
     @Override
     protected void bindAuthor(Cursor cursor, FeedCursorAdapter.ViewHolder holder) {
-        holder.author.setText(R.string.editors_comment);
+        holder.author.setText(R.string.editors_choice);
     }
 }
 
