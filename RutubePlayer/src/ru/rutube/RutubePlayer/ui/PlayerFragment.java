@@ -284,6 +284,11 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         // и точно уничтожается в onPause
         if (mPlayer == null)
             initMediaPlayer();
+
+        // при возобновлении уже проигрываемого видео элементы управления показываются еще на
+        // стадии подготовки MediaPlayer, т.е. потенциальные проблемы.
+        mMediaController.hide();
+
         mController.onResume();
         mMediaController.setMediaPlayer(mMediaPlayerControl);
         mWakeLock.acquire();
@@ -347,7 +352,8 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
 
     @Override
     public void stopPlayback() {
-        mPlayer.stop();
+        if (mPlayer.isPlaying())
+            mPlayer.stop();
 
 //        mVideoView.setVideoURI(null);
 //        mVideoView.stopPlayback();
@@ -486,19 +492,29 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
     protected void initVideoView() {
         View view = getView();
         assert view != null;
-        mLoadProgressBar = (ProgressBar) view.findViewById(R.id.load);
+
         mVideoView = (SurfaceView) view.findViewById(R.id.video_view);
+
         SurfaceHolder holder = mVideoView.getHolder();
         assert holder != null;
         holder.addCallback(mSurfaceCallbackListener);
         holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-        mMediaController = new RutubeMediaController(getActivity());
-        //mVideoView.setMediaController(mMediaController);
-        //mMediaController.setMediaPlayer();
-        mMediaController.setAnchorView((FrameLayout) view.findViewById(R.id.center_video_view));
         initMediaPlayer();
-//        mVideoView.setOnCompletionListener(this);
-//        mVideoView.setOnPreparedListener(this);
+    }
+
+    private void initProgressBar() {
+        View view = getView();
+        assert view != null;
+        mLoadProgressBar = (ProgressBar) view.findViewById(R.id.load);
+        return;
+    }
+
+    private void initMediaController() {
+        View view = getView();
+        assert view != null;
+        mMediaController = new RutubeMediaController(getActivity());
+        mMediaController.setAnchorView((FrameLayout) view.findViewById(R.id.center_video_view));
+        return;
     }
 
     /**
@@ -540,13 +556,17 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         mStreamUri = null;
         Activity activity = getActivity();
         assert activity != null;
-        Intent intent = activity.getIntent();
-        Uri videoUri = intent.getData();
-        Uri thumbnailUri = intent.getParcelableExtra(Constants.Params.THUMBNAIL_URI);
+
         PowerManager pm = (PowerManager) getActivity().getSystemService(Context.POWER_SERVICE);
         mWakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "VideoPlayer");
 
-        initVideoView();
+        Intent intent = activity.getIntent();
+        Uri videoUri = intent.getData();
+        Uri thumbnailUri = intent.getParcelableExtra(Constants.Params.THUMBNAIL_URI);
+
+        initMediaController();
+        initProgressBar();
+
         mController = null;
         if (savedInstanceState != null) {
             mController = savedInstanceState.getParcelable(CONTROLLER);
@@ -555,6 +575,9 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
             mController = new PlayerController(videoUri, thumbnailUri);
         }
         mController.attach(activity, this);
+
+        initVideoView();
+
         if (savedInstanceState == null)
             mController.requestStream();
     }
