@@ -101,12 +101,16 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         @Override
         public void surfaceCreated(SurfaceHolder surfaceHolder) {
             if (D) Log.d(LOG_TAG, "surfaceCreated");
+            if (mPlayer == null)
+                initMediaPlayer();
             mPlayer.setDisplay(surfaceHolder);
         }
 
         @Override
         public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i2, int i3) {
             if (D) Log.d(LOG_TAG, "surfaceChanged");
+            if (mPlayer == null)
+                initMediaPlayer();
             mPlayer.setDisplay(surfaceHolder);
         }
 
