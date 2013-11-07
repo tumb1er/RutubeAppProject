@@ -30,7 +30,7 @@ public class DiskBitmapCache extends DiskBasedCache implements ImageLoader.Image
     public void putBitmap(String url, Bitmap bitmap) {
         final Entry entry = new Entry();
 
-        ByteBuffer buffer = ByteBuffer.allocate(bitmap.getByteCount());
+        ByteBuffer buffer = ByteBuffer.allocate(bitmap.getRowBytes() * bitmap.getHeight());
         bitmap.copyPixelsToBuffer(buffer);
         entry.data = buffer.array();
 
