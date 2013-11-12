@@ -1,6 +1,5 @@
 package ru.rutube.RutubePlayer;
 
-import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,17 +13,17 @@ import android.util.Log;
 import java.util.List;
 
 import ru.rutube.RutubePlayer.ctrl.PlayerController;
-import ru.rutube.RutubePlayer.ui.PlayerActivity;
+import ru.rutube.RutubePlayer.ui.VideoPageActivity;
 import ru.rutube.RutubePlayer.ui.PlayerFragment;
 
 /**
  * Created by tumbler on 13.09.13.
  */
 
-public class PlayerActivityTest extends ActivityInstrumentationTestCase2<PlayerActivity> {
+public class PlayerActivityTest extends ActivityInstrumentationTestCase2<VideoPageActivity> {
     private final String LOG_TAG = PlayerActivityTest.class.getName();
     private final boolean D = BuildConfig.DEBUG;
-    private PlayerActivity mActivity;
+    private VideoPageActivity mActivity;
     private PlayerFragment mFragment;
     private Uri videoUri;
     private Uri thumbnailUri;
@@ -32,7 +31,7 @@ public class PlayerActivityTest extends ActivityInstrumentationTestCase2<PlayerA
     private PlayerController ctrl;
 
     public PlayerActivityTest() {
-        super(PlayerActivity.class);
+        super(VideoPageActivity.class);
     }
 
     @Override
@@ -134,7 +133,7 @@ public class PlayerActivityTest extends ActivityInstrumentationTestCase2<PlayerA
      */
     public void testIntentFilters() {
         Instrumentation.ActivityMonitor m = getInstrumentation().addMonitor(
-                PlayerActivity.class.getName(), null, true);
+                VideoPageActivity.class.getName(), null, true);
         Intent intent = new Intent();
         intent.setAction("android.intent.action.VIEW");
         String[] playerUrls = new String[] {
@@ -151,7 +150,7 @@ public class PlayerActivityTest extends ActivityInstrumentationTestCase2<PlayerA
             boolean rutubeFound = false;
             for (ResolveInfo value : resolution) {
                 rutubeFound = rutubeFound || String.valueOf(value.activityInfo).contains(
-                        PlayerActivity.class.getName());
+                        VideoPageActivity.class.getName());
             }
             assertTrue(playerUrl, rutubeFound);
         }
@@ -168,7 +167,7 @@ public class PlayerActivityTest extends ActivityInstrumentationTestCase2<PlayerA
             boolean rutubeFound = false;
             for (ResolveInfo value : resolution) {
                 rutubeFound = rutubeFound || String.valueOf(value.activityInfo).contains(
-                        PlayerActivity.class.getName());
+                        VideoPageActivity.class.getName());
                 Log.d(LOG_TAG, String.valueOf(value));
             }
             assertFalse(otherUrl, rutubeFound);

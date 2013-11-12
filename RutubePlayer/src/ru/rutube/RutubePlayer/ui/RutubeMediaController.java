@@ -98,6 +98,7 @@ public class RutubeMediaController extends FrameLayout {
     private ImageButton         mFullscreenButton;
     private TextView            mVideoTitle;
     private Handler             mHandler = new MessageHandler(this);
+    private View.OnTouchListener mOnTouchListener;
 
     public RutubeMediaController(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -133,6 +134,10 @@ public class RutubeMediaController extends FrameLayout {
         mPlayer = player;
         updatePausePlay();
         updateFullScreen();
+    }
+
+    public void setOnTouchListener(OnTouchListener listener) {
+        mOnTouchListener = listener;
     }
 
     /**
@@ -348,6 +353,8 @@ public class RutubeMediaController extends FrameLayout {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         show(sDefaultTimeout);
+        if (mOnTouchListener != null)
+            mOnTouchListener.onTouch(mAnchor, event);
         return true;
     }
 

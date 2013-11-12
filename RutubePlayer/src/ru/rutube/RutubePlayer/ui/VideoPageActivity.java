@@ -3,12 +3,13 @@ package ru.rutube.RutubePlayer.ui;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.Display;
-import android.view.Window;
+import android.view.View;
 import android.view.WindowManager;
+
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubePlayer.R;
@@ -20,14 +21,16 @@ import ru.rutube.RutubePlayer.ctrl.VideoPageController;
  * Возможен старт по intent-action: ru.rutube.player.play c Uri видео вида:
  * http://rutube.ru/video/<video_id>/
  */
-public class PlayerActivity extends FragmentActivity implements PlayerFragment.PlayerStateListener,
+public class VideoPageActivity extends SherlockFragmentActivity implements PlayerFragment.PlayerEventsListener,
 EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
     private static final String CONTROLLER = "controller";
     private final String LOG_TAG = getClass().getName();
     private static final boolean D = BuildConfig.DEBUG;
     private PlayerFragment mPlayerFragment;
     private EndscreenFragment mEndscreenFragment;
+    private View mVideoInfoContainer;
     private VideoPageController mController;
+    protected boolean mIsTablet;
 
     @Override
     public void replay() {
@@ -51,6 +54,27 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
         else
             ft.hide(mEndscreenFragment);
         ft.commit();
+    }
+
+    @Override
+    public void toggleFullscreen(boolean isFullscreen) {
+        initWindow(isFullscreen);
+        if (!isFullscreen) {
+            if (!mIsTablet) {
+                // Для телефонов выход из полного экрана - это переход в портретную ориентацию
+                setScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            }
+            // Для планшетов - смена layout
+            mVideoInfoContainer.setVisibility(View.VISIBLE);
+        } else {
+            setScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            mVideoInfoContainer.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void closeVideoPage() {
+        finish();
     }
 
     @Override
@@ -78,22 +102,16 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
     }
 
     @Override
+    public void onBackPressed() {
+        mController.onBackPressed();
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         if (D) Log.d(LOG_TAG, "onCreate");
         super.onCreate(savedInstanceState);
         initController(savedInstanceState);
         initWindow();
-//        // Запрашиваем горизонтальное расположение экрана, если он перевернется,
-//        // то активити пересоздатся и вся цепочка автостарта воспроизведения обломится,
-//        // поэтому не задаем ContentView ДО готовности ориентации экрана.
-//        int orientation = getScreenOrientation();
-//        if (orientation != Configuration.ORIENTATION_LANDSCAPE) {
-//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-//        } else {
-//            setContentView(R.layout.player_activity);
-//            init();
-//        }
-
         setContentView(R.layout.player_activity);
         init();
     }
@@ -105,6 +123,11 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
             mController = new VideoPageController();
     }
 
+    @Override
+    public void onDoubleTap() {
+        mController.onDoubleTap();
+    }
+
     private void init() {
         mPlayerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentById(R.id.player_fragment);
         assert mPlayerFragment != null;
@@ -112,16 +135,30 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
         mEndscreenFragment = (EndscreenFragment) getSupportFragmentManager().findFragmentById(R.id.endscreen_fragment);
         assert mEndscreenFragment != null;
         mEndscreenFragment.setReplayListener(this);
+
+        mVideoInfoContainer = findViewById(R.id.video_info_container);
+        mIsTablet = getResources().getString(R.string.device_type, "phone").equals("tablet");
         toggleEndscreen(false);
+    }
+
+    private void initWindow(){
+        initWindow(true);
     }
 
     /**
      * фулскрин без заголовка окна
      */
-    private void initWindow() {
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    private void initWindow(boolean isFullscreen) {
+        WindowManager.LayoutParams attrs = getWindow().getAttributes();
+        if (isFullscreen)
+        {
+            attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+        }
+        else
+        {
+            attrs.flags &= ~WindowManager.LayoutParams.FLAG_FULLSCREEN;
+        }
+        getWindow().setAttributes(attrs);
     }
 
     @Override

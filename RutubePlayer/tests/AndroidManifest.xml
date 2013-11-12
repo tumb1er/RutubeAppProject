@@ -16,7 +16,7 @@
         <uses-library android:name="android.test.runner" />
         <activity
             android:screenOrientation="landscape"
-            android:name=".ui.PlayerActivity"
+            android:name=".ui.VideoPageActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

@@ -11,7 +11,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MotionEventCompat;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -44,7 +46,7 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
     /**
      * Интерфейс общения с активити, в которое встроен фрагмент с плеером
      */
-    public interface PlayerStateListener {
+    public interface PlayerEventsListener {
 
         /**
          * Событие начала воспроизведения
@@ -60,6 +62,11 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
          * Событие невозможности воспроизведения
          */
         public void onFail();
+
+        /**
+         * Двойной клик по плееру
+         */
+        public void onDoubleTap();
     }
     private static final String CONTROLLER = "controller";
     private static final String LOG_TAG = PlayerFragment.class.getName();
@@ -70,14 +77,68 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
     protected MediaPlayer mPlayer;
     protected Uri mStreamUri;
     protected ProgressBar mLoadProgressBar;
-    protected PlayerStateListener mPlayerStateListener;
+    protected PlayerEventsListener mPlayerEventsListener;
     protected RutubeMediaController mMediaController;
     protected int mBufferingPercent = 0;
     protected boolean mPrepared = false;
+    protected GestureDetector mDetector;
+
 
     protected PowerManager.WakeLock mWakeLock;
     private Dialog mDialog;
 
+    protected GestureDetector.OnGestureListener mGestureEventListener = new GestureDetector.OnGestureListener() {
+        @Override
+        public boolean onDown(MotionEvent motionEvent) {
+            return false;
+        }
+
+        @Override
+        public void onShowPress(MotionEvent motionEvent) {
+
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent motionEvent) {
+            return false;
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent2, float v, float v2) {
+            return false;
+        }
+
+        @Override
+        public void onLongPress(MotionEvent motionEvent) {
+
+        }
+
+        @Override
+        public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent2, float v, float v2) {
+            return false;
+        }
+    };
+
+
+    protected GestureDetector.OnDoubleTapListener mOnDoubleTabListener = new GestureDetector.OnDoubleTapListener() {
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent motionEvent) {
+            return false;
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent motionEvent) {
+            if (D) Log.d(LOG_TAG, "onDoubleTap");
+            if (mPlayerEventsListener != null)
+                mPlayerEventsListener.onDoubleTap();
+            return false;
+        }
+
+        @Override
+        public boolean onDoubleTapEvent(MotionEvent motionEvent) {
+            return false;
+        }
+    };
 
     /**
      * Обработчик закрытия диалога сообщения об ошибке
@@ -85,8 +146,8 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
     protected DialogInterface.OnDismissListener mErrorListener = new DialogInterface.OnDismissListener() {
         @Override
         public void onDismiss(DialogInterface dialogInterface) {
-            if (mPlayerStateListener != null)
-                mPlayerStateListener.onFail();
+            if (mPlayerEventsListener != null)
+                mPlayerEventsListener.onFail();
         }
     };
 
@@ -217,15 +278,21 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
 
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
-            if (D) Log.d(LOG_TAG, "onTouch");
-            if (!mPrepared) {
-                if (D) Log.d(LOG_TAG, "preparing, don't show media controller");
-                return true;
-            } else {
-                if (D) Log.d(LOG_TAG, "MP is prepared");
+            mDetector.onTouchEvent(motionEvent);
+            int action = MotionEventCompat.getActionMasked(motionEvent);
+            if (D) Log.d(LOG_TAG, "onTouch: " + String.valueOf(action));
+            switch(action) {
+                case MotionEvent.ACTION_DOWN:
+                    if (!mPrepared) {
+                        if (D) Log.d(LOG_TAG, "preparing, don't show media controller");
+                        return true;
+                    }
+                    if (D) Log.d(LOG_TAG, "MP is prepared");
+                    mMediaController.show();
+                    return true;
+                default:
+                    return false;
             }
-            mMediaController.show();
-            return true;
         }
     };
 
@@ -376,9 +443,9 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
 
     @Override
     public void onComplete() {
-        if (mPlayerStateListener != null) {
+        if (mPlayerEventsListener != null) {
             if (D) Log.d(LOG_TAG, "onComplete");
-            mPlayerStateListener.onComplete();
+            mPlayerEventsListener.onComplete();
         }
         stopPlayback();
         toggleMediaController(false);
@@ -408,8 +475,8 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
     @Override
     public void startPlayback() {
         if (D) Log.d(LOG_TAG, "StartPlayback");
-        if (mPlayerStateListener != null)
-            mPlayerStateListener.onPlay();
+        if (mPlayerEventsListener != null)
+            mPlayerEventsListener.onPlay();
         startVideoPlayback();
     }
     @Override
@@ -468,11 +535,11 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
 
 
     /**
-     * Инициализирует обрабочтик событий PlayerStateListener
-     * @param playerStateListener контейнер фрагмента, обрабатывающий события
+     * Инициализирует обрабочтик событий PlayerEventsListener
+     * @param playerEventsListener контейнер фрагмента, обрабатывающий события
      */
-    public void setPlayerStateListener(PlayerStateListener playerStateListener) {
-        mPlayerStateListener = playerStateListener;
+    public void setPlayerStateListener(PlayerEventsListener playerEventsListener) {
+        mPlayerEventsListener = playerEventsListener;
     }
 
     /**
@@ -515,6 +582,7 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         assert view != null;
         mMediaController = new RutubeMediaController(getActivity());
         mMediaController.setAnchorView((FrameLayout) view.findViewById(R.id.center_video_view));
+        mMediaController.setOnTouchListener(mOnTouchListener);
         return;
     }
 
@@ -560,6 +628,9 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
 
         PowerManager pm = (PowerManager) getActivity().getSystemService(Context.POWER_SERVICE);
         mWakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "VideoPlayer");
+
+        mDetector = new GestureDetector(activity, mGestureEventListener);
+        mDetector.setOnDoubleTapListener(mOnDoubleTabListener);
 
         Intent intent = activity.getIntent();
         Uri videoUri = intent.getData();

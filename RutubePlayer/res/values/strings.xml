@@ -19,4 +19,6 @@
     <string name="video_is_hidden">Author hid this video</string>
     <string name="mediacontroller_play_pause">play/pause</string>
     <string name="video_playback_error">Video playback error</string>
+
+    <string name="device_type">phone</string>
 </resources>

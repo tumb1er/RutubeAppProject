@@ -1,12 +1,13 @@
 package ru.rutube.RutubePlayer.ctrl;
 
 import android.content.Context;
-import android.net.Uri;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import ru.rutube.RutubeAPI.BuildConfig;
-import ru.rutube.RutubeAPI.models.TrackInfo;
+import ru.rutube.RutubePlayer.R;
 
 /**
  * Created by tumbler on 12.11.13.
@@ -18,6 +19,7 @@ public class VideoPageController implements Parcelable {
     private boolean mAttached;
     private VideoPageView mView;
     private Context mContext;
+    private boolean mIsFullscreen;
 
     public interface VideoPageView {
         /**
@@ -31,6 +33,10 @@ public class VideoPageController implements Parcelable {
          * @param orientation ActivityInfo.ORIENTATION*
          */
         public void setScreenOrientation(int orientation);
+
+        public void closeVideoPage();
+
+        void toggleFullscreen(boolean isFullscreen);
     }
 
     public VideoPageController(){
@@ -41,6 +47,7 @@ public class VideoPageController implements Parcelable {
         mContext = context;
         mView = view;
         mAttached = true;
+        mIsFullscreen = true;
     }
 
     public void detach() {
@@ -48,6 +55,27 @@ public class VideoPageController implements Parcelable {
         mContext = null;
         mView = null;
     }
+
+    public void onBackPressed() {
+        if (mView == null) {
+            // двойное нажатие на "назад" приходит после того, как контроллер уже детачнулся
+            return;
+        }
+        if (mIsFullscreen) {
+            mView.toggleFullscreen(false);
+            mIsFullscreen = false;
+        } else {
+            mView.closeVideoPage();
+        }
+    }
+
+
+    public void onDoubleTap() {
+        mView.toggleFullscreen(!mIsFullscreen);
+        mIsFullscreen = !mIsFullscreen;
+
+    }
+
 
     // Реализация Parcelable
 
