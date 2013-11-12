@@ -1,22 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_height="fill_parent"
+    android:layout_width="fill_parent">
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
-    <fragment
+    <FrameLayout
+        android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:name="ru.rutube.RutubePlayer.ui.PlayerFragment"
-        android:id="@+id/player_fragment"
-        android:layout_gravity="center"
-        tools:layout="@layout/player_fragment"/>
-    <fragment
+        android:layout_weight="2">
+
+        <fragment
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:name="ru.rutube.RutubePlayer.ui.PlayerFragment"
+            android:id="@+id/player_fragment"
+            android:layout_gravity="center"
+            tools:layout="@layout/player_fragment" />
+
+        <fragment
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:name="ru.rutube.RutubePlayer.ui.EndscreenFragment"
             android:id="@+id/endscreen_fragment"
             android:layout_gravity="center"
-            tools:layout="@layout/endscreen_fragment"/>
-</FrameLayout>
+            tools:layout="@layout/endscreen_fragment" />
+    </FrameLayout>
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1">
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Video info here"/>
+        </RelativeLayout>
+</LinearLayout>

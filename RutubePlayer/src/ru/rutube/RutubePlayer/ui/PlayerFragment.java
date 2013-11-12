@@ -499,7 +499,8 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         assert holder != null;
         holder.addCallback(mSurfaceCallbackListener);
         holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-        initMediaPlayer();
+        if (mPlayer == null)
+            initMediaPlayer();
     }
 
     private void initProgressBar() {
