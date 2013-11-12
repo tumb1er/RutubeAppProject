@@ -3,6 +3,8 @@ package ru.rutube.RutubeAPI.models;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import com.android.volley.NetworkResponse;
@@ -28,7 +30,7 @@ import ru.rutube.RutubeAPI.requests.Requests;
 /**
  * Created by tumbler on 16.06.13.
  */
-public class Video {
+public class Video implements Parcelable {
     public final static SimpleDateFormat dtf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
     private static final String LOG_TAG = Video.class.getName();
@@ -46,6 +48,8 @@ public class Video {
     private static final String JSON_ACL_ERRCODE = "err_code";
     private static final String JSON_TRACKINFO_DETAIL = "detail";
     private static final String JSON_TRACKINFO_ID = "id";
+    private static final String JSON_DURATION = "duration";
+    private static final String JSON_HITS = "hits";
     private String mVideoId;
     private String mTitle;
     private String mDescription;
@@ -54,24 +58,29 @@ public class Video {
     private Author mAuthor;
     private String mSignature;
     private TrackInfo mTrackInfo;
+    private int mDuration;
+    private int mHits;
 
 
     public Video(String videoId) {
-        this(videoId, null, null, null, null, null, null);
+        this(videoId, null);
     }
 
     public Video(String videoId, String signature) {
-        this(videoId, signature, null, null, null, null, null);
+        this(videoId, signature, null, null, null, null, null, 0, 0);
     }
 
-    protected Video(String videoId, String signature, String title, String description, Date created, Uri thumbnailUri, Author author) {
-        this.mVideoId = videoId;
-        this.mTitle = title;
-        this.mDescription = description;
-        this.mCreated = created;
-        this.mThumbnailUri = thumbnailUri;
-        this.mAuthor = author;
-        this.mSignature = signature;
+    protected Video(String videoId, String signature, String title, String description,
+                    Date created, Uri thumbnailUri, Author author, int duration, int hits) {
+        mVideoId = videoId;
+        mTitle = title;
+        mDescription = description;
+        mCreated = created;
+        mThumbnailUri = thumbnailUri;
+        mAuthor = author;
+        mSignature = signature;
+        mDuration = duration;
+        mHits = hits;
     }
 
     private static Date parseDate(String data) {
@@ -94,8 +103,10 @@ public class Video {
         String videoId = data.getString(JSON_VIDEO_ID);
         if (D) Log.d(LOG_TAG, "Created item: " + videoId + " " + String.valueOf(created));
         Uri videoUri = Uri.parse(data.getString(JSON_VIDEO_URL));
+        int duration = data.getInt(JSON_DURATION);
+        int hits = data.getInt(JSON_HITS);
         return new Video(videoId, videoUri.getQueryParameter(URI_SIGNATURE), title, description,
-                created, thumbnailUri, author);
+                created, thumbnailUri, author, duration, hits);
     }
 
     protected Response.Listener<JSONObject> getTrackInfoListener(final RequestListener requestListener) {
@@ -186,6 +197,37 @@ public class Video {
         return request;
     }
 
+    public JsonObjectRequest getVideoRequest(Context context, RequestListener listener) {
+        String videoPath = String.format(context.getString(R.string.video_uri), mVideoId);
+        String videoUri = RutubeApp.getUrl(videoPath);
+        JsonObjectRequest request = new JsonObjectRequest(videoUri,
+                null, getVideoListener(listener), getErrorListener(Requests.VIDEO, listener));
+        request.setShouldCache(true);
+        request.setTag(Requests.VIDEO);
+        return request;
+    }
+
+    protected Response.Listener<JSONObject> getVideoListener(final RequestListener listener) {
+        return new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    Video result = Video.fromJSON(response);
+                    mTitle = result.getTitle();
+                    mDescription = result.getDescription();
+                    mThumbnailUri = result.getThumbnailUri();
+                    mCreated = result.getCreated();
+                    mAuthor = result.getAuthor();
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable(Constants.Result.VIDEO, result);
+                    listener.onResult(Requests.VIDEO, bundle);
+                } catch (JSONException ignored) {}
+
+            }
+        };
+
+    }
+
     private Response.ErrorListener getErrorListener(final int tag, final RequestListener requestListener) {
         return new Response.ErrorListener() {
             @Override
@@ -268,4 +310,59 @@ public class Video {
     public Author getAuthor() {
         return mAuthor;
     }
+
+    public int getDuration() {
+        return mDuration;
+    }
+
+    public int getHits() {
+        return mHits;
+    }
+
+
+    // Реализация Parcelable
+
+    public static Video fromParcel(Parcel in) {
+        String videoId = in.readString();
+        String title = in.readString();
+        String description = in.readString();
+        Uri thumbnailUri = in.readParcelable(Uri.class.getClassLoader());
+        String dateStr = in.readString();
+        Date created = parseDate(dateStr);
+        Author author = in.readParcelable(Author.class.getClassLoader());
+        int duration = in.readInt();
+        int hits = in.readInt();
+        return new Video(videoId, null, title, description, created, thumbnailUri, author, duration,
+                hits);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeString(mVideoId);
+        parcel.writeString(mTitle);
+        parcel.writeString(mDescription);
+        parcel.writeParcelable(mThumbnailUri, flags);
+        parcel.writeString(dtf.format(mCreated));
+        parcel.writeParcelable(mAuthor, flags);
+        parcel.writeInt(mDuration);
+        parcel.writeInt(mHits);
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public static final Parcelable.Creator<Video> CREATOR
+            = new Parcelable.Creator<Video>() {
+        public Video createFromParcel(Parcel in) {
+            return Video.fromParcel(in);
+        }
+
+        public Video[] newArray(int size) {
+            return new Video[size];
+        }
+    };
+
 }

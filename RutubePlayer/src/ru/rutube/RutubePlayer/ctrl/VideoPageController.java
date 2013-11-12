@@ -1,25 +1,62 @@
 package ru.rutube.RutubePlayer.ctrl;
 
 import android.content.Context;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
+import android.net.Uri;
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpClientStack;
+import com.android.volley.toolbox.Volley;
+
 import ru.rutube.RutubeAPI.BuildConfig;
-import ru.rutube.RutubePlayer.R;
+import ru.rutube.RutubeAPI.HttpTransport;
+import ru.rutube.RutubeAPI.RutubeApp;
+import ru.rutube.RutubeAPI.models.Constants;
+import ru.rutube.RutubeAPI.models.Video;
+import ru.rutube.RutubeAPI.requests.RequestListener;
+import ru.rutube.RutubeAPI.requests.Requests;
 
 /**
  * Created by tumbler on 12.11.13.
  */
-public class VideoPageController implements Parcelable {
+public class VideoPageController implements Parcelable, RequestListener {
     private static final String LOG_TAG = VideoPageController.class.getName();
     private static final boolean D = BuildConfig.DEBUG;
+
+    protected RequestQueue mRequestQueue;
 
     private boolean mAttached;
     private VideoPageView mView;
     private Context mContext;
-    private boolean mIsFullscreen;
+
+    private Uri mVideoUri;
+    private Video mVideo;
+
+    @Override
+    public void onResult(int tag, Bundle result) {
+        if (tag == Requests.VIDEO) {
+            mVideo = result.getParcelable(Constants.Result.VIDEO);
+            setVideoInfo();
+        }
+    }
+
+    private void setVideoInfo() {
+        mView.setVideoInfo(mVideo);
+    }
+
+    @Override
+    public void onVolleyError(VolleyError error) {
+
+    }
+
+    @Override
+    public void onRequestError(int tag, RequestError error) {
+
+    }
+
 
     public interface VideoPageView {
         /**
@@ -36,18 +73,30 @@ public class VideoPageController implements Parcelable {
 
         public void closeVideoPage();
 
-        void toggleFullscreen(boolean isFullscreen);
+        public void toggleFullscreen(boolean isFullscreen);
+
+        public void setVideoInfo(Video mVideo);
+
+        boolean isFullscreen();
     }
 
-    public VideoPageController(){
-
+    public VideoPageController(Uri videoUri){
+        mVideoUri = videoUri;
     }
 
     public void attach(Context context, VideoPageView view) {
         mContext = context;
         mView = view;
+        mRequestQueue = Volley.newRequestQueue(context,
+                new HttpClientStack(HttpTransport.getHttpClient()));
         mAttached = true;
-        mIsFullscreen = true;
+        startRequests();
+    }
+
+    private void startRequests() {
+        String videoId = mVideoUri.getLastPathSegment();
+        mVideo = new Video(videoId);
+        mRequestQueue.add(mVideo.getVideoRequest(mContext, this));
     }
 
     public void detach() {
@@ -61,9 +110,8 @@ public class VideoPageController implements Parcelable {
             // двойное нажатие на "назад" приходит после того, как контроллер уже детачнулся
             return;
         }
-        if (mIsFullscreen) {
+        if (mView.isFullscreen()) {
             mView.toggleFullscreen(false);
-            mIsFullscreen = false;
         } else {
             mView.closeVideoPage();
         }
@@ -71,16 +119,15 @@ public class VideoPageController implements Parcelable {
 
 
     public void onDoubleTap() {
-        mView.toggleFullscreen(!mIsFullscreen);
-        mIsFullscreen = !mIsFullscreen;
-
+        mView.toggleFullscreen(!mView.isFullscreen());
     }
 
 
     // Реализация Parcelable
 
     public static VideoPageController fromParcel(Parcel in) {
-        return new VideoPageController();
+        Uri videoUri = in.readParcelable(Uri.class.getClassLoader());
+        return new VideoPageController(videoUri);
     }
 
     @Override
@@ -89,18 +136,19 @@ public class VideoPageController implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel parcel, int i) {
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeParcelable(mVideoUri, flags);
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public static final Parcelable.Creator<PlayerController> CREATOR
-            = new Parcelable.Creator<PlayerController>() {
-        public PlayerController createFromParcel(Parcel in) {
-            return PlayerController.fromParcel(in);
+    public static final Parcelable.Creator<VideoPageController> CREATOR
+            = new Parcelable.Creator<VideoPageController>() {
+        public VideoPageController createFromParcel(Parcel in) {
+            return VideoPageController.fromParcel(in);
         }
 
-        public PlayerController[] newArray(int size) {
-            return new PlayerController[size];
+        public VideoPageController[] newArray(int size) {
+            return new VideoPageController[size];
         }
     };
 

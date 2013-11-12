@@ -11,6 +11,7 @@
     <string name="search_uri">api/search/video/</string>
     <string name="video_page_uri">video/%s/</string>
     <string name="video_private_uri">video/private/%s/</string>
+    <string name="person_video_uri">video/person/%d/</string>
     <string name="token_uri">api/accounts/token_auth/</string>
     <string name="login_uri">api/accounts/login/</string>
     <string name="upload_session_uri">api/uploader/upload_session/</string>

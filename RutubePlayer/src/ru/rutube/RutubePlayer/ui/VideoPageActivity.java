@@ -4,14 +4,20 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.text.Html;
+import android.text.SpannableString;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 import ru.rutube.RutubeAPI.BuildConfig;
+import ru.rutube.RutubeAPI.models.Author;
+import ru.rutube.RutubeAPI.models.Video;
 import ru.rutube.RutubePlayer.R;
 import ru.rutube.RutubePlayer.ctrl.VideoPageController;
 
@@ -31,6 +37,7 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
     private View mVideoInfoContainer;
     private VideoPageController mController;
     protected boolean mIsTablet;
+    protected boolean mIsFullscreen;
 
     @Override
     public void replay() {
@@ -70,6 +77,7 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
             setScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             mVideoInfoContainer.setVisibility(View.GONE);
         }
+        mIsFullscreen = isFullscreen;
     }
 
     @Override
@@ -102,6 +110,11 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
     }
 
     @Override
+    public boolean isFullscreen() {
+        return mIsFullscreen;
+    }
+
+    @Override
     public void onBackPressed() {
         mController.onBackPressed();
     }
@@ -114,13 +127,31 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
         initWindow();
         setContentView(R.layout.player_activity);
         init();
+        toggleFullscreen(true);
     }
 
     private void initController(Bundle savedInstanceState) {
         if (savedInstanceState != null)
             mController = savedInstanceState.getParcelable(CONTROLLER);
         else
-            mController = new VideoPageController();
+            mController = new VideoPageController(getIntent().getData());
+    }
+
+    @Override
+    public void setVideoInfo(Video mVideo) {
+        ((TextView)findViewById(R.id.video_title)).setText(mVideo.getTitle());
+        Author author = mVideo.getAuthor();
+        if (author != null) {
+            TextView authorName = (TextView) findViewById(R.id.author_name);
+            String text = String.format("<a href=\"%s\">%s</a>",
+                    author.getFeedUrl(), author.getName());
+            authorName.setText(Html.fromHtml(text));
+
+        }
+        int duration = mVideo.getDuration();
+        ((TextView)findViewById(R.id.duration)).setText(DateUtils.formatElapsedTime(duration / 1000));
+        int hits = mVideo.getHits();
+        ((TextView)findViewById(R.id.hits)).setText(String.valueOf(hits));
     }
 
     @Override
@@ -142,13 +173,14 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
     }
 
     private void initWindow(){
-        initWindow(true);
+        initWindow(mIsFullscreen);
     }
 
     /**
      * фулскрин без заголовка окна
      */
     private void initWindow(boolean isFullscreen) {
+        if(D) Log.d(LOG_TAG, "initWindow fullscreen:" + String.valueOf(isFullscreen));
         WindowManager.LayoutParams attrs = getWindow().getAttributes();
         if (isFullscreen)
         {

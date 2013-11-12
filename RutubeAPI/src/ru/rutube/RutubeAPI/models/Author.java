@@ -7,6 +7,8 @@ import android.os.Parcelable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import ru.rutube.RutubeAPI.R;
+import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.content.FeedContract;
 
 /**
@@ -86,5 +88,13 @@ public class Author implements Parcelable {
         String authorName = c.getString(c.getColumnIndex(FeedContract.FeedColumns.AUTHOR_NAME));
         Uri avatarUri = Uri.parse(c.getString(c.getColumnIndex(FeedContract.FeedColumns.AVATAR_URI)));
         return new Author(avatarUri, authorID, authorName);
+    }
+
+    public String getFeedUrl() {
+        String path = String.format(
+                RutubeApp.getContext().getResources().getString(R.string.person_video_uri),
+                getId());
+        return RutubeApp.getUrl(path);
+
     }
 }
