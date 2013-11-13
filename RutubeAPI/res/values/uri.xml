@@ -19,4 +19,5 @@
     <string name="playoptions_uri">api/play/options/%s/</string>
     <string name="referer">http://android.rutube.ru/</string>
     <string name="yastUri">http://yast.rutube.ru/track/%d/viewed/</string>
+    <string name="related_video_uri">api/search/related/</string>
 </resources>

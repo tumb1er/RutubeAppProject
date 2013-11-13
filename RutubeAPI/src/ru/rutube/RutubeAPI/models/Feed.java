@@ -58,6 +58,9 @@ public class Feed<FeedItemT extends FeedItem> {
         ContentMatcher contentMatcher = ContentMatcher.from(context);
         Uri result = contentMatcher.getContentUri(feedUri);
         if (result == null) {
+            result = contentMatcher.getRelatedVideoContentUri(context, feedUri);
+        }
+        if (result == null) {
             result = contentMatcher.getSearchContentUri(context, feedUri);
         }
         return result;

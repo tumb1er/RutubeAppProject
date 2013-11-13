@@ -47,7 +47,6 @@ public final class FeedContract {
         public static final String CONTENT_TYPE = VND + FEED + "." + CONTENT_PATH;
 
         public static final String TAGS_JSON = "tags_json";
-
     }
 
     public static final class SearchResults implements BaseColumns, FeedColumns {
@@ -66,6 +65,15 @@ public final class FeedContract {
 
         public static final String QUERY = "query";
         public static final String UPDATED = "updated";
+    }
+
+    public static final class RelatedVideo implements BaseColumns, FeedColumns {
+        public static final String CONTENT_PATH = "related_video";
+        public static final Uri CONTENT_URI = Uri.withAppendedPath(FEED_URI, CONTENT_PATH);
+        public static final String CONTENT_TYPE = VND + FEED + "." + CONTENT_PATH;
+
+        public static final String RELATED_VIDEO_ID = "related_video_id";
+        public static final String POSITION = "position";
 
     }
 }

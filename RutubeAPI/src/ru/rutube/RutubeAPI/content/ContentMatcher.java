@@ -14,6 +14,7 @@ import ru.rutube.RutubeAPI.models.FeedItem;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -41,6 +42,7 @@ public class ContentMatcher {
         uriMap.put("/" + context.getString(R.string.editors_uri), FeedContract.Editors.CONTENT_URI);
         uriMap.put("/" + context.getString(R.string.my_video_uri), FeedContract.MyVideo.CONTENT_URI);
         uriMap.put("/" + context.getString(R.string.subscription_uri), FeedContract.Subscriptions.CONTENT_URI);
+        uriMap.put("/" + context.getString(R.string.related_video_uri), FeedContract.RelatedVideo.CONTENT_URI);
     }
 
     public Uri getContentUri(Uri rutube_uri) {
@@ -55,6 +57,25 @@ public class ContentMatcher {
         Uri result = uriMap.get(path);
         if (D) Log.d(LOG_TAG, "Matched: " + String.valueOf(result));
         return result;
+    }
+
+    public Uri getRelatedVideoContentUri(Context context, Uri feedUri) {
+        String path = feedUri.getPath();
+        assert path != null;
+        if (!path.startsWith("/"))
+            path = "/" + path;
+        String relatedPath = "/" + context.getString(R.string.related_video_uri);
+        if (!path.startsWith(relatedPath)){
+            return null;
+        }
+        List<String> pathSegments = feedUri.getPathSegments();
+        assert pathSegments != null;
+        if (pathSegments.size() != 4) {
+            return null;
+        }
+        String related_video_id = pathSegments.get(3);
+        return FeedContract.RelatedVideo.CONTENT_URI.buildUpon().appendPath(
+                String.valueOf(related_video_id)).build();
     }
 
     public Uri getSearchContentUri(Context context, Uri feedUri) {
