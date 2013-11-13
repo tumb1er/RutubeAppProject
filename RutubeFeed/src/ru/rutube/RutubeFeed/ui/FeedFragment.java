@@ -161,7 +161,7 @@ public class FeedFragment extends SherlockFragment implements FeedController.Fee
 
     private void init() {
         initFeedUri();
-        mController = new FeedController(feedUri);
+        mController = new FeedController(getFeedUri());
         mController.attach(getActivity(), this);
     }
 
@@ -179,16 +179,16 @@ public class FeedFragment extends SherlockFragment implements FeedController.Fee
         init();
     }
 
-    private void initFeedUri() {
+    protected void initFeedUri() {
         Bundle args = getArguments();
         if (args != null)
-            feedUri = args.getParcelable(Constants.Params.FEED_URI);
-        if (feedUri == null) {
+            setFeedUri(((Uri)args.getParcelable(Constants.Params.FEED_URI)));
+        if (getFeedUri() == null) {
             Activity activity = getActivity();
             assert activity != null;
-            feedUri = activity.getIntent().getData();
+            setFeedUri(activity.getIntent().getData());
         }
-        if (D) Log.d(LOG_TAG, "Feed Uri:" + String.valueOf(feedUri));
+        if (D) Log.d(LOG_TAG, "Feed Uri:" + String.valueOf(getFeedUri()));
     }
 
     @Override
@@ -243,14 +243,23 @@ public class FeedFragment extends SherlockFragment implements FeedController.Fee
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
-        sgView = (ListView)inflater.inflate(R.layout.feed_fragment, container, false);
+        View view = inflater.inflate(R.layout.feed_fragment, container, false);
+        sgView = (ListView)view.findViewById(android.R.id.list);
         assert sgView != null;
         sgView.setOnItemClickListener(this);
-        return sgView;
+        return view;
     }
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         mController.onListItemClick(position);
+    }
+
+    protected Uri getFeedUri() {
+        return feedUri;
+    }
+
+    protected void setFeedUri(Uri feedUri) {
+        this.feedUri = feedUri;
     }
 }

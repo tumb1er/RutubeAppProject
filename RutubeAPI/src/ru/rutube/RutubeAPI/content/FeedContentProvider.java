@@ -57,8 +57,8 @@ public class FeedContentProvider extends ContentProvider {
         sUriMatcher.addURI(AUTHORITY, FeedContract.SearchResults.CONTENT_PATH + "/#/#", SEARCH_RESULTS_FEEDITEM);
         sUriMatcher.addURI(AUTHORITY, FeedContract.SearchQuery.CONTENT_PATH, SEARCH_QUERY);
         sUriMatcher.addURI(AUTHORITY, FeedContract.SearchQuery.CONTENT_PATH + "/#", SEARCH_QUERY_ITEM);
-        sUriMatcher.addURI(AUTHORITY, FeedContract.RelatedVideo.CONTENT_PATH + "/#", RELATED_VIDEO);
-        sUriMatcher.addURI(AUTHORITY, FeedContract.RelatedVideo.CONTENT_PATH + "/#", RELATED_VIDEO_ITEM);
+        sUriMatcher.addURI(AUTHORITY, FeedContract.RelatedVideo.CONTENT_PATH + "/*", RELATED_VIDEO);
+        sUriMatcher.addURI(AUTHORITY, FeedContract.RelatedVideo.CONTENT_PATH + "/*/*", RELATED_VIDEO_ITEM);
     }
 
     private MainDatabaseHelper dbHelper;
@@ -142,8 +142,8 @@ public class FeedContentProvider extends ContentProvider {
                 // соответственно, нужен 2 сегмент
                 String relatedVideId = relatedPathSegments.get(1);
                 assert relatedVideId != null;
-                queryBuilder.appendWhere(FeedContract.RelatedVideo.RELATED_VIDEO_ID + "="
-                        + relatedVideId);
+                queryBuilder.appendWhere(FeedContract.RelatedVideo.RELATED_VIDEO_ID + "= '"
+                        + relatedVideId + "'");
                 break;
             case RELATED_VIDEO_ITEM:
                 queryBuilder.setTables(FeedContract.RelatedVideo.CONTENT_PATH);
@@ -279,6 +279,7 @@ public class FeedContentProvider extends ContentProvider {
                 break;
             case RELATED_VIDEO:
                 table = FeedContract.RelatedVideo.CONTENT_PATH;
+                break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }

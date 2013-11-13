@@ -30,6 +30,7 @@ import ru.rutube.RutubePlayer.ctrl.VideoPageController;
 public class VideoPageActivity extends SherlockFragmentActivity implements PlayerFragment.PlayerEventsListener,
 EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
     private static final String CONTROLLER = "controller";
+    private static final String FULLSCREEN = "fullscreen";
     private final String LOG_TAG = getClass().getName();
     private static final boolean D = BuildConfig.DEBUG;
     private PlayerFragment mPlayerFragment;
@@ -123,11 +124,15 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
     public void onCreate(Bundle savedInstanceState) {
         if (D) Log.d(LOG_TAG, "onCreate");
         super.onCreate(savedInstanceState);
+        if (savedInstanceState != null)
+            mIsFullscreen = savedInstanceState.getBoolean(FULLSCREEN);
+        else
+            mIsFullscreen = true;
         initController(savedInstanceState);
         initWindow();
         setContentView(R.layout.player_activity);
         init();
-        toggleFullscreen(true);
+        toggleFullscreen(mIsFullscreen);
     }
 
     private void initController(Bundle savedInstanceState) {
@@ -169,7 +174,6 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
 
         mVideoInfoContainer = findViewById(R.id.video_info_container);
         mIsTablet = getResources().getString(R.string.device_type, "phone").equals("tablet");
-        toggleEndscreen(false);
     }
 
     private void initWindow(){

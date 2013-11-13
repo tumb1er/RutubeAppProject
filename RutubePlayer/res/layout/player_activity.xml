@@ -25,6 +25,7 @@
             android:name="ru.rutube.RutubePlayer.ui.EndscreenFragment"
             android:id="@+id/endscreen_fragment"
             android:layout_gravity="center"
+            android:visibility="gone"
             tools:layout="@layout/endscreen_fragment" />
     </FrameLayout>
     <RelativeLayout

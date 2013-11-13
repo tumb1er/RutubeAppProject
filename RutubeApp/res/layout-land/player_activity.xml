@@ -7,7 +7,7 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_weight="1"
+        android:layout_weight="2"
         android:orientation="vertical"
         >
 
@@ -31,8 +31,8 @@
                 android:layout_height="fill_parent"
                 android:name="ru.rutube.RutubePlayer.ui.EndscreenFragment"
                 android:id="@+id/endscreen_fragment"
-                android:layout_gravity="center"
                 android:visibility="gone"
+                android:layout_gravity="center"
                 tools:layout="@layout/endscreen_fragment"/>
 
         </RelativeLayout>
@@ -100,4 +100,12 @@
                 </LinearLayout>
         </RelativeLayout>
     </LinearLayout>
+    <fragment
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/related_video_container"
+        class="ru.rutube.RutubeFeed.ui.RelatedFeedFragment"
+        android:name="ru.rutube.RutubeFeed.ui.RelatedFeedFragment"
+        android:layout_weight="1"
+        />
 </LinearLayout>
