@@ -293,6 +293,9 @@ public class PlayerController implements Parcelable, RequestListener {
      * стартует воспроизведение
      */
     public void replay() {
+        // если проигрывание уже началось, не инициируем его снова.
+        if (mState == STATE_STARTING)
+            return;
         if (mState!= STATE_COMPLETED)
             throw new IllegalStateException(
                     String.format("Can't change state to Starting from %d", mState));
