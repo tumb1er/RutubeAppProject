@@ -56,6 +56,7 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
     }
 
     private void toggleEndscreen(boolean visible) {
+        if (D) Log.d(LOG_TAG, "toggleEndscreen: " + String.valueOf(visible));
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         if (visible)
             ft.show(mEndscreenFragment);
@@ -171,6 +172,7 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
         mEndscreenFragment = (EndscreenFragment) getSupportFragmentManager().findFragmentById(R.id.endscreen_fragment);
         assert mEndscreenFragment != null;
         mEndscreenFragment.setReplayListener(this);
+        toggleEndscreen(false);
 
         mVideoInfoContainer = findViewById(R.id.video_info_container);
         mIsTablet = getResources().getString(R.string.device_type, "phone").equals("tablet");
