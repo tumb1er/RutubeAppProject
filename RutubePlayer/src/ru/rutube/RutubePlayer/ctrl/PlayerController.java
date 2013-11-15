@@ -244,12 +244,11 @@ public class PlayerController implements Parcelable, RequestListener {
     // Реализация Parcelable
 
     public static PlayerController fromParcel(Parcel in) {
-        int checksum = in.readInt();
-        if (checksum != 100500) throw new IllegalArgumentException(
-                "Invalid parcel for PlayerController: " + String.valueOf(in));
-        Uri videoUri = in.readParcelable(Uri.class.getClassLoader());
+        // Странно, но иногда на строке чтения Uri возникает ClassNotFoundException,
+        // поэтому вместо Uri храним в парселе строку
+        Uri videoUri = Uri.parse(in.readString());
+        Uri thumbnailUri = Uri.parse(in.readString());
         TrackInfo trackInfo = in.readParcelable(TrackInfo.class.getClassLoader());
-        Uri thumbnailUri = in.readParcelable(Uri.class.getClassLoader());
         int state = in.readInt();
         int videoOffset = in.readInt();
         return new PlayerController(videoUri, thumbnailUri, state, videoOffset, trackInfo);
@@ -262,10 +261,15 @@ public class PlayerController implements Parcelable, RequestListener {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeInt(100500);
-        parcel.writeParcelable(mVideoUri, i);
+        if (mVideoUri == null)
+            parcel.writeString(null);
+        else
+            parcel.writeString(mVideoUri.toString());
+        if (mThumbnailUri == null)
+            parcel.writeString(null);
+        else
+            parcel.writeString(mThumbnailUri.toString());
         parcel.writeParcelable(mTrackInfo, i);
-        parcel.writeParcelable(mThumbnailUri, i);
         parcel.writeInt(mState);
         parcel.writeInt(mVideoOffset);
     }
