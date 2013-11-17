@@ -74,10 +74,12 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
                 setScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             }
             // Для планшетов - смена layout
-            mVideoInfoContainer.setVisibility(View.VISIBLE);
+            if (mVideoInfoContainer != null)
+                mVideoInfoContainer.setVisibility(View.VISIBLE);
         } else {
             setScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            mVideoInfoContainer.setVisibility(View.GONE);
+            if (mVideoInfoContainer != null)
+                mVideoInfoContainer.setVisibility(View.GONE);
         }
         mIsFullscreen = isFullscreen;
     }

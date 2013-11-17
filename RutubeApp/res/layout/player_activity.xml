@@ -37,69 +37,6 @@
             android:layout_alignParentTop="true"
             android:layout_marginTop="0dp" />
     </RelativeLayout>
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:background="@color/video_background"
-        android:padding="10dp"
-        android:focusableInTouchMode="true"
-        android:id="@+id/video_info_container"
-        android:layout_weight="1">
-
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="Video Title"
-            android:textStyle="bold"
-            android:textSize="18dp"
-            android:textColor="#FF000000"
-            android:id="@+id/video_title" />
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_below="@id/video_title"
-            android:paddingTop="3dp"
-            android:paddingBottom="3dp"
-            android:gravity="center_vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/from"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/author_name"
-                android:text="author name"
-                android:paddingLeft="3dp"
-                android:paddingRight="3dp"
-                android:linksClickable="true"
-                android:autoLink="web" />
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/duration"
-                android:baselineAlignBottom="false" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/duration"
-                android:text="00:00"
-                android:paddingLeft="3dp"
-                android:paddingRight="3dp"/>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/views"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/hits"
-                android:text="100500"
-                android:paddingLeft="3dp"
-                android:paddingRight="3dp"/>
-        </LinearLayout>
-    </RelativeLayout>
 
     <FrameLayout
         android:layout_width="fill_parent"
@@ -110,8 +47,8 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:id="@+id/related_video_container"
-            class="ru.rutube.RutubeFeed.ui.RelatedFeedFragment"
-            android:name="ru.rutube.RutubeFeed.ui.RelatedFeedFragment"
+            class="ru.rutube.RutubeApp.ui.feed.RutubeRelatedFeedFragment"
+            android:name="ru.rutube.RutubeApp.ui.feed.RutubeRelatedFeedFragment"
             android:visibility="gone"
             tools:layout="@layout/feed_fragment"
             android:layout_weight="3" />
