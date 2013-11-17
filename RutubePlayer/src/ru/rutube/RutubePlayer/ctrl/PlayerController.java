@@ -341,7 +341,8 @@ public class PlayerController implements Parcelable, RequestListener {
             // Если проигрывание не готово, необходимо заново начать подготовку к проигрыванию видео
             mView.setLoading();
             mView.toggleThumbnail(true);
-            checkReadyToPlay();
+            if (mState != STATE_COMPLETED)
+                checkReadyToPlay();
         }
     }
 
