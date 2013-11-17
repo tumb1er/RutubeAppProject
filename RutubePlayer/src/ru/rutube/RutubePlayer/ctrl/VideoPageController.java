@@ -44,7 +44,8 @@ public class VideoPageController implements Parcelable, RequestListener {
     }
 
     private void setVideoInfo() {
-        mView.setVideoInfo(mVideo);
+        if (mView != null)
+            mView.setVideoInfo(mVideo);
     }
 
     @Override
@@ -80,8 +81,13 @@ public class VideoPageController implements Parcelable, RequestListener {
         boolean isFullscreen();
     }
 
-    public VideoPageController(Uri videoUri){
+    public VideoPageController(Uri videoUri) {
+        this(videoUri, null);
+    }
+
+    public VideoPageController(Uri videoUri, Video video){
         mVideoUri = videoUri;
+        mVideo = video;
     }
 
     public void attach(Context context, VideoPageView view) {
@@ -90,6 +96,9 @@ public class VideoPageController implements Parcelable, RequestListener {
         mRequestQueue = Volley.newRequestQueue(context,
                 new HttpClientStack(HttpTransport.getHttpClient()));
         mAttached = true;
+        if (mVideo != null) {
+            mView.setVideoInfo(mVideo);
+        }
         startRequests();
     }
 
@@ -127,7 +136,8 @@ public class VideoPageController implements Parcelable, RequestListener {
 
     public static VideoPageController fromParcel(Parcel in) {
         Uri videoUri = in.readParcelable(Uri.class.getClassLoader());
-        return new VideoPageController(videoUri);
+        Video video = in.readParcelable(Video.class.getClassLoader());
+        return new VideoPageController(videoUri, video);
     }
 
     @Override
@@ -138,6 +148,7 @@ public class VideoPageController implements Parcelable, RequestListener {
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
         parcel.writeParcelable(mVideoUri, flags);
+        parcel.writeParcelable(mVideo, flags);
     }
 
     @SuppressWarnings("UnusedDeclaration")
