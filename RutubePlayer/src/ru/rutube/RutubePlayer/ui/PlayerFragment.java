@@ -419,11 +419,8 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
 
     @Override
     public void stopPlayback() {
-        if (mPlayer.isPlaying())
+        if (mPlayer != null && mPlayer.isPlaying())
             mPlayer.stop();
-
-//        mVideoView.setVideoURI(null);
-//        mVideoView.stopPlayback();
     }
 
 
@@ -432,13 +429,11 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
     public void seekTo(int millis) {
         if (D) Log.d(LOG_TAG, "Seek To: " + String.valueOf(millis / 1000));
         mPlayer.seekTo(millis);
-//        mVideoView.seekTo(millis);
     }
 
     @Override
     public void pauseVideo() {
         mPlayer.pause();
-//        mVideoView.pause();
     }
 
     @Override
