@@ -67,6 +67,7 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
 
     @Override
     public void toggleFullscreen(boolean isFullscreen) {
+        mIsFullscreen = isFullscreen;
         initWindow(isFullscreen);
         if (!isFullscreen) {
             if (!mIsTablet) {
@@ -77,11 +78,10 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
             if (mVideoInfoContainer != null)
                 mVideoInfoContainer.setVisibility(View.VISIBLE);
         } else {
-            setScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             if (mVideoInfoContainer != null)
                 mVideoInfoContainer.setVisibility(View.GONE);
+            setScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
-        mIsFullscreen = isFullscreen;
     }
 
     @Override
@@ -111,6 +111,7 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(CONTROLLER, mController);
+        outState.putBoolean(FULLSCREEN, mIsFullscreen);
     }
 
     @Override
@@ -127,10 +128,7 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
     public void onCreate(Bundle savedInstanceState) {
         if (D) Log.d(LOG_TAG, "onCreate");
         super.onCreate(savedInstanceState);
-        if (savedInstanceState != null)
-            mIsFullscreen = savedInstanceState.getBoolean(FULLSCREEN);
-        else
-            mIsFullscreen = true;
+        mIsFullscreen = savedInstanceState == null || savedInstanceState.getBoolean(FULLSCREEN);
         initController(savedInstanceState);
         initWindow();
         setContentView(R.layout.player_activity);

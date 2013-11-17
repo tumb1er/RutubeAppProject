@@ -41,8 +41,14 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
 
     @Override
     public void toggleFullscreen(boolean isFullscreen) {
+        // при переходе в фулскрин скрывать похожие надо до изменения ориентации,
+        if (isFullscreen)
+            toggleRelatedFragment(!isFullscreen);
         super.toggleFullscreen(isFullscreen);
-        toggleRelatedFragment(!isFullscreen);
+        // а при переходе в режим страницы видео - после изменения ориентации.
+        if (!isFullscreen)
+            toggleRelatedFragment(!isFullscreen);
+
     }
 
     private void toggleRelatedFragment(boolean visible) {
