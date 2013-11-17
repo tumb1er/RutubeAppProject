@@ -12,9 +12,13 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.models.Author;
 import ru.rutube.RutubeAPI.models.Video;
 import ru.rutube.RutubeApp.R;
+import ru.rutube.RutubeApp.data.RelatedCursorAdapter;
+import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
+import ru.rutube.RutubeFeed.data.SubscriptionsCursorAdapter;
 import ru.rutube.RutubeFeed.ui.RelatedFeedFragment;
 
 /**
@@ -40,6 +44,7 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
         View infoView = getActivity().getLayoutInflater().inflate(R.layout.video_info, null);
         mListView = (ListView) fragmentView.findViewById(android.R.id.list);
         mListView.addHeaderView(infoView);
+        mListView.setHeaderDividersEnabled(false);
     }
 
     @Override
@@ -47,6 +52,16 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
         // При вызове addHeaderView ListView трансформирует свой адаптер в HeaderViewListAdapter,
         // являющийся оберткой адаптера, проставляемого через ListView.setAdapter
         return ((HeaderViewListAdapter)mListView.getAdapter()).getWrappedAdapter();
+    }
+
+    @Override
+    public FeedCursorAdapter initAdapter() {
+        return new RelatedCursorAdapter(getActivity(),
+                R.layout.related_feed_item,
+                null,
+                new String[]{FeedContract.FeedColumns.TITLE, FeedContract.FeedColumns.THUMBNAIL_URI},
+                new int[]{ru.rutube.RutubeFeed.R.id.titleTextView, ru.rutube.RutubeFeed.R.id.thumbnailImageView},
+                0);
     }
 
     public void setVideoInfo(Video video) {

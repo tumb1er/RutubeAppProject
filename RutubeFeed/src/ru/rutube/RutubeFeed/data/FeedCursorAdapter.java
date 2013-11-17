@@ -39,7 +39,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     protected static final SimpleDateFormat sqlDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     protected static final SimpleDateFormat reprDateFormat = new SimpleDateFormat("d MMMM y");
     protected ImageLoader imageLoader;
-    protected static int item_layout_id = R.layout.feed_item;
+    protected int item_layout_id = R.layout.feed_item;
     private final String LOG_TAG = getClass().getName();
     private static final boolean D = BuildConfig.DEBUG;
     private int mPerPage;
@@ -52,13 +52,13 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     }
 
     protected static class ViewHolder {
-        TextView title;
-        TextView created;
-        TextView description;
-        TextView author;
-        NetworkImageView thumbnail;
-        AvatarView avatar;
-        View footer;
+        public TextView title;
+        public TextView created;
+        public TextView description;
+        public TextView author;
+        public NetworkImageView thumbnail;
+        public AvatarView avatar;
+        public View footer;
     }
 
     public int getPerPage() {
@@ -80,10 +80,12 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     public void setLoadMoreListener(LoadMoreListener listener) {
         loadMoreListener = listener;
     }
+
     public FeedCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
         super(context, layout, c, from, to, flags);
         mPerPage = 20;
         mHasMore = true;
+        item_layout_id = layout;
         initImageLoader(context);
         mNormalFont = Typefaces.get(mContext, "fonts/opensansregular.ttf");
         mLightFont = Typefaces.get(mContext, "fonts/opensanslight.ttf");
@@ -106,7 +108,6 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         holder.description.setTypeface(mLightFont);
         holder.created.setTypeface(mLightFont);
         holder.author.setTypeface(mLightFont);
-     //   holder.thumbnail.setDefaultImageResId(R.drawable.thumbnail_stub);
     }
 
     protected ViewHolder getHolder(View view) {

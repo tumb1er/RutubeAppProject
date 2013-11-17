@@ -36,4 +36,6 @@ public class RelatedVideoItem extends FeedItem {
         row.put(FeedContract.RelatedVideo.RELATED_VIDEO_ID, mVideoId);
         row.put(FeedContract.RelatedVideo.POSITION, position);
     }
+
+
 }

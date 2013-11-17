@@ -90,4 +90,10 @@
         <item name="displayOptions">useLogo|showHome|showTitle</item>
         <item name="android:displayOptions">useLogo|showHome|showTitle</item>
     </style>
+
+    <!-- Тема для страницы видео и плеера -->
+    <style name="Theme.Rutube.Video" parent="Theme.Player">
+        <item name="FeedTitleStyle">@style/Rutube.Feed.Title</item>
+        <item name="FeedAuthorStyle">@style/Rutube.Feed.Author</item>
+    </style>
 </resources>

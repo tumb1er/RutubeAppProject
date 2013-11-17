@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/feed_background"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/card_background"
+        android:padding="10dp">
+
+        <View
+            android:layout_width="90dp"
+            android:layout_height="60dp"
+            android:background="@drawable/thumbnail_stub"
+            android:layout_alignRight="@+id/thumbnailImageView"
+            android:layout_alignLeft="@+id/thumbnailImageView"
+            android:layout_alignTop="@+id/thumbnailImageView"
+            android:layout_alignBottom="@+id/thumbnailImageView" />
+
+        <!-- Тамнейл -->
+        <ru.rutube.RutubeFeed.views.ThumbnailView
+            android:id="@+id/thumbnailImageView"
+            android:layout_width="90dp"
+            android:layout_height="60dp"
+            android:contentDescription="@string/thumbnail"
+            android:scaleType="centerCrop" />
+
+        <!-- Название ролика-->
+        <TextView
+            android:id="@+id/titleTextView"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Title"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/thumbnailImageView"
+            style="?attr/FeedTitleStyle"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:paddingTop="0dp"
+            android:paddingLeft="10dp" />
+
+        <!-- Имя автора справа от аватара -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Author"
+            android:id="@+id/authorTextView"
+            android:layout_centerVertical="true"
+            style="?attr/FeedAuthorStyle"
+            android:layout_toRightOf="@+id/thumbnailImageView"
+            android:layout_below="@+id/titleTextView"
+            android:paddingLeft="10dp" />
+
+
+    </RelativeLayout>
+</FrameLayout>
