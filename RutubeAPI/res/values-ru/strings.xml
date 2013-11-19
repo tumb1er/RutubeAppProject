@@ -9,4 +9,8 @@
     <string name="week_ago">%d неделю назад</string>
     <string name="weeks_ago">%d недели назад</string>
     <string name="failed_to_load_data">Не удалось загрузить данные</string>
+    <string name="views5">%,d просмотров</string>
+    <string name="view1">%,d просмотр</string>
+    <string name="views21">%,d просмотр</string>
+    <string name="views4">%,d просмотра</string>
 </resources>

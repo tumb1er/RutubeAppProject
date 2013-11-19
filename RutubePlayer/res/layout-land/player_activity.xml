@@ -57,6 +57,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:id="@+id/short_info_container"
                 android:layout_below="@id/video_title"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
@@ -98,6 +99,15 @@
                     android:paddingLeft="3dp"
                     android:paddingRight="3dp"/>
                 </LinearLayout>
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/short_info_container"
+                android:text="Description"
+                android:textColor="#FF000000"
+                android:id="@+id/description" />
+
         </RelativeLayout>
     </LinearLayout>
 </LinearLayout>

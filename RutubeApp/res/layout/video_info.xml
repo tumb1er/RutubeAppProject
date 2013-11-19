@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="0dp"
+    android:layout_height="wrap_content"
     android:layout_weight="1"
     android:id="@+id/video_info_container"
     android:paddingBottom="10dp"
@@ -12,11 +12,15 @@
 
 <RelativeLayout
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="wrap_content"
     android:background="@drawable/card_shadow"
     android:padding="10dp"
-    android:focusableInTouchMode="true">
-
+    android:focusableInTouchMode="true"
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentTop="true"
+    android:layout_marginTop="0dp"
+    android:id="@+id/baseInfoContainer">
+    <!-- Название ролика -->
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -24,52 +28,81 @@
         android:textStyle="bold"
         android:textSize="18dp"
         android:textColor="#FF000000"
+        android:ellipsize="end"
+        android:maxLines="2"
         android:id="@+id/video_title" />
-    <LinearLayout
-        android:layout_width="fill_parent"
+    <!-- Дата создания под названием -->
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_below="@id/video_title"
-        android:paddingTop="3dp"
-        android:paddingBottom="3dp"
-        android:gravity="center_vertical">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/from"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/author_name"
-            android:text="author name"
-            android:paddingLeft="3dp"
-            android:paddingRight="3dp"
-            android:linksClickable="true"
-            android:autoLink="web" />
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/duration"
-            android:baselineAlignBottom="false" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/duration"
-            android:text="00:00"
-            android:paddingLeft="3dp"
-            android:paddingRight="3dp"/>
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/views"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/hits"
-            android:text="100500"
-            android:paddingLeft="3dp"
-            android:paddingRight="3dp"/>
-    </LinearLayout>
+        android:id="@+id/createdTextView"
+        android:layout_below="@+id/video_title"
+        android:text="21.11.2013" />
+    <!-- буллет -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/createdTextView"
+        android:id="@+id/bullet"
+        android:layout_below="@+id/video_title"
+        android:text="•"
+        android:phoneNumber="false"
+        android:textColor="#FFAAAAAA"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" />
+    <!-- буллет -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/bullet"
+        android:layout_below="@+id/video_title"
+        android:text="100500"
+        android:id="@+id/hits" />
+    <ImageButton
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignParentRight="true"
+        android:id="@+id/moreImageButton"
+        android:src="@drawable/more_btn_default"
+        android:layout_below="@+id/video_title"
+        android:background="#00000000"
+        android:layout_alignParentEnd="false" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/fromTextView"
+        android:text="@string/from"
+        android:layout_below="@+id/createdTextView" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/fromTextView"
+        android:id="@+id/author_name"
+        android:text="author name"
+        android:paddingLeft="3dp"
+        android:paddingRight="3dp"
+        android:linksClickable="true"
+        android:autoLink="web"
+        android:layout_below="@+id/createdTextView" />
 </RelativeLayout>
 
-</FrameLayout>
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/card_shadow"
+        android:padding="10dp"
+        android:focusableInTouchMode="true"
+        android:id="@+id/moreInfoContainer"
+        android:layout_below="@+id/baseInfoContainer"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Description"
+            android:textSize="14dp"
+            android:id="@+id/descriptionTextView" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

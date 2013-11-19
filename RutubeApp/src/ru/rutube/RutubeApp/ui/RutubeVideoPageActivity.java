@@ -1,16 +1,21 @@
 package ru.rutube.RutubeApp.ui;
 
 import android.content.Context;
-import android.support.v4.app.Fragment;
+import android.content.pm.ActivityInfo;
+import android.graphics.Typeface;
+import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import ru.rutube.RutubeAPI.models.Video;
 import ru.rutube.RutubeApp.BuildConfig;
 import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubeApp.ui.feed.RutubeRelatedFeedFragment;
+import ru.rutube.RutubeFeed.helpers.Typefaces;
 import ru.rutube.RutubePlayer.ui.VideoPageActivity;
 
 /**
@@ -24,6 +29,18 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
     private static final boolean D = BuildConfig.DEBUG;
     private static final String LOG_TAG = RutubeVideoPageActivity.class.getName();
     private RutubeRelatedFeedFragment mRelatedFragment;
+    private boolean mIsLandscape;
+    private Typeface mNormalFont;
+    private Typeface mLightFont;
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        mIsLandscape = getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+        getIntent().putExtra(RutubeRelatedFeedFragment.INIT_HEADER, !mIsLandscape);
+        super.onCreate(savedInstanceState);
+        init();
+    }
 
     @Override
     public View onCreateView(String name, Context context, AttributeSet attrs) {
@@ -34,20 +51,34 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         return view;
     }
 
+    private void init() {
+        mNormalFont = Typefaces.get(this, "fonts/opensansregular.ttf");
+        mLightFont = Typefaces.get(this, "fonts/opensanslight.ttf");
+        ((TextView)findViewById(R.id.video_title)).setTypeface(mNormalFont);
+        ((TextView)findViewById(R.id.from)).setTypeface(mLightFont);
+        ((TextView)findViewById(R.id.author_name)).setTypeface(mLightFont);
+        ((TextView)findViewById(R.id.duration)).setTypeface(mLightFont);
+        ((TextView)findViewById(R.id.hits)).setTypeface(mLightFont);
+        ((TextView)findViewById(R.id.description)).setTypeface(mLightFont);
+    }
+
     @Override
     public void setVideoInfo(Video video) {
-        mRelatedFragment.setVideoInfo(video);
+        if (!mIsLandscape)
+            mRelatedFragment.setVideoInfo(video);
+        else
+            super.setVideoInfo(video);
     }
 
     @Override
     public void toggleFullscreen(boolean isFullscreen) {
         // при переходе в фулскрин скрывать похожие надо до изменения ориентации,
         if (isFullscreen)
-            toggleRelatedFragment(!isFullscreen);
+            toggleRelatedFragment(false);
         super.toggleFullscreen(isFullscreen);
         // а при переходе в режим страницы видео - после изменения ориентации.
         if (!isFullscreen)
-            toggleRelatedFragment(!isFullscreen);
+            toggleRelatedFragment(true);
 
     }
 

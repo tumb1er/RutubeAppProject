@@ -5,7 +5,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Html;
-import android.text.SpannableString;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Display;
@@ -144,9 +143,31 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
     }
 
     @Override
-    public void setVideoInfo(Video mVideo) {
-        ((TextView)findViewById(R.id.video_title)).setText(mVideo.getTitle());
-        Author author = mVideo.getAuthor();
+    public void setVideoInfo(Video video) {
+        bindTitle(video);
+        bindAuthor(video);
+        bindDuration(video);
+        bindHits(video);
+        bindDescription(video);
+    }
+
+    protected void bindDescription(Video video) {
+        String description = video.getDescription();
+        ((TextView)findViewById(R.id.description)).setText(Html.fromHtml(description));
+    }
+
+    protected void bindHits(Video video) {
+        int hits = video.getHits();
+        ((TextView)findViewById(R.id.hits)).setText(String.valueOf(hits));
+    }
+
+    protected void bindDuration(Video video) {
+        int duration = video.getDuration();
+        ((TextView)findViewById(R.id.duration)).setText(DateUtils.formatElapsedTime(duration / 1000));
+    }
+
+    protected void bindAuthor(Video video) {
+        Author author = video.getAuthor();
         if (author != null) {
             TextView authorName = (TextView) findViewById(R.id.author_name);
             String text = String.format("<a href=\"%s\">%s</a>",
@@ -154,10 +175,10 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
             authorName.setText(Html.fromHtml(text));
 
         }
-        int duration = mVideo.getDuration();
-        ((TextView)findViewById(R.id.duration)).setText(DateUtils.formatElapsedTime(duration / 1000));
-        int hits = mVideo.getHits();
-        ((TextView)findViewById(R.id.hits)).setText(String.valueOf(hits));
+    }
+
+    protected void bindTitle(Video video) {
+        ((TextView)findViewById(R.id.video_title)).setText(video.getTitle());
     }
 
     @Override
@@ -207,9 +228,9 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
             orientation = Configuration.ORIENTATION_SQUARE;
         } else {
             if (getOrient.getWidth() < getOrient.getHeight()) {
-                orientation = Configuration.ORIENTATION_PORTRAIT;
+                orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
             } else {
-                orientation = Configuration.ORIENTATION_LANDSCAPE;
+                orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
             }
         }
         return orientation;

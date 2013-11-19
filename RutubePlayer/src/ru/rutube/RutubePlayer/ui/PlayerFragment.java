@@ -423,8 +423,6 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
             mPlayer.stop();
     }
 
-
-
     @Override
     public void seekTo(int millis) {
         if (D) Log.d(LOG_TAG, "Seek To: " + String.valueOf(millis / 1000));

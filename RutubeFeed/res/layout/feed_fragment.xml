@@ -22,6 +22,7 @@ android:background="@color/feed_background"
         android:paddingRight="0dp"
         android:background="@color/feed_background"
         android:dividerHeight="1dp"
+        android:scrollbars="none"
         android:divider="@drawable/feed_item_divider"
         style="@style/Rutube.Feed.Container" />
 </RelativeLayout>

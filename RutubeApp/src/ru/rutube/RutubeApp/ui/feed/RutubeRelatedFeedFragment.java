@@ -1,5 +1,7 @@
 package ru.rutube.RutubeApp.ui.feed;
 
+import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.format.DateUtils;
@@ -19,6 +21,7 @@ import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubeApp.data.RelatedCursorAdapter;
 import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
 import ru.rutube.RutubeFeed.data.SubscriptionsCursorAdapter;
+import ru.rutube.RutubeFeed.helpers.Typefaces;
 import ru.rutube.RutubeFeed.ui.RelatedFeedFragment;
 
 /**
@@ -28,22 +31,40 @@ import ru.rutube.RutubeFeed.ui.RelatedFeedFragment;
  */
 public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
     private static final String LOG_TAG = RutubeRelatedFeedFragment.class.getName();
+    public static final String INIT_HEADER = "init_header";
     private ListView mListView;
+    private Typeface mNormalFont;
+    private Typeface mLightFont;
+    private View mInfoView;
+    private boolean mHasInfoView = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(LOG_TAG, "onCreateView");
         View v = super.onCreateView(inflater, container, savedInstanceState);
         assert v!= null;
-        initListView(v);
+        mListView = (ListView) v.findViewById(android.R.id.list);
+        Intent intent = getActivity().getIntent();
+        if (intent.getBooleanExtra(INIT_HEADER, false))
+            initListView();
         return v;
     }
 
-    private void initListView(View fragmentView) {
+    private void initListView() {
+        mHasInfoView = true;
+        mNormalFont = Typefaces.get(getActivity(), "fonts/opensansregular.ttf");
+        mLightFont = Typefaces.get(getActivity(), "fonts/opensanslight.ttf");
         // инициализирует и добавляет в ListView заголовок с информацией о видео.
-        View infoView = getActivity().getLayoutInflater().inflate(R.layout.video_info, null);
-        mListView = (ListView) fragmentView.findViewById(android.R.id.list);
-        mListView.addHeaderView(infoView);
+        mInfoView = getActivity().getLayoutInflater().inflate(R.layout.video_info, null);
+        assert mInfoView != null;
+        ((TextView)mInfoView.findViewById(R.id.video_title)).setTypeface(mNormalFont);
+        ((TextView)mInfoView.findViewById(R.id.fromTextView)).setTypeface(mLightFont);
+        ((TextView)mInfoView.findViewById(R.id.author_name)).setTypeface(mNormalFont);
+        ((TextView)mInfoView.findViewById(R.id.bullet)).setTypeface(mLightFont);
+        ((TextView)mInfoView.findViewById(R.id.createdTextView)).setTypeface(mLightFont);
+        ((TextView)mInfoView.findViewById(R.id.hits)).setTypeface(mLightFont);
+        ((TextView)mInfoView.findViewById(R.id.descriptionTextView)).setTypeface(mLightFont);
+        mListView.addHeaderView(mInfoView);
         mListView.setHeaderDividersEnabled(false);
     }
 
@@ -51,7 +72,9 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
     public ListAdapter getListAdapter() {
         // При вызове addHeaderView ListView трансформирует свой адаптер в HeaderViewListAdapter,
         // являющийся оберткой адаптера, проставляемого через ListView.setAdapter
-        return ((HeaderViewListAdapter)mListView.getAdapter()).getWrappedAdapter();
+        if (mHasInfoView)
+            return ((HeaderViewListAdapter)mListView.getAdapter()).getWrappedAdapter();
+        return mListView.getAdapter();
     }
 
     @Override
@@ -71,15 +94,15 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
         Author author = video.getAuthor();
         if (author != null) {
             TextView authorName = (TextView)v.findViewById(ru.rutube.RutubePlayer.R.id.author_name);
-            String text = String.format("<a href=\"%s\">%s</a>",
-                    author.getFeedUrl(), author.getName());
-            authorName.setText(Html.fromHtml(text));
+            authorName.setText(author.getName());
+            authorName.setTag(author.getFeedUrl());
 
         }
-        int duration = video.getDuration();
-        ((TextView)v.findViewById(ru.rutube.RutubePlayer.R.id.duration)).setText(
-                DateUtils.formatElapsedTime(duration / 1000));
-        int hits = video.getHits();
-        ((TextView)v.findViewById(ru.rutube.RutubePlayer.R.id.hits)).setText(String.valueOf(hits));
+//        int duration = video.getDuration();
+//        ((TextView)v.findViewById(ru.rutube.RutubePlayer.R.id.duration)).setText(
+//                DateUtils.formatElapsedTime(duration));
+        String hits = video.getHitsText(getActivity());
+        ((TextView)v.findViewById(ru.rutube.RutubePlayer.R.id.hits)).setText(hits);
+        ((TextView)v.findViewById(R.id.descriptionTextView)).setText(video.getDescription());
     }
 }
