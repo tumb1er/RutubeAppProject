@@ -45,7 +45,8 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
         mListView = (ListView) v.findViewById(android.R.id.list);
         initListView();
         Intent intent = getActivity().getIntent();
-        toggleHeader(intent.getBooleanExtra(INIT_HEADER, false));
+        if (intent.getBooleanExtra(INIT_HEADER, false))
+            addHeaderView();
         return v;
     }
 
@@ -116,9 +117,16 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
 
     public void toggleHeader(boolean visible) {
         if (D) Log.d(LOG_TAG, "toggleHeader: " + String.valueOf(visible));
-        if (visible)
-            addHeaderView();
-        else
-            removeHeaderView();
+        mInfoView.setVisibility(visible? View.VISIBLE: View.GONE);
+        // разметка такова, что при нахождении карточки видео в похожих, надо менять paddingRight
+        // с 0 на значение, равное paddingLeft.
+        // FIXME: разные layout + include общей чачти
+        mInfoView.setPadding(
+                mInfoView.getPaddingLeft(),
+                mInfoView.getPaddingTop(),
+                mInfoView.getPaddingLeft(),
+                mInfoView.getPaddingBottom()
+        );
+        mListView.forceLayout();
     }
 }

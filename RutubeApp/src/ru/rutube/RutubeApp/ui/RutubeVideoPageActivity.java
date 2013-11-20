@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -33,14 +34,17 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
     private boolean mIsLandscape;
     private Typeface mNormalFont;
     private Typeface mLightFont;
+    private View mVideoInfoContainer;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         mIsLandscape = getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-        getIntent().putExtra(RutubeRelatedFeedFragment.INIT_HEADER, !mIsLandscape);
+        boolean needHeader = getString(R.string.device_type).equals("phone");
+        getIntent().putExtra(RutubeRelatedFeedFragment.INIT_HEADER, needHeader);
         mLayoutResId = R.layout.video_page_activity;
         super.onCreate(savedInstanceState);
+        mRelatedFragment.toggleHeader(!mIsLandscape);
         init();
     }
 
@@ -50,6 +54,7 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         FragmentManager fm = getSupportFragmentManager();
         mRelatedFragment = (RutubeRelatedFeedFragment) fm.findFragmentById(
                 R.id.related_video_container);
+        mVideoInfoContainer = findViewById(R.id.video_info_container);
         return view;
     }
 
@@ -60,20 +65,26 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
     }
 
     protected void transformLayout(boolean isPortrait) {
+        // список похожих справа или снизу
         LinearLayout ll = (LinearLayout)findViewById(R.id.page);
         ll.setOrientation(isPortrait? LinearLayout.VERTICAL: LinearLayout.HORIZONTAL);
-        View v = findViewById(R.id.video_info_container);
-        v.setVisibility(isPortrait? View.GONE: View.VISIBLE);
+        // основная карточка видео видна только в пейзажной ориентации
+        mVideoInfoContainer.setVisibility(isPortrait ? View.GONE : View.VISIBLE);
+        // карточка видео в похожих видна только в портретной ориентации
         mRelatedFragment.toggleHeader(isPortrait);
-        v = findViewById(R.id.video_container);
+        // layout_weight для плеера + карточки видео в зависимости от ориентации
+        View v = findViewById(R.id.video_container);
         LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams)v.getLayoutParams();
-        lp.weight = isPortrait? 2: 1;
+        lp.weight = getResources().getInteger(R.integer.video_container_weight);
+        if(D) Log.d(LOG_TAG, "VC weight: " + String.valueOf(lp.weight));
         v.setLayoutParams(lp);
+        // layout_weight для похожих в зависимости от ориентации
         v = mRelatedFragment.getView();
         lp =(LinearLayout.LayoutParams)v.getLayoutParams();
-        lp.weight = isPortrait? 1: 2;
+        lp.weight = getResources().getInteger(R.integer.related_video_container_weight);
+        if(D) Log.d(LOG_TAG, "RC weight: " + String.valueOf(lp.weight));
         v.setLayoutParams(lp);
-    }
+  }
 
     private void init() {
         mNormalFont = Typefaces.get(this, "fonts/opensansregular.ttf");

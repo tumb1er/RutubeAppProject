@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="video_info_padding_right">0dp</dimen>
+    <integer name="video_container_weight">1</integer>
+    <integer name="related_video_container_weight">2</integer>
+</resources>
