@@ -2,6 +2,7 @@ package ru.rutube.RutubeApp.ui;
 
 import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -49,6 +50,11 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         mRelatedFragment = (RutubeRelatedFeedFragment) fm.findFragmentById(
                 R.id.related_video_container);
         return view;
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
     }
 
     private void init() {

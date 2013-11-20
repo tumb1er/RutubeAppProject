@@ -40,6 +40,7 @@
             android:name="ru.rutube.RutubeApp.ui.RutubeVideoPageActivity"
             android:label="@string/app_name"
             android:screenOrientation="landscape"
+            android:configChanges="orientation|screenSize"
             android:theme="@style/Theme.Rutube.Video">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
