@@ -3,7 +3,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="#000000">
-    <FrameLayout android:layout_width="fill_parent"
+    <ru.rutube.RutubePlayer.views.VideoFrameLayout android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:id="@+id/center_video_view">
         <SurfaceView
@@ -12,7 +12,7 @@
             android:layout_gravity="center"
 
             android:id="@+id/video_view"/>
-    </FrameLayout>
+    </ru.rutube.RutubePlayer.views.VideoFrameLayout>
 
     <com.android.volley.toolbox.NetworkImageView
         android:layout_width="fill_parent"

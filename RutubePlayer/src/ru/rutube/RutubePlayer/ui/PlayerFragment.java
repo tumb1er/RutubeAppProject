@@ -20,7 +20,6 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.MediaController;
 import android.widget.ProgressBar;
 
@@ -33,6 +32,7 @@ import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubePlayer.R;
 import ru.rutube.RutubePlayer.ctrl.PlayerController;
+import ru.rutube.RutubePlayer.views.VideoFrameLayout;
 
 /**
  * Created with IntelliJ IDEA.
@@ -153,10 +153,25 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
 
 
     /**
+     * При изменении размеров контейнера, содержащего SurfaceView, изменяет размеры самого
+     * SurfaceView, так как автоматически этого почему-то не происходит.
+     */
+    protected VideoFrameLayout.OnSizeChangedListener mOnSizeChangedListener = new VideoFrameLayout.OnSizeChangedListener() {
+        @Override
+        public void onSizeChanged(int width, int height) {
+            if (D) Log.d(LOG_TAG, String.format("onSizeChanged: %dx%d", width, height));
+            ViewGroup.LayoutParams lp = mVideoView.getLayoutParams();
+            lp.height = height;
+            lp.width = width;
+            mVideoView.setLayoutParams(lp);
+        }
+    };
+
+
+    /**
      * Обработчики различных интерфейсов, необходимые, чтобы заставить MediaPlayer показывать на
      * SurfaceView видео под управлением MediaController
      */
-
 
     protected SurfaceHolder.Callback mSurfaceCallbackListener = new SurfaceHolder.Callback() {
         @Override
@@ -553,8 +568,10 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         View view = getView();
         assert view != null;
 
-        mVideoView = (SurfaceView) view.findViewById(R.id.video_view);
+        VideoFrameLayout container = ((VideoFrameLayout)view.findViewById(R.id.center_video_view));
+        container.setOnSizeChangedListener(mOnSizeChangedListener);
 
+        mVideoView = (SurfaceView) view.findViewById(R.id.video_view);
         SurfaceHolder holder = mVideoView.getHolder();
         assert holder != null;
         holder.addCallback(mSurfaceCallbackListener);
@@ -574,7 +591,7 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         View view = getView();
         assert view != null;
         mMediaController = new RutubeMediaController(getActivity());
-        mMediaController.setAnchorView((FrameLayout) view.findViewById(R.id.center_video_view));
+        mMediaController.setAnchorView((ViewGroup) view.findViewById(R.id.center_video_view));
         mMediaController.setOnTouchListener(mOnTouchListener);
         return;
     }
