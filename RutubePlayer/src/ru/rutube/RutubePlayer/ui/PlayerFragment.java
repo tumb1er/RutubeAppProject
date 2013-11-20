@@ -160,9 +160,19 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         @Override
         public void onSizeChanged(int width, int height) {
             if (D) Log.d(LOG_TAG, String.format("onSizeChanged: %dx%d", width, height));
+            int vw = mPlayer.getVideoWidth();
+            int vh = mPlayer.getVideoHeight();
+            if (vw * vh == 0)
+                return;
+            float scale = Math.min(((float)height)/vh, ((float)width)/vw);
+            int w = (int)(vw * scale);
+            int h = (int)(vh * scale);
+            if (D) Log.d(LOG_TAG, String.format("videoSize: %dx%d", vw, vh));
+            if (D) Log.d(LOG_TAG, String.format("fit to %dx%d", w, h));
+
             ViewGroup.LayoutParams lp = mVideoView.getLayoutParams();
-            lp.height = height;
-            lp.width = width;
+            lp.height = h;
+            lp.width = w;
             mVideoView.setLayoutParams(lp);
         }
     };
