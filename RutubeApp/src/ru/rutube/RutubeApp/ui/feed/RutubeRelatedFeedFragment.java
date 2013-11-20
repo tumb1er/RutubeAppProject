@@ -17,6 +17,7 @@ import android.widget.TextView;
 import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.models.Author;
 import ru.rutube.RutubeAPI.models.Video;
+import ru.rutube.RutubeApp.BuildConfig;
 import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubeApp.data.RelatedCursorAdapter;
 import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
@@ -32,6 +33,7 @@ import ru.rutube.RutubeFeed.ui.RelatedFeedFragment;
 public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
     private static final String LOG_TAG = RutubeRelatedFeedFragment.class.getName();
     public static final String INIT_HEADER = "init_header";
+    private static final boolean D = BuildConfig.DEBUG;
     private ListView mListView;
     private Typeface mNormalFont;
     private Typeface mLightFont;
@@ -44,14 +46,13 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
         View v = super.onCreateView(inflater, container, savedInstanceState);
         assert v!= null;
         mListView = (ListView) v.findViewById(android.R.id.list);
+        initListView();
         Intent intent = getActivity().getIntent();
-        if (intent.getBooleanExtra(INIT_HEADER, false))
-            initListView();
+        toggleHeader(intent.getBooleanExtra(INIT_HEADER, false));
         return v;
     }
 
     private void initListView() {
-        mHasInfoView = true;
         mNormalFont = Typefaces.get(getActivity(), "fonts/opensansregular.ttf");
         mLightFont = Typefaces.get(getActivity(), "fonts/opensanslight.ttf");
         // инициализирует и добавляет в ListView заголовок с информацией о видео.
@@ -64,8 +65,19 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
         ((TextView)mInfoView.findViewById(R.id.createdTextView)).setTypeface(mLightFont);
         ((TextView)mInfoView.findViewById(R.id.hits)).setTypeface(mLightFont);
         ((TextView)mInfoView.findViewById(R.id.descriptionTextView)).setTypeface(mLightFont);
-        mListView.addHeaderView(mInfoView);
         mListView.setHeaderDividersEnabled(false);
+    }
+
+    private void addHeaderView() {
+        if (mHasInfoView) return;
+        mHasInfoView = true;
+        mListView.addHeaderView(mInfoView);
+    }
+
+    private void removeHeaderView() {
+        if (!mHasInfoView) return;
+        mHasInfoView = false;
+        mListView.removeHeaderView(mInfoView);
     }
 
     @Override
@@ -88,12 +100,11 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
     }
 
     public void setVideoInfo(Video video) {
-        View v = getView();
-        ((TextView)v.findViewById(ru.rutube.RutubePlayer.R.id.video_title)).setText(
+        ((TextView)mInfoView.findViewById(ru.rutube.RutubePlayer.R.id.video_title)).setText(
                 video.getTitle());
         Author author = video.getAuthor();
         if (author != null) {
-            TextView authorName = (TextView)v.findViewById(ru.rutube.RutubePlayer.R.id.author_name);
+            TextView authorName = (TextView)mInfoView.findViewById(ru.rutube.RutubePlayer.R.id.author_name);
             authorName.setText(author.getName());
             authorName.setTag(author.getFeedUrl());
 
@@ -102,7 +113,15 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
 //        ((TextView)v.findViewById(ru.rutube.RutubePlayer.R.id.duration)).setText(
 //                DateUtils.formatElapsedTime(duration));
         String hits = video.getHitsText(getActivity());
-        ((TextView)v.findViewById(ru.rutube.RutubePlayer.R.id.hits)).setText(hits);
-        ((TextView)v.findViewById(R.id.descriptionTextView)).setText(video.getDescription());
+        ((TextView)mInfoView.findViewById(ru.rutube.RutubePlayer.R.id.hits)).setText(hits);
+        ((TextView)mInfoView.findViewById(R.id.descriptionTextView)).setText(video.getDescription());
+    }
+
+    public void toggleHeader(boolean visible) {
+        if (D) Log.d(LOG_TAG, "toggleHeader: " + String.valueOf(visible));
+        if (visible)
+            addHeaderView();
+        else
+            removeHeaderView();
     }
 }

@@ -3,12 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/page"
     android:orientation="horizontal">
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
         android:orientation="vertical"
+        android:id="@+id/video_container"
         >
 
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -105,7 +107,7 @@
                         android:text="100500"
                         android:paddingLeft="3dp"
                         android:paddingRight="3dp"/>
-                    </LinearLayout>
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="fill_parent"

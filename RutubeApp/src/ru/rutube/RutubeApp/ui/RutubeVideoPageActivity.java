@@ -8,8 +8,8 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import ru.rutube.RutubeAPI.models.Video;
@@ -39,6 +39,7 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
     public void onCreate(Bundle savedInstanceState) {
         mIsLandscape = getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
         getIntent().putExtra(RutubeRelatedFeedFragment.INIT_HEADER, !mIsLandscape);
+        mLayoutResId = R.layout.video_page_activity;
         super.onCreate(savedInstanceState);
         init();
     }
@@ -55,6 +56,23 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        transformLayout(newConfig.orientation == Configuration.ORIENTATION_PORTRAIT);
+    }
+
+    protected void transformLayout(boolean isPortrait) {
+        LinearLayout ll = (LinearLayout)findViewById(R.id.page);
+        ll.setOrientation(isPortrait? LinearLayout.VERTICAL: LinearLayout.HORIZONTAL);
+        View v = findViewById(R.id.video_info_container);
+        v.setVisibility(isPortrait? View.GONE: View.VISIBLE);
+        mRelatedFragment.toggleHeader(isPortrait);
+        v = findViewById(R.id.video_container);
+        LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams)v.getLayoutParams();
+        lp.weight = isPortrait? 2: 1;
+        v.setLayoutParams(lp);
+        v = mRelatedFragment.getView();
+        lp =(LinearLayout.LayoutParams)v.getLayoutParams();
+        lp.weight = isPortrait? 1: 2;
+        v.setLayoutParams(lp);
     }
 
     private void init() {
@@ -70,10 +88,8 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
 
     @Override
     public void setVideoInfo(Video video) {
-        if (!mIsLandscape)
-            mRelatedFragment.setVideoInfo(video);
-        else
-            super.setVideoInfo(video);
+        mRelatedFragment.setVideoInfo(video);
+        super.setVideoInfo(video);
     }
 
     @Override

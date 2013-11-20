@@ -38,6 +38,7 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
     private VideoPageController mController;
     protected boolean mIsTablet;
     protected boolean mIsFullscreen;
+    protected int mLayoutResId = R.layout.player_activity;
 
     @Override
     public void replay() {
@@ -130,7 +131,7 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
         mIsFullscreen = savedInstanceState == null || savedInstanceState.getBoolean(FULLSCREEN);
         initController(savedInstanceState);
         initWindow();
-        setContentView(R.layout.player_activity);
+        setContentView(mLayoutResId);
         init();
         toggleFullscreen(mIsFullscreen);
     }
