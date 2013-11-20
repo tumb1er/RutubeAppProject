@@ -52,13 +52,13 @@
                 android:textStyle="bold"
                 android:textSize="18dp"
                 android:textColor="#FF000000"
-                android:id="@+id/video_title" />
+                android:id="@+id/video_t1itle" />
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:id="@+id/short_info_container"
-                android:layout_below="@id/video_title"
+                android:layout_below="@id/video_t1itle"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:gravity="center_vertical">

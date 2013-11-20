@@ -81,10 +81,13 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         ((TextView)findViewById(R.id.video_title)).setTypeface(mNormalFont);
         ((TextView)findViewById(R.id.from)).setTypeface(mLightFont);
         ((TextView)findViewById(R.id.author_name)).setTypeface(mLightFont);
-        ((TextView)findViewById(R.id.duration)).setTypeface(mLightFont);
+        // ((TextView)findViewById(R.id.duration)).setTypeface(mLightFont);
         ((TextView)findViewById(R.id.hits)).setTypeface(mLightFont);
         ((TextView)findViewById(R.id.description)).setTypeface(mLightFont);
     }
+
+    @Override
+    protected void bindDuration(Video video) {}
 
     @Override
     public void setVideoInfo(Video video) {

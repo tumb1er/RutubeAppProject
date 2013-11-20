@@ -3,8 +3,6 @@ package ru.rutube.RutubeApp.ui.feed;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.text.Html;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +19,6 @@ import ru.rutube.RutubeApp.BuildConfig;
 import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubeApp.data.RelatedCursorAdapter;
 import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
-import ru.rutube.RutubeFeed.data.SubscriptionsCursorAdapter;
 import ru.rutube.RutubeFeed.helpers.Typefaces;
 import ru.rutube.RutubeFeed.ui.RelatedFeedFragment;
 
@@ -59,12 +56,12 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
         mInfoView = getActivity().getLayoutInflater().inflate(R.layout.video_info, null);
         assert mInfoView != null;
         ((TextView)mInfoView.findViewById(R.id.video_title)).setTypeface(mNormalFont);
-        ((TextView)mInfoView.findViewById(R.id.fromTextView)).setTypeface(mLightFont);
+        ((TextView)mInfoView.findViewById(R.id.from)).setTypeface(mLightFont);
         ((TextView)mInfoView.findViewById(R.id.author_name)).setTypeface(mNormalFont);
         ((TextView)mInfoView.findViewById(R.id.bullet)).setTypeface(mLightFont);
         ((TextView)mInfoView.findViewById(R.id.createdTextView)).setTypeface(mLightFont);
         ((TextView)mInfoView.findViewById(R.id.hits)).setTypeface(mLightFont);
-        ((TextView)mInfoView.findViewById(R.id.descriptionTextView)).setTypeface(mLightFont);
+        ((TextView)mInfoView.findViewById(R.id.description)).setTypeface(mLightFont);
         mListView.setHeaderDividersEnabled(false);
     }
 
@@ -100,11 +97,11 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
     }
 
     public void setVideoInfo(Video video) {
-        ((TextView)mInfoView.findViewById(ru.rutube.RutubePlayer.R.id.video_title)).setText(
+        ((TextView)mInfoView.findViewById(R.id.video_title)).setText(
                 video.getTitle());
         Author author = video.getAuthor();
         if (author != null) {
-            TextView authorName = (TextView)mInfoView.findViewById(ru.rutube.RutubePlayer.R.id.author_name);
+            TextView authorName = (TextView)mInfoView.findViewById(R.id.author_name);
             authorName.setText(author.getName());
             authorName.setTag(author.getFeedUrl());
 
@@ -114,7 +111,7 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
 //                DateUtils.formatElapsedTime(duration));
         String hits = video.getHitsText(getActivity());
         ((TextView)mInfoView.findViewById(ru.rutube.RutubePlayer.R.id.hits)).setText(hits);
-        ((TextView)mInfoView.findViewById(R.id.descriptionTextView)).setText(video.getDescription());
+        ((TextView)mInfoView.findViewById(R.id.description)).setText(video.getDescription());
     }
 
     public void toggleHeader(boolean visible) {
