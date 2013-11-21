@@ -3,6 +3,7 @@ package ru.rutube.RutubeApp.ui.feed;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -98,8 +99,7 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
     }
 
     public void setVideoInfo(Video video) {
-        ((TextView)mInfoView.findViewById(R.id.video_title)).setText(
-                video.getTitle());
+        ((TextView)mInfoView.findViewById(R.id.video_title)).setText(video.getTitle());
         Author author = video.getAuthor();
         if (author != null) {
             TextView authorName = (TextView)mInfoView.findViewById(R.id.author_name);
@@ -112,7 +112,8 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
 //                DateUtils.formatElapsedTime(duration));
         String hits = video.getHitsText(getActivity());
         ((TextView)mInfoView.findViewById(ru.rutube.RutubePlayer.R.id.hits)).setText(hits);
-        ((TextView)mInfoView.findViewById(R.id.description)).setText(video.getDescription());
+        ((TextView)mInfoView.findViewById(R.id.description)).setText(
+                Html.fromHtml(video.getDescription()));
     }
 
     public void toggleHeader(boolean visible) {

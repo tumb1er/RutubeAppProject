@@ -14,7 +14,7 @@
     <RelativeLayout
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/card_shadow"
+    android:background="@color/video_background"
     android:padding="10dp"
     android:focusableInTouchMode="true"
     android:layout_alignParentLeft="true"
@@ -68,14 +68,14 @@
             android:src="@drawable/more_btn_default"
             android:layout_below="@+id/video_title"
             android:background="#00000000"
-            android:layout_alignParentEnd="false" />
+            android:layout_alignParentEnd="false"/>
         <!-- От -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/from"
             android:text="@string/from"
-            android:layout_below="@+id/createdTextView" />
+            android:layout_below="@+id/createdTextView"/>
         <!-- Имя автора -->
         <TextView
             android:layout_width="wrap_content"
@@ -87,26 +87,29 @@
             android:paddingRight="3dp"
             android:linksClickable="true"
             android:autoLink="web"
-            android:layout_below="@+id/createdTextView" />
+            android:layout_below="@+id/createdTextView"/>
     </RelativeLayout>
 
-    <RelativeLayout
+
+    <!-- горизонтальная полоса перед описанием -->
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1px"
+        android:id="@+id/commentLine"
+        android:layout_below="@+id/baseInfoContainer"
+        android:background="@color/commentLine"/>
+
+    <!-- описание ролика -->
+    <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/card_shadow"
+        android:text="Description"
+        android:textSize="14dp"
+        android:id="@+id/description"
         android:padding="10dp"
-        android:focusableInTouchMode="true"
-        android:id="@+id/moreInfoContainer"
-        android:layout_below="@+id/baseInfoContainer"
-        android:layout_marginTop="10dp">
-        <!-- описание ролика -->
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="Description"
-            android:textSize="14dp"
-            android:id="@+id/description" />
+        android:background="@drawable/card_shadow"
+        android:layout_below="@+id/commentLine"
+        android:layout_alignParentBottom="true"/>
 
-    </RelativeLayout>
 
 </RelativeLayout>

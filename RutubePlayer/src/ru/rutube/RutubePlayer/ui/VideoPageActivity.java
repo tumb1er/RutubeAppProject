@@ -34,7 +34,7 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
     private static final boolean D = BuildConfig.DEBUG;
     private PlayerFragment mPlayerFragment;
     private EndscreenFragment mEndscreenFragment;
-    private View mVideoInfoContainer;
+    protected View mVideoInfoContainer;
     private VideoPageController mController;
     protected boolean mIsTablet;
     protected boolean mIsFullscreen;

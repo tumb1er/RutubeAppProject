@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
@@ -128,6 +129,7 @@ public class VideoPageController implements Parcelable, RequestListener {
 
 
     public void onDoubleTap() {
+        if (D) Log.d(LOG_TAG, "onDoubleTap");
         mView.toggleFullscreen(!mView.isFullscreen());
     }
 

@@ -34,7 +34,6 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
     private boolean mIsLandscape;
     private Typeface mNormalFont;
     private Typeface mLightFont;
-    private View mVideoInfoContainer;
 
 
     @Override
@@ -54,7 +53,6 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         FragmentManager fm = getSupportFragmentManager();
         mRelatedFragment = (RutubeRelatedFeedFragment) fm.findFragmentById(
                 R.id.related_video_container);
-        mVideoInfoContainer = findViewById(R.id.video_info_container);
         return view;
     }
 
@@ -65,11 +63,13 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
     }
 
     protected void transformLayout(boolean isPortrait) {
+        if(D) Log.d(LOG_TAG, "transformLayout " + String.valueOf(isPortrait));
         // список похожих справа или снизу
         LinearLayout ll = (LinearLayout)findViewById(R.id.page);
         ll.setOrientation(isPortrait? LinearLayout.VERTICAL: LinearLayout.HORIZONTAL);
-        // основная карточка видео видна только в пейзажной ориентации
-        mVideoInfoContainer.setVisibility(isPortrait ? View.GONE : View.VISIBLE);
+
+        // основная карточка видео видна только в пейзажной ориентации и только не в фуллскрине
+        mVideoInfoContainer.setVisibility((isPortrait || mIsFullscreen) ? View.GONE : View.VISIBLE);
         // карточка видео в похожих видна только в портретной ориентации
         mRelatedFragment.toggleHeader(isPortrait);
         // layout_weight для плеера + карточки видео в зависимости от ориентации
@@ -112,6 +112,7 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         if (isFullscreen)
             toggleRelatedFragment(false);
         super.toggleFullscreen(isFullscreen);
+        mVideoInfoContainer.setVisibility(isFullscreen? View.GONE: View.VISIBLE);
         // а при переходе в режим страницы видео - после изменения ориентации.
         if (!isFullscreen)
             toggleRelatedFragment(true);
