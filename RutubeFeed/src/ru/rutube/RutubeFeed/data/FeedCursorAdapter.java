@@ -233,7 +233,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         return super.getItem(position);
     }
 
-    private void processPosition(int position) {
+    protected void processPosition(int position) {
         if (mHasMore && (position > getCount() - mPerPage / 2)) {
             if (D) Log.d(LOG_TAG, String.format("Load more: %d of %d", position, getCount()));
             loadMore();

@@ -158,8 +158,8 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
     }
 
     protected void bindHits(Video video) {
-        int hits = video.getHits();
-        ((TextView)findViewById(R.id.hits)).setText(String.valueOf(hits));
+        String hits = video.getHitsText(this);
+        ((TextView)findViewById(R.id.hits)).setText(hits);
     }
 
     protected void bindDuration(Video video) {
@@ -170,10 +170,9 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
     protected void bindAuthor(Video video) {
         Author author = video.getAuthor();
         if (author != null) {
-            TextView authorName = (TextView) findViewById(R.id.author_name);
-            String text = String.format("<a href=\"%s\">%s</a>",
-                    author.getFeedUrl(), author.getName());
-            authorName.setText(Html.fromHtml(text));
+            TextView authorName = (TextView)findViewById(R.id.author_name);
+            authorName.setText(author.getName());
+            authorName.setTag(author.getFeedUrl());
 
         }
     }

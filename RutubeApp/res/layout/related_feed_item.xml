@@ -7,10 +7,12 @@
     android:paddingRight="10dp">
 
     <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:background="@color/card_background"
-        android:padding="10dp">
+        android:id="@+id/card"
+        android:padding="6dp"
+        android:paddingLeft="10dp">
 
         <View
             android:layout_width="90dp"
@@ -29,6 +31,16 @@
             android:contentDescription="@string/thumbnail"
             android:scaleType="centerCrop" />
 
+        <!-- скругленные углы -->
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_alignRight="@+id/thumbnailImageView"
+            android:layout_alignLeft="@+id/thumbnailImageView"
+            android:layout_alignTop="@+id/thumbnailImageView"
+            android:layout_alignBottom="@+id/thumbnailImageView"
+            android:background="@drawable/thumbnail_rc" />
+
         <!-- Название ролика-->
         <!--style="?attr/RelatedTitleStyle"-->
 
@@ -42,19 +54,20 @@
             android:maxLines="2"
             android:textSize="14dp"
             android:ellipsize="end"
-            android:paddingTop="0dp"
-            android:paddingLeft="10dp" />
+            android:paddingLeft="10dp"
+            android:paddingTop="4dp"
+            android:textColor="#FF6C6C6C" />
 
         <!-- Количество просмотров -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="100500"
-            android:id="@+id/hitsTextVoew"
-            android:layout_centerVertical="true"
+            android:id="@+id/hitsTextView"
             android:layout_toRightOf="@+id/thumbnailImageView"
             android:layout_below="@+id/titleTextView"
-            android:paddingLeft="10dp" />
+            android:paddingLeft="10dp"
+            android:textColor="#FFA9A9A9" />
 
         <!-- Имя автора справа от аватара -->
         <TextView
@@ -62,10 +75,9 @@
             android:layout_height="wrap_content"
             android:text="Author"
             android:id="@+id/authorTextView"
-            android:layout_centerVertical="true"
             style="?attr/FeedAuthorStyle"
             android:layout_toRightOf="@+id/thumbnailImageView"
-            android:layout_below="@+id/titleTextView"
+            android:layout_below="@+id/hitsTextView"
             android:paddingLeft="10dp" />
 
 

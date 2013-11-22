@@ -8,7 +8,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.HeaderViewListAdapter;
+import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -36,7 +38,32 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
     private Typeface mNormalFont;
     private Typeface mLightFont;
     private View mInfoView;
+    private View mCommentLineView;
+    private View mDescriptionView;
     private boolean mHasInfoView = false;
+    private boolean mDescriptionVisible = false;
+    private ImageButton mMoreButton;
+    protected View.OnClickListener mOnMoreClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            toggleDescription();
+        }
+    };
+
+    private void toggleDescription(boolean visible) {
+        if (visible)
+            mMoreButton.setImageResource(R.drawable.more_btn_selected);
+        else
+            mMoreButton.setImageResource(R.drawable.more_btn_default);
+        mDescriptionVisible = visible;
+        int visibility = visible? View.VISIBLE: View.GONE;
+        mCommentLineView.setVisibility(visibility);
+        mDescriptionView.setVisibility(visibility);
+    }
+
+    private void toggleDescription() {
+        toggleDescription(!mDescriptionVisible);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -49,6 +76,12 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
         if (intent.getBooleanExtra(INIT_HEADER, false))
             addHeaderView();
         return v;
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        // вычитаем HeaderView
+        super.onItemClick(adapterView, view, position - 1, id);
     }
 
     private void initListView() {
@@ -64,6 +97,14 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
         ((TextView)mInfoView.findViewById(R.id.createdTextView)).setTypeface(mLightFont);
         ((TextView)mInfoView.findViewById(R.id.hits)).setTypeface(mLightFont);
         ((TextView)mInfoView.findViewById(R.id.description)).setTypeface(mLightFont);
+
+        mMoreButton = ((ImageButton)mInfoView.findViewById(R.id.moreImageButton));
+        mMoreButton.setOnClickListener(mOnMoreClickListener);
+        mMoreButton.setVisibility(View.VISIBLE);
+        mCommentLineView = mInfoView.findViewById(R.id.commentLine);
+        mDescriptionView = mInfoView.findViewById(R.id.description);
+
+        toggleDescription(false);
         mListView.setHeaderDividersEnabled(false);
     }
 

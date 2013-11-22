@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:layout_weight="1"
     android:id="@+id/video_info"
-    android:paddingBottom="10dp"
+    android:paddingBottom="0dp"
     android:paddingLeft="10dp"
     android:paddingRight="@dimen/video_info_padding_right"
     android:paddingTop="10dp"
@@ -28,7 +28,7 @@
             android:text="Video Title"
             android:textStyle="bold"
             android:textSize="18dp"
-            android:textColor="#FF000000"
+            android:textColor="#FF353535"
             android:ellipsize="end"
             android:maxLines="2"
             android:id="@+id/video_title" />
@@ -38,7 +38,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/createdTextView"
             android:layout_below="@+id/video_title"
-            android:text="21.11.2013" />
+            android:text="21.11.2013"
+            android:textColor="#FFACACAC" />
         <!-- буллет -->
         <TextView
             android:layout_width="wrap_content"
@@ -48,7 +49,7 @@
             android:layout_below="@+id/video_title"
             android:text="•"
             android:phoneNumber="false"
-            android:textColor="#FFAAAAAA"
+            android:textColor="#FFACACAC"
             android:paddingLeft="10dp"
             android:paddingRight="10dp" />
         <!-- количество просмотров -->
@@ -58,16 +59,18 @@
             android:layout_toRightOf="@id/bullet"
             android:layout_below="@+id/video_title"
             android:text="100500"
-            android:id="@+id/hits" />
+            android:id="@+id/hits"
+            android:textColor="#FFACACAC" />
         <!-- кнопка резака -->
         <ImageButton
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:id="@+id/moreImageButton"
             android:src="@drawable/more_btn_default"
             android:layout_below="@+id/video_title"
             android:background="#00000000"
+            android:visibility="gone"
             android:layout_alignParentEnd="false"/>
         <!-- От -->
         <TextView
@@ -75,7 +78,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/from"
             android:text="@string/from"
-            android:layout_below="@+id/createdTextView"/>
+            android:layout_below="@+id/createdTextView"
+            android:textColor="#FFACACAC" />
         <!-- Имя автора -->
         <TextView
             android:layout_width="wrap_content"
@@ -87,17 +91,18 @@
             android:paddingRight="3dp"
             android:linksClickable="true"
             android:autoLink="web"
-            android:layout_below="@+id/createdTextView"/>
+            android:layout_below="@+id/createdTextView"
+            android:textColor="#FF353535" />
     </RelativeLayout>
 
 
     <!-- горизонтальная полоса перед описанием -->
     <View
         android:layout_width="fill_parent"
-        android:layout_height="1px"
+        android:layout_height="2px"
         android:id="@+id/commentLine"
         android:layout_below="@+id/baseInfoContainer"
-        android:background="@color/commentLine"/>
+        android:background="#FFEEEEEE"/>
 
     <!-- описание ролика -->
     <TextView
@@ -109,7 +114,8 @@
         android:padding="10dp"
         android:background="@drawable/card_shadow"
         android:layout_below="@+id/commentLine"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true"
+        android:textColor="#FF6C6C6C" />
 
 
 </RelativeLayout>

@@ -3,10 +3,9 @@ package ru.rutube.RutubeApp.data;
 import android.content.Context;
 import android.database.Cursor;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
-import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
 
@@ -21,7 +20,7 @@ public class RelatedCursorAdapter extends FeedCursorAdapter {
     protected static int item_layout_id = R.layout.related_feed_item;
 
     protected static class ViewHolder extends FeedCursorAdapter.ViewHolder {
-       public TextView hits;
+        public TextView hits;
     }
 
     public RelatedCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
@@ -29,10 +28,15 @@ public class RelatedCursorAdapter extends FeedCursorAdapter {
     }
 
     @Override
+    protected void processPosition(int position) {
+        super.processPosition(position);
+    }
+
+    @Override
     protected ViewHolder getHolder(View view) {
         ViewHolder holder = new ViewHolder();
         initHolder(view, holder);
-        holder.hits = (TextView)view.findViewById(R.id.hits);
+        holder.hits = (TextView) view.findViewById(R.id.hits);
         return holder;
     }
 
@@ -43,19 +47,51 @@ public class RelatedCursorAdapter extends FeedCursorAdapter {
     }
 
     @Override
-    protected void bindCreated(Cursor cursor, FeedCursorAdapter.ViewHolder holder) {}
+    protected void bindCreated(Cursor cursor, FeedCursorAdapter.ViewHolder holder) {
+    }
 
     @Override
-    protected void bindAvatar(Cursor cursor, FeedCursorAdapter.ViewHolder holder) {}
+    protected void bindAvatar(Cursor cursor, FeedCursorAdapter.ViewHolder holder) {
+    }
 
     @Override
-    protected void bindDescription(Cursor cursor, FeedCursorAdapter.ViewHolder holder) {}
+    protected void bindDescription(Cursor cursor, FeedCursorAdapter.ViewHolder holder) {
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View view = super.getView(position, convertView, parent);
+        decorateItem(view, position == 0);
+        return view;
+    }
+
+    private void decorateItem(View view, boolean isFirst) {
+        View cardView = view.findViewById(R.id.card);
+        int pl = cardView.getPaddingLeft();
+        int pt = cardView.getPaddingTop();
+        int pr = cardView.getPaddingRight();
+        int pb = cardView.getPaddingBottom();
+        if (isFirst)
+            cardView.setBackgroundResource(R.drawable.related_first_card_bg);
+        else
+            cardView.setBackgroundResource(R.color.card_background);
+
+        int topPadding = (int) view.getContext().getResources().getDimension(
+                R.dimen.related_card_padding_top);
+        // при установке фона padding сбрасывается
+        cardView.setPadding(pl, pt, pr, pb);
+        view.setPadding(
+                view.getPaddingLeft(),
+                isFirst ? topPadding: 0,
+                view.getPaddingRight(),
+                view.getPaddingBottom());
+    }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         super.bindView(view, context, cursor);
         try {
-            bindHits(cursor, (ViewHolder)view.getTag());
+            bindHits(cursor, (ViewHolder) view.getTag());
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
