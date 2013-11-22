@@ -328,7 +328,9 @@ public class Video implements Parcelable {
         String description = in.readString();
         Uri thumbnailUri = in.readParcelable(Uri.class.getClassLoader());
         String dateStr = in.readString();
-        Date created = parseDate(dateStr);
+        Date created = null;
+        if (dateStr != null && !dateStr.isEmpty())
+            created = parseDate(dateStr);
         Author author = in.readParcelable(Author.class.getClassLoader());
         int duration = in.readInt();
         int hits = in.readInt();
@@ -347,7 +349,10 @@ public class Video implements Parcelable {
         parcel.writeString(mTitle);
         parcel.writeString(mDescription);
         parcel.writeParcelable(mThumbnailUri, flags);
-        parcel.writeString(dtf.format(mCreated));
+        if (mCreated != null)
+            parcel.writeString(dtf.format(mCreated));
+        else
+            parcel.writeString("");
         parcel.writeParcelable(mAuthor, flags);
         parcel.writeInt(mDuration);
         parcel.writeInt(mHits);
