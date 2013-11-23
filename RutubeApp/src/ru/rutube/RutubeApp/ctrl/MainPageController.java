@@ -72,6 +72,7 @@ public class MainPageController implements Parcelable, RequestListener {
     public void loginCanceled() {
         if (D) Log.d(LOG_TAG, "Login cancelled, switching to " + mSelectedTab);
         mView.selectTab(mSelectedTab);
+        mView.onLoginCanceled();
     }
 
     public void logout() {
@@ -90,6 +91,9 @@ public class MainPageController implements Parcelable, RequestListener {
 
         void showError();
 
+        void onLoginCanceled();
+
+        void onLoginSuccess();
     }
 
     private Context mContext = null;
@@ -119,6 +123,7 @@ public class MainPageController implements Parcelable, RequestListener {
         Uri feedUri = feedUriMap.get(mAfterLoginTab);
         mSelectedTab = mAfterLoginTab;
         mView.showFeedFragment(mAfterLoginTab, feedUri);
+        mView.onLoginSuccess();
     }
 
     public void attach(Context context, MainPageView view) {

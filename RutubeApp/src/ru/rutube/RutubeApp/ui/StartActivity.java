@@ -1,14 +1,12 @@
 package ru.rutube.RutubeApp.ui;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import android.view.Window;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -18,6 +16,7 @@ import com.actionbarsherlock.view.MenuItem;
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeAPI.models.User;
+import ru.rutube.RutubeApp.MainApplication;
 import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubeApp.ctrl.MainPageController;
 import ru.rutube.RutubeApp.ui.dialog.LoginDialogFragment;
@@ -84,6 +83,18 @@ public class StartActivity extends SherlockFragmentActivity implements MainPageC
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        MainApplication.mainActivityStart(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        MainApplication.activityStop(this);
+    }
+
+    @Override
     public void onAttachFragment(Fragment fragment) {
         // После вызова super.onCreate из сохраненного состояния автоматически восстанавливается
         // последний фрагмент.
@@ -120,6 +131,7 @@ public class StartActivity extends SherlockFragmentActivity implements MainPageC
 
     @Override
     public void showLoginDialog() {
+        MainApplication.loginDialogStart(this);
         LoginDialogFragment.InputDialogFragmentBuilder builder = new LoginDialogFragment.InputDialogFragmentBuilder(this);
         builder.setOnDoneListener(new LoginDialogFragment.OnDoneListener() {
             @Override
@@ -130,6 +142,7 @@ public class StartActivity extends SherlockFragmentActivity implements MainPageC
             @Override
             public void onCancel() {
                 mController.loginCanceled();
+
             }
         }).show();
     }
@@ -138,6 +151,16 @@ public class StartActivity extends SherlockFragmentActivity implements MainPageC
     public void showError() {
         String message = getString(ru.rutube.RutubePlayer.R.string.failed_to_load_data);
         showError(message);
+    }
+
+    @Override
+    public void onLoginCanceled() {
+        MainApplication.loginDialogFailed(this);
+    }
+
+    @Override
+    public void onLoginSuccess() {
+        MainApplication.loginDialogSuccess(this);
     }
 
     private void showError(String message) {

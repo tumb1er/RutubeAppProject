@@ -22,6 +22,10 @@ public class SearchFeedActivity extends FeedActivity {
     private final String LOG_TAG = getClass().getName();
     private String mQuery = null;
 
+    public String getSearchQuery() {
+        return mQuery;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Intent intent = getIntent();

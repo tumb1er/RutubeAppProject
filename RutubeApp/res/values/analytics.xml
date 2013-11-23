@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="ga_trackingId">UA-43789797-1</string>
+    <string name="ga_appVersion">1.0.0 Alpha</string>
+    <bool name="ga_reportUncaughtExceptions">true</bool>
+    <bool name="ga_debug">true</bool>
+    <bool name="ga_autoActivityTracking">true</bool>
+
+</resources>

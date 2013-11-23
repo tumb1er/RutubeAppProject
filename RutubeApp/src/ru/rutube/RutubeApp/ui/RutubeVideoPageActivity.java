@@ -13,8 +13,11 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.analytics.tracking.android.EasyTracker;
+
 import ru.rutube.RutubeAPI.models.Video;
 import ru.rutube.RutubeApp.BuildConfig;
+import ru.rutube.RutubeApp.MainApplication;
 import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubeApp.ui.feed.RutubeRelatedFeedFragment;
 import ru.rutube.RutubeFeed.helpers.Typefaces;
@@ -46,6 +49,19 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         mRelatedFragment.toggleHeader(!mIsLandscape);
         init();
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        MainApplication.playerActivityStart(this, String.valueOf(getIntent().getData()));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        MainApplication.activityStop(this);
+    }
+
 
     @Override
     public View onCreateView(String name, Context context, AttributeSet attrs) {
