@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,12 +15,16 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.MotionEventCompat;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.ProgressBar;
 
@@ -42,6 +47,31 @@ import ru.rutube.RutubePlayer.views.VideoFrameLayout;
  * To change this template use File | Settings | File Templates.
  */
 public class PlayerFragment extends Fragment implements PlayerController.PlayerView {
+
+
+    public boolean onKeyDown(int keyCode) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                mAudioManager.adjustVolume(AudioManager.ADJUST_LOWER, 0);
+                animateVolume(false);
+                return true;
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                mAudioManager.adjustVolume(AudioManager.ADJUST_RAISE, 0);
+                animateVolume(true);
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    protected void animateVolume(boolean up) {
+        mVolumeImageView.setImageResource(up? R.drawable.volume_up : R.drawable.volume_down);
+        AlphaAnimation aa = new AlphaAnimation(1.0f, 0.0f);
+        aa.setDuration(500);
+        aa.setFillAfter(true);
+        aa.setAnimationListener(mVolumeAnimationListener);
+        mVolumeImageView.startAnimation(aa);
+    }
 
     /**
      * Интерфейс общения с активити, в которое встроен фрагмент с плеером
@@ -74,6 +104,7 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
 
     protected PlayerController mController;
     protected SurfaceView mVideoView;
+    protected ImageView mVolumeImageView;
     protected MediaPlayer mPlayer;
     protected Uri mStreamUri;
     protected ProgressBar mLoadProgressBar;
@@ -82,10 +113,27 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
     protected int mBufferingPercent = 0;
     protected boolean mPrepared = false;
     protected GestureDetector mDetector;
-
+    protected AudioManager mAudioManager;
 
     protected PowerManager.WakeLock mWakeLock;
     private Dialog mDialog;
+
+    protected Animation.AnimationListener mVolumeAnimationListener = new Animation.AnimationListener() {
+        @Override
+        public void onAnimationStart(Animation animation) {
+            mVolumeImageView.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        public void onAnimationEnd(Animation animation) {
+            mVolumeImageView.setVisibility(View.GONE);
+        }
+
+        @Override
+        public void onAnimationRepeat(Animation animation) {
+
+        }
+    };
 
     protected GestureDetector.OnGestureListener mGestureEventListener = new GestureDetector.OnGestureListener() {
         @Override
@@ -660,6 +708,11 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
 
         initMediaController();
         initProgressBar();
+
+        mAudioManager = (AudioManager)activity.getSystemService(Context.AUDIO_SERVICE);
+
+
+        mVolumeImageView = (ImageView)getView().findViewById(R.id.volumeImageView);
 
         mController = null;
         if (savedInstanceState != null) {
