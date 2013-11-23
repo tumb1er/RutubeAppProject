@@ -19,6 +19,7 @@ import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.models.Author;
 import ru.rutube.RutubeAPI.models.Video;
 import ru.rutube.RutubeApp.BuildConfig;
+import ru.rutube.RutubeApp.MainApplication;
 import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubeApp.data.RelatedCursorAdapter;
 import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
@@ -81,7 +82,8 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         // вычитаем HeaderView
-        super.onItemClick(adapterView, view, position - 1, id);
+        int offset = mHasInfoView? 1: 0;
+        super.onItemClick(adapterView, view, position - offset, id);
     }
 
     private void initListView() {
@@ -170,5 +172,12 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
                 mInfoView.getPaddingBottom()
         );
         mListView.forceLayout();
+    }
+
+
+    @Override
+    public void onItemClick(FeedCursorAdapter.ClickTag position, String viewTag) {
+        MainApplication.relatedCardClick(getActivity(), viewTag);
+        super.onItemClick(position, viewTag);
     }
 }

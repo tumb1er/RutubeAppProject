@@ -28,7 +28,7 @@
             android:id="@+id/thumbnailImageView"
             android:layout_width="90dp"
             android:layout_height="60dp"
-            android:contentDescription="@string/thumbnail"
+            android:contentDescription="thumbnail"
             android:scaleType="centerCrop" />
 
         <!-- скругленные углы -->
@@ -49,6 +49,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="Title"
+            android:contentDescription="title"
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@+id/thumbnailImageView"
             android:maxLines="2"
@@ -64,6 +65,7 @@
             android:layout_height="wrap_content"
             android:text="100500"
             android:id="@+id/hitsTextView"
+            android:contentDescription="hits"
             android:layout_toRightOf="@+id/thumbnailImageView"
             android:layout_below="@+id/titleTextView"
             android:paddingLeft="10dp"
@@ -74,6 +76,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Author"
+            android:contentDescription="author"
             android:id="@+id/authorTextView"
             style="?attr/FeedAuthorStyle"
             android:layout_toRightOf="@+id/thumbnailImageView"

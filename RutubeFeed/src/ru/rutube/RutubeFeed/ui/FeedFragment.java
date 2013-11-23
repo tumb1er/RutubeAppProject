@@ -255,6 +255,12 @@ public class FeedFragment extends SherlockFragment implements FeedController.Fee
         mController.onListItemClick(position);
     }
 
+    @Override
+    public void onItemClick(FeedCursorAdapter.ClickTag dataTag, String viewTag) {
+        if (D) Log.d(LOG_TAG, String.format("onItemClick: %d %s", dataTag.position, viewTag));
+        onItemClick(null, null, dataTag.position, -1);
+    }
+
     protected Uri getFeedUri() {
         return feedUri;
     }

@@ -19,7 +19,7 @@
         android:id="@+id/thumbnailImageView"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:contentDescription="@string/thumbnail"
+        android:contentDescription="thumbnail"
         style="?attr/FeedThumbnailStyle"
         android:scaleType="centerCrop"
         android:layout_alignParentTop="true"
@@ -50,6 +50,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="Title"
+            android:contentDescription="title"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             style="?attr/FeedTitleStyle" />
@@ -59,6 +60,7 @@
             android:layout_width="fill_parent"
             android:text="Description"
             android:id="@+id/descriptionTextView"
+            android:contentDescription="description"
             android:layout_below="@+id/titleTextView"
             style="?attr/FeedDescriptionStyle"
             />
@@ -90,7 +92,8 @@
                 android:layout_below="@id/commentLine"
                 android:scaleType="fitXY"
                 android:adjustViewBounds="true"
-            />
+                android:contentDescription="avatar"
+                />
 
             <!-- Имя автора справа от аватара -->
             <TextView
@@ -100,6 +103,7 @@
                 android:id="@+id/authorTextView"
                 android:layout_centerVertical="true"
                 style="?attr/FeedAuthorStyle"
+                android:contentDescription="author"
                 android:layout_toRightOf="@+id/avatarImageView" />
 
             <!-- когда загружен -->
@@ -110,6 +114,7 @@
                 android:text="Created"
                 android:layout_alignParentRight="false"
                 android:layout_centerVertical="true"
+                android:contentDescription="created"
                 android:gravity="right"
                 style="?attr/FeedCreatedStyle"
                 android:layout_toRightOf="@+id/authorTextView" />

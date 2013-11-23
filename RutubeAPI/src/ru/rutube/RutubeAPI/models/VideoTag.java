@@ -28,6 +28,8 @@ public class VideoTag {
         return mMessage;
     }
 
+    public int getId() {return mId; }
+
     public static VideoTag fromJSON(JSONObject data) throws JSONException {
         int id = data.getInt(JSON_ID);
         String tag = data.getString(JSON_NAME);

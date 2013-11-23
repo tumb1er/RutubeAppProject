@@ -36,7 +36,7 @@ public class RelatedCursorAdapter extends FeedCursorAdapter {
     protected ViewHolder getHolder(View view) {
         ViewHolder holder = new ViewHolder();
         initHolder(view, holder);
-        holder.hits = (TextView) view.findViewById(R.id.hits);
+        holder.hits = (TextView) view.findViewById(R.id.hitsTextView);
         return holder;
     }
 
@@ -44,6 +44,7 @@ public class RelatedCursorAdapter extends FeedCursorAdapter {
     protected void initView(FeedCursorAdapter.ViewHolder holder) {
         holder.title.setTypeface(mNormalFont);
         holder.author.setTypeface(mLightFont);
+        initOnClickListeners(holder);
     }
 
     @Override
@@ -99,5 +100,24 @@ public class RelatedCursorAdapter extends FeedCursorAdapter {
 
     protected void bindHits(Cursor cursor, ViewHolder holder) {
         // No hits
+    }
+
+    @Override
+    protected void setTags(int position, View view) {
+        ClickTag tag = new ClickTag();
+        tag.position = position;
+        ViewHolder holder = (ViewHolder)view.getTag();
+        holder.title.setTag(tag);
+        holder.thumbnail.setTag(tag);
+        holder.hits.setTag(tag);
+
+    }
+
+    @Override
+    protected void initOnClickListeners(FeedCursorAdapter.ViewHolder holder) {
+        ViewHolder h = (ViewHolder)holder;
+        h.title.setOnClickListener(mOnClickListener);
+        h.thumbnail.setOnClickListener(mOnClickListener);
+        h.hits.setOnClickListener(mOnClickListener);
     }
 }

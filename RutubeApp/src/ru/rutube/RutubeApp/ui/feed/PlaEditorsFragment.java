@@ -11,7 +11,9 @@ import com.huewu.pla.lib.MultiColumnListView;
 import com.huewu.pla.lib.internal.PLA_AdapterView;
 
 import ru.rutube.RutubeAPI.BuildConfig;
+import ru.rutube.RutubeApp.MainApplication;
 import ru.rutube.RutubeApp.R;
+import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
 
 /**
  * Created by tumbler on 18.08.13.
@@ -24,6 +26,7 @@ public class PlaEditorsFragment extends ru.rutube.RutubeFeed.ui.EditorsFeedFragm
     private PLA_AdapterView.OnItemClickListener onItemClickListener = new PLA_AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(PLA_AdapterView<?> parent, View view, int position, long id) {
+            MainApplication.cardClick(getActivity());
             mController.onListItemClick(position);
         }
     };
@@ -48,6 +51,13 @@ public class PlaEditorsFragment extends ru.rutube.RutubeFeed.ui.EditorsFeedFragm
     @Override
     public void setListAdapter(ListAdapter adapter) {
         sgView.setAdapter(adapter);
+    }
+
+
+    @Override
+    public void onItemClick(FeedCursorAdapter.ClickTag position, String viewTag) {
+        MainApplication.cardClick(getActivity(), viewTag);
+        super.onItemClick(position, viewTag);
     }
 
 }

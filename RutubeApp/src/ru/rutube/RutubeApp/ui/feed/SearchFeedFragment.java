@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.huewu.pla.lib.MultiColumnListView;
 import com.huewu.pla.lib.internal.PLA_AdapterView;
 
+import ru.rutube.RutubeApp.MainApplication;
 import ru.rutube.RutubeApp.R;
 
 /**

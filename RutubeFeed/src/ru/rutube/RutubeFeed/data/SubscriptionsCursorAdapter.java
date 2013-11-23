@@ -28,6 +28,7 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
 
     private int mTagColor;
 
+
     protected static class ViewHolder extends FeedCursorAdapter.ViewHolder {
         public LinearLayout tags;
         public View balloon;
@@ -127,5 +128,21 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
         holder.description.setVisibility(description_set ? View.VISIBLE : View.GONE);
         holder.balloon.setVisibility(tagValues.length > 0 ? View.VISIBLE : View.GONE);
         return holder;
+    }
+
+    @Override
+    protected void setTags(int position, View view) {
+        super.setTags(position, view);
+        ViewHolder holder = (ViewHolder)view.getTag();
+        for (int i=0; i<holder.tags.getChildCount(); i++) {
+            View tagView = holder.tags.getChildAt(i);
+            TagsListAdapter.ViewHolder tagHolder = (TagsListAdapter.ViewHolder)tagView.getTag();
+            ClickTag tag = new ClickTag();
+            tag.position = position;
+            tag.extraId = tagHolder.tagId;
+            tagHolder.card.setTag(tag);
+            tagHolder.card.setOnClickListener(mOnClickListener);
+        }
+
     }
 }

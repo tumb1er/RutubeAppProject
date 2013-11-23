@@ -47,8 +47,35 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     protected Typeface mNormalFont;
     protected Typeface mLightFont;
 
+    private LoadMoreListener loadMoreListener = null;
+    private ItemClickListener mItemCLickListener = null;
+
+    protected View.OnClickListener mOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            try {
+                ClickTag tag = (ClickTag)view.getTag();
+                if (tag == null || mItemCLickListener == null)
+                    return;
+                String cd = (String)view.getContentDescription();
+
+                mItemCLickListener.onItemClick(tag, cd);
+            } catch (ClassCastException ignored) {}
+
+        }
+    };
+
     public void setHasMore(boolean hasMore) {
         mHasMore = hasMore;
+    }
+
+    /**
+     * Класс, хранящий данные, необходимые для проброса кликов от отдельных элементов карточки
+     * в onItemClick;
+     */
+    public static class ClickTag {
+        public int position;
+        public int extraId;
     }
 
     protected static class ViewHolder {
@@ -61,6 +88,17 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         public View footer;
     }
 
+
+    public interface LoadMoreListener
+    {
+        public void onLoadMore();
+        public void onItemRequested(int position);
+    }
+
+    public interface ItemClickListener {
+        public void onItemClick(ClickTag position, String viewTag);
+    }
+
     public int getPerPage() {
         return mPerPage;
     }
@@ -69,13 +107,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         this.mPerPage = perPage;
     }
 
-    public interface LoadMoreListener
-    {
-        public void onLoadMore();
-        public void onItemRequested(int position);
-    }
-
-    private LoadMoreListener loadMoreListener = null;
+    public void setItemClickListener(ItemClickListener listener) { mItemCLickListener = listener; }
 
     public void setLoadMoreListener(LoadMoreListener listener) {
         loadMoreListener = listener;
@@ -108,6 +140,18 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         holder.description.setTypeface(mLightFont);
         holder.created.setTypeface(mLightFont);
         holder.author.setTypeface(mLightFont);
+
+        initOnClickListeners(holder);
+    }
+
+    protected void initOnClickListeners(ViewHolder holder) {
+        holder.title.setOnClickListener(mOnClickListener);
+        holder.description.setOnClickListener(mOnClickListener);
+        holder.avatar.setOnClickListener(mOnClickListener);
+        holder.author.setOnClickListener(mOnClickListener);
+        holder.created.setOnClickListener(mOnClickListener);
+        holder.thumbnail.setOnClickListener(mOnClickListener);
+        holder.footer.setOnClickListener(mOnClickListener);
     }
 
     protected ViewHolder getHolder(View view) {
@@ -246,7 +290,22 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         processPosition(position);
-        return super.getView(position, convertView, parent);
+        View view = super.getView(position, convertView, parent);
+        setTags(position, view);
+        return view;
+    }
+
+    protected void setTags(int position, View view) {
+        ClickTag tag = new ClickTag();
+        tag.position = position;
+        ViewHolder holder = (ViewHolder)view.getTag();
+        holder.title.setTag(tag);
+        holder.description.setTag(tag);
+        holder.author.setTag(tag);
+        holder.avatar.setTag(tag);
+        holder.footer.setTag(tag);
+        holder.created.setTag(tag);
+        holder.thumbnail.setTag(tag);
     }
 
     private void loadMore() {

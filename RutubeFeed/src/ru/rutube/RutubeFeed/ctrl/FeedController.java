@@ -22,12 +22,10 @@ import com.android.volley.toolbox.Volley;
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.HttpTransport;
 import ru.rutube.RutubeAPI.content.FeedContentProvider;
-import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeAPI.models.Feed;
 import ru.rutube.RutubeAPI.models.FeedItem;
 import ru.rutube.RutubeAPI.requests.RequestListener;
-import ru.rutube.RutubeFeed.R;
 import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
 
 /**
@@ -48,6 +46,8 @@ public class FeedController implements Parcelable {
         public void openPlayer(Uri uri, Uri thumbnailUri);
 
         public FeedCursorAdapter initAdapter();
+
+        public void onItemClick(FeedCursorAdapter.ClickTag position, String viewTag);
     }
 
     private static final int LOADER_ID = 1;
@@ -161,6 +161,7 @@ public class FeedController implements Parcelable {
     private FeedCursorAdapter prepareFeedCursorAdapter() {
         FeedCursorAdapter adapter = mView.initAdapter();
         adapter.setLoadMoreListener(loadMoreListener);
+        adapter.setItemClickListener(itemClickListener);
         return adapter;
     }
 
@@ -185,6 +186,14 @@ public class FeedController implements Parcelable {
             }
         }
     };
+
+    protected FeedCursorAdapter.ItemClickListener itemClickListener = new FeedCursorAdapter.ItemClickListener() {
+        @Override
+        public void onItemClick(FeedCursorAdapter.ClickTag dataTag, String viewTag) {
+            mView.onItemClick(dataTag, viewTag);
+        }
+    };
+
 
     /**
      * Обработчик ответа от API ленты

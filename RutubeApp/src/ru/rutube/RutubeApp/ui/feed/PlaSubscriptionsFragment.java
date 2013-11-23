@@ -11,7 +11,10 @@ import com.huewu.pla.lib.MultiColumnListView;
 import com.huewu.pla.lib.internal.PLA_AdapterView;
 
 import ru.rutube.RutubeAPI.BuildConfig;
+import ru.rutube.RutubeApp.MainApplication;
 import ru.rutube.RutubeApp.R;
+import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
+import ru.rutube.RutubeFeed.data.SubscriptionsCursorAdapter;
 
 /**
  * Created by tumbler on 18.08.13.
@@ -24,7 +27,9 @@ public class PlaSubscriptionsFragment extends ru.rutube.RutubeFeed.ui.Subscripti
     private PLA_AdapterView.OnItemClickListener onItemClickListener = new PLA_AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(PLA_AdapterView<?> parent, View view, int position, long id) {
+            MainApplication.cardClick(getActivity());
             mController.onListItemClick(position);
+
         }
     };
 
@@ -48,6 +53,21 @@ public class PlaSubscriptionsFragment extends ru.rutube.RutubeFeed.ui.Subscripti
     @Override
     public void setListAdapter(ListAdapter adapter) {
         sgView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onItemClick(FeedCursorAdapter.ClickTag dataTag, String viewTag) {
+        MainApplication.cardClick(getActivity(), viewTag);
+        try {
+            SubscriptionsCursorAdapter.ClickTag tag = (SubscriptionsCursorAdapter.ClickTag)dataTag;
+            if (D) Log.d(LOG_TAG, String.format("onItemClick: tag_id=%d %s", tag.extraId, viewTag));
+            onItemClick(null, null, tag.position, -1);
+
+        } catch (ClassCastException ignored) {
+            if (D) Log.d(LOG_TAG, String.format("onItemClick: %d %s", dataTag.position, viewTag));
+            onItemClick(null, null, dataTag.position, -1);
+
+        }
     }
 
 }

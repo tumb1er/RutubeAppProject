@@ -39,12 +39,15 @@ public class TagsListAdapter extends ArrayAdapter<VideoTag> {
     public class ViewHolder {
         public TextView title;
         public TextView comment;
+        public View card;
+        public int tagId;
     }
 
     protected ViewHolder init_holder(View view) {
         ViewHolder holder = new ViewHolder();
         holder.title = (TextView) view.findViewById(R.id.title);
         holder.comment = (TextView) view.findViewById(R.id.comment);
+        holder.card = view;
         return holder;
     }
 
@@ -66,6 +69,7 @@ public class TagsListAdapter extends ArrayAdapter<VideoTag> {
 
     protected void initView(TagsListAdapter.ViewHolder holder, VideoTag item) {
         if (item != null) {
+            holder.tagId = item.getId();
             holder.title.setText("#" + item.getTag());
             holder.title.setTypeface(mNormalFont);
             String message = item.getMessage();
