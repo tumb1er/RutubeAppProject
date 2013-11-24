@@ -4,7 +4,7 @@
     <style name="Widget">
     </style>
 
-    <style name="Player.__Theme" parent="android:Theme.NoTitleBar.Fullscreen">
+    <style name="Player.__Theme" parent="Theme.Sherlock.Light.NoActionBar">
     </style>
 
     <style name="Theme.Player" parent="Player.__Theme">

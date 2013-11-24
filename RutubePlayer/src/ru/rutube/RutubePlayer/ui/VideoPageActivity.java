@@ -1,6 +1,5 @@
 package ru.rutube.RutubePlayer.ui;
 
-import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.media.AudioManager;
