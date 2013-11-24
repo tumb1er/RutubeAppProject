@@ -242,10 +242,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         int descriptionIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.DESCRIPTION);
         String description = cursor.getString(descriptionIndex);
         assert description!=null;
-        if (description.indexOf('<') >= 0)
-            holder.description.setText(Html.fromHtml(description));
-        else
-            holder.description.setText(description);
+        holder.description.setText(Html.fromHtml(description));
     }
 
     protected void bindThumbnail(Cursor cursor, ViewHolder holder) {
@@ -257,7 +254,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     protected void bindTitle(Cursor cursor, ViewHolder holder) {
         int titleIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.TITLE);
         String title = cursor.getString(titleIndex);
-        holder.title.setText(title);
+        holder.title.setText(Html.fromHtml(title));
     }
 
     protected String getCreatedText(Date created) {

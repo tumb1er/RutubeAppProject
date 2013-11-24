@@ -79,13 +79,6 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
         return v;
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        // вычитаем HeaderView
-        int offset = mHasInfoView? 1: 0;
-        super.onItemClick(adapterView, view, position - offset, id);
-    }
-
     private void initListView() {
         mNormalFont = Typefaces.get(getActivity(), "fonts/opensansregular.ttf");
         mLightFont = Typefaces.get(getActivity(), "fonts/opensanslight.ttf");
