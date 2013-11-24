@@ -34,14 +34,14 @@ public class TagsFeedItem extends FeedItem {
     private List<VideoTag> tags;
 
     public TagsFeedItem(String title, String description, Date created, Uri thumbnailUri,
-                        String videoId, Author author, List<VideoTag> tags) {
-        super(title, description, created, thumbnailUri, videoId, author);
+                        String videoId, Author author, int duration, List<VideoTag> tags) {
+        super(title, description, created, thumbnailUri, videoId, author, duration);
         this.tags = tags;
     }
 
     public TagsFeedItem(FeedItem item, List<VideoTag> tags) {
-        this(item.getTitle(), item.getDescription(), item.getCreated(),
-                item.getThumbnailUri(), item.getVideoId(), item.getAuthor(), tags);
+        this(item.getTitle(), item.getDescription(), item.getCreated(), item.getThumbnailUri(),
+                item.getVideoId(), item.getAuthor(), item.getDuration(), tags);
     }
 
     public static TagsFeedItem fromParcel(Parcel parcel) {

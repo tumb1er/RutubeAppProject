@@ -26,14 +26,14 @@ public class MyVideoFeedItem extends FeedItem {
     private String mSignature;
 
     public MyVideoFeedItem(String title, String description, Date created, Uri thumbnailUri,
-                           String videoId, Author author, String signature) {
-        super(title, description, created, thumbnailUri, videoId, author);
+                           String videoId, Author author, int duration, String signature) {
+        super(title, description, created, thumbnailUri, videoId, author, duration);
         mSignature = signature;
     }
 
     public MyVideoFeedItem(FeedItem item, String signature) {
-        this(item.getTitle(), item.getDescription(), item.getCreated(),
-                item.getThumbnailUri(), item.getVideoId(), item.getAuthor(), signature);
+        this(item.getTitle(), item.getDescription(), item.getCreated(), item.getThumbnailUri(),
+                item.getVideoId(), item.getAuthor(), item.getDuration(), signature);
     }
 
     public static MyVideoFeedItem fromParcel(Parcel parcel) {

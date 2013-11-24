@@ -354,7 +354,8 @@ public class FeedContentProvider extends ContentProvider {
                 FeedContract.FeedColumns.THUMBNAIL_URI,
                 FeedContract.FeedColumns.AUTHOR_ID,
                 FeedContract.FeedColumns.AUTHOR_NAME,
-                FeedContract.FeedColumns.AVATAR_URI
+                FeedContract.FeedColumns.AVATAR_URI,
+                FeedContract.FeedColumns.DURATION
         };
 
         ArrayList<String> columnList = new ArrayList<String>(Arrays.asList(available));
@@ -367,6 +368,7 @@ public class FeedContentProvider extends ContentProvider {
         if (uriType == RELATED_VIDEO || uriType == RELATED_VIDEO_ITEM) {
             columnList.add(FeedContract.RelatedVideo.RELATED_VIDEO_ID);
             columnList.add(FeedContract.RelatedVideo.POSITION);
+            columnList.add(FeedContract.RelatedVideo.HITS);
         }
 
         if (uriType == SUBSCRIPTION || uriType == SUBSCRIPTION_FEEDITEM) {
@@ -398,7 +400,8 @@ public class FeedContentProvider extends ContentProvider {
             " created DATETIME," +
             " author_id INTEGER NULL," +
             " author_name VARCHAR(120)," +
-            " avatar_url VARCHAR(255)";
+            " avatar_url VARCHAR(255)," +
+            " duration INTEGER NULL";
 
     private static final String MY_VIDEO_COLUMNS_SQL =
             FEED_COLUMNS_SQL + "," +
@@ -416,7 +419,8 @@ public class FeedContentProvider extends ContentProvider {
     private static final String RELATED_VIDEO_COLUMNS_SQL =
             FEED_COLUMNS_SQL + "," +
                     " related_video_id INTEGER NOT NULL," +
-                    " position INTEGER NOT NULL";
+                    " position INTEGER NOT NULL," +
+                    " hits INTEGER NOT NULL";
 
     private static final String SQL_CREATE_VIDEO_EDITORS = "CREATE TABLE " +
             FeedContract.Editors.CONTENT_PATH + " (" +
@@ -442,7 +446,9 @@ public class FeedContentProvider extends ContentProvider {
             FeedContract.RelatedVideo.CONTENT_PATH + " (" +
             RELATED_VIDEO_COLUMNS_SQL + ")";
 
-    private static final int DB_VERSION = 3;
+    private static final String SQL_DROP_TABLE = "DROP TABLE %s";
+
+    private static final int DB_VERSION = 4;
 
     protected static final class MainDatabaseHelper extends SQLiteOpenHelper {
 
@@ -476,6 +482,25 @@ public class FeedContentProvider extends ContentProvider {
                                 " ADD COLUMN tags_json TEXT NULL DEFAULT '[]'");
                         break;
                     case 2:
+                        db.execSQL(SQL_CREATE_RELATED_VIDEO);
+                        break;
+                    case 3:
+                        // писать кучу дополнительного кода ради ALTER TABLE ADD COLUMN не хочется
+                        // поэтому тупо удаляем модифицируемые таблицы и создаем их заново.
+                        String[] tables = {
+                                FeedContract.Editors.CONTENT_PATH,
+                                FeedContract.MyVideo.CONTENT_PATH,
+                                FeedContract.Subscriptions.CONTENT_PATH,
+                                FeedContract.SearchResults.CONTENT_PATH,
+                                FeedContract.RelatedVideo.CONTENT_PATH
+                        };
+                        for (String table : tables) {
+                            db.execSQL(String.format(SQL_DROP_TABLE, table));
+                        }
+                        db.execSQL(SQL_CREATE_VIDEO_EDITORS);
+                        db.execSQL(SQL_CREATE_VIDEO_MY_VIDEO);
+                        db.execSQL(SQL_CREATE_VIDEO_SUBSCRIPTION);
+                        db.execSQL(SQL_CREATE_SEARCH_RESULTS);
                         db.execSQL(SQL_CREATE_RELATED_VIDEO);
                         break;
                     default:

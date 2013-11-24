@@ -17,7 +17,7 @@ public class SearchFeedItem extends FeedItem {
     private int mQueryId;
     public SearchFeedItem(FeedItem item) {
         super(item.getTitle(), item.getDescription(), item.getCreated(), item.getThumbnailUri(),
-                item.getVideoId(), item.getAuthor());
+                item.getVideoId(), item.getAuthor(), item.getDuration());
     }
 
     public int getQueryId() {

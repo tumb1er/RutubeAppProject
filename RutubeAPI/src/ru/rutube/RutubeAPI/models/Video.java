@@ -372,20 +372,24 @@ public class Video implements Parcelable {
     };
 
     public String getHitsText(Context context) {
-        if (mHits == 1)
-            return formatHits(context, R.string.view1);
-        int hits = mHits % 100;
-        if (hits > 10 && hits < 20)
-            return formatHits(context, R.string.views5);
-        hits = hits % 10;
-        if (hits == 1)
-            return formatHits(context, R.string.views21);
-        if (hits > 1 && hits < 5)
-            return formatHits(context, R.string.views4);
-        return formatHits(context, R.string.views5);
+        return getHitsText(context, mHits);
     }
 
-    private String formatHits(Context context, int resourceId) {
-        return String.format(context.getResources().getString(resourceId), mHits);
+    public static String getHitsText(Context context, int hits) {
+        if (hits == 1)
+            return formatHits(context, R.string.view1, hits);
+        int hitsDiv100 = hits % 100;
+        if (hitsDiv100 > 10 && hitsDiv100 < 20)
+            return formatHits(context, R.string.views5, hits);
+        int hitsDiv10 = hitsDiv100 % 10;
+        if (hitsDiv10 == 1)
+            return formatHits(context, R.string.views21, hits);
+        if (hitsDiv10 > 1 && hitsDiv10 < 5)
+            return formatHits(context, R.string.views4, hits);
+        return formatHits(context, R.string.views5, hits);
+    }
+
+    private static String formatHits(Context context, int resourceId, int hits) {
+        return String.format(context.getResources().getString(resourceId), hits);
     }
 }

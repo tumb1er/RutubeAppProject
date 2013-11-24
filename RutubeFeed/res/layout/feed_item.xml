@@ -33,7 +33,7 @@
         android:text="4:24"
         android:layout_alignRight="@+id/thumbnailImageView"
         android:layout_alignBottom="@+id/thumbnailImageView"
-        android:visibility="gone"
+        android:contentDescription="duration"
         style="?attr/FeedDurationStyle" />
 
     <!-- Карточка видео под тамнейлом -->

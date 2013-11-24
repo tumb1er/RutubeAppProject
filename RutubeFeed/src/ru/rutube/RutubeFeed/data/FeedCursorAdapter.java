@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.graphics.Typeface;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.Html;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -86,6 +87,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         public NetworkImageView thumbnail;
         public AvatarView avatar;
         public View footer;
+        public TextView duration;
     }
 
 
@@ -140,7 +142,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         holder.description.setTypeface(mLightFont);
         holder.created.setTypeface(mLightFont);
         holder.author.setTypeface(mLightFont);
-
+        holder.duration.setTypeface(mLightFont);
         initOnClickListeners(holder);
     }
 
@@ -152,6 +154,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         holder.created.setOnClickListener(mOnClickListener);
         holder.thumbnail.setOnClickListener(mOnClickListener);
         holder.footer.setOnClickListener(mOnClickListener);
+        holder.duration.setOnClickListener(mOnClickListener);
     }
 
     protected ViewHolder getHolder(View view) {
@@ -168,6 +171,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         holder.footer = view.findViewById(R.id.footer);
         holder.avatar = (AvatarView)view.findViewById(R.id.avatarImageView);
         holder.thumbnail = (NetworkImageView)view.findViewById(R.id.thumbnailImageView);
+        holder.duration = (TextView)view.findViewById(R.id.durationTextView);
     }
 
     @Override
@@ -180,7 +184,20 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
             bindAuthor(cursor, holder);
             bindThumbnail(cursor, holder);
             bindAvatar(cursor, holder);
+            bindDuration(cursor, holder);
         } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void bindDuration(Cursor cursor, ViewHolder holder) {
+        try {
+        int durationIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.DURATION);
+        int duration = cursor.getInt(durationIndex);
+        if (duration > 0)
+            holder.duration.setText(DateUtils.formatElapsedTime(duration));
+        holder.duration.setVisibility(duration > 0 ? View.VISIBLE: View.GONE);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

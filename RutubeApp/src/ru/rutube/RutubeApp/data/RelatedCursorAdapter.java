@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import ru.rutube.RutubeAPI.content.FeedContract;
+import ru.rutube.RutubeAPI.models.Video;
 import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
 
@@ -42,8 +44,10 @@ public class RelatedCursorAdapter extends FeedCursorAdapter {
 
     @Override
     protected void initView(FeedCursorAdapter.ViewHolder holder) {
-        holder.title.setTypeface(mNormalFont);
-        holder.author.setTypeface(mLightFont);
+        ViewHolder h = (ViewHolder)holder;
+        h.title.setTypeface(mNormalFont);
+        h.author.setTypeface(mLightFont);
+        h.hits.setTypeface(mLightFont);
         initOnClickListeners(holder);
     }
 
@@ -57,6 +61,10 @@ public class RelatedCursorAdapter extends FeedCursorAdapter {
 
     @Override
     protected void bindDescription(Cursor cursor, FeedCursorAdapter.ViewHolder holder) {
+    }
+
+    @Override
+    protected void bindDuration(Cursor cursor, FeedCursorAdapter.ViewHolder holder) {
     }
 
     @Override
@@ -98,8 +106,11 @@ public class RelatedCursorAdapter extends FeedCursorAdapter {
         }
     }
 
+
     protected void bindHits(Cursor cursor, ViewHolder holder) {
-        // No hits
+        int hitsIndex = cursor.getColumnIndexOrThrow(FeedContract.RelatedVideo.HITS);
+        int hits = cursor.getInt(hitsIndex);
+        holder.hits.setText(Video.getHitsText(mContext, hits));
     }
 
     @Override
