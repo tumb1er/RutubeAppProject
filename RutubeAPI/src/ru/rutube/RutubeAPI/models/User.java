@@ -111,7 +111,7 @@ public class User {
         return new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-
+                if(D) Log.d(LOG_TAG, "Visitor: " + String.valueOf(response));
             }
         };
     }

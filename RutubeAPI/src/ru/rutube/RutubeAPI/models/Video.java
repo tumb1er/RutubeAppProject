@@ -130,6 +130,7 @@ public class Video implements Parcelable {
         return new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                if (D) Log.d(LOG_TAG, "Options: " + String.valueOf(response));
                 try {
                     Boolean allowed = parseAllowed(response);
                     Integer errCode = parseErrCode(response);

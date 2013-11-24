@@ -3,7 +3,7 @@
     <string name="base_uri">http://rutube.ru</string>
     <string name="uploader_uri">http://u.rutube.ru</string>
     <string name="visitor_uri">api/accounts/visitor/</string>
-    <string name="trackinfo_uri">api/play/trackinfo/%s/</string>
+    <string name="trackinfo_uri">api/play/trackinfo/%s/?sqr4374_compat=1</string>
     <string name="editors_uri">api/video/editors/</string>
     <string name="my_video_uri">api/video/person/</string>
     <string name="subscription_uri">api/subscription/video/</string>
@@ -16,7 +16,7 @@
     <string name="login_uri">api/accounts/login/</string>
     <string name="upload_session_uri">api/uploader/upload_session/</string>
     <string name="upload_uri">upload/%s</string>
-    <string name="playoptions_uri">api/play/options/%s/</string>
+    <string name="playoptions_uri">api/play/options/%s/?sqr4374_compat=1</string>
     <string name="referer">http://android.rutube.ru/</string>
     <string name="yastUri">http://yast.rutube.ru/track/%d/viewed/</string>
     <string name="related_video_uri">api/search/related/</string>
