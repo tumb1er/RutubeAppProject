@@ -14,7 +14,6 @@ import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeApp.MainApplication;
 import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
-import ru.rutube.RutubeFeed.data.SubscriptionsCursorAdapter;
 
 /**
  * Created by tumbler on 18.08.13.
@@ -58,16 +57,8 @@ public class PlaSubscriptionsFragment extends ru.rutube.RutubeFeed.ui.Subscripti
     @Override
     public void onItemClick(FeedCursorAdapter.ClickTag dataTag, String viewTag) {
         MainApplication.cardClick(getActivity(), viewTag);
-        try {
-            SubscriptionsCursorAdapter.ClickTag tag = (SubscriptionsCursorAdapter.ClickTag)dataTag;
-            if (D) Log.d(LOG_TAG, String.format("onItemClick: tag_id=%d %s", tag.extraId, viewTag));
-            onItemClick(null, null, tag.position, -1);
-
-        } catch (ClassCastException ignored) {
-            if (D) Log.d(LOG_TAG, String.format("onItemClick: %d %s", dataTag.position, viewTag));
-            onItemClick(null, null, dataTag.position, -1);
-
-        }
+        if (D) Log.d(LOG_TAG, String.format("onItemClick: %s %s", String.valueOf(dataTag.href), viewTag));
+        onItemClick(null, null, dataTag.position, -1);
     }
 
 }

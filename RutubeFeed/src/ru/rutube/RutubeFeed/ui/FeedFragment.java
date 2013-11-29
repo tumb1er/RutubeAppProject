@@ -258,7 +258,13 @@ public class FeedFragment extends SherlockFragment implements FeedController.Fee
     @Override
     public void onItemClick(FeedCursorAdapter.ClickTag dataTag, String viewTag) {
         if (D) Log.d(LOG_TAG, String.format("onItemClick: %d %s", dataTag.position, viewTag));
-        onItemClick(null, null, dataTag.position, -1);
+    }
+
+    @Override
+    public void openFeed(Uri feedUri) {
+        Intent intent = new Intent("ru.rutube.feed.open");
+        intent.setData(feedUri);
+        startActivity(intent);
     }
 
     protected Uri getFeedUri() {

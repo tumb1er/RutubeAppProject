@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import ru.rutube.RutubeAPI.BuildConfig;
+import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.models.VideoTag;
 import ru.rutube.RutubeFeed.R;
@@ -70,6 +71,7 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
     @Override
     protected void bindAuthor(Cursor cursor, FeedCursorAdapter.ViewHolder holder) {
         holder.author.setTextColor(mTagColor);
+        holder.authorId = 0;
     }
 
     @Override
@@ -137,9 +139,8 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
         for (int i=0; i<holder.tags.getChildCount(); i++) {
             View tagView = holder.tags.getChildAt(i);
             TagsListAdapter.ViewHolder tagHolder = (TagsListAdapter.ViewHolder)tagView.getTag();
-            ClickTag tag = new ClickTag();
-            tag.position = position;
-            tag.extraId = tagHolder.tagId;
+            ClickTag tag = new ClickTag(position);
+            tag.href = null; // RutubeApp.getUrl(R.string.authors_uri)tagHolder.tagId;
             tagHolder.card.setTag(tag);
             tagHolder.card.setOnClickListener(mOnClickListener);
         }

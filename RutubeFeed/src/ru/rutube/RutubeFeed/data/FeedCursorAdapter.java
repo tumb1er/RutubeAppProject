@@ -3,6 +3,7 @@ package ru.rutube.RutubeFeed.data;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.Html;
 import android.text.format.DateUtils;
@@ -76,7 +77,16 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
      */
     public static class ClickTag {
         public int position;
-        public int extraId;
+        public Uri href;
+
+        public ClickTag(int position) {
+            this.position = position;
+        }
+
+        public ClickTag(int position, Uri href) {
+            this(position);
+            this.href = href;
+        }
     }
 
     protected static class ViewHolder {
@@ -88,6 +98,8 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         public AvatarView avatar;
         public View footer;
         public TextView duration;
+
+        public int authorId;
     }
 
 
@@ -218,7 +230,9 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
 
     protected void bindAuthor(Cursor cursor, ViewHolder holder) {
         int authorNameIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.AUTHOR_NAME);
+        int authorIdIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.AUTHOR_ID);
         String authorName = cursor.getString(authorNameIndex);
+        holder.authorId = cursor.getInt(authorIdIndex);
         // При отсутствии имени автора скрываем соответствующий TextField
         int visibility = (authorName == null) ? View.GONE : View.VISIBLE;
         holder.author.setVisibility(visibility);
@@ -310,16 +324,22 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     }
 
     protected void setTags(int position, View view) {
-        ClickTag tag = new ClickTag();
-        tag.position = position;
         ViewHolder holder = (ViewHolder)view.getTag();
-        holder.title.setTag(tag);
-        holder.description.setTag(tag);
-        holder.author.setTag(tag);
-        holder.avatar.setTag(tag);
-        holder.footer.setTag(tag);
-        holder.created.setTag(tag);
-        holder.thumbnail.setTag(tag);
+
+        Uri authorFeedUri = null;
+        if (holder.authorId > 0) {
+            authorFeedUri = RutubeApp.getFeedUri(R.string.authors_uri, holder.authorId);
+        }
+
+        ClickTag authorTag = new ClickTag(position, authorFeedUri);
+        ClickTag emptyTag = new ClickTag(position);
+        holder.title.setTag(emptyTag);
+        holder.description.setTag(emptyTag);
+        holder.author.setTag(authorTag);
+        holder.avatar.setTag(authorTag);
+        holder.footer.setTag(authorTag);
+        holder.created.setTag(authorTag);
+        holder.thumbnail.setTag(emptyTag);
     }
 
     private void loadMore() {

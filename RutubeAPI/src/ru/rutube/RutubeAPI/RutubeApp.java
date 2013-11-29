@@ -105,6 +105,14 @@ public class RutubeApp extends Application {
         return resultUri.toString();
     }
 
+    public static Uri getFeedUri(int stringId, int param) {
+        Uri baseUri = Uri.parse(getContext().getString(R.string.base_uri));
+        String path = getContext().getString(stringId).replace("api/", "");
+        return baseUri.buildUpon()
+                .appendEncodedPath(String.format(path, param))
+                .build();
+    }
+
     public static String getUrl(String path) {
         assert getContext() != null;
         Uri baseUri = Uri.parse(getContext().getString(R.string.base_uri));

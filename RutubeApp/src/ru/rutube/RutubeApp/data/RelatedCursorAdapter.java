@@ -115,8 +115,7 @@ public class RelatedCursorAdapter extends FeedCursorAdapter {
 
     @Override
     protected void setTags(int position, View view) {
-        ClickTag tag = new ClickTag();
-        tag.position = position;
+        ClickTag tag = new ClickTag(position);
         ViewHolder holder = (ViewHolder)view.getTag();
         holder.title.setTag(tag);
         holder.thumbnail.setTag(tag);

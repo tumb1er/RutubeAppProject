@@ -39,6 +39,7 @@ public class EditorsCursorAdapter extends FeedCursorAdapter {
     @Override
     protected void bindAuthor(Cursor cursor, FeedCursorAdapter.ViewHolder holder) {
         holder.author.setText(R.string.editors_choice);
+        holder.authorId = 0;
     }
 }
 

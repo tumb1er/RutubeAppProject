@@ -78,11 +78,10 @@
             android:name="ru.rutube.RutubeApp.ui.AuthorFeedActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+                <action android:name="ru.rutube.feed.open"/>
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="http"
-                    android:host="rutube.ru"
-                    android:pathPrefix="/video/person/" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/person/" />
             </intent-filter>
         </activity>
         <activity

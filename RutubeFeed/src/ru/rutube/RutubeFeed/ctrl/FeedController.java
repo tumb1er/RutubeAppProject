@@ -33,6 +33,11 @@ import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
  */
 public class FeedController implements Parcelable {
 
+    protected static final String VIEW_AUTHOR = "author";
+    protected static final String VIEW_AVATAR = "avatar";
+    protected static final String VIEW_CREATED = "created";
+    protected static final String VIEW_FOOTER = "footer";
+
     /**
      * Контракт пользовательского интерфейса
      */
@@ -48,6 +53,8 @@ public class FeedController implements Parcelable {
         public FeedCursorAdapter initAdapter();
 
         public void onItemClick(FeedCursorAdapter.ClickTag position, String viewTag);
+
+        public void openFeed(Uri feedUri);
     }
 
     private static final int LOADER_ID = 1;
@@ -190,10 +197,18 @@ public class FeedController implements Parcelable {
     protected FeedCursorAdapter.ItemClickListener itemClickListener = new FeedCursorAdapter.ItemClickListener() {
         @Override
         public void onItemClick(FeedCursorAdapter.ClickTag dataTag, String viewTag) {
+            if (viewTag.equals(VIEW_AUTHOR) || viewTag.equals(VIEW_AVATAR) ||
+                    viewTag.equals(VIEW_CREATED) || viewTag.equals(VIEW_FOOTER)) {
+                // Клик по футеру, открываем ленту автора
+                if (D) Log.d(LOG_TAG, "Feed link click: " + String.valueOf(dataTag.href));
+                if (dataTag.href != null && !dataTag.href.equals(mFeedUri)) {
+                    mView.openFeed(dataTag.href);
+                    return;
+                }
+            }
             mView.onItemClick(dataTag, viewTag);
         }
     };
-
 
     /**
      * Обработчик ответа от API ленты

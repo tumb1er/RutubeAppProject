@@ -107,6 +107,16 @@ public class FeedContentProvider extends ContentProvider {
                 break;
             case AUTHOR_VIDEO:
                 queryBuilder.setTables(FeedContract.AuthorVideo.CONTENT_PATH);
+                List<String> authorPathSegments = uri.getPathSegments();
+                assert authorPathSegments != null;
+                if (D) Log.d(LOG_TAG, String.valueOf(authorPathSegments));
+                // путь выглядит так: /author_video/1
+                // соответственно, нужен 2 сегмент
+                String authorId = authorPathSegments.get(1);
+                assert authorId != null;
+                queryBuilder.appendWhere(FeedContract.AuthorVideo.AUTHOR_ID + "="
+                        + authorId);
+
                 break;
             case AUTHOR_VIDEO_FEEDITEM:
                 queryBuilder.setTables(FeedContract.AuthorVideo.CONTENT_PATH);
