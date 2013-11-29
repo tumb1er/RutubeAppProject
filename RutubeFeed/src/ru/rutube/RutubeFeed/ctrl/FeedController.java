@@ -54,6 +54,8 @@ public class FeedController implements Parcelable {
         public FeedCursorAdapter initAdapter();
 
         public boolean onItemClick(FeedCursorAdapter.ClickTag position, String viewTag);
+
+        public void openFeed(Uri feedUri);
     }
 
     private static final int LOADER_ID = 1;
@@ -201,7 +203,7 @@ public class FeedController implements Parcelable {
                 // Клик по футеру, открываем ленту автора
                 if (D) Log.d(LOG_TAG, "Feed link click: " + String.valueOf(dataTag.href));
                 if (dataTag.href != null && !dataTag.href.equals(mFeedUri)) {
-                    RutubeApp.getInstance().openFeed(dataTag.href);
+                    mView.openFeed(dataTag.href);
                     return;
                 }
             }

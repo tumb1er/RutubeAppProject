@@ -34,17 +34,26 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
     private static final String FULLSCREEN = "fullscreen";
     private final String LOG_TAG = getClass().getName();
     private static final boolean D = BuildConfig.DEBUG;
-    private PlayerFragment mPlayerFragment;
-    private EndscreenFragment mEndscreenFragment;
-    protected View mVideoInfoContainer;
     private VideoPageController mController;
     protected boolean mIsTablet;
     protected boolean mIsFullscreen;
     protected int mLayoutResId = R.layout.player_activity;
+    protected ViewHolder mViewHolder;
+
+    protected static class ViewHolder {
+        public PlayerFragment playerFragment;
+        public EndscreenFragment endscreenFragment;
+        public View videoInfoContainer;
+        public TextView description;
+        public TextView hits;
+        public TextView duration;
+        public TextView author;
+        public TextView title;
+    }
 
     @Override
     public void replay() {
-        mPlayerFragment.replay();
+        mViewHolder.playerFragment.replay();
     }
 
     @Override
@@ -61,9 +70,9 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
         if (D) Log.d(LOG_TAG, "toggleEndscreen: " + String.valueOf(visible));
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         if (visible)
-            ft.show(mEndscreenFragment);
+            ft.show(mViewHolder.endscreenFragment);
         else
-            ft.hide(mEndscreenFragment);
+            ft.hide(mViewHolder.endscreenFragment);
         ft.commit();
     }
 
@@ -77,11 +86,11 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
                 setScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             }
             // Для планшетов - смена layout
-            if (mVideoInfoContainer != null)
-                mVideoInfoContainer.setVisibility(View.VISIBLE);
+            if (mViewHolder.videoInfoContainer != null)
+                mViewHolder.videoInfoContainer.setVisibility(View.VISIBLE);
         } else {
-            if (mVideoInfoContainer != null)
-                mVideoInfoContainer.setVisibility(View.GONE);
+            if (mViewHolder.videoInfoContainer != null)
+                mViewHolder.videoInfoContainer.setVisibility(View.GONE);
             setScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
     }
@@ -156,23 +165,23 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
 
     protected void bindDescription(Video video) {
         String description = video.getDescription();
-        ((TextView)findViewById(R.id.description)).setText(Html.fromHtml(description));
+        mViewHolder.description.setText(Html.fromHtml(description));
     }
 
     protected void bindHits(Video video) {
         String hits = video.getHitsText(this);
-        ((TextView)findViewById(R.id.hits)).setText(hits);
+        mViewHolder.hits.setText(hits);
     }
 
     protected void bindDuration(Video video) {
         int duration = video.getDuration();
-        ((TextView)findViewById(R.id.duration)).setText(DateUtils.formatElapsedTime(duration / 1000));
+        mViewHolder.duration.setText(DateUtils.formatElapsedTime(duration / 1000));
     }
 
     protected void bindAuthor(Video video) {
         Author author = video.getAuthor();
         if (author != null) {
-            TextView authorName = (TextView)findViewById(R.id.author_name);
+            TextView authorName = mViewHolder.author;
             authorName.setText(author.getName());
             authorName.setTag(author.getFeedUrl());
 
@@ -180,7 +189,7 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
     }
 
     protected void bindTitle(Video video) {
-        ((TextView)findViewById(R.id.video_title)).setText(video.getTitle());
+        mViewHolder.title.setText(video.getTitle());
     }
 
     @Override
@@ -189,18 +198,33 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
     }
 
     private void init() {
-        mPlayerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentById(R.id.player_fragment);
-        assert mPlayerFragment != null;
-        mPlayerFragment.setPlayerStateListener(this);
-        mEndscreenFragment = (EndscreenFragment) getSupportFragmentManager().findFragmentById(R.id.endscreen_fragment);
-        assert mEndscreenFragment != null;
-        mEndscreenFragment.setReplayListener(this);
+        ViewHolder holder = getHolder();
+        initHolder(holder);
+
+        mViewHolder.playerFragment.setPlayerStateListener(this);
+        mViewHolder.endscreenFragment.setReplayListener(this);
+
         toggleEndscreen(false);
 
-        mVideoInfoContainer = findViewById(R.id.video_info_container);
         mIsTablet = getResources().getString(R.string.device_type, "phone").equals("tablet");
 
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
+    }
+
+    protected ViewHolder getHolder() {
+        return new ViewHolder();
+    }
+
+    protected void initHolder(ViewHolder  holder) {
+        holder.playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentById(R.id.player_fragment);
+        holder.endscreenFragment = (EndscreenFragment) getSupportFragmentManager().findFragmentById(R.id.endscreen_fragment);
+        holder.videoInfoContainer = findViewById(R.id.video_info_container);
+        holder.description = ((TextView)findViewById(R.id.description));
+        holder.hits = ((TextView)findViewById(R.id.hits));
+        holder.duration = ((TextView)findViewById(R.id.duration));
+        holder.author = (TextView)findViewById(R.id.author_name);
+        holder.title = ((TextView)findViewById(R.id.video_title));
+        mViewHolder = holder;
     }
 
     @Override
@@ -208,7 +232,7 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
         switch(keyCode) {
             case KeyEvent.KEYCODE_VOLUME_DOWN:
             case KeyEvent.KEYCODE_VOLUME_UP:
-                return mPlayerFragment.onKeyDown(keyCode) || super.onKeyDown(keyCode, event);
+                return mViewHolder.playerFragment.onKeyDown(keyCode) || super.onKeyDown(keyCode, event);
             default:
                 return super.onKeyDown(keyCode, event);
         }

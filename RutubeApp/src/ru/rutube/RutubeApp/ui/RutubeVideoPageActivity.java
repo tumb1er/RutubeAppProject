@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -31,11 +32,42 @@ import ru.rutube.RutubePlayer.ui.VideoPageActivity;
 public class RutubeVideoPageActivity extends VideoPageActivity {
     private static final boolean D = BuildConfig.DEBUG;
     private static final String LOG_TAG = RutubeVideoPageActivity.class.getName();
-    private RutubeRelatedFeedFragment mRelatedFragment;
     private boolean mIsLandscape;
     private Typeface mNormalFont;
     private Typeface mLightFont;
+    private RutubeRelatedFeedFragment mRelatedFragment;
 
+    protected View.OnClickListener mOnVideoElementClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (D) Log.d(LOG_TAG, "element click: " + String.valueOf(view));
+            try {
+                Uri feedUri = (Uri)view.getTag();
+                MainApplication.getInstance().openFeed(feedUri, RutubeVideoPageActivity.this);
+            } catch (ClassCastException ignored) {}
+
+        }
+    };
+
+    public static class ViewHolder extends VideoPageActivity.ViewHolder {
+        public TextView from;
+        public TextView created;
+    }
+
+    @Override
+    protected VideoPageActivity.ViewHolder getHolder() {
+        return new ViewHolder();
+    }
+
+    @Override
+    protected void initHolder(VideoPageActivity.ViewHolder holder) {
+        super.initHolder(holder);
+        ViewHolder h = (ViewHolder)holder;
+        h.from = ((TextView)findViewById(R.id.from));
+        h.created = ((TextView)findViewById(R.id.createdTextView));
+        mViewHolder = h;
+
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,7 +76,6 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         getIntent().putExtra(RutubeRelatedFeedFragment.INIT_HEADER, needHeader);
         mLayoutResId = R.layout.video_page_activity;
         super.onCreate(savedInstanceState);
-        mRelatedFragment.toggleHeader(!mIsLandscape);
         init();
     }
 
@@ -65,8 +96,7 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
     public View onCreateView(String name, Context context, AttributeSet attrs) {
         View view = super.onCreateView(name, context, attrs);
         FragmentManager fm = getSupportFragmentManager();
-        mRelatedFragment = (RutubeRelatedFeedFragment) fm.findFragmentById(
-                R.id.related_video_container);
+        mRelatedFragment = (RutubeRelatedFeedFragment)fm.findFragmentById(R.id.related_video_container);
         return view;
     }
 
@@ -83,7 +113,7 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         ll.setOrientation(isPortrait? LinearLayout.VERTICAL: LinearLayout.HORIZONTAL);
 
         // основная карточка видео видна только в пейзажной ориентации и только не в фуллскрине
-        mVideoInfoContainer.setVisibility((isPortrait || mIsFullscreen) ? View.GONE : View.VISIBLE);
+        mViewHolder.videoInfoContainer.setVisibility((isPortrait || mIsFullscreen) ? View.GONE : View.VISIBLE);
         // карточка видео в похожих видна только в портретной ориентации
         mRelatedFragment.toggleHeader(isPortrait);
         // layout_weight для плеера + карточки видео в зависимости от ориентации
@@ -103,12 +133,18 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
     private void init() {
         mNormalFont = Typefaces.get(this, "fonts/opensansregular.ttf");
         mLightFont = Typefaces.get(this, "fonts/opensanslight.ttf");
-        ((TextView)findViewById(R.id.video_title)).setTypeface(mNormalFont);
-        ((TextView)findViewById(R.id.from)).setTypeface(mLightFont);
-        ((TextView)findViewById(R.id.author_name)).setTypeface(mLightFont);
-        ((TextView)findViewById(R.id.createdTextView)).setTypeface(mLightFont);
-        ((TextView)findViewById(R.id.hits)).setTypeface(mLightFont);
-        ((TextView)findViewById(R.id.description)).setTypeface(mLightFont);
+        FragmentManager fm = getSupportFragmentManager();
+        mRelatedFragment = (RutubeRelatedFeedFragment) fm.findFragmentById(
+                R.id.related_video_container);
+        ViewHolder holder = (ViewHolder)mViewHolder;
+        holder.title.setTypeface(mNormalFont);
+        holder.from.setTypeface(mLightFont);
+        holder.author.setTypeface(mLightFont);
+        holder.created.setTypeface(mLightFont);
+        holder.hits.setTypeface(mLightFont);
+        holder.description.setTypeface(mLightFont);
+
+        holder.author.setOnClickListener(mOnVideoElementClickListener);
     }
 
     @Override
@@ -126,7 +162,7 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         if (isFullscreen)
             toggleRelatedFragment(false);
         super.toggleFullscreen(isFullscreen);
-        mVideoInfoContainer.setVisibility(isFullscreen? View.GONE: View.VISIBLE);
+        mViewHolder.videoInfoContainer.setVisibility(isFullscreen ? View.GONE : View.VISIBLE);
         // а при переходе в режим страницы видео - после изменения ориентации.
         if (!isFullscreen)
             toggleRelatedFragment(true);

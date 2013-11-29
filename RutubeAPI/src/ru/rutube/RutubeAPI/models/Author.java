@@ -90,11 +90,8 @@ public class Author implements Parcelable {
         return new Author(avatarUri, authorID, authorName);
     }
 
-    public String getFeedUrl() {
-        String path = String.format(
-                RutubeApp.getContext().getResources().getString(R.string.person_video_uri),
-                getId());
-        return RutubeApp.getUrl(path);
+    public Uri getFeedUrl() {
+        return RutubeApp.getFeedUri(R.string.authors_uri, id);
 
     }
 }

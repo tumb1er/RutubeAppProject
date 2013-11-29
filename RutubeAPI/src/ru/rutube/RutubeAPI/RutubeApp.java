@@ -120,10 +120,10 @@ public class RutubeApp extends Application {
                 .build();
     }
 
-    public void openFeed(Uri feedUri) {
+    public void openFeed(Uri feedUri, Context context) {
         Intent intent = new Intent("ru.rutube.feed.open");
         intent.setData(feedUri);
-        startActivity(intent);
+        context.startActivity(intent);
     }
 
     public static String getUrl(String path) {

@@ -2,6 +2,7 @@ package ru.rutube.RutubeApp.ui.feed;
 
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
@@ -22,6 +23,7 @@ import ru.rutube.RutubeApp.BuildConfig;
 import ru.rutube.RutubeApp.MainApplication;
 import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubeApp.data.RelatedCursorAdapter;
+import ru.rutube.RutubeApp.ui.RutubeVideoPageActivity;
 import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
 import ru.rutube.RutubeFeed.helpers.Typefaces;
 import ru.rutube.RutubeFeed.ui.RelatedFeedFragment;
@@ -39,27 +41,44 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
     private Typeface mNormalFont;
     private Typeface mLightFont;
     private View mInfoView;
-    private View mCommentLineView;
-    private View mDescriptionView;
     private boolean mHasInfoView = false;
     private boolean mDescriptionVisible = false;
-    private ImageButton mMoreButton;
     protected View.OnClickListener mOnMoreClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             toggleDescription();
         }
     };
+    protected View.OnClickListener mOnVideoElementClickListener = new View.OnClickListener() {
+
+        @Override
+        public void onClick(View view) {
+            if (D) Log.d(LOG_TAG, "element click: " + String.valueOf(view));
+            try {
+                Uri feedUri = (Uri)view.getTag();
+                MainApplication.getInstance().openFeed(feedUri, getActivity());
+            } catch (ClassCastException ignored) {}
+
+        }
+    };
+
+    protected static class ViewHolder extends RutubeVideoPageActivity.ViewHolder {
+        ImageButton moreInfo;
+        TextView bullet;
+        View commentLine;
+    }
+
+    protected ViewHolder mViewHolder;
 
     private void toggleDescription(boolean visible) {
         if (visible)
-            mMoreButton.setImageResource(R.drawable.more_btn_selected);
+            mViewHolder.moreInfo.setImageResource(R.drawable.more_btn_selected);
         else
-            mMoreButton.setImageResource(R.drawable.more_btn_default);
+            mViewHolder.moreInfo.setImageResource(R.drawable.more_btn_default);
         mDescriptionVisible = visible;
         int visibility = visible? View.VISIBLE: View.GONE;
-        mCommentLineView.setVisibility(visibility);
-        mDescriptionView.setVisibility(visibility);
+        mViewHolder.commentLine.setVisibility(visibility);
+        mViewHolder.description.setVisibility(visibility);
     }
 
     private void toggleDescription() {
@@ -85,19 +104,28 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
         // инициализирует и добавляет в ListView заголовок с информацией о видео.
         mInfoView = getActivity().getLayoutInflater().inflate(R.layout.video_info, null);
         assert mInfoView != null;
-        ((TextView)mInfoView.findViewById(R.id.video_title)).setTypeface(mNormalFont);
-        ((TextView)mInfoView.findViewById(R.id.from)).setTypeface(mLightFont);
-        ((TextView)mInfoView.findViewById(R.id.author_name)).setTypeface(mNormalFont);
-        ((TextView)mInfoView.findViewById(R.id.bullet)).setTypeface(mLightFont);
-        ((TextView)mInfoView.findViewById(R.id.createdTextView)).setTypeface(mLightFont);
-        ((TextView)mInfoView.findViewById(R.id.hits)).setTypeface(mLightFont);
-        ((TextView)mInfoView.findViewById(R.id.description)).setTypeface(mLightFont);
+        mViewHolder = new ViewHolder();
+        mViewHolder.title = ((TextView)mInfoView.findViewById(R.id.video_title));
+        mViewHolder.from = ((TextView)mInfoView.findViewById(R.id.from));
+        mViewHolder.author = ((TextView)mInfoView.findViewById(R.id.author_name));
+        mViewHolder.bullet = ((TextView) mInfoView.findViewById(R.id.bullet));
+        mViewHolder.created = ((TextView)mInfoView.findViewById(R.id.createdTextView));
+        mViewHolder.hits = ((TextView)mInfoView.findViewById(R.id.hits));
+        mViewHolder.description = ((TextView)mInfoView.findViewById(R.id.description));
+        mViewHolder.moreInfo = ((ImageButton)mInfoView.findViewById(R.id.moreImageButton));
+        mViewHolder.commentLine = mInfoView.findViewById(R.id.commentLine);
 
-        mMoreButton = ((ImageButton)mInfoView.findViewById(R.id.moreImageButton));
-        mMoreButton.setOnClickListener(mOnMoreClickListener);
-        mMoreButton.setVisibility(View.VISIBLE);
-        mCommentLineView = mInfoView.findViewById(R.id.commentLine);
-        mDescriptionView = mInfoView.findViewById(R.id.description);
+        mViewHolder.title.setTypeface(mNormalFont);
+        mViewHolder.from.setTypeface(mLightFont);
+        mViewHolder.author.setTypeface(mNormalFont);
+        mViewHolder.bullet.setTypeface(mLightFont);
+        mViewHolder.created.setTypeface(mLightFont);
+        mViewHolder.hits.setTypeface(mLightFont);
+        mViewHolder.description.setTypeface(mLightFont);
+
+        mViewHolder.moreInfo.setOnClickListener(mOnMoreClickListener);
+        mViewHolder.moreInfo.setVisibility(View.VISIBLE);
+        mViewHolder.author.setOnClickListener(mOnVideoElementClickListener);
 
         toggleDescription(false);
         mListView.setHeaderDividersEnabled(false);
@@ -135,20 +163,19 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
     }
 
     public void setVideoInfo(Video video) {
-        ((TextView)mInfoView.findViewById(R.id.video_title)).setText(video.getTitle());
+        mViewHolder.title.setText(video.getTitle());
         Author author = video.getAuthor();
         if (author != null) {
-            TextView authorName = (TextView)mInfoView.findViewById(R.id.author_name);
-            authorName.setText(author.getName());
-            authorName.setTag(author.getFeedUrl());
+            mViewHolder.author.setText(author.getName());
+            mViewHolder.author.setTag(author.getFeedUrl());
 
         }
 //        int duration = video.getDuration();
 //        ((TextView)v.findViewById(ru.rutube.RutubePlayer.R.id.duration)).setText(
 //                DateUtils.formatElapsedTime(duration));
         String hits = video.getHitsText(getActivity());
-        ((TextView)mInfoView.findViewById(ru.rutube.RutubePlayer.R.id.hits)).setText(hits);
-        ((TextView)mInfoView.findViewById(R.id.description)).setText(
+        mViewHolder.hits.setText(hits);
+        mViewHolder.description.setText(
                 Html.fromHtml(video.getDescription()));
     }
 
