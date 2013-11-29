@@ -2,7 +2,9 @@ package ru.rutube.RutubeFeed.views;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 
+import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 
 import ru.rutube.RutubeFeed.R;
@@ -44,5 +46,16 @@ public class AvatarView extends NetworkImageView {
 
     public void setDefaultImageRes(int author_id) {
         super.setDefaultImageResId(sStubs[author_id % 8]);
+    }
+
+    public void resetImageResource(int author_id) {
+        super.setImageResource(sStubs[author_id % 8]);
+    }
+
+    @Override
+    public void setImageUrl(String url, ImageLoader imageLoader) {
+        if (url.startsWith("http")) {
+            super.setImageUrl(url, imageLoader);
+        }
     }
 }

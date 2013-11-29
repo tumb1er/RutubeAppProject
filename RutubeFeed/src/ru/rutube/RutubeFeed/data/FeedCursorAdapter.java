@@ -225,7 +225,10 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         holder.avatar.setVisibility(visibility);
         holder.footer.setVisibility(visibility);
         holder.avatar.setDefaultImageRes(authorId);
-        holder.avatar.setImageUrl(avatarUri, imageLoader);
+        if (avatarUri != null)
+            holder.avatar.setImageUrl(avatarUri, imageLoader);
+        else
+            holder.avatar.resetImageResource(authorId);
     }
 
     protected void bindAuthor(Cursor cursor, ViewHolder holder) {
