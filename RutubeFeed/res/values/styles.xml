@@ -90,8 +90,8 @@
 
     <style name="Rutube.Feed.Created" parent="Rutube.Feed.LightText">
         <item name="android:textColor">@color/created</item>
-        <item name="android:paddingTop">@dimen/footer_inner_padding</item>
-        <item name="android:paddingBottom">@dimen/footer_inner_padding</item>
+        <item name="android:paddingTop">@dimen/footer_text_padding_top</item>
+        <item name="android:paddingBottom">@dimen/footer_text_padding_bottom</item>
         <item name="android:paddingLeft">@dimen/card_inner_padding</item>
         <item name="android:paddingRight">@dimen/card_inner_padding</item>
         <item name="android:gravity">center_vertical</item>
@@ -108,15 +108,15 @@
         <item name="android:scaleType">fitXY</item>
         <item name="android:adjustViewBounds">true</item>
         <item name="android:src">@drawable/stub</item>
-        <item name="android:layout_marginTop">@dimen/footer_inner_padding</item>
-        <item name="android:layout_marginBottom">@dimen/footer_inner_padding</item>
-        <item name="android:layout_marginLeft">@dimen/card_inner_padding</item>
+        <item name="android:paddingLeft">@dimen/card_inner_padding</item>
+        <item name="android:paddingTop">@dimen/footer_inner_padding</item>
+        <item name="android:paddingBottom">@dimen/footer_inner_padding</item>
     </style>
 
     <style name="Rutube.Feed.Author" parent="Rutube.Feed.LightText">
         <item name="android:textColor">@color/author</item>
-        <item name="android:paddingTop">@dimen/footer_inner_padding</item>
-        <item name="android:paddingBottom">@dimen/footer_inner_padding</item>
+        <item name="android:paddingTop">@dimen/footer_text_padding_top</item>
+        <item name="android:paddingBottom">@dimen/footer_text_padding_bottom</item>
         <item name="android:paddingLeft">@dimen/card_inner_padding</item>
         <item name="android:paddingRight">@dimen/card_inner_padding</item>
         <item name="android:gravity">center_vertical</item>
@@ -161,5 +161,4 @@
         <item name="android:paddingLeft">@dimen/tag_comment_padding_left</item>
         <item name="android:paddingRight">@dimen/card_inner_padding</item>
     </style>
-
 </resources>

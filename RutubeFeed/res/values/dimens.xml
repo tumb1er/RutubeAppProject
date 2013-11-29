@@ -8,11 +8,14 @@
     <dimen name="card_inner_padding">12dp</dimen>
     <dimen name="title_padding_top">11dp</dimen>
     <dimen name="title_padding_bottom">5dp</dimen>
-    <dimen name="description_padding_bottom">8dp</dimen>
-    <dimen name="avatar">30dp</dimen>
+    <dimen name="description_padding_bottom">12dp</dimen>
+    <dimen name="avatar">50dp</dimen>
     <dimen name="footer_inner_padding">8dp</dimen>
     <dimen name="footer_padding_bottom">4dp</dimen>
+    <dimen name="footer_text_padding_top">9dp</dimen>
+    <dimen name="footer_text_padding_bottom">11dp</dimen>
     <dimen name="tag_comment_padding_left">24dp</dimen>
     <dimen name="tag_list_padding_top">4dp</dimen>
     <dimen name="tag_list_padding_bottom">8dp</dimen>
+    <dimen name="balloon_offset_left">40dp</dimen>
 </resources>
