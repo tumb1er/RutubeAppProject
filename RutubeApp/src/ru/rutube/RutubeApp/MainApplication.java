@@ -34,7 +34,7 @@ public class MainApplication extends RutubeApp {
         tracker.set(Fields.SCREEN_NAME, "Search screen");
         tracker.activityStart(activity);
         tracker.send(MapBuilder
-                .createEvent("ui_actions", "open_search", searchQuery, null)
+                .createEvent("stats", "open_search", searchQuery, null)
                 .build());
     }
 
@@ -43,7 +43,7 @@ public class MainApplication extends RutubeApp {
         tracker.set(Fields.SCREEN_NAME, "Video page screen");
         tracker.activityStart(activity);
         tracker.send(MapBuilder
-                .createEvent("ui_actions", "open_player", videoUrl, null)
+                .createEvent("stats", "open_player", videoUrl, null)
                 .build());
     }
 
