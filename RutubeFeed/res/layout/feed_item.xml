@@ -1,133 +1,143 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    style="?attr/FeedListStyle">
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@drawable/thumbnail_stub"
+        android:layout_alignRight="@+id/thumbnailImageView"
+        android:layout_alignLeft="@+id/thumbnailImageView"
+        android:layout_alignTop="@+id/thumbnailImageView"
+        android:layout_alignBottom="@+id/thumbnailImageView"
+    />
+
+    <!-- Тамнейл -->
+    <ru.rutube.RutubeFeed.views.ThumbnailView
+        android:id="@+id/thumbnailImageView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="thumbnail"
+        style="?attr/FeedThumbnailStyle"
+        android:scaleType="centerCrop"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true" />
+
+    <!-- Длительность поверх тамнейла -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/durationTextView"
+        android:text="4:24"
+        android:layout_alignRight="@+id/thumbnailImageView"
+        android:layout_alignBottom="@+id/thumbnailImageView"
+        android:contentDescription="duration"
+        style="?attr/FeedDurationStyle" />
+
+    <!-- Карточка видео под тамнейлом -->
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/videoInfoLayout"
+        android:layout_below="@+id/thumbnailImageView"
+        style="?attr/FeedCardStyle">
+
+        <!-- Название ролика-->
+        <TextView
+            android:id="@+id/titleTextView"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            >
+            android:text="Title"
+            android:contentDescription="title"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            style="?attr/FeedTitleStyle" />
+        <!-- Описание ролика -->
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:text="Description"
+            android:id="@+id/descriptionTextView"
+            android:contentDescription="description"
+            android:layout_below="@+id/titleTextView"
+            style="?attr/FeedDescriptionStyle"
+            />
 
 
-        <ru.rutube.RutubeFeed.views.ThumbnailView
-                android:id="@+id/thumbnailImageView"
-                android:layout_width="fill_parent"
-                android:layout_height="0dp"
-                android:minHeight="100dp"
-                android:adjustViewBounds="true"
-                android:layout_marginLeft="-1dp"
-                android:layout_marginRight="-1dp"
-                android:contentDescription="@string/thumbnail"
-                android:scaleType="centerCrop"
-                android:src="@drawable/stub"/>
-
+        <!-- Футер карточки-->
         <RelativeLayout
-                android:orientation="vertical"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_below="@+id/descriptionTextView"
+            android:id="@+id/footer"
+            style="?attr/FeedFooterStyle">
+
+            <!-- Горизонтальная черта -->
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:id="@+id/commentLine"
+                android:background="@drawable/hor_line"
+                style="?attr/FeedHorizontalLineStyle"/>
+
+            <!-- Аватар -->
+            <ru.rutube.RutubeFeed.views.AvatarView
+                android:id="@+id/avatarImageView"
+                style="?attr/FeedAvatarStyle"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/commentLine"
+                android:scaleType="fitXY"
+                android:adjustViewBounds="true"
+                android:contentDescription="avatar"
+                />
+
+            <!-- Имя автора справа от аватара -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Author"
+                android:id="@+id/authorTextView"
+                android:layout_centerVertical="true"
+                style="?attr/FeedAuthorStyle"
+                android:contentDescription="author"
+                android:layout_toRightOf="@+id/avatarImageView" />
+
+            <!-- когда загружен -->
+            <TextView
+                android:id="@+id/createdTextView"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/videoInfoLayout"
-                android:background="#ffffffff"
-                android:paddingBottom="0dp"
-                android:paddingRight="10dp"
-                android:paddingTop="10dp"
-                android:paddingLeft="10dp"
-                android:layout_below="@+id/thumbnailImageView">
+                android:text="Created"
+                android:layout_alignParentRight="false"
+                android:layout_centerVertical="true"
+                android:contentDescription="created"
+                android:gravity="right"
+                style="?attr/FeedCreatedStyle"
+                android:layout_toRightOf="@+id/authorTextView" />
 
-            <TextView
-                    android:id="@+id/titleTextView"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="18dp"
-                    android:text="Title"
-                    android:textStyle="bold"
-                    android:textColor="@android:color/primary_text_light_nodisable"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentTop="true"
-                    />
-
-            <TextView
-                    android:id="@+id/createdTextView"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="10dp"
-                    android:text="Created"
-                    android:textColor="@android:color/secondary_text_light"
-                    android:layout_alignParentLeft="false"
-                    android:layout_alignParentTop="false"
-                    android:layout_below="@+id/titleTextView"/>
-
+            <!-- Стрелка вниз поверх всего -->
             <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/commentLine"
-                    android:src="@drawable/comment_line_right"
-                    android:adjustViewBounds="true"
-                    android:contentDescription="@string/empty"
-                    android:layout_below="@+id/createdTextView"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentLeft="true"
-                    android:scaleType="fitXY"/>
-
-            <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/commentBaloon"
-                    android:contentDescription="@string/empty"
-                    android:focusable="false"
-                    android:src="@drawable/comment_line"
-                    android:layout_gravity="left"
-                    android:layout_below="@+id/createdTextView"/>
-
-            <com.android.volley.toolbox.NetworkImageView
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:id="@+id/avatarImageView"
-                    android:minWidth="50dp"
-                    android:minHeight="50dp"
-                    android:maxHeight="50dp"
-                    android:maxWidth="50dp"
-                    android:scaleType="centerCrop"
-                    android:adjustViewBounds="true"
-                    android:src="@drawable/stub"
-                    android:layout_alignParentLeft="false"
-                    android:layout_alignParentTop="false"
-                    android:layout_below="@+id/commentLine"
-                android:layout_margin="5dp" />
-
-            <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Author"
-                    android:id="@+id/authorTextView"
-                    android:textColor="#000"
-                    android:textSize="12dp"
-                    android:textStyle="bold"
-                    android:layout_toRightOf="@+id/avatarImageView"
-                    android:layout_below="@+id/commentLine"/>
-
-            <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Description"
-                    android:id="@+id/descriptionTextView"
-                    android:textColor="#000"
-                    android:textSize="12dp"
-                    android:textIsSelectable="false"
-                    android:layout_below="@+id/authorTextView"
-                    android:layout_toRightOf="@+id/avatarImageView"/>
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:id="@+id/balloon"
+                android:src="@drawable/balloon"
+                android:layout_marginLeft="@dimen/balloon_offset_left"/>
 
         </RelativeLayout>
 
-        <View
-                android:layout_below="@id/videoInfoLayout"
-                android:layout_width="fill_parent"
-                android:layout_height="10dp"
-                android:background="@drawable/card_shadow"
-                android:id="@+id/cardShadow">
-        </View>
+        <!-- Контейнер списка тегов -->
+        <LinearLayout
+            android:orientation="vertical"
+            android:baselineAligned="false"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/footer"
+            android:id="@+id/tagsListContainer"/>
 
-        <View
-                android:layout_below="@id/videoInfoLayout"
-                android:layout_width="fill_parent"
-                android:layout_height="5dp"
-                android:background="@drawable/card_footer"
-                android:id="@+id/cardFooter">
-        </View>
+
     </RelativeLayout>
+</RelativeLayout>

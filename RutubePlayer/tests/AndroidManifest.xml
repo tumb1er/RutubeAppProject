@@ -7,20 +7,39 @@
     <!-- We add an application tag here just so that we can indicate that
          this package needs to link against the android.test library,
          which is needed when building test cases. -->
-    <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="17"/>
-    <application>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="18"/>
+    <application
+        android:name="ru.rutube.RutubeAPI.RutubeApp">
+        <!--android:theme="@style/Theme.Sherlock">-->
         <uses-library android:name="android.test.runner" />
         <activity
             android:screenOrientation="landscape"
-            android:name=".ui.PlayerActivity"
+            android:name=".ui.VideoPageActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="http"
-                    android:host="rutube.ru"
-                    android:pathPrefix="/video/" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/embed/" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/private/" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/0" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/1" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/2" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/3" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/4" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/5" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/6" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/7" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/8" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/9" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/a" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/b" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/c" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/d" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/e" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/f" />
             </intent-filter>
             <intent-filter android:label="@string/app_name">
                 <action android:name="ru.rutube.player.play"/>

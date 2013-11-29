@@ -22,12 +22,10 @@ import com.android.volley.toolbox.Volley;
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.HttpTransport;
 import ru.rutube.RutubeAPI.content.FeedContentProvider;
-import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeAPI.models.Feed;
 import ru.rutube.RutubeAPI.models.FeedItem;
 import ru.rutube.RutubeAPI.requests.RequestListener;
-import ru.rutube.RutubeFeed.R;
 import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
 
 /**
@@ -46,6 +44,10 @@ public class FeedController implements Parcelable {
         public void showError();
         public LoaderManager getLoaderManager();
         public void openPlayer(Uri uri, Uri thumbnailUri);
+
+        public FeedCursorAdapter initAdapter();
+
+        public void onItemClick(FeedCursorAdapter.ClickTag position, String viewTag);
     }
 
     private static final int LOADER_ID = 1;
@@ -157,16 +159,11 @@ public class FeedController implements Parcelable {
      * @return
      */
     private FeedCursorAdapter prepareFeedCursorAdapter() {
-        FeedCursorAdapter adapter = new FeedCursorAdapter(mContext,
-                R.layout.feed_item,
-                null,
-                new String[]{FeedContract.FeedColumns.TITLE, FeedContract.FeedColumns.THUMBNAIL_URI},
-                new int[]{R.id.titleTextView, R.id.thumbnailImageView},
-                0);
+        FeedCursorAdapter adapter = mView.initAdapter();
         adapter.setLoadMoreListener(loadMoreListener);
+        adapter.setItemClickListener(itemClickListener);
         return adapter;
     }
-
 
     /**
      * Обрабатывает события "нужно загрузить следующую страницу", приходящие от адаптера
@@ -190,6 +187,14 @@ public class FeedController implements Parcelable {
         }
     };
 
+    protected FeedCursorAdapter.ItemClickListener itemClickListener = new FeedCursorAdapter.ItemClickListener() {
+        @Override
+        public void onItemClick(FeedCursorAdapter.ClickTag dataTag, String viewTag) {
+            mView.onItemClick(dataTag, viewTag);
+        }
+    };
+
+
     /**
      * Обработчик ответа от API ленты
      */
@@ -210,20 +215,21 @@ public class FeedController implements Parcelable {
 
         private void requestDone() {
             if (mLoading > 0) mLoading -= 1;
-            if (mLoading == 0)
+            if (mLoading == 0 && mView != null)
                 mView.doneRefreshing();
         }
 
         @Override
         public void onVolleyError(VolleyError error) {
-            mView.showError();
+            if (mView != null)
+                mView.showError();
 
         }
 
         @Override
         public void onRequestError(int tag, RequestError error) {
-            mView.showError();
-
+            if (mView != null)
+                mView.showError();
         }
     };
 

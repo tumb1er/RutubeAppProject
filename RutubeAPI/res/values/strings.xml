@@ -9,4 +9,8 @@
     <string name="week_ago">%d week ago</string>
     <string name="weeks_ago">%d weeks ago</string>
     <string name="failed_to_load_data">Failed to load data</string>
+    <string name="views5">%,d views</string>
+    <string name="view1">%,d view</string>
+    <string name="views21">%,d views</string>
+    <string name="views4">%,d views</string>
 </resources>

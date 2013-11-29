@@ -11,4 +11,7 @@ public class Requests {
     public static final int FEED_PAGE = 3;
     public static final int PLAY_OPTIONS = 4;
     public static final int YAST_VIEWED = 5;
+    public static final int BALANCER_JSON = 6;
+    public static final int VISITOR = 7;
+    public static final int VIDEO = 8;
 }

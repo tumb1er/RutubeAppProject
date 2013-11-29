@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <layer-list  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <inset
+            android:insetLeft="10dp"
+            android:insetRight="10dp" >
+            <shape>
+                <solid
+                    android:color="@color/card_background" />
+            </shape>
+        </inset>
+    </item>
+    <item>
+        <inset
+            android:insetLeft="40dp"
+            android:insetRight="40dp" >
+            <shape>
+                <solid
+                    android:color="@color/divider" />
+            </shape>
+        </inset>
+    </item>
+</layer-list>

@@ -2,7 +2,9 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 android:layout_width="fill_parent"
-android:layout_height="fill_parent">
+android:layout_height="fill_parent"
+android:background="@color/feed_background"
+    >
 
     <TextView android:id="@+id/empty"
         android:layout_width="fill_parent"
@@ -16,9 +18,11 @@ android:layout_height="fill_parent">
         android:layout_height="wrap_content"
         android:id="@android:id/list"
         android:layout_gravity="center"
-        android:background="#cccccccc"
-        android:divider="@android:color/transparent"
-        android:drawSelectorOnTop="false"
-        android:cacheColorHint="#cccccccc"
-        android:listSelector="@android:color/transparent"/>
+        android:paddingLeft="0dp"
+        android:paddingRight="0dp"
+        android:background="@color/feed_background"
+        android:dividerHeight="1dp"
+        android:scrollbars="none"
+        android:divider="@drawable/feed_item_divider"
+        style="@style/Rutube.Feed.Container" />
 </RelativeLayout>

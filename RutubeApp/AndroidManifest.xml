@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="ru.rutube.RutubeApp"
-          android:versionCode="7"
-          android:versionName="1.0.0-07"
-    android:installLocation="preferExternal">
+          android:versionCode="36"
+          android:versionName="1.0.0-36">
 
     <uses-sdk
         android:minSdkVersion="9"
-        android:targetSdkVersion="18"/>
+        android:targetSdkVersion="19"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <application
         android:label="@string/app_name"
-        android:icon="@drawable/logo_48"
+        android:icon="@drawable/icon"
+        android:logo="@drawable/logo"
         android:name=".MainApplication"
-        android:theme="@style/Theme.Sherlock">
+        android:theme="@style/Theme.Rutube">
         <meta-data android:name="android.app.default_searchable"
                    android:value="ru.rutube.RutubeApp.ui.SearchFeedActivity" />
         <activity
@@ -26,7 +28,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="ru.rutube.RutubeApp.ui.SearchFeedActivity">
+            android:name="ru.rutube.RutubeApp.ui.SearchFeedActivity"
+            android:theme="@style/Theme.Rutube.Feed">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH"/>
             </intent-filter>
@@ -34,47 +37,58 @@
                        android:resource="@xml/searchable"/>
         </activity>
         <activity
-            android:name="ru.rutube.RutubeApp.ui.AuthorFeedActivity">
-                <intent-filter>
-                    <action android:name="android.intent.action.VIEW" />
-                    <category android:name="android.intent.category.DEFAULT" />
-                    <category android:name="android.intent.category.BROWSABLE" />
-                    <data android:scheme="http"
-                        android:host="rutube.ru"
-                        android:pathPrefix="/video/person/" />
-                </intent-filter>
+            android:name="ru.rutube.RutubeApp.ui.RutubeVideoPageActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.Rutube.Video">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="ru.rutube.player.play"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/embed/" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/private/" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/0" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/1" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/2" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/3" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/4" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/5" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/6" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/7" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/8" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/9" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/a" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/b" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/c" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/d" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/e" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/video/f" />
+            </intent-filter>
+            <!--<intent-filter android:label="@string/app_name">-->
+                <!--<action android:name="ru.rutube.player.play"/>-->
+                <!--<category android:name="android.intent.category.DEFAULT"/>-->
+                <!--<data android:scheme="http"-->
+                    <!--android:host="rutube.ru"-->
+                    <!--android:pathPrefix="/video/" />-->
+            <!--</intent-filter>-->
         </activity>
         <activity
-            android:name=".ui.player.VitamioPlayerActivity"
-            android:label="@string/app_name">
-                <!--<intent-filter>-->
-                    <!--<action android:name="android.intent.action.VIEW" />-->
-                    <!--<category android:name="android.intent.category.DEFAULT" />-->
-                    <!--<category android:name="android.intent.category.BROWSABLE" />-->
-                    <!--<data android:scheme="http"-->
-                          <!--android:host="rutube.ru"-->
-                          <!--android:pathPrefix="/video/" />-->
-                <!--</intent-filter>-->
-                <intent-filter android:label="@string/app_name">
-                    <action android:name="ru.rutube.player.play"/>
-                    <category android:name="android.intent.category.DEFAULT"/>
-                    <data android:scheme="http"
-                          android:host="rutube.ru"
-                          android:pathPrefix="/video/" />
-                </intent-filter>
+            android:name="ru.rutube.RutubeApp.ui.AuthorFeedActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http"
+                    android:host="rutube.ru"
+                    android:pathPrefix="/video/person/" />
+            </intent-filter>
         </activity>
         <activity
             android:name="ru.rutube.RutubeFeed.ui.FeedActivity"
             android:label="@string/app_name">
         </activity>
-        <activity
-            android:name="io.vov.vitamio.activity.InitActivity"
-            android:configChanges="orientation|keyboardHidden|navigation"
-            android:launchMode="singleTop"
-            android:screenOrientation="sensorLandscape"
-            android:theme="@android:style/Theme.NoTitleBar"
-            android:windowSoftInputMode="stateAlwaysHidden"
-        />
         <!--<activity android:name=".ui.UploadActivity">-->
             <!--<intent-filter android:label="@string/app_name">-->
                 <!--<action android:name="ru.rutube.api.upload"/>-->

@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import android.view.Window;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -17,10 +16,13 @@ import com.actionbarsherlock.view.MenuItem;
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeAPI.models.User;
+import ru.rutube.RutubeApp.MainApplication;
 import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubeApp.ctrl.MainPageController;
 import ru.rutube.RutubeApp.ui.dialog.LoginDialogFragment;
+import ru.rutube.RutubeApp.ui.feed.PlaEditorsFragment;
 import ru.rutube.RutubeApp.ui.feed.PlaFeedFragment;
+import ru.rutube.RutubeApp.ui.feed.PlaSubscriptionsFragment;
 
 import java.util.HashMap;
 
@@ -34,6 +36,7 @@ public class StartActivity extends SherlockFragmentActivity implements MainPageC
     private HashMap<String, ActionBar.Tab> mTabMap = new HashMap<String, ActionBar.Tab>();
     private HashMap<String, Fragment> mFragmentMap = new HashMap<String, Fragment>();
     private FragmentTransaction mFragmentTransaction;
+    private String mCurrentFragmentTag;
 
     @Override
     public boolean onCreatePanelMenu(int featureId, Menu menu) {
@@ -62,6 +65,12 @@ public class StartActivity extends SherlockFragmentActivity implements MainPageC
     }
 
     @Override
+    protected void onDestroy() {
+        mController.detach();
+        super.onDestroy();
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         if (savedInstanceState != null)
             mController = savedInstanceState.getParcelable(CONTROLLER);
@@ -74,12 +83,26 @@ public class StartActivity extends SherlockFragmentActivity implements MainPageC
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        MainApplication.mainActivityStart(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        MainApplication.activityStop(this);
+    }
+
+    @Override
     public void onAttachFragment(Fragment fragment) {
         // После вызова super.onCreate из сохраненного состояния автоматически восстанавливается
         // последний фрагмент.
+        if(D) Log.d(LOG_TAG, "onAttachFragment: " + String.valueOf(fragment.getTag()));
         super.onAttachFragment(fragment);
         if (mFragmentMap.get(fragment.getTag()) == null)
             mFragmentMap.put(fragment.getTag(), fragment);
+        // mCurrentFragment = fragment;
     }
 
     /**
@@ -108,6 +131,7 @@ public class StartActivity extends SherlockFragmentActivity implements MainPageC
 
     @Override
     public void showLoginDialog() {
+        MainApplication.loginDialogStart(this);
         LoginDialogFragment.InputDialogFragmentBuilder builder = new LoginDialogFragment.InputDialogFragmentBuilder(this);
         builder.setOnDoneListener(new LoginDialogFragment.OnDoneListener() {
             @Override
@@ -118,6 +142,7 @@ public class StartActivity extends SherlockFragmentActivity implements MainPageC
             @Override
             public void onCancel() {
                 mController.loginCanceled();
+
             }
         }).show();
     }
@@ -126,6 +151,16 @@ public class StartActivity extends SherlockFragmentActivity implements MainPageC
     public void showError() {
         String message = getString(ru.rutube.RutubePlayer.R.string.failed_to_load_data);
         showError(message);
+    }
+
+    @Override
+    public void onLoginCanceled() {
+        MainApplication.loginDialogFailed(this);
+    }
+
+    @Override
+    public void onLoginSuccess() {
+        MainApplication.loginDialogSuccess(this);
     }
 
     private void showError(String message) {
@@ -211,23 +246,55 @@ public class StartActivity extends SherlockFragmentActivity implements MainPageC
      * Заменяет фрагмент ленты в UI рассчитывая на нахождение в контексте транзакции фрагмента.
      */
     private void replaceFragmentInTransaction(FragmentTransaction ft, String tag, Uri feedUri) {
+        Fragment old = getSupportFragmentManager().findFragmentById(R.id.feed_fragment_container);
+        if (old != null)
+            if (D) Log.d(LOG_TAG, "replace fragment: " + String.valueOf(old.getTag()) + " to " + tag);
+        else
+            if (D) Log.d(LOG_TAG, "replace fragment: null to " + tag);
         // ищем фрагмент в локальном кэше
         Fragment fragment = mFragmentMap.get(tag);
         // не нашли, конструируем новый фрагмент с feedUri
         if (fragment == null) {
-            fragment = createFeedFragment(feedUri);
+            if (D) Log.d(LOG_TAG, "Not in cache, creating");
+                    fragment = createFeedFragment(feedUri, tag);
             // добавляем в кэш
             mFragmentMap.put(tag, fragment);
         }
-        ft.replace(R.id.feed_fragment_container, fragment);
+        Fragment prevFragment = mFragmentMap.get(mCurrentFragmentTag);
+        // Для ActionBarCompat рабочий код гораздо короче
+        // ft.replace(R.id.feed_fragment_container, fragment);
+        if (prevFragment != null){
+            if (D) Log.d(LOG_TAG, "Current not null");
+            if (prevFragment.equals(fragment)) {
+                if (D) Log.d(LOG_TAG, "Same fragment, not removing :)");
+                return;
+            }
+            if (D) Log.d(LOG_TAG, "Removing " + String.valueOf(prevFragment.getTag()));
+            ft.remove(prevFragment);
+            if (old != null)
+                ft.remove(old);
+        }
+        prevFragment = getSupportFragmentManager().findFragmentByTag(tag);
+        // История с IndexError внутри FragmentActivity - в интернетах пишут это из-за того, что
+        // идентичные фрагменты задваиваются при повторном добавлении.
+        if (prevFragment == null)
+            ft.add(R.id.feed_fragment_container, fragment, tag);
+        mCurrentFragmentTag = tag;
     }
     /**
      * Конструирует новый фрагмент с лентой
      * @param feedUri uri ленты
      * @return готовый к использованию фрагмент ленты
      */
-    private Fragment createFeedFragment(Uri feedUri) {
-        Fragment fragment = new PlaFeedFragment();
+    private Fragment createFeedFragment(Uri feedUri, String tag) {
+        Fragment fragment;
+        if (tag.equals(MainPageController.TAB_SUBSCRIPTIONS))
+            fragment = new PlaSubscriptionsFragment();
+        else if (tag.equals(MainPageController.TAB_EDITORS))
+            fragment = new PlaEditorsFragment();
+        else
+            fragment = new PlaFeedFragment();
+
         Bundle args = new Bundle();
         args.putParcelable(Constants.Params.FEED_URI, feedUri);
         fragment.setArguments(args);

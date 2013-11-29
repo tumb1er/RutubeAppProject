@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="NewApi">
+
+    <style name="Rutube.ActionBarStyle" parent="Widget.Sherlock.Light.ActionBar.Solid">
+        <!-- Фон ActionBar -->
+        <item name="background">@color/action_bar_background</item>
+        <item name="android:background">@color/action_bar_background</item>
+        <!-- не показывать Title -->
+        <item name="displayOptions">useLogo|showHome</item>
+        <item name="android:displayOptions">useLogo|showHome</item>
+    </style>
+
+</resources>

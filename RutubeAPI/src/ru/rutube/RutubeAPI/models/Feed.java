@@ -34,7 +34,8 @@ public class Feed<FeedItemT extends FeedItem> {
     private final String mToken;
     private final Uri mFeedUri;
     private final Uri mContentUri;
-    private int mForeignKeyId;
+    private int mIntForeignKeyId;
+    private String mStringForeignKeyId;
 
     /**
      * Конструктор объекта ленты
@@ -48,9 +49,11 @@ public class Feed<FeedItemT extends FeedItem> {
         mFeedUri = normalizeFeedUri(feedUri, context);
         mContentUri = contentUri;
         try {
-            mForeignKeyId = Integer.parseInt(contentUri.getLastPathSegment());
+            mIntForeignKeyId = Integer.parseInt(contentUri.getLastPathSegment());
+            mStringForeignKeyId = null;
         } catch (NumberFormatException e) {
-            mForeignKeyId = 0;
+            mIntForeignKeyId = 0;
+            mStringForeignKeyId = contentUri.getLastPathSegment();
         }
     }
 
@@ -63,6 +66,9 @@ public class Feed<FeedItemT extends FeedItem> {
     private static Uri getContentUri(Uri feedUri, Context context) {
         ContentMatcher contentMatcher = ContentMatcher.from(context);
         Uri result = contentMatcher.getContentUri(feedUri);
+        if (result == null) {
+            result = contentMatcher.getRelatedVideoContentUri(context, feedUri);
+        }
         if (result == null) {
             result = contentMatcher.getSearchContentUri(context, feedUri);
         }
@@ -134,13 +140,22 @@ public class Feed<FeedItemT extends FeedItem> {
         if (mContentUri.equals(FeedContract.MyVideo.CONTENT_URI)) {
             return MyVideoFeedItem.fromJSON(data_item);
         }
+        if (mContentUri.equals(FeedContract.Subscriptions.CONTENT_URI)) {
+            return TagsFeedItem.fromJSON(data_item);
+        }
         if (mContentUri.equals(FeedContract.Editors.CONTENT_URI)) {
             return EditorsFeedItem.fromJSON(data_item);
         }
         if (mContentUri.getEncodedPath().startsWith(
                 FeedContract.SearchResults.CONTENT_URI.getEncodedPath())) {
             SearchFeedItem item = SearchFeedItem.fromJSON(data_item);
-            item.setQueryId(mForeignKeyId);
+            item.setQueryId(mIntForeignKeyId);
+            return item;
+        }
+        if (mContentUri.getEncodedPath().startsWith(
+                FeedContract.RelatedVideo.CONTENT_URI.getEncodedPath())) {
+            RelatedVideoItem item = RelatedVideoItem.fromJSON(data_item);
+            item.setVideoId(mStringForeignKeyId);
             return item;
         }
         if (mContentUri.getEncodedPath().startsWith(

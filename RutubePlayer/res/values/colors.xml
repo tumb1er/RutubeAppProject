@@ -2,7 +2,8 @@
 <resources>
     <color name="transparent">#00000000</color>
     <color name="endscreen_shade">#AA000000</color>
-    <color name="seekbar_bg">#FFB6B6B6</color>
-    <color name="seekbar_progress">#FF0090FF</color>
-    <color name="seekbar_secondary">#FFFFFFFF</color>
+    <color name="seekbar_progress">#FF0090FD</color>
+    <color name="seekbar_secondary">#33FFFFFF</color>
+    <color name="seekbar_background">#33FFFFFF</color>
+    <color name="video_background">#FFFFFFFF</color>
 </resources>

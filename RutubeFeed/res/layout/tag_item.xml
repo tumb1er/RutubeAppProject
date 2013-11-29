@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:contentDescription="tag_card"
+    style="?attr/FeedTagStyle">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:id="@+id/title"
+        android:layout_gravity="left|center_vertical"
+        android:contentDescription="title"
+        style="?attr/FeedTagTitleStyle"
+        />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:contentDescription="comment"
+        android:id="@+id/comment"
+        style="?attr/FeedTagCommentStyle"
+        android:layout_below="@id/title"/>
+
+</RelativeLayout>

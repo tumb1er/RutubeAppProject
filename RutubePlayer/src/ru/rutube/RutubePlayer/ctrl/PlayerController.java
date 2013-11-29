@@ -81,11 +81,13 @@ public class PlayerController implements Parcelable, RequestListener {
 
     private static final String LOG_TAG = PlayerController.class.getName();
     private static final boolean D = BuildConfig.DEBUG;
+    private static final int TOTAL_REQUESTS_NEEDED = 4;
 
     protected RequestQueue mRequestQueue;
     protected ImageLoader mImageLoader;
 
     private Uri mVideoUri;
+    private Uri mStreamUri;
     private Video mVideo;
     private TrackInfo mTrackInfo;
     private int mState;
@@ -116,6 +118,7 @@ public class PlayerController implements Parcelable, RequestListener {
     public void onResult(int tag, Bundle result) {
 
         if (tag == Requests.TRACK_INFO) {
+            if (D) Log.d(LOG_TAG, "Got Trackinfo");
             mTrackInfo = result.getParcelable(Constants.Result.TRACKINFO);
             assert mView != null;
             if (mTrackInfo == null) {
@@ -130,17 +133,22 @@ public class PlayerController implements Parcelable, RequestListener {
                 return;
             }
             mView.setVideoTitle(mTrackInfo.getTitle());
-            if (mPlaybackAllowed != null && mPlaybackAllowed)
-                mView.setStreamUri(mTrackInfo.getBalancerUrl());
+            if (mPlaybackAllowed == null || mPlaybackAllowed){
+            //    mView.setStreamUri(mTrackInfo.getBalancerUrl());
+                JsonObjectRequest request = mTrackInfo.getMP4UrlRequest(mContext, this);
+                mRequestQueue.add(request);
+            }
             mPlayRequestStage++;
         }
 
         if (tag == Requests.PLAY_OPTIONS) {
+            if (D) Log.d(LOG_TAG, "Got PlayOptions");
             mPlaybackAllowed = result.getBoolean(Constants.Result.ACL_ALLOWED, false);
             Integer errCode = result.getInt(Constants.Result.ACL_ERRCODE, 0);
             if (!mPlaybackAllowed) {
                 if (D) Log.w(LOG_TAG, "Playback not allowed");
                 mRequestQueue.cancelAll(Requests.TRACK_INFO);
+                mRequestQueue.cancelAll(Requests.BALANCER_JSON);
                 if (mState == STATE_ERROR)
                     return;
                 setState(STATE_ERROR);
@@ -154,13 +162,28 @@ public class PlayerController implements Parcelable, RequestListener {
                 mView.showError(mContext.getResources().getString(error_resource));
                 return;
             } else {
-                if (mTrackInfo != null) {
-                    mView.setStreamUri(mTrackInfo.getBalancerUrl());
+//                if (mTrackInfo != null) {
+//                    mView.setStreamUri(mTrackInfo.getBalancerUrl());
+//                }
+                if (mStreamUri != null) {
+                    mView.setStreamUri(mStreamUri);
                 }
                 if (mThumbnailUri == null){
                     Uri thumbnailUri = result.getParcelable(Constants.Result.PLAY_THUMBNAIL);
                     mView.setThumbnailUri(thumbnailUri);
                 }
+            }
+            mPlayRequestStage++;
+        }
+
+        if (tag == Requests.BALANCER_JSON) {
+            if (D) Log.d(LOG_TAG, "Got Balancer Result");
+            String mp4url = result.getString(Constants.Result.MP4_URL);
+            if (D) Log.d(LOG_TAG, "Got mp4 uri: " + mp4url);
+            if (mp4url != null) {
+                mStreamUri = Uri.parse(mp4url);
+                if (mPlaybackAllowed != null && mPlaybackAllowed)
+                    mView.setStreamUri(mStreamUri);
             }
             mPlayRequestStage++;
         }
@@ -221,9 +244,11 @@ public class PlayerController implements Parcelable, RequestListener {
     // Реализация Parcelable
 
     public static PlayerController fromParcel(Parcel in) {
-        Uri videoUri = in.readParcelable(Uri.class.getClassLoader());
+        // Странно, но иногда на строке чтения Uri возникает ClassNotFoundException,
+        // поэтому вместо Uri храним в парселе строку
+        Uri videoUri = Uri.parse(in.readString());
+        Uri thumbnailUri = Uri.parse(in.readString());
         TrackInfo trackInfo = in.readParcelable(TrackInfo.class.getClassLoader());
-        Uri thumbnailUri = in.readParcelable(Uri.class.getClassLoader());
         int state = in.readInt();
         int videoOffset = in.readInt();
         return new PlayerController(videoUri, thumbnailUri, state, videoOffset, trackInfo);
@@ -236,9 +261,15 @@ public class PlayerController implements Parcelable, RequestListener {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeParcelable(mVideoUri, i);
+        if (mVideoUri == null)
+            parcel.writeString(null);
+        else
+            parcel.writeString(mVideoUri.toString());
+        if (mThumbnailUri == null)
+            parcel.writeString(null);
+        else
+            parcel.writeString(mThumbnailUri.toString());
         parcel.writeParcelable(mTrackInfo, i);
-        parcel.writeParcelable(mThumbnailUri, i);
         parcel.writeInt(mState);
         parcel.writeInt(mVideoOffset);
     }
@@ -266,15 +297,18 @@ public class PlayerController implements Parcelable, RequestListener {
      * стартует воспроизведение
      */
     public void replay() {
+        // если проигрывание уже началось, не инициируем его снова.
+        if (mState == STATE_STARTING)
+            return;
         if (mState!= STATE_COMPLETED)
             throw new IllegalStateException(
                     String.format("Can't change state to Starting from %d", mState));
-        setState(STATE_PLAYING);
+        setState(STATE_STARTING);
         mVideoOffset = 0;
         mView.toggleThumbnail(false);
-        mView.setStreamUri(mTrackInfo.getBalancerUrl());
+        mView.setStreamUri(mStreamUri);
         mView.setVideoTitle(mTrackInfo.getTitle());
-        mView.startPlayback();
+        mPlayRequestStage = TOTAL_REQUESTS_NEEDED - 1;
     }
 
     /**
@@ -297,11 +331,18 @@ public class PlayerController implements Parcelable, RequestListener {
      * запускает воспроизведение.
      */
     public void onResume() {
+        if (D) Log.d(LOG_TAG, "onResume: state=" + String.valueOf(mState));
         if (mState == STATE_PLAYING){
-            mView.setStreamUri(mTrackInfo.getBalancerUrl());
+            mView.setStreamUri(mStreamUri);
             mView.setVideoTitle(mTrackInfo.getTitle());
-            mView.seekTo(mVideoOffset);
-            mView.startPlayback();
+            mPlayRequestStage = TOTAL_REQUESTS_NEEDED - 1;
+            setState(STATE_STARTING);
+        } else {
+            // Если проигрывание не готово, необходимо заново начать подготовку к проигрыванию видео
+            mView.setLoading();
+            mView.toggleThumbnail(true);
+            if (mState != STATE_COMPLETED)
+                checkReadyToPlay();
         }
     }
 
@@ -322,16 +363,27 @@ public class PlayerController implements Parcelable, RequestListener {
     public void onCompletion() {
         if (mState!= STATE_PLAYING)
             throw new IllegalStateException(
-                    String.format("Can't change state to Starting from %d", mState));
+                    String.format("Can't change state to Completed from %d", mState));
         setState(STATE_COMPLETED);
         mView.toggleThumbnail(true);
         mView.onComplete();
     }
 
     /**
+     * Обрабатывает событие ошибки воспроизведения видео
+     */
+    public void onPlaybackError() {
+        setState(STATE_ERROR);
+        mView.showError(mContext.getString(R.string.video_playback_error));
+        mView.toggleThumbnail(true);
+    }
+
+
+    /**
      * Обработка события инициализации VideoView
      */
     public void onViewReady() {
+        if (D) Log.d(LOG_TAG, "Got ViewReady");
         mPlayRequestStage++;
         checkReadyToPlay();
     }
@@ -364,6 +416,7 @@ public class PlayerController implements Parcelable, RequestListener {
      * Останавливает очередь запросов, зануляет все ссылки на объекты Android.
      */
     public void detach() {
+        mAttached = false;
         mRequestQueue.cancelAll(Requests.TRACK_INFO);
         mRequestQueue.cancelAll(Requests.PLAY_OPTIONS);
         mRequestQueue.cancelAll(Requests.YAST_VIEWED);
@@ -371,7 +424,6 @@ public class PlayerController implements Parcelable, RequestListener {
         mRequestQueue = null;
         mContext = null;
         mView = null;
-        mAttached = false;
     }
 
     /**
@@ -381,7 +433,7 @@ public class PlayerController implements Parcelable, RequestListener {
     public void requestStream() {
         if (!mAttached)
             throw new NullPointerException("Not attached");
-        if (D) Log.d(LOG_TAG, "Got Uri: " + String.valueOf(mVideoUri));
+        if (D) Log.d(LOG_TAG, "requestStream() for: " + String.valueOf(mVideoUri));
         mVideo = null;
         if (mVideoUri != null) {
             parseVideoUri();
@@ -389,6 +441,14 @@ public class PlayerController implements Parcelable, RequestListener {
         if (mVideo != null)
             startPlayRequests(mVideo);
 
+    }
+
+    /**
+     * Возвращает текущее состояние контроллера
+     * @return PlayerController.STATE_*
+     */
+    public int getState() {
+        return mState;
     }
 
     /**
@@ -429,6 +489,7 @@ public class PlayerController implements Parcelable, RequestListener {
         if (D) Log.d(LOG_TAG, "Restoring from state " + String.valueOf(mState));
         switch(mState) {
             case STATE_STARTING:
+            case STATE_ERROR:
                 // на момент сохранения запросы еще не были обработаны, запускаем их заново
                 mState = STATE_NEW;
                 requestStream();
@@ -441,10 +502,9 @@ public class PlayerController implements Parcelable, RequestListener {
                 // Запускается показ видео без отправки статистики.
                 mState = STATE_STARTING;
                 mView.setVideoTitle(mTrackInfo.getTitle());
-                mView.setStreamUri(mTrackInfo.getBalancerUrl());
+                mPlayRequestStage = TOTAL_REQUESTS_NEEDED - 1;
+                mView.setStreamUri(mStreamUri);
                 mView.setLoadingCompleted();
-                mView.seekTo(mVideoOffset);
-                startPlayback(false);
                 break;
             case STATE_COMPLETED:
                 // На момент сохранения был показан эндскрин.
@@ -465,9 +525,10 @@ public class PlayerController implements Parcelable, RequestListener {
      * Проверяет необходимые условия начала просмотра
      */
     private void checkReadyToPlay() {
-        // Для начала воспроизведения необходимо дождаться завершения 2 запросов
-        // и вызова onViewReady() - всего 3 стадии.
-        if (mPlayRequestStage == 3) {
+        // Для начала воспроизведения необходимо дождаться завершения 3 запросов
+        // и вызова onViewReady() - всего 4 стадии.
+        if (D) Log.d(LOG_TAG, "Current stage: " + String.valueOf(mPlayRequestStage));
+        if (mPlayRequestStage == TOTAL_REQUESTS_NEEDED) {
             startPlayback(true);
         } else
             if (D) Log.d(LOG_TAG, "Not ready yet");
@@ -478,11 +539,13 @@ public class PlayerController implements Parcelable, RequestListener {
      * и командует плееру начать просмотр
      */
     private void startPlayback(boolean sendViewed) {
-        if (mState!= STATE_STARTING)
-            throw new IllegalStateException(String.format("Can't change state to Starting from %d", mState));
+        if (mState!= STATE_STARTING && mState != STATE_ERROR)
+            throw new IllegalStateException(String.format("Can't change state to Playing from %d", mState));
         setState(STATE_PLAYING);
         mView.setLoadingCompleted();
         mView.toggleThumbnail(false);
+        if (mVideoOffset > 0)
+            mView.seekTo(mVideoOffset);
         mView.startPlayback();
         if (sendViewed) {
             JsonObjectRequest request = mVideo.getYastRequest(mContext);
@@ -507,7 +570,7 @@ public class PlayerController implements Parcelable, RequestListener {
      * @param video объект видео, которое надо воспроизвести.
      */
     private void startPlayRequests(Video video) {
-        if (mState != STATE_NEW)
+        if (mState != STATE_NEW && mState != STATE_ERROR)
             throw new IllegalStateException(
                     String.format("can't change state to STARTING from %d", mState));
         mPlayRequestStage = 0;

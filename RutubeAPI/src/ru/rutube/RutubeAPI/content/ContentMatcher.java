@@ -43,6 +43,7 @@ public class ContentMatcher {
         uriMap.put("/" + context.getString(R.string.editors_uri), FeedContract.Editors.CONTENT_URI);
         uriMap.put("/" + context.getString(R.string.my_video_uri), FeedContract.MyVideo.CONTENT_URI);
         uriMap.put("/" + context.getString(R.string.subscription_uri), FeedContract.Subscriptions.CONTENT_URI);
+        uriMap.put("/" + context.getString(R.string.related_video_uri), FeedContract.RelatedVideo.CONTENT_URI);
         uriMap.put("/" + context.getString(R.string.authors_uri), FeedContract.AuthorVideo.CONTENT_URI);
     }
 
@@ -87,9 +88,27 @@ public class ContentMatcher {
         path = normalize(path);
         if (D) Log.d(LOG_TAG, "Matching with params: " + path);
         Uri result = uriMap.get(path);
-        if (result == null)
+        if (D) Log.d(LOG_TAG, "Matched: " + String.valueOf(result));
+        return result;
+    }
+
+    public Uri getRelatedVideoContentUri(Context context, Uri feedUri) {
+        String path = feedUri.getPath();
+        assert path != null;
+        if (!path.startsWith("/"))
+            path = "/" + path;
+        String relatedPath = "/" + context.getString(R.string.related_video_uri);
+        if (!path.startsWith(relatedPath)){
             return null;
-        return result.buildUpon().appendEncodedPath(last).build();
+        }
+        List<String> pathSegments = feedUri.getPathSegments();
+        assert pathSegments != null;
+        if (pathSegments.size() != 4) {
+            return null;
+        }
+        String related_video_id = pathSegments.get(3);
+        return FeedContract.RelatedVideo.CONTENT_URI.buildUpon().appendPath(
+                String.valueOf(related_video_id)).build();
     }
 
     public Uri getSearchContentUri(Context context, Uri feedUri) {

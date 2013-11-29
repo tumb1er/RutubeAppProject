@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,9 +27,11 @@ import com.actionbarsherlock.widget.SearchView;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.RutubeApp;
+import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeFeed.R;
 import ru.rutube.RutubeFeed.ctrl.FeedController;
+import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
 
 /**
  * Created with IntelliJ IDEA.
@@ -74,15 +77,23 @@ public class FeedFragment extends SherlockFragment implements FeedController.Fee
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if (D) Log.d(LOG_TAG, "onCreateOptionsMenu");
         super.onCreateOptionsMenu(menu, inflater);
 
         mMenu = menu;
-        inflater.inflate(R.menu.feed_menu, menu);
+        if (menu.size() == 0)
+            inflater.inflate(R.menu.feed_menu, menu);
         mRefreshItem = menu.findItem(R.id.menu_refresh);
         MenuItem searchItem = menu.findItem(R.id.menu_search);
         assert searchItem != null;
         Activity activity = getActivity();
-        assert activity != null;
+        // Иногда успевает вызваться в момент, когда активити недоступно.
+        if (activity != null)
+            setupSearchMenuItem(searchItem, activity);
+
+    }
+
+    private void setupSearchMenuItem(MenuItem searchItem, Activity activity) {
         // Get the SearchView and set the searchable configuration
         SearchManager searchManager = (SearchManager) activity.getSystemService(Context.SEARCH_SERVICE);
         mSearchView = (SearchView) searchItem.getActionView();
@@ -124,6 +135,16 @@ public class FeedFragment extends SherlockFragment implements FeedController.Fee
         if (D) Log.d(LOG_TAG, "Player started");
     }
 
+    @Override
+    public FeedCursorAdapter initAdapter() {
+        return new FeedCursorAdapter(getActivity(),
+            R.layout.feed_item,
+            null,
+            new String[]{FeedContract.FeedColumns.TITLE, FeedContract.FeedColumns.THUMBNAIL_URI},
+            new int[]{R.id.titleTextView, R.id.thumbnailImageView},
+            0);
+    }
+
     public void showError() {
         Activity activity = getActivity();
         if (activity != null)
@@ -140,7 +161,7 @@ public class FeedFragment extends SherlockFragment implements FeedController.Fee
 
     private void init() {
         initFeedUri();
-        mController = new FeedController(feedUri);
+        mController = new FeedController(getFeedUri());
         mController.attach(getActivity(), this);
     }
 
@@ -158,28 +179,31 @@ public class FeedFragment extends SherlockFragment implements FeedController.Fee
         init();
     }
 
-    private void initFeedUri() {
+    protected void initFeedUri() {
         Bundle args = getArguments();
         if (args != null)
-            feedUri = args.getParcelable(Constants.Params.FEED_URI);
-        if (feedUri == null) {
+            setFeedUri(((Uri)args.getParcelable(Constants.Params.FEED_URI)));
+        if (getFeedUri() == null) {
             Activity activity = getActivity();
             assert activity != null;
-            feedUri = activity.getIntent().getData();
+            setFeedUri(activity.getIntent().getData());
         }
-        if (D) Log.d(LOG_TAG, "Feed Uri:" + String.valueOf(feedUri));
+        if (D) Log.d(LOG_TAG, "Feed Uri:" + String.valueOf(getFeedUri()));
     }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        if (D) Log.d(LOG_TAG, "onPrepareOptionsMenu");
+        if (D) Log.d(LOG_TAG, "onPrepareOptionsMenu" + String.valueOf(getTag()));
         mRefreshItem = menu.findItem(R.id.menu_refresh);
-
-        mRotateAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate_icon);
+        FragmentActivity activity = getActivity();
+        // NPE, куда же без него
+        if (activity == null)
+            return;
+        mRotateAnimation = AnimationUtils.loadAnimation(activity, R.anim.rotate_icon);
         assert mRotateAnimation != null;
         mRotateAnimation.setRepeatCount(Animation.INFINITE);
 
-        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         ImageView iv = (ImageView) inflater.inflate(R.layout.refresh_btn, null);
         iv.setOnClickListener(mRefreshClickListener);
         mRefreshItem.setActionView(iv);
@@ -195,6 +219,8 @@ public class FeedFragment extends SherlockFragment implements FeedController.Fee
 
     public void setRefreshing() {
         boolean isLoading = RutubeApp.isLoadingFeed();
+        if (isLoading)
+            return;
         RutubeApp.startLoading();
         if (mRefreshItem == null) {
             if (D) Log.d(LOG_TAG, "empty refresh item");
@@ -217,14 +243,29 @@ public class FeedFragment extends SherlockFragment implements FeedController.Fee
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
-        sgView = (ListView)inflater.inflate(R.layout.feed_fragment, container, false);
+        View view = inflater.inflate(R.layout.feed_fragment, container, false);
+        sgView = (ListView)view.findViewById(android.R.id.list);
         assert sgView != null;
-        // sgView.setOnItemClickListener(this);
-        return sgView;
+        sgView.setOnItemClickListener(this);
+        return view;
     }
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         mController.onListItemClick(position);
+    }
+
+    @Override
+    public void onItemClick(FeedCursorAdapter.ClickTag dataTag, String viewTag) {
+        if (D) Log.d(LOG_TAG, String.format("onItemClick: %d %s", dataTag.position, viewTag));
+        onItemClick(null, null, dataTag.position, -1);
+    }
+
+    protected Uri getFeedUri() {
+        return feedUri;
+    }
+
+    protected void setFeedUri(Uri feedUri) {
+        this.feedUri = feedUri;
     }
 }

@@ -1,14 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
-        <VideoView xmlns:android="http://schemas.android.com/apk/res/android"
-                   android:layout_width="fill_parent"
-                   android:layout_height="fill_parent"
-                   android:id="@+id/video_view">
-        </VideoView>
-        <com.android.volley.toolbox.NetworkImageView
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#000000">
+    <ru.rutube.RutubePlayer.views.VideoFrameLayout android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/center_video_view">
+        <SurfaceView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:id="@+id/thumbnail"/>
-</FrameLayout>
+            android:layout_gravity="center"
+
+            android:id="@+id/video_view"/>
+    </ru.rutube.RutubePlayer.views.VideoFrameLayout>
+
+    <com.android.volley.toolbox.NetworkImageView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/thumbnail" />
+
+    <ProgressBar
+        android:id="@+id/load"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="visible" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="20dp"
+        android:focusableInTouchMode="true"
+        android:id="@+id/volumeImageView"
+        android:visibility="gone" />
+
+</RelativeLayout>

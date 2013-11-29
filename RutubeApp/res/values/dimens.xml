@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <dimen name="action_bar_default_height">48dp</dimen>
-    <dimen name="mediacontroller_button_space">32dp</dimen>
-    <dimen name="mediacontroller_buttons_top_margin">2dp</dimen>
-    <dimen name="mediacontroller_buttons_bottom_margin">0dp</dimen>
-
+    <dimen name="video_info_padding_right">10dp</dimen>
+    <dimen name="related_card_padding_top">10dp</dimen>
+    <integer name="video_container_weight" >2</integer>
+    <integer name="related_video_container_weight">1</integer>
 </resources>

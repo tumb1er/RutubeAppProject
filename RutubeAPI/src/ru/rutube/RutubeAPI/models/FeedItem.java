@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import ru.rutube.RutubeAPI.R;
 import ru.rutube.RutubeAPI.RutubeApp;
@@ -35,6 +36,7 @@ public class FeedItem implements Parcelable {
     protected static final String JSON_VIDEO = "video";
     protected static final String JSON_THUMBNAIL_URL = "thumbnail_url";
     protected static final String JSON_VIDEO_ID = "id";
+    protected static final String JSON_DURATION = "duration";
 
     private String title;
     private String description;
@@ -42,14 +44,17 @@ public class FeedItem implements Parcelable {
     private Uri thumbnailUri;
     private String videoId;
     private Author author;
+    private int duration;
 
-    public FeedItem(String title, String description, Date created, Uri thumbnailUri, String videoId, Author author) {
+    public FeedItem(String title, String description, Date created, Uri thumbnailUri,
+                    String videoId, Author author, int duration) {
         this.title = title;
         this.description = description;
         this.created = created;
         this.thumbnailUri = thumbnailUri;
         this.videoId = videoId;
         this.author = author;
+        this.duration = duration;
     }
 
     public static FeedItem fromParcel(Parcel parcel) {
@@ -70,7 +75,8 @@ public class FeedItem implements Parcelable {
         if (hasAuthor) {
             author = Author.fromParcel(parcel);
         }
-        return new FeedItem(title, description, created, thumbnailUri, videoId, author);
+        int duration = parcel.readInt();
+        return new FeedItem(title, description, created, thumbnailUri, videoId, author, duration);
     }
 
     protected static Date getCreated(JSONObject data) {
@@ -90,7 +96,10 @@ public class FeedItem implements Parcelable {
             return new Date(0);
         }
     }
-
+    public int getDuration()
+        {
+            return duration;
+        }
     public Author getAuthor() {
         return author;
     }
@@ -119,7 +128,8 @@ public class FeedItem implements Parcelable {
         String description = data.getString(JSON_DESCIPTION);
         Uri thumbnailUri = Uri.parse(data.getString(JSON_THUMBNAIL_URL));
         String videoId = data.getString(JSON_VIDEO_ID);
-        return new FeedItem(title, description, created, thumbnailUri, videoId, author);
+        int duration = data.optInt(JSON_DURATION, 0);
+        return new FeedItem(title, description, created, thumbnailUri, videoId, author, duration);
     }
 
     // Parcelable implementation
@@ -157,6 +167,10 @@ public class FeedItem implements Parcelable {
 
     public String getTitle() {
         return title;
+    }
+
+    public List<VideoTag> getTags() {
+        return null;
     }
 
     public String getDescription() {
@@ -198,7 +212,8 @@ public class FeedItem implements Parcelable {
         if (authorId > 0) {
              author = Author.fromCursor(c);
         }
-        return new FeedItem(title, description, created, thumbnailUri, videoId, author);
+        int duration = c.getInt(c.getColumnIndex(FeedContract.FeedColumns.DURATION));
+        return new FeedItem(title, description, created, thumbnailUri, videoId, author, duration);
 
     }
 
@@ -208,6 +223,7 @@ public class FeedItem implements Parcelable {
         row.put(FeedContract.FeedColumns.DESCRIPTION, description);
         row.put(FeedContract.FeedColumns.CREATED, sSqlDateTimeFormat.format(created));
         row.put(FeedContract.FeedColumns.THUMBNAIL_URI, thumbnailUri.toString());
+        row.put(FeedContract.FeedColumns.DURATION, duration);
 
         if (author != null) {
             row.put(FeedContract.FeedColumns.AUTHOR_ID, author.getId());

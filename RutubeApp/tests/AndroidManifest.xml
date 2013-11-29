@@ -7,25 +7,17 @@
     <!-- We add an application tag here just so that we can indicate that
          this package needs to link against the android.test library,
          which is needed when building test cases. -->
-    <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="17"/>
+    <uses-sdk
+        android:minSdkVersion="9"
+        android:targetSdkVersion="18"/>
     <application>
-        <uses-library android:name="android.test.runner" />
+        <uses-library android:name="android.test.runner"/>
         <activity
-            android:name="ru.rutube.RutubeApp.ui.player.VitamioPlayerActivity">
+            android:name="ru.rutube.RutubeApp.ui.StartActivity"
+            android:label="">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="http"
-                    android:host="rutube.ru"
-                    android:pathPrefix="/video/" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="ru.rutube.player.play"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data android:scheme="http"
-                    android:host="rutube.ru"
-                    android:pathPrefix="/video/" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
     </application>
@@ -34,7 +26,8 @@
     the package of ru.rutube.RutubeApp.  To run the tests use the command:
     "adb shell am instrument -w ru.rutube.RutubeApp.tests/android.test.InstrumentationTestRunner"
     -->
-    <instrumentation android:name="android.test.InstrumentationTestRunner"
-                     android:targetPackage="ru.rutube.RutubeApp"
-                     android:label="Tests for ru.rutube.RutubeApp"/>
+    <instrumentation
+        android:name="android.test.InstrumentationTestRunner"
+        android:targetPackage="ru.rutube.RutubeApp"
+        android:label="Tests for ru.rutube.RutubeApp"/>
 </manifest>

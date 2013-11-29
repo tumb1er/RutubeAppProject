@@ -1,25 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@android:id/background">
-            <!--<bitmap xmlns:android="http://schemas.android.com/apk/res/android"-->
-                <!--android:src="@drawable/seekbar_background"-->
-                    <!--android:gravity="fill"/>-->
-            <shape>
-                <gradient
-                        android:startColor="@color/seekbar_bg"
-                        android:endColor="@color/seekbar_bg"/>
+            <shape android:thickness="80dp">
+                <solid android:color="@color/seekbar_background"/>
             </shape>
     </item>
     <item android:id="@android:id/secondaryProgress">
         <clip>
-            <shape>
+            <shape android:thickness="80dp">
                 <solid android:color="@color/seekbar_secondary"/>
             </shape>
         </clip>
     </item>
     <item android:id="@android:id/progress">
         <clip>
-            <shape>
+            <shape android:thickness="80dp">
                 <solid android:color="@color/seekbar_progress"/>
             </shape>
         </clip>

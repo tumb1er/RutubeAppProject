@@ -22,14 +22,15 @@ import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeAPI.models.User;
 import ru.rutube.RutubeAPI.requests.RequestListener;
+import ru.rutube.RutubeAPI.requests.Requests;
 
 /**
  * Created by tumbler on 14.07.13.
  */
 public class MainPageController implements Parcelable, RequestListener {
-    private static final String TAB_EDITORS = "editors";
-    private static final String TAB_MY_VIDEO = "my_video";
-    private static final String TAB_SUBSCRIPTIONS = "subscription";
+    public static final String TAB_EDITORS = "editors";
+    public static final String TAB_MY_VIDEO = "my_video";
+    public static final String TAB_SUBSCRIPTIONS = "subscription";
     private static final String LOG_TAG = MainPageController.class.getName();
     private static final boolean D = BuildConfig.DEBUG;
 
@@ -71,6 +72,7 @@ public class MainPageController implements Parcelable, RequestListener {
     public void loginCanceled() {
         if (D) Log.d(LOG_TAG, "Login cancelled, switching to " + mSelectedTab);
         mView.selectTab(mSelectedTab);
+        mView.onLoginCanceled();
     }
 
     public void logout() {
@@ -89,6 +91,9 @@ public class MainPageController implements Parcelable, RequestListener {
 
         void showError();
 
+        void onLoginCanceled();
+
+        void onLoginSuccess();
     }
 
     private Context mContext = null;
@@ -118,6 +123,7 @@ public class MainPageController implements Parcelable, RequestListener {
         Uri feedUri = feedUriMap.get(mAfterLoginTab);
         mSelectedTab = mAfterLoginTab;
         mView.showFeedFragment(mAfterLoginTab, feedUri);
+        mView.onLoginSuccess();
     }
 
     public void attach(Context context, MainPageView view) {
@@ -129,7 +135,13 @@ public class MainPageController implements Parcelable, RequestListener {
             new HttpClientStack(HttpTransport.getHttpClient()));
         mUser = User.load(context);
         initFeedUriMap();
+        requestVisitor();
         mAttached = true;
+    }
+
+    private void requestVisitor() {
+        if (!mUser.isAnonymous())
+            mRequestQueue.add(mUser.getVisitorRequest());
     }
 
     private void initFeedUriMap() {
@@ -140,6 +152,8 @@ public class MainPageController implements Parcelable, RequestListener {
     }
 
     public  void detach() {
+        mRequestQueue.cancelAll(Requests.VISITOR);
+        mRequestQueue.cancelAll(Requests.TOKEN);
         mContext = null;
         mView = null;
         mAttached = false;
@@ -154,7 +168,7 @@ public class MainPageController implements Parcelable, RequestListener {
         mView.addFeedTab(mContext.getResources().getString(ru.rutube.RutubeFeed.R.string.tab_my_video), TAB_MY_VIDEO);
         mView.addFeedTab(mContext.getResources().getString(ru.rutube.RutubeFeed.R.string.tab_subscriptions), TAB_SUBSCRIPTIONS);
         mTabsInited = true;
-        if (D) Log.d(LOG_TAG, "selecting tab" + mSelectedTab);
+        if (D) Log.d(LOG_TAG, "selecting tab " + mSelectedTab);
         mView.selectTab(mSelectedTab);
         mView.showFeedFragment(mSelectedTab, feedUriMap.get(mSelectedTab));
     }
