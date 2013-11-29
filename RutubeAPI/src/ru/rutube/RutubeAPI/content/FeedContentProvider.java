@@ -497,6 +497,7 @@ public class FeedContentProvider extends ContentProvider {
             db.execSQL(SQL_CREATE_SEARCH_RESULTS);
             db.execSQL(SQL_CREATE_SEARCH_QUERY);
             db.execSQL(SQL_CREATE_RELATED_VIDEO);
+            db.execSQL(SQL_CREATE_AUTHOR_QUERY);
         }
 
         @Override

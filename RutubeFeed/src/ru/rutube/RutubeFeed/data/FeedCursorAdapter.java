@@ -216,11 +216,14 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         holder.avatar.setImageUrl(avatarUri, imageLoader);
     }
 
-            // При отсутствии аватара скрываем его ImageView и стрелочку вниз
-            visibility = (avatarUri == null) ? View.GONE : View.VISIBLE;
-            holder.avatar.setVisibility(visibility);
-            holder.avatar.setImageUrl(avatarUri, imageLoader);
-            holder.commentBalloon.setVisibility(visibility);
+    protected void bindAuthor(Cursor cursor, ViewHolder holder) {
+        int authorNameIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.AUTHOR_NAME);
+        String authorName = cursor.getString(authorNameIndex);
+        // При отсутствии имени автора скрываем соответствующий TextField
+        int visibility = (authorName == null) ? View.GONE : View.VISIBLE;
+        holder.author.setVisibility(visibility);
+        holder.author.setText(authorName);
+    }
 
     protected void bindCreated(Cursor cursor, ViewHolder holder) {
         int createdIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.CREATED);
