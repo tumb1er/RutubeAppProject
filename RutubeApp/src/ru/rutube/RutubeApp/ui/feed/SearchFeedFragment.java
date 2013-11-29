@@ -13,6 +13,7 @@ import com.huewu.pla.lib.internal.PLA_AdapterView;
 
 import ru.rutube.RutubeApp.MainApplication;
 import ru.rutube.RutubeApp.R;
+import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
 
 /**
  * Created by tumbler on 18.08.13.
@@ -27,4 +28,11 @@ public class SearchFeedFragment extends PlaFeedFragment {
         tv.setText(getResources().getText(R.string.nothing_found));
         return v;
     }
+
+    @Override
+    public boolean onItemClick(FeedCursorAdapter.ClickTag position, String viewTag) {
+        MainApplication.cardClick(getActivity(), viewTag);
+        return super.onItemClick(position, viewTag);
+    }
+
 }

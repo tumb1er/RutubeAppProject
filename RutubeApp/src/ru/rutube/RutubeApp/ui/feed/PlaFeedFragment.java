@@ -54,8 +54,8 @@ public class PlaFeedFragment extends ru.rutube.RutubeFeed.ui.FeedFragment {
     }
 
     @Override
-    public void onItemClick(FeedCursorAdapter.ClickTag position, String viewTag) {
+    public boolean onItemClick(FeedCursorAdapter.ClickTag position, String viewTag) {
         MainApplication.cardClick(getActivity(), viewTag);
-        super.onItemClick(position, viewTag);
+        return super.onItemClick(position, viewTag);
     }
 }

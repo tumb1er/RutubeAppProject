@@ -169,8 +169,8 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
 
 
     @Override
-    public void onItemClick(FeedCursorAdapter.ClickTag position, String viewTag) {
+    public boolean onItemClick(FeedCursorAdapter.ClickTag position, String viewTag) {
         MainApplication.relatedCardClick(getActivity(), viewTag);
-        super.onItemClick(position, viewTag);
+        return super.onItemClick(position, viewTag);
     }
 }

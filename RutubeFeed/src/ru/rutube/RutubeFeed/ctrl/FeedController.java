@@ -21,6 +21,7 @@ import com.android.volley.toolbox.Volley;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.HttpTransport;
+import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.content.FeedContentProvider;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeAPI.models.Feed;
@@ -52,9 +53,7 @@ public class FeedController implements Parcelable {
 
         public FeedCursorAdapter initAdapter();
 
-        public void onItemClick(FeedCursorAdapter.ClickTag position, String viewTag);
-
-        public void openFeed(Uri feedUri);
+        public boolean onItemClick(FeedCursorAdapter.ClickTag position, String viewTag);
     }
 
     private static final int LOADER_ID = 1;
@@ -202,11 +201,12 @@ public class FeedController implements Parcelable {
                 // Клик по футеру, открываем ленту автора
                 if (D) Log.d(LOG_TAG, "Feed link click: " + String.valueOf(dataTag.href));
                 if (dataTag.href != null && !dataTag.href.equals(mFeedUri)) {
-                    mView.openFeed(dataTag.href);
+                    RutubeApp.getInstance().openFeed(dataTag.href);
                     return;
                 }
             }
-            mView.onItemClick(dataTag, viewTag);
+            if (!mView.onItemClick(dataTag, viewTag))
+                onListItemClick(dataTag.position);
         }
     };
 

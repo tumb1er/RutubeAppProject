@@ -2,6 +2,7 @@ package ru.rutube.RutubeAPI;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -27,6 +28,12 @@ public class RutubeApp extends Application {
     public RutubeApp() {
         instance = this;
         mLoadingFeed = false;
+    }
+
+    public static RutubeApp getInstance() {
+        if (instance == null)
+            instance = new RutubeApp();
+        return instance;
     }
 
     public static Context getContext() {
@@ -111,6 +118,12 @@ public class RutubeApp extends Application {
         return baseUri.buildUpon()
                 .appendEncodedPath(String.format(path, param))
                 .build();
+    }
+
+    public void openFeed(Uri feedUri) {
+        Intent intent = new Intent("ru.rutube.feed.open");
+        intent.setData(feedUri);
+        startActivity(intent);
     }
 
     public static String getUrl(String path) {

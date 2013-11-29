@@ -55,10 +55,9 @@ public class PlaSubscriptionsFragment extends ru.rutube.RutubeFeed.ui.Subscripti
     }
 
     @Override
-    public void onItemClick(FeedCursorAdapter.ClickTag dataTag, String viewTag) {
+    public boolean onItemClick(FeedCursorAdapter.ClickTag position, String viewTag) {
         MainApplication.cardClick(getActivity(), viewTag);
-        if (D) Log.d(LOG_TAG, String.format("onItemClick: %s %s", String.valueOf(dataTag.href), viewTag));
-        onItemClick(null, null, dataTag.position, -1);
+        return super.onItemClick(position, viewTag);
     }
 
 }
