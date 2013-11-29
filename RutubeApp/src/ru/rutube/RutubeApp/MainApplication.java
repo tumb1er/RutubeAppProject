@@ -9,6 +9,7 @@ import com.google.analytics.tracking.android.Fields;
 import com.google.analytics.tracking.android.MapBuilder;
 
 import ru.rutube.RutubeAPI.RutubeApp;
+import ru.rutube.RutubeApp.ui.AuthorFeedActivity;
 
 /**
  * Created by oleg on 7/30/13.
@@ -75,6 +76,16 @@ public class MainApplication extends RutubeApp {
     public static void relatedCardClick(Activity activity, String tag) {
         EasyTracker tracker = getTracker(activity);
         tracker.send(MapBuilder.createEvent("ui_actions", "related_click", tag, null).build());
+
+    }
+
+    public static void feedActivityStart(Activity activity, String tag) {
+        EasyTracker tracker = getTracker(activity);
+        tracker.set(Fields.SCREEN_NAME, "Feed");
+        tracker.activityStart(activity);
+        tracker.send(MapBuilder
+                .createEvent("stats", "open_feed", tag, null)
+                .build());
 
     }
 }
