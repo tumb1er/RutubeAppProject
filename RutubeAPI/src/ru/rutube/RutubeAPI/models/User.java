@@ -101,7 +101,7 @@ public class User {
     public JsonObjectRequest getVisitorRequest() {
         String visitorUri = RutubeApp.getUrl(R.string.visitor_uri);
         JsonObjectRequest request = new AuthJsonObjectRequest(visitorUri, null,
-                getVisitorListener(), null, mToken);
+                getVisitorListener(), getVisitorErrorListener(), mToken);
         request.setShouldCache(false);
         request.setTag(Requests.VISITOR);
         return request;
@@ -194,6 +194,20 @@ public class User {
             @Override
             public void onErrorResponse(VolleyError error) {
                 requestListener.onVolleyError(error);
+            }
+        };
+    }
+
+    /**
+     * Конструирует
+     * @return обработчик ошибок Volley
+     */
+    private Response.ErrorListener getVisitorErrorListener()
+    {
+        return new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                if (D) Log.d(LOG_TAG, "visitor error: " + String.valueOf(error));
             }
         };
     }

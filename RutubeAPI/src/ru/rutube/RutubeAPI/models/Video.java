@@ -189,7 +189,7 @@ public class Video implements Parcelable {
         String trackInfoPath = String.format(context.getString(R.string.trackinfo_uri), mVideoId);
         String trackInfoUri = RutubeApp.getUrl(trackInfoPath);
         if (mSignature != null)
-            trackInfoUri += String.format("?p=%s", mSignature);
+            trackInfoUri += String.format("&p=%s", mSignature);
         JsonObjectRequest request = new JsonObjectRequest(trackInfoUri,
                 null, getTrackInfoListener(listener), getErrorListener(Requests.TRACK_INFO, listener));
         request.setShouldCache(true);
@@ -259,6 +259,8 @@ public class Video implements Parcelable {
     public JsonObjectRequest getPlayOptionsRequest(Context context, RequestListener listener) {
         String playOptionsPath = String.format(context.getString(R.string.playoptions_uri), mVideoId);
         String playOptionsUrl = RutubeApp.getUrl(playOptionsPath);
+        if (mSignature != null)
+            playOptionsUrl += "&p=" + mSignature;
         Uri uri = Uri.parse(playOptionsUrl).buildUpon()
                 .appendQueryParameter("referer", context.getString(R.string.referer))
                 .build();

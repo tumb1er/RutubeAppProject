@@ -175,8 +175,12 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
 //                DateUtils.formatElapsedTime(duration));
         String hits = video.getHitsText(getActivity());
         mViewHolder.hits.setText(hits);
-        mViewHolder.description.setText(
-                Html.fromHtml(video.getDescription()));
+        String description = video.getDescription();
+        if (description != null)
+            mViewHolder.description.setText(
+                    Html.fromHtml(description));
+        else
+            mViewHolder.description.setText(null);
     }
 
     public void toggleHeader(boolean visible) {

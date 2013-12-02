@@ -95,6 +95,12 @@ public class StartActivity extends SherlockFragmentActivity implements MainPageC
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        mController.onResume();
+    }
+
+    @Override
     public void onAttachFragment(Fragment fragment) {
         // После вызова super.onCreate из сохраненного состояния автоматически восстанавливается
         // последний фрагмент.

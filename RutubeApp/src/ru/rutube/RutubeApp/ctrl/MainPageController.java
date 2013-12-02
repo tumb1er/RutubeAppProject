@@ -135,7 +135,6 @@ public class MainPageController implements Parcelable, RequestListener {
             new HttpClientStack(HttpTransport.getHttpClient()));
         mUser = User.load(context);
         initFeedUriMap();
-        requestVisitor();
         mAttached = true;
     }
 
@@ -173,6 +172,9 @@ public class MainPageController implements Parcelable, RequestListener {
         mView.showFeedFragment(mSelectedTab, feedUriMap.get(mSelectedTab));
     }
 
+    public void onResume() {
+        requestVisitor();
+    }
 
     public void onTabSelected(String tag) {
         if (!mTabsInited) {
