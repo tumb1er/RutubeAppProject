@@ -75,7 +75,7 @@ public class VideoPageController implements Parcelable, RequestListener {
 
         public void closeVideoPage();
 
-        public void toggleFullscreen(boolean isFullscreen);
+        public void toggleFullscreen(boolean isFullscreen, boolean rotate);
 
         public void setVideoInfo(Video mVideo);
 
@@ -120,17 +120,17 @@ public class VideoPageController implements Parcelable, RequestListener {
             // двойное нажатие на "назад" приходит после того, как контроллер уже детачнулся
             return;
         }
-        if (mView.isFullscreen()) {
-            mView.toggleFullscreen(false);
-        } else {
+//        if (mView.isFullscreen()) {
+//            mView.toggleFullscreen(false);
+//        } else {
             mView.closeVideoPage();
-        }
+//        }
     }
 
 
     public void onDoubleTap() {
         if (D) Log.d(LOG_TAG, "onDoubleTap");
-        mView.toggleFullscreen(!mView.isFullscreen());
+        mView.toggleFullscreen(!mView.isFullscreen(), true);
     }
 
 

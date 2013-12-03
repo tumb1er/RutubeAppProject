@@ -61,6 +61,7 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
 
         }
     };
+    private View mHeaderView;
 
     protected static class ViewHolder extends RutubeVideoPageActivity.ViewHolder {
         ImageButton moreInfo;
@@ -71,10 +72,13 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
     protected ViewHolder mViewHolder;
 
     private void toggleDescription(boolean visible) {
-        if (visible)
-            mViewHolder.moreInfo.setImageResource(R.drawable.more_btn_selected);
-        else
-            mViewHolder.moreInfo.setImageResource(R.drawable.more_btn_default);
+        if (visible){
+            mViewHolder.moreInfo.setImageResource(R.drawable.more_info_btn_down);
+            mViewHolder.videoInfoContainer.setBackgroundResource(R.drawable.first_related_bg);
+        } else {
+            mViewHolder.moreInfo.setImageResource(R.drawable.more_info_btn_left);
+            mViewHolder.videoInfoContainer.setBackgroundResource(R.drawable.video_info_bg);
+        }
         mDescriptionVisible = visible;
         int visibility = visible? View.VISIBLE: View.GONE;
         mViewHolder.commentLine.setVisibility(visibility);
@@ -102,7 +106,9 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
         mNormalFont = Typefaces.get(getActivity(), "fonts/opensansregular.ttf");
         mLightFont = Typefaces.get(getActivity(), "fonts/opensanslight.ttf");
         // инициализирует и добавляет в ListView заголовок с информацией о видео.
-        mInfoView = getActivity().getLayoutInflater().inflate(R.layout.video_info, null);
+        mHeaderView = getActivity().getLayoutInflater().inflate(R.layout.related_header, null);
+        assert mHeaderView != null;
+        mInfoView = mHeaderView.findViewById(R.id.video_info);
         assert mInfoView != null;
         mViewHolder = new ViewHolder();
         mViewHolder.title = ((TextView)mInfoView.findViewById(R.id.video_title));
@@ -114,6 +120,7 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
         mViewHolder.description = ((TextView)mInfoView.findViewById(R.id.description));
         mViewHolder.moreInfo = ((ImageButton)mInfoView.findViewById(R.id.moreImageButton));
         mViewHolder.commentLine = mInfoView.findViewById(R.id.commentLine);
+        mViewHolder.videoInfoContainer = mInfoView.findViewById(R.id.baseInfoContainer);
 
         mViewHolder.title.setTypeface(mNormalFont);
         mViewHolder.from.setTypeface(mLightFont);
@@ -134,13 +141,7 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
     private void addHeaderView() {
         if (mHasInfoView) return;
         mHasInfoView = true;
-        mListView.addHeaderView(mInfoView);
-    }
-
-    private void removeHeaderView() {
-        if (!mHasInfoView) return;
-        mHasInfoView = false;
-        mListView.removeHeaderView(mInfoView);
+        mListView.addHeaderView(mHeaderView);
     }
 
     @Override
@@ -197,7 +198,6 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
         );
         mListView.forceLayout();
     }
-
 
     @Override
     public boolean onItemClick(FeedCursorAdapter.ClickTag position, String viewTag) {

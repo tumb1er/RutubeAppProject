@@ -77,11 +77,11 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
     }
 
     @Override
-    public void toggleFullscreen(boolean isFullscreen) {
+    public void toggleFullscreen(boolean isFullscreen, boolean rotate) {
         mIsFullscreen = isFullscreen;
         initWindow(isFullscreen);
         if (!isFullscreen) {
-            if (!mIsTablet) {
+            if (!mIsTablet && rotate) {
                 // Для телефонов выход из полного экрана - это переход в портретную ориентацию
                 setScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             }
@@ -91,7 +91,8 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
         } else {
             if (mViewHolder.videoInfoContainer != null)
                 mViewHolder.videoInfoContainer.setVisibility(View.GONE);
-            setScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            if (rotate)
+                setScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
     }
 
@@ -139,12 +140,14 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
     public void onCreate(Bundle savedInstanceState) {
         if (D) Log.d(LOG_TAG, "onCreate");
         super.onCreate(savedInstanceState);
-        mIsFullscreen = savedInstanceState == null || savedInstanceState.getBoolean(FULLSCREEN);
+        mIsFullscreen = (savedInstanceState == null)?
+                getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE :
+                savedInstanceState.getBoolean(FULLSCREEN);
         initController(savedInstanceState);
         initWindow();
         setContentView(mLayoutResId);
         init();
-        toggleFullscreen(mIsFullscreen);
+        toggleFullscreen(mIsFullscreen, false);
     }
 
     private void initController(Bundle savedInstanceState) {
@@ -239,14 +242,14 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
 
     }
 
-    private void initWindow(){
+    protected void initWindow(){
         initWindow(mIsFullscreen);
     }
 
     /**
      * фулскрин без заголовка окна
      */
-    private void initWindow(boolean isFullscreen) {
+    protected void initWindow(boolean isFullscreen) {
         if(D) Log.d(LOG_TAG, "initWindow fullscreen:" + String.valueOf(isFullscreen));
         WindowManager.LayoutParams attrs = getWindow().getAttributes();
         if (isFullscreen)
