@@ -39,7 +39,7 @@
             android:layout_alignLeft="@+id/thumbnailImageView"
             android:layout_alignTop="@+id/thumbnailImageView"
             android:layout_alignBottom="@+id/thumbnailImageView"
-            android:background="@drawable/thumbnail_rc" />
+            android:background="@drawable/related_thumb_border" />
 
         <!-- Название ролика-->
         <!--style="?attr/RelatedTitleStyle"-->

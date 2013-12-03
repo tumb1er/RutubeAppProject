@@ -59,9 +59,9 @@
     <style name="Rutube.Feed.Duration" parent="Rutube.Feed.LightText">
         <!-- стиль плашки с длительностью -->
         <item name="android:textColor">@color/duration_color</item>
-        <item name="android:background">@color/duration_background</item>
-        <item name="android:layout_marginRight">13dp</item>
-        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:background">@drawable/duration</item>
+        <!--<item name="android:layout_marginRight">13dp</item>-->
+        <!--<item name="android:layout_marginBottom">10dp</item>-->
         <item name="android:paddingLeft">6dp</item>
         <item name="android:paddingRight">6dp</item>
     </style>
