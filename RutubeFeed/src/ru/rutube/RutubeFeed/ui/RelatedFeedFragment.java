@@ -40,6 +40,13 @@ import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
  * Time: 12:56
  * To change this template use File | Settings | File Templates.
  */
+
+/**
+ * Фрагмент для ленты похожих.
+ * Принимает из getArguments параметр String VIDEO_ID, загружает через API ленту похожих.
+ * ID видео при отсутствии в аргументах может получаться из Uri, сохраненного в
+ * getIntent().getData().
+ */
 public class RelatedFeedFragment extends FeedFragment {
 
     @Override

@@ -2,12 +2,14 @@ package ru.rutube.RutubeApp.data;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.models.Video;
+import ru.rutube.RutubeApp.BuildConfig;
 import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
 
@@ -18,8 +20,17 @@ import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
  * Time: 11:53
  * To change this template use File | Settings | File Templates.
  */
+
+/**
+ * Адаптер для ленты похожих видео
+ */
 public class RelatedCursorAdapter extends FeedCursorAdapter {
-    protected static int item_layout_id = R.layout.related_feed_item;
+    protected static final boolean D = BuildConfig.DEBUG;
+    private static final String LOG_TAG = RelatedCursorAdapter.class.getName();
+
+    static {
+        item_layout_id = R.layout.related_feed_item;
+    }
 
     protected static class ViewHolder extends FeedCursorAdapter.ViewHolder {
         public TextView hits;
@@ -27,11 +38,6 @@ public class RelatedCursorAdapter extends FeedCursorAdapter {
 
     public RelatedCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
         super(context, layout, c, from, to, flags);
-    }
-
-    @Override
-    protected void processPosition(int position) {
-        super.processPosition(position);
     }
 
     @Override
@@ -74,28 +80,6 @@ public class RelatedCursorAdapter extends FeedCursorAdapter {
         return view;
     }
 
-    private void decorateItem(View view, boolean isFirst) {
-        View cardView = view.findViewById(R.id.card);
-        int pl = cardView.getPaddingLeft();
-        int pt = cardView.getPaddingTop();
-        int pr = cardView.getPaddingRight();
-        int pb = cardView.getPaddingBottom();
-        if (isFirst)
-            cardView.setBackgroundResource(R.drawable.first_related_bg);
-        else
-            cardView.setBackgroundResource(R.color.card_background);
-
-        int topPadding = (int) view.getContext().getResources().getDimension(
-                R.dimen.related_card_padding_top);
-        // при установке фона padding сбрасывается
-        cardView.setPadding(pl, pt, pr, pb);
-        view.setPadding(
-                view.getPaddingLeft(),
-                isFirst ? topPadding: 0,
-                view.getPaddingRight(),
-                view.getPaddingBottom());
-    }
-
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         super.bindView(view, context, cursor);
@@ -104,13 +88,6 @@ public class RelatedCursorAdapter extends FeedCursorAdapter {
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
-    }
-
-
-    protected void bindHits(Cursor cursor, ViewHolder holder) {
-        int hitsIndex = cursor.getColumnIndexOrThrow(FeedContract.RelatedVideo.HITS);
-        int hits = cursor.getInt(hitsIndex);
-        holder.hits.setText(Video.getHitsText(mContext, hits));
     }
 
     @Override
@@ -130,4 +107,45 @@ public class RelatedCursorAdapter extends FeedCursorAdapter {
         h.thumbnail.setOnClickListener(mOnClickListener);
         h.hits.setOnClickListener(mOnClickListener);
     }
+
+    protected void bindHits(Cursor cursor, ViewHolder holder) {
+        int hitsIndex = cursor.getColumnIndexOrThrow(FeedContract.RelatedVideo.HITS);
+        int hits = cursor.getInt(hitsIndex);
+        holder.hits.setText(Video.getHitsText(mContext, hits));
+    }
+
+    /**
+     * Изменяет представление элемента списка в зависимости от того, первый ли он в списке.
+     * @param view элемент списка
+     * @param isFirst флаг первого элемента списка
+     */
+    private void decorateItem(View view, boolean isFirst) {
+        View cardView = view.findViewById(R.id.card);
+        // при проставлении в качестве фона 9-patch, отступы сбрасываются
+        int pl = cardView.getPaddingLeft();
+        int pt = cardView.getPaddingTop();
+        int pr = cardView.getPaddingRight();
+        int pb = cardView.getPaddingBottom();
+        // меняем фон для первого элемента списка
+        if (isFirst)
+            cardView.setBackgroundResource(R.drawable.first_related_bg);
+        else
+            cardView.setBackgroundResource(R.color.card_background);
+
+        // меняем верхний отступ для рамки элемента
+        int topItemPadding = (int) mContext.getResources().getDimension(
+                R.dimen.related_item_padding_top);
+        // меняем верхний отступ для карточки видео (влияет установленный 9-patch)
+        int topCardPadding = (int) mContext.getResources().getDimension(
+                R.dimen.related_card_padding_top);
+
+        cardView.setPadding(pl, isFirst? topCardPadding: pt, pr, pb);
+        // первая карточка задает верхним отступом рамку для всего списка, поэтому topItemPadding
+        view.setPadding(
+                view.getPaddingLeft(),
+                isFirst ? topItemPadding: 0,
+                view.getPaddingRight(),
+                view.getPaddingBottom());
+    }
+
 }

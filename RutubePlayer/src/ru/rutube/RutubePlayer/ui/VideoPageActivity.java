@@ -28,8 +28,10 @@ import ru.rutube.RutubePlayer.ctrl.VideoPageController;
  * Возможен старт по intent-action: ru.rutube.player.play c Uri видео вида:
  * http://rutube.ru/video/<video_id>/
  */
-public class VideoPageActivity extends SherlockFragmentActivity implements PlayerFragment.PlayerEventsListener,
-EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
+public class VideoPageActivity extends SherlockFragmentActivity
+        implements PlayerFragment.PlayerEventsListener,
+        EndscreenFragment.ReplayListener,
+        VideoPageController.VideoPageView {
     private static final String CONTROLLER = "controller";
     private static final String FULLSCREEN = "fullscreen";
     private final String LOG_TAG = getClass().getName();
@@ -140,7 +142,7 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
     public void onCreate(Bundle savedInstanceState) {
         if (D) Log.d(LOG_TAG, "onCreate");
         super.onCreate(savedInstanceState);
-        mIsFullscreen = (savedInstanceState == null)?
+        mIsFullscreen = (savedInstanceState == null) ?
                 getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE :
                 savedInstanceState.getBoolean(FULLSCREEN);
         initController(savedInstanceState);
@@ -218,21 +220,21 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
         return new ViewHolder();
     }
 
-    protected void initHolder(ViewHolder  holder) {
+    protected void initHolder(ViewHolder holder) {
         holder.playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentById(R.id.player_fragment);
         holder.endscreenFragment = (EndscreenFragment) getSupportFragmentManager().findFragmentById(R.id.endscreen_fragment);
         holder.videoInfoContainer = findViewById(R.id.video_info_container);
-        holder.description = ((TextView)findViewById(R.id.description));
-        holder.hits = ((TextView)findViewById(R.id.hits));
-        holder.duration = ((TextView)findViewById(R.id.duration));
-        holder.author = (TextView)findViewById(R.id.author_name);
-        holder.title = ((TextView)findViewById(R.id.video_title));
+        holder.description = ((TextView) findViewById(R.id.description));
+        holder.hits = ((TextView) findViewById(R.id.hits));
+        holder.duration = ((TextView) findViewById(R.id.duration));
+        holder.author = (TextView) findViewById(R.id.author_name);
+        holder.title = ((TextView) findViewById(R.id.video_title));
         mViewHolder = holder;
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch(keyCode) {
+        switch (keyCode) {
             case KeyEvent.KEYCODE_VOLUME_DOWN:
             case KeyEvent.KEYCODE_VOLUME_UP:
                 return mViewHolder.playerFragment.onKeyDown(keyCode) || super.onKeyDown(keyCode, event);
@@ -242,7 +244,7 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
 
     }
 
-    protected void initWindow(){
+    protected void initWindow() {
         initWindow(mIsFullscreen);
     }
 
@@ -250,14 +252,11 @@ EndscreenFragment.ReplayListener, VideoPageController.VideoPageView {
      * фулскрин без заголовка окна
      */
     protected void initWindow(boolean isFullscreen) {
-        if(D) Log.d(LOG_TAG, "initWindow fullscreen:" + String.valueOf(isFullscreen));
+        if (D) Log.d(LOG_TAG, "initWindow fullscreen:" + String.valueOf(isFullscreen));
         WindowManager.LayoutParams attrs = getWindow().getAttributes();
-        if (isFullscreen)
-        {
+        if (isFullscreen) {
             attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
-        }
-        else
-        {
+        } else {
             attrs.flags &= ~WindowManager.LayoutParams.FLAG_FULLSCREEN;
         }
         getWindow().setAttributes(attrs);
