@@ -2,14 +2,20 @@ package ru.rutube.RutubePlayer.ui;
 
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.database.ContentObserver;
+import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.provider.Settings;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Html;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
+import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
@@ -32,15 +38,8 @@ public class VideoPageActivity extends SherlockFragmentActivity
         implements PlayerFragment.PlayerEventsListener,
         EndscreenFragment.ReplayListener,
         VideoPageController.VideoPageView {
-    private static final String CONTROLLER = "controller";
-    private static final String FULLSCREEN = "fullscreen";
-    private final String LOG_TAG = getClass().getName();
-    private static final boolean D = BuildConfig.DEBUG;
-    private VideoPageController mController;
-    protected boolean mIsTablet;
-    protected boolean mIsFullscreen;
-    protected int mLayoutResId = R.layout.player_activity;
-    protected ViewHolder mViewHolder;
+    protected static final boolean D = BuildConfig.DEBUG;
+    protected static int mLayoutResId = R.layout.player_activity;
 
     protected static class ViewHolder {
         public PlayerFragment playerFragment;
@@ -51,6 +50,97 @@ public class VideoPageActivity extends SherlockFragmentActivity
         public TextView duration;
         public TextView author;
         public TextView title;
+    }
+
+    private static final String CONTROLLER = "controller";
+    private static final String FULLSCREEN = "fullscreen";
+    private static final String LOG_TAG = VideoPageActivity.class.getName();
+
+    protected boolean mIsTablet;
+    protected boolean mIsFullscreen;
+    protected boolean mIsLandscape;
+    protected ViewHolder mViewHolder;
+    protected VideoPageController mController;
+    private OrientationEventListener mOrientationListener;
+
+    /**
+     * Отложенная задача, включающая обработку событий от датчика ориентации.
+     */
+    protected Runnable mEnableOrientationEventListenerTask = new Runnable() {
+        public void run() {
+            if (D) Log.d(LOG_TAG, "Release Orientation");
+            mOrientationListener.enable();
+        }
+    };
+
+    /**
+     * Обработчик изменения настроек автоповорота
+     */
+    protected ContentObserver mRotationObserver = new ContentObserver(new Handler()) {
+
+        @Override
+        public void onChange(boolean selfChange) {
+            // При изменении настроек автоповорота включаем и выключаем обработчик событий
+            // от датчика ориентации.
+            boolean autorotate = Settings.System.getInt(
+                    getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 0) == 1;
+            if (!autorotate) {
+                if (D) Log.d(LOG_TAG, "Autorotate is off, skip orientation handling");
+                mOrientationListener.disable();
+            } else {
+                if (D) Log.d(LOG_TAG, "Autorotate is on, enable orientation handling");
+                mOrientationListener.enable();
+            }
+        }
+    };
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        if (D) Log.d(LOG_TAG, "onCreate");
+        super.onCreate(savedInstanceState);
+        checkOrientation();
+        mIsFullscreen = (savedInstanceState == null) ?
+                getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE :
+                savedInstanceState.getBoolean(FULLSCREEN);
+        initController(savedInstanceState);
+        initWindow();
+        setContentView(mLayoutResId);
+        init();
+        toggleFullscreen(mIsFullscreen, false);
+        transformLayout(mIsLandscape);
+    }
+
+    @Override
+    public void onBackPressed() {
+        mController.onBackPressed();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // Обработчик нажатий кнопок громкости
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                return mViewHolder.playerFragment.onKeyDown(keyCode) || super.onKeyDown(keyCode, event);
+            default:
+                return super.onKeyDown(keyCode, event);
+        }
+    }
+
+    @Override
+    public void closeVideoPage() {
+        finish();
+    }
+
+    @Override
+    public void onComplete() {
+        if (D) Log.d(LOG_TAG, "onComplete");
+        toggleEndscreen(true);
+    }
+
+    @Override
+    public boolean isFullscreen() {
+        return mIsFullscreen;
     }
 
     @Override
@@ -68,14 +158,37 @@ public class VideoPageActivity extends SherlockFragmentActivity
         finish();
     }
 
-    private void toggleEndscreen(boolean visible) {
-        if (D) Log.d(LOG_TAG, "toggleEndscreen: " + String.valueOf(visible));
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        if (visible)
-            ft.show(mViewHolder.endscreenFragment);
-        else
-            ft.hide(mViewHolder.endscreenFragment);
-        ft.commit();
+    @Override
+    public void setVideoInfo(Video video) {
+        bindTitle(video);
+        bindAuthor(video);
+        bindDuration(video);
+        bindHits(video);
+        bindDescription(video);
+    }
+
+    @Override
+    public void onDoubleTap() {
+        mController.onDoubleTap();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mController.attach(this, this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mController.detach();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(CONTROLLER, mController);
+        outState.putBoolean(FULLSCREEN, mIsFullscreen);
     }
 
     @Override
@@ -99,73 +212,41 @@ public class VideoPageActivity extends SherlockFragmentActivity
     }
 
     @Override
-    public void closeVideoPage() {
-        finish();
+    public int getScreenOrientation() {
+        Display getOrient = getWindowManager().getDefaultDisplay();
+        int orientation;
+        if (getOrient.getWidth() == getOrient.getHeight()) {
+            orientation = Configuration.ORIENTATION_SQUARE;
+        } else {
+            if (getOrient.getWidth() < getOrient.getHeight()) {
+                orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+            } else {
+                orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+            }
+        }
+        return orientation;
     }
 
+    /**
+     * Задает ориентацию устройства
+     * @param orientation значение ориентации, соответствующее ActivityInfo.SCREEN_ORIENTATION_*
+     */
     @Override
-    public void onComplete() {
-        if (D) Log.d(LOG_TAG, "onComplete");
-        toggleEndscreen(true);
+    public void setScreenOrientation(int orientation) {
+        if (D) Log.d(LOG_TAG, String.format("setScreenOrientation: %d", orientation));
+        // временно выключаем обработку событий датчика ориентации
+        mOrientationListener.disable();
+        // изменяем ориентацию
+        setRequestedOrientation(orientation);
+        // добавляем отложенный вызов включения обработчика собитый датчика ориентации
+        Handler handler = new Handler();
+        handler.postDelayed(mEnableOrientationEventListenerTask, 500);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mController.attach(this, this);
-    }
+    protected void transformLayout(boolean isLandscape) {}
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mController.detach();
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelable(CONTROLLER, mController);
-        outState.putBoolean(FULLSCREEN, mIsFullscreen);
-    }
-
-    @Override
-    public boolean isFullscreen() {
-        return mIsFullscreen;
-    }
-
-    @Override
-    public void onBackPressed() {
-        mController.onBackPressed();
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        if (D) Log.d(LOG_TAG, "onCreate");
-        super.onCreate(savedInstanceState);
-        mIsFullscreen = (savedInstanceState == null) ?
-                getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE :
-                savedInstanceState.getBoolean(FULLSCREEN);
-        initController(savedInstanceState);
-        initWindow();
-        setContentView(mLayoutResId);
-        init();
-        toggleFullscreen(mIsFullscreen, false);
-    }
-
-    private void initController(Bundle savedInstanceState) {
-        if (savedInstanceState != null)
-            mController = savedInstanceState.getParcelable(CONTROLLER);
-        else
-            mController = new VideoPageController(getIntent().getData());
-    }
-
-    @Override
-    public void setVideoInfo(Video video) {
-        bindTitle(video);
-        bindAuthor(video);
-        bindDuration(video);
-        bindHits(video);
-        bindDescription(video);
+    protected void checkOrientation() {
+        mIsLandscape = getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
     }
 
     protected void bindDescription(Video video) {
@@ -189,7 +270,6 @@ public class VideoPageActivity extends SherlockFragmentActivity
             TextView authorName = mViewHolder.author;
             authorName.setText(author.getName());
             authorName.setTag(author.getFeedUrl());
-
         }
     }
 
@@ -197,12 +277,84 @@ public class VideoPageActivity extends SherlockFragmentActivity
         mViewHolder.title.setText(video.getTitle());
     }
 
-    @Override
-    public void onDoubleTap() {
-        mController.onDoubleTap();
+    protected ViewHolder getHolder() {
+        return new ViewHolder();
     }
 
-    private void init() {
+    protected void initHolder(ViewHolder holder) {
+        FragmentManager fm = getSupportFragmentManager();
+        holder.playerFragment = (PlayerFragment) fm.findFragmentById(R.id.player_fragment);
+        holder.endscreenFragment = (EndscreenFragment) fm.findFragmentById(R.id.endscreen_fragment);
+        holder.videoInfoContainer = findViewById(R.id.video_info_container);
+        holder.description = ((TextView) findViewById(R.id.description));
+        holder.hits = ((TextView) findViewById(R.id.hits));
+        holder.duration = ((TextView) findViewById(R.id.duration));
+        holder.author = (TextView) findViewById(R.id.author_name);
+        holder.title = ((TextView) findViewById(R.id.video_title));
+        mViewHolder = holder;
+    }
+
+    protected void initWindow() {
+        initWindow(mIsFullscreen);
+    }
+
+    /**
+     * Инициализирует параметры окна приложения
+     */
+    protected void initWindow(boolean isFullscreen) {
+        if (D) Log.d(LOG_TAG, "initWindow fullscreen:" + String.valueOf(isFullscreen));
+        WindowManager.LayoutParams attrs = getWindow().getAttributes();
+        if (isFullscreen) {
+            attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+        } else {
+            attrs.flags &= ~WindowManager.LayoutParams.FLAG_FULLSCREEN;
+        }
+        getWindow().setAttributes(attrs);
+    }
+
+    /**
+     * Возвращает обработчик событий от датчика ориентации
+     * @return OrientationEventListener
+     */
+    protected OrientationEventListener getOrientationEventListener() {
+
+        return new OrientationEventListener(this, SensorManager.SENSOR_DELAY_UI) {
+
+            /**
+             * Обрабатывает события от датчика ориентации
+             * Заменяет явно заданную ориентацию экрана на "Не указано", когда пользователь
+             * поворачивает устройтво так, чтобы реальная ориентация совпала с указанной
+             * через setRequestedOrientation
+             @param degree угол поворота устройства
+             */
+            @Override
+            public void onOrientationChanged(int degree) {
+
+                if (D) Log.d(LOG_TAG, String.format("Orientation changed! %d", degree));
+                // Переводим угол поворота в константы ориентации устройства
+                degree = ((degree + 45) / 90) % 4;
+                int orientation = (degree == 0 || degree == 2)?
+                        ActivityInfo.SCREEN_ORIENTATION_PORTRAIT:
+                        ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                if (D) Log.d(LOG_TAG, String.format("Orient: %d %d", orientation,
+                        getScreenOrientation()));
+                // Если реальная ориентация совпала с указанной, сбрасываем ориентацию экрана.
+                if (orientation == getScreenOrientation()) {
+                    if (D) Log.d(LOG_TAG, "Orient: Rotating screen");
+                    setScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+                }
+            }
+        };
+    }
+
+    protected void init() {
+
+        mOrientationListener = getOrientationEventListener();
+        mOrientationListener.enable();
+        getContentResolver().registerContentObserver(Settings.System.getUriFor
+                (Settings.System.ACCELEROMETER_ROTATION), true, mRotationObserver);
+
+
         ViewHolder holder = getHolder();
         initHolder(holder);
 
@@ -216,70 +368,21 @@ public class VideoPageActivity extends SherlockFragmentActivity
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
-    protected ViewHolder getHolder() {
-        return new ViewHolder();
+    private void toggleEndscreen(boolean visible) {
+        if (D) Log.d(LOG_TAG, "toggleEndscreen: " + String.valueOf(visible));
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        if (visible)
+            ft.show(mViewHolder.endscreenFragment);
+        else
+            ft.hide(mViewHolder.endscreenFragment);
+        ft.commit();
     }
 
-    protected void initHolder(ViewHolder holder) {
-        holder.playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentById(R.id.player_fragment);
-        holder.endscreenFragment = (EndscreenFragment) getSupportFragmentManager().findFragmentById(R.id.endscreen_fragment);
-        holder.videoInfoContainer = findViewById(R.id.video_info_container);
-        holder.description = ((TextView) findViewById(R.id.description));
-        holder.hits = ((TextView) findViewById(R.id.hits));
-        holder.duration = ((TextView) findViewById(R.id.duration));
-        holder.author = (TextView) findViewById(R.id.author_name);
-        holder.title = ((TextView) findViewById(R.id.video_title));
-        mViewHolder = holder;
+    private void initController(Bundle savedInstanceState) {
+        if (savedInstanceState != null)
+            mController = savedInstanceState.getParcelable(CONTROLLER);
+        else
+            mController = new VideoPageController(getIntent().getData());
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_VOLUME_DOWN:
-            case KeyEvent.KEYCODE_VOLUME_UP:
-                return mViewHolder.playerFragment.onKeyDown(keyCode) || super.onKeyDown(keyCode, event);
-            default:
-                return super.onKeyDown(keyCode, event);
-        }
-
-    }
-
-    protected void initWindow() {
-        initWindow(mIsFullscreen);
-    }
-
-    /**
-     * фулскрин без заголовка окна
-     */
-    protected void initWindow(boolean isFullscreen) {
-        if (D) Log.d(LOG_TAG, "initWindow fullscreen:" + String.valueOf(isFullscreen));
-        WindowManager.LayoutParams attrs = getWindow().getAttributes();
-        if (isFullscreen) {
-            attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
-        } else {
-            attrs.flags &= ~WindowManager.LayoutParams.FLAG_FULLSCREEN;
-        }
-        getWindow().setAttributes(attrs);
-    }
-
-    @Override
-    public int getScreenOrientation() {
-        Display getOrient = getWindowManager().getDefaultDisplay();
-        int orientation;
-        if (getOrient.getWidth() == getOrient.getHeight()) {
-            orientation = Configuration.ORIENTATION_SQUARE;
-        } else {
-            if (getOrient.getWidth() < getOrient.getHeight()) {
-                orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-            } else {
-                orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-            }
-        }
-        return orientation;
-    }
-
-    @Override
-    public void setScreenOrientation(int orientation) {
-        setRequestedOrientation(orientation);
-    }
 }
