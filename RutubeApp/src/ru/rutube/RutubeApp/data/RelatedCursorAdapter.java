@@ -81,7 +81,7 @@ public class RelatedCursorAdapter extends FeedCursorAdapter {
         int pr = cardView.getPaddingRight();
         int pb = cardView.getPaddingBottom();
         if (isFirst)
-            cardView.setBackgroundResource(R.drawable.related_first_card_bg);
+            cardView.setBackgroundResource(R.drawable.first_related_bg);
         else
             cardView.setBackgroundResource(R.color.card_background);
 

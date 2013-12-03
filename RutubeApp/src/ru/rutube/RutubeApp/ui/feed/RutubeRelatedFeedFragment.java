@@ -72,9 +72,9 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
 
     private void toggleDescription(boolean visible) {
         if (visible)
-            mViewHolder.moreInfo.setImageResource(R.drawable.more_btn_selected);
+            mViewHolder.moreInfo.setImageResource(R.drawable.more_info_btn_down);
         else
-            mViewHolder.moreInfo.setImageResource(R.drawable.more_btn_default);
+            mViewHolder.moreInfo.setImageResource(R.drawable.more_info_btn_left);
         mDescriptionVisible = visible;
         int visibility = visible? View.VISIBLE: View.GONE;
         mViewHolder.commentLine.setVisibility(visibility);

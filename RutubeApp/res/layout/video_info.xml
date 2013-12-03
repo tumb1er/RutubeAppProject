@@ -14,7 +14,7 @@
     <RelativeLayout
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="@color/video_background"
+    android:background="@drawable/video_info_bg"
     android:padding="10dp"
     android:focusableInTouchMode="true"
     android:layout_alignParentLeft="true"
@@ -67,11 +67,11 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:id="@+id/moreImageButton"
-            android:src="@drawable/more_btn_default"
-            android:layout_below="@+id/video_title"
+            android:src="@drawable/more_info_btn_left"
             android:background="#00000000"
-            android:visibility="gone"
-            android:layout_alignParentEnd="false"/>
+            android:visibility="invisible"
+            android:padding="15dp"
+            android:layout_centerVertical="true" />
         <!-- От -->
         <TextView
             android:layout_width="wrap_content"
@@ -112,7 +112,7 @@
         android:textSize="14dp"
         android:id="@+id/description"
         android:padding="10dp"
-        android:background="@drawable/card_shadow"
+        android:background="@drawable/last_related_bg"
         android:layout_below="@+id/commentLine"
         android:layout_alignParentBottom="true"
         android:textColor="#FF6C6C6C" />
