@@ -40,6 +40,7 @@ public class VideoPageActivity extends SherlockFragmentActivity
         VideoPageController.VideoPageView {
     protected static final boolean D = BuildConfig.DEBUG;
     protected static int mLayoutResId = R.layout.player_activity;
+    private boolean mIsAutorotateEnabled;
 
     protected static class ViewHolder {
         public PlayerFragment playerFragment;
@@ -82,15 +83,7 @@ public class VideoPageActivity extends SherlockFragmentActivity
         public void onChange(boolean selfChange) {
             // При изменении настроек автоповорота включаем и выключаем обработчик событий
             // от датчика ориентации.
-            boolean autorotate = Settings.System.getInt(
-                    getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 0) == 1;
-            if (!autorotate) {
-                if (D) Log.d(LOG_TAG, "Autorotate is off, skip orientation handling");
-                mOrientationListener.disable();
-            } else {
-                if (D) Log.d(LOG_TAG, "Autorotate is on, enable orientation handling");
-                mOrientationListener.enable();
-            }
+            checkAutoOrientation();
         }
     };
 
@@ -243,6 +236,19 @@ public class VideoPageActivity extends SherlockFragmentActivity
         handler.postDelayed(mEnableOrientationEventListenerTask, 500);
     }
 
+    protected void checkAutoOrientation() {
+        mIsAutorotateEnabled = Settings.System.getInt(
+                getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 0) == 1;
+        if (!mIsAutorotateEnabled) {
+            if (D) Log.d(LOG_TAG, "Autorotate is off, skip orientation handling");
+            mOrientationListener.disable();
+        } else {
+            if (D) Log.d(LOG_TAG, "Autorotate is on, enable orientation handling");
+            mOrientationListener.enable();
+        }
+    }
+
+
     protected void transformLayout(boolean isLandscape) {}
 
     protected void checkOrientation() {
@@ -329,7 +335,8 @@ public class VideoPageActivity extends SherlockFragmentActivity
              */
             @Override
             public void onOrientationChanged(int degree) {
-
+                if (!mIsAutorotateEnabled)
+                    return;
                 if (D) Log.d(LOG_TAG, String.format("Orientation changed! %d", degree));
                 // Переводим угол поворота в константы ориентации устройства
                 degree = ((degree + 45) / 90) % 4;
@@ -350,7 +357,7 @@ public class VideoPageActivity extends SherlockFragmentActivity
     protected void init() {
 
         mOrientationListener = getOrientationEventListener();
-        mOrientationListener.enable();
+        checkAutoOrientation();
         getContentResolver().registerContentObserver(Settings.System.getUriFor
                 (Settings.System.ACCELEROMETER_ROTATION), true, mRotationObserver);
 
@@ -375,7 +382,10 @@ public class VideoPageActivity extends SherlockFragmentActivity
             ft.show(mViewHolder.endscreenFragment);
         else
             ft.hide(mViewHolder.endscreenFragment);
-        ft.commit();
+        try {
+            // Вызывает ISE после saveInstanceState()
+            ft.commit();
+        } catch (IllegalStateException ignored) {}
     }
 
     private void initController(Bundle savedInstanceState) {
