@@ -258,8 +258,10 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     protected void bindDescription(Cursor cursor, ViewHolder holder) {
         int descriptionIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.DESCRIPTION);
         String description = cursor.getString(descriptionIndex);
-        assert description!=null;
-        holder.description.setText(Html.fromHtml(description));
+        if (description != null)
+            holder.description.setText(Html.fromHtml(description));
+        else
+            holder.description.setText(null);
     }
 
     protected void bindThumbnail(Cursor cursor, ViewHolder holder) {
