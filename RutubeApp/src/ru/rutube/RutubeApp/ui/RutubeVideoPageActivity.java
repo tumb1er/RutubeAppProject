@@ -1,7 +1,6 @@
 package ru.rutube.RutubeApp.ui;
 
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -14,6 +13,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.models.Video;
 import ru.rutube.RutubeApp.MainApplication;
 import ru.rutube.RutubeApp.R;
@@ -114,6 +114,7 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
     public void setVideoInfo(Video video) {
         mRelatedFragment.setVideoInfo(video);
         super.setVideoInfo(video);
+        bindCreated(video);
     }
 
     /**
@@ -159,7 +160,7 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         super.initHolder(holder);
         ViewHolder h = (ViewHolder)holder;
         h.from = ((TextView)findViewById(R.id.from));
-        h.created = ((TextView)findViewById(R.id.createdTextView));
+        h.created = ((TextView)findViewById(R.id.created));
         mViewHolder = h;
     }
 
@@ -185,6 +186,12 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         holder.description.setTypeface(lightFont);
 
         holder.author.setOnClickListener(mOnVideoElementClickListener);
+    }
+
+    protected void bindCreated(Video video) {
+        String createdText = RutubeApp.getInstance().getCreatedText(video.getCreated());
+        ViewHolder holder = (ViewHolder)mViewHolder;
+        holder.created.setText(createdText);
     }
 
     protected void transformLayout(boolean isLandscape) {

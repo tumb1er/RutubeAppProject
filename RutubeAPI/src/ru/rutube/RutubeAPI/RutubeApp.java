@@ -11,6 +11,9 @@ import android.net.Uri;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import ru.rutube.RutubeAPI.tools.MemDiskBitmapCache;
 
 /**
@@ -19,6 +22,7 @@ import ru.rutube.RutubeAPI.tools.MemDiskBitmapCache;
 public class RutubeApp extends Application {
 
     private static ImageLoader.ImageCache sBitmapCache;
+    protected static final SimpleDateFormat reprDateFormat = new SimpleDateFormat("d MMMM y");
 
     private static RutubeApp instance;
 
@@ -121,6 +125,8 @@ public class RutubeApp extends Application {
     }
 
     public void openFeed(Uri feedUri, Context context) {
+        if (feedUri == null)
+            throw new IllegalArgumentException("Can't open feeed");
         Intent intent = new Intent("ru.rutube.feed.open");
         intent.setData(feedUri);
         context.startActivity(intent);
@@ -145,6 +151,27 @@ public class RutubeApp extends Application {
     }
     public static void stopLoading() {
         instance.mLoadingFeed = false;
+    }
+
+
+    public String getCreatedText(Date created) {
+        Date now = new Date();
+        long seconds = (now.getTime() - created.getTime()) / 1000;
+        if (seconds < 3600)
+            return getResources().getString(R.string.now);
+        if (seconds < 24 * 3600)
+            return getResources().getString(R.string.today);
+        if (seconds < 2 * 24 * 3600)
+            return getResources().getString(R.string.yesterday);
+        if (seconds < 5 * 24 * 3600)
+            return String.format(getResources().getString(R.string.days_ago_24, seconds / (24 * 3600)));
+        if (seconds < 7 * 24 * 3600)
+            return String.format(getResources().getString(R.string.days_ago_59, seconds / (24 * 3600)));
+        if (seconds < 14 * 24 * 3600)
+            return String.format(getResources().getString(R.string.week_ago, seconds / (7 * 24 * 3600)));
+        if (seconds < 31 * 24 * 3600)
+            return String.format(getResources().getString(R.string.weeks_ago, seconds / (7 * 24 * 3600)));
+        return reprDateFormat.format(created);
     }
 
 

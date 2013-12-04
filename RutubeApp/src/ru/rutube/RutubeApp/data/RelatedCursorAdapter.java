@@ -28,10 +28,6 @@ public class RelatedCursorAdapter extends FeedCursorAdapter {
     protected static final boolean D = BuildConfig.DEBUG;
     private static final String LOG_TAG = RelatedCursorAdapter.class.getName();
 
-    static {
-        item_layout_id = R.layout.related_feed_item;
-    }
-
     protected static class ViewHolder extends FeedCursorAdapter.ViewHolder {
         public TextView hits;
     }
@@ -41,11 +37,17 @@ public class RelatedCursorAdapter extends FeedCursorAdapter {
     }
 
     @Override
-    protected ViewHolder getHolder(View view) {
+    protected ViewHolder initHolder(View view) {
         ViewHolder holder = new ViewHolder();
         initHolder(view, holder);
-        holder.hits = (TextView) view.findViewById(R.id.hitsTextView);
         return holder;
+    }
+
+    @Override
+    protected void initHolder(View view, FeedCursorAdapter.ViewHolder holder) {
+        super.initHolder(view, holder);
+        ViewHolder h = (ViewHolder)holder;
+        h.hits = (TextView) view.findViewById(R.id.hitsTextView);
     }
 
     @Override
@@ -84,7 +86,7 @@ public class RelatedCursorAdapter extends FeedCursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         super.bindView(view, context, cursor);
         try {
-            bindHits(cursor, (ViewHolder) view.getTag());
+            bindHits(cursor, (ViewHolder)getViewHolder(view));
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
@@ -93,7 +95,7 @@ public class RelatedCursorAdapter extends FeedCursorAdapter {
     @Override
     protected void setTags(int position, View view) {
         ClickTag tag = new ClickTag(position);
-        ViewHolder holder = (ViewHolder)view.getTag();
+        ViewHolder holder = (ViewHolder)getViewHolder(view);
         holder.title.setTag(tag);
         holder.thumbnail.setTag(tag);
         holder.hits.setTag(tag);

@@ -11,7 +11,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import ru.rutube.RutubeAPI.BuildConfig;
-import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.models.VideoTag;
 import ru.rutube.RutubeFeed.R;
@@ -41,7 +40,7 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
     }
 
     @Override
-    protected FeedCursorAdapter.ViewHolder getHolder(View view) {
+    protected FeedCursorAdapter.ViewHolder initHolder(View view) {
         ViewHolder holder = new ViewHolder();
         super.initHolder(view, holder);
         holder.tags = (LinearLayout)view.findViewById(R.id.tagsListContainer);
@@ -58,7 +57,7 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
     public void bindView(@NotNull View view, Context context, @NotNull Cursor cursor) {
         super.bindView(view, context, cursor);
         try {
-            ViewHolder holder = (ViewHolder)view.getTag();
+            ViewHolder holder = (ViewHolder)getViewHolder(view);
             bindTags(holder, cursor);
 
         } catch (IllegalArgumentException e) {
@@ -82,7 +81,7 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         View view = super.newView(context, cursor, parent);
-        ViewHolder holder = (ViewHolder)getHolder(view);
+        ViewHolder holder = (ViewHolder) initHolder(view);
         holder.author.setTypeface(mNormalFont);
         holder.footer.setVisibility(View.VISIBLE);
         holder.avatar.setVisibility(View.GONE);
@@ -135,7 +134,7 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
     @Override
     protected void setTags(int position, View view) {
         super.setTags(position, view);
-        ViewHolder holder = (ViewHolder)view.getTag();
+        ViewHolder holder = (ViewHolder)getViewHolder(view);
         for (int i=0; i<holder.tags.getChildCount(); i++) {
             View tagView = holder.tags.getChildAt(i);
             TagsListAdapter.ViewHolder tagHolder = (TagsListAdapter.ViewHolder)tagView.getTag();

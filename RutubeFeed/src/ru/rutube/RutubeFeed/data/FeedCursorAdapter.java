@@ -39,16 +39,14 @@ import java.util.Date;
  */
 public class FeedCursorAdapter extends SimpleCursorAdapter {
     protected static final SimpleDateFormat sqlDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    protected static final SimpleDateFormat reprDateFormat = new SimpleDateFormat("d MMMM y");
-    protected ImageLoader imageLoader;
-    protected static int item_layout_id = R.layout.feed_item;
-    private final String LOG_TAG = getClass().getName();
     private static final boolean D = BuildConfig.DEBUG;
-    private int mPerPage;
-    private boolean mHasMore;
     protected Typeface mNormalFont;
     protected Typeface mLightFont;
-
+    protected int item_layout_id = R.layout.feed_item;
+    protected ImageLoader imageLoader;
+    private final String LOG_TAG = getClass().getName();
+    private int mPerPage;
+    private boolean mHasMore;
     private LoadMoreListener loadMoreListener = null;
     private ItemClickListener mItemCLickListener = null;
 
@@ -143,7 +141,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(item_layout_id, null);
         assert view != null;
-        ViewHolder holder = getHolder(view);
+        ViewHolder holder = initHolder(view);
         initView(holder);
         view.setTag(holder);
         return view;
@@ -169,7 +167,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         holder.duration.setOnClickListener(mOnClickListener);
     }
 
-    protected ViewHolder getHolder(View view) {
+    protected ViewHolder initHolder(View view) {
         ViewHolder holder = new ViewHolder();
         initHolder(view, holder);
         return holder;
@@ -189,7 +187,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     @Override
     public void bindView(@NotNull View view, Context context, @NotNull Cursor cursor) {
         try {
-            ViewHolder holder = (ViewHolder)view.getTag();
+            ViewHolder holder = getViewHolder(view);
             bindTitle(cursor, holder);
             bindCreated(cursor, holder);
             bindDescription(cursor, holder);
@@ -200,6 +198,16 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Получает ViewHolder для элемента списка.
+     * Если holder.feedClass не совпадает с текущим, происходит переинициализация holder-a.
+     * @param view элемент списка
+     * @return ViewHolder, содержащий ссылки на контролы элемента списка
+     */
+    protected ViewHolder getViewHolder(View view) {
+        return (ViewHolder) view.getTag();
     }
 
     protected void bindDuration(Cursor cursor, ViewHolder holder) {
@@ -252,7 +260,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
             if (D) Log.e(getClass().getName(), "CR Parse error");
         }
         if (created != null)
-            holder.created.setText(getCreatedText(created));
+            holder.created.setText(RutubeApp.getInstance().getCreatedText(created));
     }
 
     protected void bindDescription(Cursor cursor, ViewHolder holder) {
@@ -274,26 +282,6 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         int titleIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.TITLE);
         String title = cursor.getString(titleIndex);
         holder.title.setText(Html.fromHtml(title));
-    }
-
-    protected String getCreatedText(Date created) {
-        Date now = new Date();
-        long seconds = (now.getTime() - created.getTime()) / 1000;
-        if (seconds < 3600)
-            return mContext.getString(R.string.now);
-        if (seconds < 24 * 3600)
-            return mContext.getString(R.string.today);
-        if (seconds < 2 * 24 * 3600)
-            return mContext.getString(R.string.yesterday);
-        if (seconds < 5 * 24 * 3600)
-            return String.format(mContext.getString(R.string.days_ago_24, seconds / (24 * 3600)));
-        if (seconds < 7 * 24 * 3600)
-            return String.format(mContext.getString(R.string.days_ago_59, seconds / (24 * 3600)));
-        if (seconds < 14 * 24 * 3600)
-            return String.format(mContext.getString(R.string.week_ago, seconds / (7 * 24 * 3600)));
-        if (seconds < 31 * 24 * 3600)
-            return String.format(mContext.getString(R.string.weeks_ago, seconds / (7 * 24 * 3600)));
-        return reprDateFormat.format(created);
     }
 
     protected void initImageLoader(Context context) {
@@ -329,7 +317,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     }
 
     protected void setTags(int position, View view) {
-        ViewHolder holder = (ViewHolder)view.getTag();
+        ViewHolder holder = getViewHolder(view);
 
         Uri authorFeedUri = null;
         if (holder.authorId > 0) {

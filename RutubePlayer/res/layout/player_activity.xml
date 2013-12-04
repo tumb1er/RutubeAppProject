@@ -90,6 +90,10 @@
             android:text="100500"
             android:paddingLeft="3dp"
             android:paddingRight="3dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/created"/>
     </LinearLayout>
 
     <TextView

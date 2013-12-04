@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.HeaderViewListAdapter;
 import android.widget.ImageButton;
 import android.widget.ListAdapter;
@@ -73,8 +72,13 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
             if (D) Log.d(LOG_TAG, "element click: " + String.valueOf(view));
             try {
                 Uri feedUri = (Uri)view.getTag();
+                if (D) Log.d(LOG_TAG, "Found feed uri: " + String.valueOf(feedUri));
                 MainApplication.getInstance().openFeed(feedUri, getActivity());
-            } catch (ClassCastException ignored) {}
+            }
+            catch (ClassCastException ignored) {}
+            catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
 
         }
     };
@@ -147,6 +151,8 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
             mViewHolder.description.setText(Html.fromHtml(description));
         else
             mViewHolder.description.setText(null);
+
+        mViewHolder.created.setText(MainApplication.getInstance().getCreatedText(video.getCreated()));
     }
 
     /**
@@ -221,7 +227,7 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
         mViewHolder.from = ((TextView)mInfoView.findViewById(R.id.from));
         mViewHolder.author = ((TextView)mInfoView.findViewById(R.id.author_name));
         mViewHolder.bullet = ((TextView) mInfoView.findViewById(R.id.bullet));
-        mViewHolder.created = ((TextView)mInfoView.findViewById(R.id.createdTextView));
+        mViewHolder.created = ((TextView)mInfoView.findViewById(R.id.created));
         mViewHolder.hits = ((TextView)mInfoView.findViewById(R.id.hits));
         mViewHolder.description = ((TextView)mInfoView.findViewById(R.id.description));
         mViewHolder.moreInfo = ((ImageButton)mInfoView.findViewById(R.id.moreImageButton));

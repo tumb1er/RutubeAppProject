@@ -26,7 +26,7 @@ public class EditorsCursorAdapter extends FeedCursorAdapter {
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         View view = super.newView(context, cursor, parent);
-        ViewHolder holder = (ViewHolder)view.getTag();
+        ViewHolder holder = getViewHolder(view);
         holder.avatar.setDefaultImageResId(R.drawable.editors_av);
         return view;
     }
