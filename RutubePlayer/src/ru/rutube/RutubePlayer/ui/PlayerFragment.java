@@ -1,5 +1,6 @@
 package ru.rutube.RutubePlayer.ui;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -223,7 +224,9 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
             ViewGroup.LayoutParams lp = mVideoView.getLayoutParams();
             lp.height = h;
             lp.width = w;
-            mVideoView.setLayoutParams(lp);
+            // На Lenovo ThinkPad почему-то только после "дергания" контролов видео начинает
+            // корректно апскейлиться до полного экрана.
+            mMediaController.show(1);
         }
     };
 
