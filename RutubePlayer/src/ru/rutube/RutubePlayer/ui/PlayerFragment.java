@@ -260,6 +260,12 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
     };
 
     protected MediaController.MediaPlayerControl mMediaPlayerControl = new MediaController.MediaPlayerControl() {
+
+        @Override
+        public int getAudioSessionId() {
+            return 0;
+        }
+
         @Override
         public void start() {
             mPlayer.start();
