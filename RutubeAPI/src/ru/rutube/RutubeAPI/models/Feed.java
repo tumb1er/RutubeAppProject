@@ -28,8 +28,10 @@ import ru.rutube.RutubeAPI.requests.Requests;
  * Created by tumbler on 22.06.13.
  */
 public class Feed<FeedItemT extends FeedItem> {
+    protected static final String SQL_TAG_ID = "tag_id";
     private static final String PARAM_PAGE = "page";
     private static final boolean D = BuildConfig.DEBUG;
+
     private final String LOG_TAG = getClass().getName();
     private final String mToken;
     private final Uri mFeedUri;
@@ -146,21 +148,29 @@ public class Feed<FeedItemT extends FeedItem> {
         if (mContentUri.equals(FeedContract.Editors.CONTENT_URI)) {
             return EditorsFeedItem.fromJSON(data_item);
         }
-        if (mContentUri.getEncodedPath().startsWith(
+
+        String contentUriPath = mContentUri.getEncodedPath();
+
+        assert contentUriPath != null;
+        if (contentUriPath.startsWith(
                 FeedContract.SearchResults.CONTENT_URI.getEncodedPath())) {
             SearchFeedItem item = SearchFeedItem.fromJSON(data_item);
             item.setQueryId(mIntForeignKeyId);
             return item;
         }
-        if (mContentUri.getEncodedPath().startsWith(
+        if (contentUriPath.startsWith(
                 FeedContract.RelatedVideo.CONTENT_URI.getEncodedPath())) {
             RelatedVideoItem item = RelatedVideoItem.fromJSON(data_item);
             item.setVideoId(mStringForeignKeyId);
             return item;
         }
-        if (mContentUri.getEncodedPath().startsWith(
+        if (contentUriPath.startsWith(
                 FeedContract.AuthorVideo.CONTENT_URI.getEncodedPath())) {
-            return (AuthorFeedItem) AuthorFeedItem.fromJSON(data_item);
+            return AuthorFeedItem.fromJSON(data_item);
+        }
+        if (contentUriPath.startsWith(
+                FeedContract.TagsVideo.CONTENT_URI.getEncodedPath())) {
+            return TagsFeedItem.fromJSON(data_item);
         }
         return FeedItem.fromJSON(data_item);
     }
@@ -173,6 +183,10 @@ public class Feed<FeedItemT extends FeedItem> {
     protected ContentValues fillRow(FeedItem item, int position) {
         ContentValues row = new ContentValues();
         item.fillRow(row, position);
+        String encodedPath = mContentUri.getEncodedPath();
+        if (encodedPath.startsWith(FeedContract.TagsVideo.CONTENT_URI.getEncodedPath())) {
+            row.put(SQL_TAG_ID, mIntForeignKeyId);
+        }
         return row;
     }
 

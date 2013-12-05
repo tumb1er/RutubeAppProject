@@ -1,24 +1,18 @@
 package ru.rutube.RutubeAPI.models;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Parcel;
-import android.os.Parcelable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import ru.rutube.RutubeAPI.R;
-import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.content.FeedContract;
 
 /**
@@ -58,7 +52,12 @@ public class TagsFeedItem extends FeedItem {
     }
 
     protected static List<VideoTag> parseTags(JSONObject data) throws JSONException {
-        JSONObject video = data.getJSONObject(JSON_VIDEO);
+        JSONObject video;
+        try{
+            video = data.getJSONObject(JSON_VIDEO);
+        } catch (JSONException e) {
+            video = data;
+        }
         JSONArray tags_json = video.getJSONArray(JSON_TAGS);
         ArrayList<VideoTag> result = new ArrayList<VideoTag>(tags_json.length());
         for (int i=0; i<tags_json.length(); i++) {
@@ -115,8 +114,6 @@ public class TagsFeedItem extends FeedItem {
             e.printStackTrace();
             return new TagsFeedItem(item, null);
         }
-
-
     }
 
     protected void fillRow(ContentValues row) {

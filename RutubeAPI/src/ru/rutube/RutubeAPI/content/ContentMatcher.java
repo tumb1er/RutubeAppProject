@@ -3,7 +3,6 @@ package ru.rutube.RutubeAPI.content;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
 import android.text.TextUtils;
@@ -45,6 +44,7 @@ public class ContentMatcher {
         uriMap.put("/" + context.getString(R.string.subscription_uri), FeedContract.Subscriptions.CONTENT_URI);
         uriMap.put("/" + context.getString(R.string.related_video_uri), FeedContract.RelatedVideo.CONTENT_URI);
         uriMap.put("/" + context.getString(R.string.authors_uri), FeedContract.AuthorVideo.CONTENT_URI);
+        uriMap.put("/" + context.getString(R.string.video_by_tag_uri), FeedContract.TagsVideo.CONTENT_URI);
     }
 
     public Uri getContentUri(Uri rutube_uri) {
@@ -143,6 +143,7 @@ public class ContentMatcher {
                 FeedContract.SearchQuery._ID);
 
         int query_id;
+        assert c != null;
         if (c.moveToFirst()) {
             query_id = c.getInt(c.getColumnIndex(FeedContract.SearchQuery._ID));
             c.close();
@@ -151,12 +152,18 @@ public class ContentMatcher {
         } else {
             c.close();
             Uri inserted = contentResolver.insert(FeedContract.SearchQuery.CONTENT_URI, cv);
-            if (D) Log.d(LOG_TAG, "Inserted Search Query: " + inserted.toString());
+            assert inserted != null;
+            if (D) {
+                Log.d(LOG_TAG, "Inserted Search Query: " + inserted.toString());
+            }
             query_id = Integer.parseInt(inserted.getLastPathSegment());
         }
         Uri result = FeedContract.SearchResults.CONTENT_URI.buildUpon().appendPath(
                 String.valueOf(query_id)).build();
-        if (D) Log.d(LOG_TAG, "Matched search uri: " + result.toString());
+        assert result != null;
+        if (D) {
+            Log.d(LOG_TAG, "Matched search uri: " + result.toString());
+        }
         return result;
     }
 

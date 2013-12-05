@@ -28,6 +28,10 @@ public final class FeedContract {
         public static final String DURATION = "duration";
     }
 
+    public interface TagsColumns {
+        public static final String TAGS_JSON = "tags_json";
+    }
+
     public static final class Editors implements BaseColumns, FeedColumns {
         public static final String CONTENT_PATH = "editors";
         public static final Uri CONTENT_URI = Uri.withAppendedPath(FEED_URI, CONTENT_PATH);
@@ -48,12 +52,10 @@ public final class FeedContract {
         public static final String CONTENT_TYPE = VND + FEED + "." + CONTENT_PATH;
     }
 
-    public static final class Subscriptions implements BaseColumns, FeedColumns {
+    public static final class Subscriptions implements BaseColumns, FeedColumns, TagsColumns {
         public static final String CONTENT_PATH = "subscriptions";
         public static final Uri CONTENT_URI = Uri.withAppendedPath(FEED_URI, CONTENT_PATH);
         public static final String CONTENT_TYPE = VND + FEED + "." + CONTENT_PATH;
-
-        public static final String TAGS_JSON = "tags_json";
     }
 
     public static final class SearchResults implements BaseColumns, FeedColumns {
@@ -83,5 +85,13 @@ public final class FeedContract {
         public static final String POSITION = "position";
 
         public static final String HITS = "hits";
+    }
+
+    public static final class TagsVideo implements  BaseColumns, FeedColumns, TagsColumns {
+        public static final String CONTENT_PATH = "tags_video";
+        public static final Uri CONTENT_URI = Uri.withAppendedPath(FEED_URI, CONTENT_PATH);
+        public static final String CONTENT_TYPE = VND + FEED + "." + CONTENT_PATH;
+
+        public static final String TAG_ID = "tag_id";
     }
 }
