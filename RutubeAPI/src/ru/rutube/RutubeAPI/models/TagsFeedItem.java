@@ -100,7 +100,22 @@ public class TagsFeedItem extends FeedItem {
 
     public static TagsFeedItem fromCursor(Cursor c) {
         FeedItem item = FeedItem.fromCursor(c);
-        return new TagsFeedItem(item, null);
+        int tags_column_index = c.getColumnIndexOrThrow(FeedContract.Subscriptions.TAGS_JSON);
+        String tags_json = c.getString(tags_column_index);
+        try {
+            List<VideoTag> videoTags = new ArrayList<VideoTag>();
+            JSONArray tags = new JSONArray(tags_json);
+            for (int i=0; i<tags.length(); i++) {
+                JSONObject tag_data = (JSONObject) tags.get(i);
+                VideoTag tag = VideoTag.fromJSON(tag_data);
+                videoTags.add(tag);
+            }
+            return new TagsFeedItem(item, videoTags);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return new TagsFeedItem(item, null);
+        }
+
 
     }
 

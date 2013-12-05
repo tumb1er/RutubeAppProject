@@ -2,6 +2,7 @@ package ru.rutube.RutubeFeed.data;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -11,7 +12,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import ru.rutube.RutubeAPI.BuildConfig;
+import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.content.FeedContract;
+import ru.rutube.RutubeAPI.models.TagsFeedItem;
 import ru.rutube.RutubeAPI.models.VideoTag;
 import ru.rutube.RutubeFeed.R;
 
@@ -32,6 +35,7 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
     protected static class ViewHolder extends FeedCursorAdapter.ViewHolder {
         public LinearLayout tags;
         public View balloon;
+        public int firstTagId;
     }
 
     public SubscriptionsCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
@@ -58,6 +62,9 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
         super.bindView(view, context, cursor);
         try {
             ViewHolder holder = (ViewHolder)getViewHolder(view);
+            // Сохраняем ID первого тега, который окажется на месте имени автора.
+            TagsFeedItem item = TagsFeedItem.fromCursor(cursor);
+            holder.firstTagId = item.getTags().get(0).getId();
             bindTags(holder, cursor);
 
         } catch (IllegalArgumentException e) {
@@ -135,14 +142,25 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
     protected void setTags(int position, View view) {
         super.setTags(position, view);
         ViewHolder holder = (ViewHolder)getViewHolder(view);
+        Uri feedUri;
+        ClickTag feedTag;
         for (int i=0; i<holder.tags.getChildCount(); i++) {
             View tagView = holder.tags.getChildAt(i);
+            assert tagView != null;
             TagsListAdapter.ViewHolder tagHolder = (TagsListAdapter.ViewHolder)tagView.getTag();
-            ClickTag tag = new ClickTag(position);
-            tag.href = null; // RutubeApp.getUrl(R.string.authors_uri)tagHolder.tagId;
-            tagHolder.card.setTag(tag);
+            feedUri = RutubeApp.getFeedUri(R.string.video_by_tag_uri, tagHolder.tagId);
+            feedTag = new ClickTag(position, feedUri);
+            tagHolder.card.setTag(feedTag);
+            tagHolder.comment.setTag(feedTag);
+            tagHolder.title.setTag(feedTag);
             tagHolder.card.setOnClickListener(mOnClickListener);
+            tagHolder.comment.setOnClickListener(mOnClickListener);
+            tagHolder.title.setOnClickListener(mOnClickListener);
         }
-
+        feedUri = RutubeApp.getFeedUri(R.string.video_by_tag_uri, holder.firstTagId);
+        feedTag = new ClickTag(position, feedUri);
+        holder.footer.setTag(feedTag);
+        holder.author.setTag(feedTag);
+        holder.created.setTag(feedTag);
     }
 }

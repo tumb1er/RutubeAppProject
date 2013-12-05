@@ -8,6 +8,7 @@
     <string name="my_video_uri">api/video/person/</string>
     <string name="subscription_uri">api/subscription/video/</string>
     <string name="authors_uri" >api/video/person/%d/</string>
+    <string name="video_by_tag_uri" >api/tags/video/%d/</string>
     <string name="video_uri">api/video/%s/</string>
     <string name="search_uri">api/search/video/</string>
     <string name="video_page_uri">video/%s/</string>

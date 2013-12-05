@@ -21,7 +21,6 @@ import com.android.volley.toolbox.Volley;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.HttpTransport;
-import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.content.FeedContentProvider;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeAPI.models.Feed;
@@ -38,6 +37,20 @@ public class FeedController implements Parcelable {
     protected static final String VIEW_AVATAR = "avatar";
     protected static final String VIEW_CREATED = "created";
     protected static final String VIEW_FOOTER = "footer";
+    protected static final String VIEW_TAG_TITLE = "tag_title";
+    protected static final String VIEW_TAG_COMMENT = "tag_comment";
+    protected static final String VIEW_TAG_CARD = "tag_card";
+
+    protected static final String[] CLICKABLE = {
+        VIEW_AVATAR,
+        VIEW_FOOTER,
+        VIEW_AUTHOR,
+        VIEW_CREATED,
+        VIEW_TAG_CARD,
+        VIEW_TAG_COMMENT,
+        VIEW_TAG_TITLE
+    };
+
 
     /**
      * Контракт пользовательского интерфейса
@@ -198,8 +211,14 @@ public class FeedController implements Parcelable {
     protected FeedCursorAdapter.ItemClickListener itemClickListener = new FeedCursorAdapter.ItemClickListener() {
         @Override
         public void onItemClick(FeedCursorAdapter.ClickTag dataTag, String viewTag) {
-            if (viewTag.equals(VIEW_AUTHOR) || viewTag.equals(VIEW_AVATAR) ||
-                    viewTag.equals(VIEW_CREATED) || viewTag.equals(VIEW_FOOTER)) {
+            boolean isSpecial = false;
+            for (String t: CLICKABLE) {
+                if (t.equals(viewTag)){
+                    isSpecial = true;
+                    break;
+                }
+            }
+            if (isSpecial) {
                 // Клик по футеру, открываем ленту автора
                 if (D) Log.d(LOG_TAG, "Feed link click: " + String.valueOf(dataTag.href));
                 if (dataTag.href != null && !dataTag.href.equals(mFeedUri)) {
