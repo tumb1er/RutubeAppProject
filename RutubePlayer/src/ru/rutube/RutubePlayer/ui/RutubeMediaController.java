@@ -99,6 +99,15 @@ public class RutubeMediaController extends FrameLayout {
     private TextView            mVideoTitle;
     private Handler             mHandler = new MessageHandler(this);
     private View.OnTouchListener mOnTouchListener;
+    private ToggleFullscreenListener mToggleFullscreenListener;
+
+    public void setToggleFullscreenListener(ToggleFullscreenListener toggleFullscreenListener) {
+        this.mToggleFullscreenListener = toggleFullscreenListener;
+    }
+
+    public static interface ToggleFullscreenListener {
+        public void toggleFullscreen();
+    }
 
     public RutubeMediaController(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -178,6 +187,11 @@ public class RutubeMediaController extends FrameLayout {
         if (mPauseButton != null) {
             mPauseButton.requestFocus();
             mPauseButton.setOnClickListener(mPauseListener);
+        }
+
+        mFullscreenButton = (ImageButton) v.findViewById(R.id.mediacontroller_fullscreen);
+        if (mFullscreenButton != null) {
+            mFullscreenButton.setOnClickListener(mFullscreenListener);
         }
 
         mProgress = (ProgressBar) v.findViewById(R.id.mediacontroller_seekbar);
@@ -461,11 +475,11 @@ public class RutubeMediaController extends FrameLayout {
     }
 
     private void doToggleFullscreen() {
-        if (mPlayer == null) {
+        if (mToggleFullscreenListener == null) {
             return;
         }
 
-        //mPlayer.toggleFullScreen();
+        mToggleFullscreenListener.toggleFullscreen();
     }
 
     // There are two scenarios that can trigger the seekbar listener to trigger:

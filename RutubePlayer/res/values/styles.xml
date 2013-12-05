@@ -16,7 +16,7 @@
         <item name="PlayButtonStyle">@style/Player.MediaController.PlayButton</item>
         <item name="TimeTextStyle">@style/Player.MediaController.TimeText</item>
         <item name="SeekBarStyle">@style/Player.MediaController.ProgressBar</item>
-
+        <item name="FullscreenButtonStyle">@style/Player.MediaController.FullscreenButton</item>
         <item name="SeekBarThumbDrawable">@drawable/seekbar_circle</item>
         <item name="SeekBarDrawable">@drawable/seekbar_progress</item>
     </style>
@@ -59,7 +59,6 @@
         <item name="android:layout_alignParentBottom">true</item>
         <item name="android:layout_alignParentLeft">true</item>
         <item name="android:layout_alignParentRight">true</item>
-        <item name="android:paddingRight">30dp</item>
     </style>
 
     <style name="Player.MediaController.PlayButton" parent="Widget">
@@ -69,7 +68,15 @@
         <item name="android:paddingBottom">20dp</item>
         <item name="android:paddingLeft">30dp</item>
         <item name="android:paddingRight">20dp</item>
+    </style>
 
+    <style name="Player.MediaController.FullscreenButton" parent="Widget">
+        <item name="android:background">@color/transparent</item>
+        <item name="android:src">@drawable/fullscreen_btn</item>
+        <item name="android:paddingTop">24dp</item>
+        <item name="android:paddingBottom">16dp</item>
+        <item name="android:paddingLeft">20dp</item>
+        <item name="android:paddingRight">30dp</item>
     </style>
 
     <style name="Player.MediaController.TimeText" parent="Player.MediaController.TextStyle">

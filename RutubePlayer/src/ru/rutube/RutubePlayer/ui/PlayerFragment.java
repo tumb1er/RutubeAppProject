@@ -50,7 +50,6 @@ import ru.rutube.RutubePlayer.views.VideoFrameLayout;
  */
 public class PlayerFragment extends Fragment implements PlayerController.PlayerView {
 
-
     public boolean onKeyDown(int keyCode) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_VOLUME_DOWN:
@@ -119,6 +118,15 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
 
     protected PowerManager.WakeLock mWakeLock;
     private Dialog mDialog;
+
+    protected RutubeMediaController.ToggleFullscreenListener mToggleFullscreenListener = new RutubeMediaController.ToggleFullscreenListener() {
+        @Override
+        public void toggleFullscreen() {
+            if (mPlayerEventsListener == null)
+                return;
+            mPlayerEventsListener.onDoubleTap();
+        }
+    };
 
     protected Animation.AnimationListener mVolumeAnimationListener = new Animation.AnimationListener() {
         @Override
@@ -675,6 +683,7 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         mMediaController = new RutubeMediaController(getActivity());
         mMediaController.setAnchorView((ViewGroup) view.findViewById(R.id.center_video_view));
         mMediaController.setOnTouchListener(mOnTouchListener);
+        mMediaController.setToggleFullscreenListener(mToggleFullscreenListener);
         return;
     }
 

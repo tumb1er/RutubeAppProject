@@ -11,5 +11,6 @@
         <attr name="SeekBarStyle" format="reference"/>
         <attr name="SeekBarThumbDrawable" format="reference"/>
         <attr name="SeekBarDrawable" format="reference"/>
+        <attr name="FullscreenButtonStyle" format="reference"/>
     </declare-styleable>
 </resources>
