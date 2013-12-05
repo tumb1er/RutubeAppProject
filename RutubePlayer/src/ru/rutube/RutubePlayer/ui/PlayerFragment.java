@@ -14,6 +14,7 @@ import android.os.PowerManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MotionEventCompat;
 import android.util.Log;
+import android.view.Display;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -22,6 +23,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ImageView;
@@ -214,11 +216,15 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
             int vh = mPlayer.getVideoHeight();
             if (vw * vh == 0)
                 return;
-            float scale = Math.min(((float)height)/vh, ((float)width)/vw);
+            boolean fullscreen = isFullscreen();
+            // когда плеер не фулскрин, убираем черные поля, растягивая видео на всё доступное
+            // пространство
+            float scale = (fullscreen)?Math.min(((float)height)/vh, ((float)width)/vw):
+                    Math.max(((float) height) / vh, ((float) width) / vw);
             int w = (int)(vw * scale);
             int h = (int)(vh * scale);
-            if (D) Log.d(LOG_TAG, String.format("videoSize: %dx%d", vw, vh));
-            if (D) Log.d(LOG_TAG, String.format("fit to %dx%d", w, h));
+            if (D) Log.d(LOG_TAG, String.format("video size: %dx%d", vw, vh));
+            if (D) Log.d(LOG_TAG, String.format("fit to size: %dx%d", w, h));
 
             ViewGroup.LayoutParams lp = mVideoView.getLayoutParams();
             lp.height = h;
@@ -390,20 +396,28 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
             float ratio_height = surfaceView_Height/ (float) h;
             float aspectratio = (float) w / (float) h;
 
+            boolean fullscreen = isFullscreen();
+
+
             ViewGroup.LayoutParams layoutParams = mVideoView.getLayoutParams();
             assert layoutParams != null;
-            if (ratio_width > ratio_height){
+            if ((ratio_width > ratio_height) == fullscreen){
                 layoutParams.width = (int) (surfaceView_Height * aspectratio);
                 layoutParams.height = surfaceView_Height;
             }else{
                 layoutParams.width = surfaceView_Width;
                 layoutParams.height = (int) (surfaceView_Width / aspectratio);
             }
-
+            if (D) Log.d(LOG_TAG, "size: onVideoSizeChanged");
             mVideoView.setLayoutParams(layoutParams);
 
         }
     };
+
+    protected boolean isFullscreen() {
+        return (getActivity().getWindow().getAttributes().flags
+                & WindowManager.LayoutParams.FLAG_FULLSCREEN) != 0;
+    }
 
     //
     // переопределенные методы из Fragment
