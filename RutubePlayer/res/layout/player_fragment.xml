@@ -21,12 +21,11 @@
 
     <ProgressBar
         android:id="@+id/load"
-        style="?android:attr/progressBarStyleLarge"
+        style="?attr/PlayerLoaderStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:visibility="visible" />
+        android:visibility="visible"
+        android:layout_centerInParent="true" />
 
     <ImageView
         android:layout_width="wrap_content"

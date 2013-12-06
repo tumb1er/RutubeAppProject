@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:duration="200" >
+        <scale android:drawable="@drawable/loader_f0" android:scaleGravity="center" />
+    </item>
+    <item android:duration="200" >
+        <scale android:drawable="@drawable/loader_f1" android:scaleGravity="center" />
+    </item>
+    <item android:duration="200" >
+        <scale android:drawable="@drawable/loader_f2" android:scaleGravity="center" />
+    </item>
+    <item android:duration="200" >
+        <scale android:drawable="@drawable/loader_f3" android:scaleGravity="center" />
+    </item>
+</animation-list>

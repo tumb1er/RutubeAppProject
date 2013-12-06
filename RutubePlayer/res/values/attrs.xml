@@ -12,5 +12,6 @@
         <attr name="SeekBarThumbDrawable" format="reference"/>
         <attr name="SeekBarDrawable" format="reference"/>
         <attr name="FullscreenButtonStyle" format="reference"/>
+        <attr name="PlayerLoaderStyle" format="reference"/>
     </declare-styleable>
 </resources>
