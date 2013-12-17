@@ -62,7 +62,9 @@ public class RelatedFeedFragment extends FeedFragment {
             assert uri != null;
             videoId = uri.getLastPathSegment();
             if (videoId == null || videoId.length() != 32)
-                throw new IllegalArgumentException("Can't load videoId from activity");
+            {
+                setFeedUri(Uri.parse(RutubeApp.getUrl(R.string.editors_uri)));
+            }
         }
         setFeedUri(Uri.parse(RutubeApp.getUrl(R.string.related_video_uri)).buildUpon()
                 .appendEncodedPath(videoId).build());
