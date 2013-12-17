@@ -153,11 +153,23 @@ public class VideoPageActivity extends SherlockFragmentActivity
 
     @Override
     public void setVideoInfo(Video video) {
+        if (video == null){
+            toggleNoVideoInfo(true);
+            return;
+        }
         bindTitle(video);
         bindAuthor(video);
         bindDuration(video);
         bindHits(video);
         bindDescription(video);
+    }
+
+    /**
+     * Изменяет видимость заглушки блока информации о видео
+     * @param show флаг видимости заглушки
+     */
+    protected void toggleNoVideoInfo(boolean show) {
+
     }
 
     @Override

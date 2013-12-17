@@ -234,6 +234,8 @@ public class Video implements Parcelable {
             @Override
             public void onErrorResponse(VolleyError error) {
                 if (D) Log.d(LOG_TAG, "onErrorResponse");
+                if (requestListener == null)
+                    return;
                 try {
                     NetworkResponse networkResponse = error.networkResponse;
                     Bundle bundle = new Bundle();
