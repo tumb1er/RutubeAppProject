@@ -155,6 +155,8 @@ public class RutubeApp extends Application {
 
 
     public String getCreatedText(Date created) {
+        if (created == null)
+            return null;
         Date now = new Date();
         long seconds = (now.getTime() - created.getTime()) / 1000;
         if (seconds < 3600)
