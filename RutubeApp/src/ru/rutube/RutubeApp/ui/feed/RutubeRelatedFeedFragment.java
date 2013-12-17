@@ -137,6 +137,10 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
      * @param video объект модели Video.
      */
     public void setVideoInfo(Video video) {
+        if (video == null){
+            toggleNoVideoInfo(true);
+            return;
+        }
         mViewHolder.title.setText(video.getTitle());
         Author author = video.getAuthor();
         if (author != null) {
@@ -153,6 +157,14 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
             mViewHolder.description.setText(null);
 
         mViewHolder.created.setText(MainApplication.getInstance().getCreatedText(video.getCreated()));
+    }
+
+    /**
+     * Изменяет видимость заглушки у блока информации о видео
+     * @param show флаг видимости заглушки
+     */
+    protected void toggleNoVideoInfo(boolean show) {
+
     }
 
     /**

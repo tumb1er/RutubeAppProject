@@ -114,7 +114,8 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
     public void setVideoInfo(Video video) {
         mRelatedFragment.setVideoInfo(video);
         super.setVideoInfo(video);
-        bindCreated(video);
+        if (video != null)
+            bindCreated(video);
     }
 
     /**
