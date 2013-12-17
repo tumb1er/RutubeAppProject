@@ -38,6 +38,7 @@ public final class Constants {
         public static final String PASSWORD = "ru.rutube.api.login.password";
         public static final String VIDEO_URI = "ru.rutube.api.upload.video";
         public static final String THUMBNAIL_URI = "ru.rutube.api.video.thumbnail_url";
+        public static final String FEED_TITLE = "ru.rutube.feed.title";
     }
 
     public final class Actions {

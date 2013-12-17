@@ -61,8 +61,8 @@ public class FeedFragment extends SherlockFragment implements FeedController.Fee
     };
 
     @Override
-    public void openFeed(Uri feedUri) {
-        RutubeApp.getInstance().openFeed(feedUri, getActivity());
+    public void openFeed(Uri feedUri, String title) {
+        RutubeApp.getInstance().openFeed(feedUri, getActivity(), title);
     }
 
     public ListAdapter getListAdapter() {

@@ -74,7 +74,8 @@
             <!--</intent-filter>-->
         </activity>
         <activity
-            android:name="ru.rutube.RutubeApp.ui.AuthorFeedActivity">
+            android:name="ru.rutube.RutubeApp.ui.AuthorFeedActivity"
+            android:theme="@style/Theme.Rutube.Feed">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name="ru.rutube.feed.open"/>
@@ -84,7 +85,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="ru.rutube.RutubeApp.ui.TagsFeedActivity">
+            android:name="ru.rutube.RutubeApp.ui.TagsFeedActivity"
+            android:theme="@style/Theme.Rutube.Feed">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name="ru.rutube.feed.open"/>

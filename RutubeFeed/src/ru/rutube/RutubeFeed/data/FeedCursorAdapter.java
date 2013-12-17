@@ -77,14 +77,16 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     public static class ClickTag {
         public int position;
         public Uri href;
+        public String title;
 
         public ClickTag(int position) {
             this.position = position;
         }
 
-        public ClickTag(int position, Uri href) {
+        public ClickTag(int position, Uri href, String title) {
             this(position);
             this.href = href;
+            this.title = title;
         }
     }
 
@@ -325,7 +327,8 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
             authorFeedUri = RutubeApp.getFeedUri(R.string.authors_uri, holder.authorId);
         }
 
-        ClickTag authorTag = new ClickTag(position, authorFeedUri);
+        String authorName = "@" + String.valueOf(holder.author.getText());
+        ClickTag authorTag = new ClickTag(position, authorFeedUri, authorName);
         ClickTag emptyTag = new ClickTag(position);
         holder.title.setTag(emptyTag);
         holder.description.setTag(emptyTag);

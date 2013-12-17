@@ -54,7 +54,7 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
             if (D) Log.d(LOG_TAG, "element click: " + String.valueOf(view));
             try {
                 Uri feedUri = (Uri)view.getTag();
-                MainApplication.getInstance().openFeed(feedUri, RutubeVideoPageActivity.this);
+                MainApplication.getInstance().openFeed(feedUri, RutubeVideoPageActivity.this, null);
             } catch (ClassCastException ignored) {}
         }
     };

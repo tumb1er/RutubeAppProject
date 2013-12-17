@@ -153,7 +153,8 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
             View tagView = holder.tags.getChildAt(i);
             assert tagView != null;
             TagsListAdapter.ViewHolder tagHolder = (TagsListAdapter.ViewHolder)tagView.getTag();
-            feedTag = getClickTag(position, tagHolder.tagId);
+            String tagTitle = String.valueOf(tagHolder.title.getText());
+            feedTag = getClickTag(position, tagHolder.tagId, tagTitle);
             tagHolder.card.setTag(feedTag);
             tagHolder.comment.setTag(feedTag);
             tagHolder.title.setTag(feedTag);
@@ -162,20 +163,21 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
             tagHolder.comment.setOnClickListener(mOnClickListener);
             tagHolder.title.setOnClickListener(mOnClickListener);
         }
-        feedTag = getClickTag(position, holder.firstTagId);
+        String authorName = String.valueOf(holder.author.getText());
+        feedTag = getClickTag(position, holder.firstTagId, authorName);
         holder.footer.setTag(feedTag);
         holder.author.setTag(feedTag);
         holder.created.setTag(feedTag);
     }
 
-    private ClickTag getClickTag(int position, int tag_id) {
+    private ClickTag getClickTag(int position, int tag_id, String title) {
         Uri feedUri;
         ClickTag feedTag;
         if (tag_id > 0){
             feedUri = RutubeApp.getFeedUri(R.string.video_by_tag_uri, tag_id);
-            feedTag = new ClickTag(position, feedUri);
+            feedTag = new ClickTag(position, feedUri, title);
         } else {
-            feedTag = new ClickTag(position, null);
+            feedTag = new ClickTag(position, null, null);
         }
         return feedTag;
     }

@@ -7,6 +7,7 @@ import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Bundle;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
@@ -14,6 +15,7 @@ import com.android.volley.toolbox.ImageLoader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeAPI.tools.MemDiskBitmapCache;
 
 /**
@@ -124,11 +126,12 @@ public class RutubeApp extends Application {
                 .build();
     }
 
-    public void openFeed(Uri feedUri, Context context) {
+    public void openFeed(Uri feedUri, Context context, String title) {
         if (feedUri == null)
             throw new IllegalArgumentException("Can't open feeed");
         Intent intent = new Intent("ru.rutube.feed.open");
         intent.setData(feedUri);
+        intent.putExtra(Constants.Params.FEED_TITLE, title);
         context.startActivity(intent);
     }
 

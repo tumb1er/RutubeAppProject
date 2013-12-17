@@ -73,9 +73,11 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
             try {
                 Uri feedUri = (Uri)view.getTag();
                 if (D) Log.d(LOG_TAG, "Found feed uri: " + String.valueOf(feedUri));
-                MainApplication.getInstance().openFeed(feedUri, getActivity());
+                MainApplication.getInstance().openFeed(feedUri, getActivity(), null);
             }
-            catch (ClassCastException ignored) {}
+            catch (ClassCastException e) {
+                e.printStackTrace();
+            }
             catch (IllegalArgumentException e) {
                 e.printStackTrace();
             }
