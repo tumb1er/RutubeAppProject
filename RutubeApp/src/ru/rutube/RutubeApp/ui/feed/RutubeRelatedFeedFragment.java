@@ -71,12 +71,11 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
         public void onClick(View view) {
             if (D) Log.d(LOG_TAG, "element click: " + String.valueOf(view));
             try {
+                FeedCursorAdapter.ClickTag tag = (FeedCursorAdapter.ClickTag)view.getTag();
+                MainApplication.getInstance().openFeed(tag.href, getActivity(), tag.title);
+            } catch (ClassCastException e) {
                 Uri feedUri = (Uri)view.getTag();
-                if (D) Log.d(LOG_TAG, "Found feed uri: " + String.valueOf(feedUri));
                 MainApplication.getInstance().openFeed(feedUri, getActivity(), null);
-            }
-            catch (ClassCastException e) {
-                e.printStackTrace();
             }
             catch (IllegalArgumentException e) {
                 e.printStackTrace();
@@ -147,7 +146,9 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
         Author author = video.getAuthor();
         if (author != null) {
             mViewHolder.author.setText(author.getName());
-            mViewHolder.author.setTag(author.getFeedUrl());
+            FeedCursorAdapter.ClickTag tag = new FeedCursorAdapter.ClickTag(0, author.getFeedUrl(),
+                    "@" + author.getName());
+            mViewHolder.author.setTag(tag);
 
         }
         String hits = video.getHitsText(getActivity());

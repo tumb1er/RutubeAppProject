@@ -14,10 +14,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import ru.rutube.RutubeAPI.RutubeApp;
+import ru.rutube.RutubeAPI.models.Author;
 import ru.rutube.RutubeAPI.models.Video;
 import ru.rutube.RutubeApp.MainApplication;
 import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubeApp.ui.feed.RutubeRelatedFeedFragment;
+import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
 import ru.rutube.RutubeFeed.helpers.Typefaces;
 import ru.rutube.RutubePlayer.ui.VideoPageActivity;
 
@@ -53,9 +55,12 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         public void onClick(View view) {
             if (D) Log.d(LOG_TAG, "element click: " + String.valueOf(view));
             try {
+                FeedCursorAdapter.ClickTag tag = (FeedCursorAdapter.ClickTag)view.getTag();
+                MainApplication.getInstance().openFeed(tag.href, RutubeVideoPageActivity.this, tag.title);
+            } catch (ClassCastException e) {
                 Uri feedUri = (Uri)view.getTag();
                 MainApplication.getInstance().openFeed(feedUri, RutubeVideoPageActivity.this, null);
-            } catch (ClassCastException ignored) {}
+            }
         }
     };
 
@@ -187,6 +192,18 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         holder.description.setTypeface(lightFont);
 
         holder.author.setOnClickListener(mOnVideoElementClickListener);
+    }
+
+    @Override
+    protected void bindAuthor(Video video) {
+        Author author = video.getAuthor();
+        if (author != null) {
+            TextView authorName = mViewHolder.author;
+            authorName.setText(author.getName());
+            FeedCursorAdapter.ClickTag tag = new FeedCursorAdapter.ClickTag(0, author.getFeedUrl(),
+                    "@" + author.getName());
+            authorName.setTag(tag);
+        }
     }
 
     protected void bindCreated(Video video) {
