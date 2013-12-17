@@ -71,4 +71,6 @@ public class RelatedFeedFragment extends FeedFragment {
 
     }
 
+    @Override
+    public void showError() {}
 }
