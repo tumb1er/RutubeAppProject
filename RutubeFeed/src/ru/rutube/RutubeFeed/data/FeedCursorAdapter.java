@@ -55,6 +55,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         public void onClick(View view) {
             try {
                 ClickTag tag = (ClickTag)view.getTag();
+                if (D) Log.d(LOG_TAG, "ClickTag: " + String.valueOf(tag));
                 if (tag == null || mItemCLickListener == null)
                     return;
                 String cd = (String)view.getContentDescription();
