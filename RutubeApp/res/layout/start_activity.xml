@@ -4,7 +4,9 @@
               android:orientation="vertical"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
-              android:background="#ffffffff"
-              android:id="@+id/feed_fragment_container">
+              android:background="#FFFFFFFF"
+              android:id="@+id/feed_fragment_container"
+    android:gravity="center_vertical">
+
 
 </LinearLayout>

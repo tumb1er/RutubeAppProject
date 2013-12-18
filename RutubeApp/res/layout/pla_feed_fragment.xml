@@ -8,7 +8,15 @@
         android:layout_height="match_parent"
         android:text="@string/no_data"
         android:gravity="center"
+        android:visibility="gone"
         />
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/loader"
+        android:gravity="center"
+        android:indeterminateDrawable="@anim/loader"
+        android:layout_centerInParent="true" />
     <com.huewu.pla.lib.MultiColumnListView
         xmlns:pla="http://schemas.android.com/apk/res-auto"
         android:id="@+id/feed_item_list"

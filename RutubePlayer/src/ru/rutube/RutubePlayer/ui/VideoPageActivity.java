@@ -17,6 +17,7 @@ import android.view.Display;
 import android.view.KeyEvent;
 import android.view.OrientationEventListener;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.TextView;
 
@@ -45,7 +46,7 @@ public class VideoPageActivity extends SherlockFragmentActivity
     protected static class ViewHolder {
         public PlayerFragment playerFragment;
         public EndscreenFragment endscreenFragment;
-        public View videoInfoContainer;
+        public ViewGroup videoInfoContainer;
         public TextView description;
         public TextView hits;
         public TextView duration;
@@ -153,23 +154,11 @@ public class VideoPageActivity extends SherlockFragmentActivity
 
     @Override
     public void setVideoInfo(Video video) {
-        if (video == null){
-            toggleNoVideoInfo(true);
-            return;
-        }
         bindTitle(video);
         bindAuthor(video);
         bindDuration(video);
         bindHits(video);
         bindDescription(video);
-    }
-
-    /**
-     * Изменяет видимость заглушки блока информации о видео
-     * @param show флаг видимости заглушки
-     */
-    protected void toggleNoVideoInfo(boolean show) {
-
     }
 
     @Override
@@ -303,7 +292,7 @@ public class VideoPageActivity extends SherlockFragmentActivity
         FragmentManager fm = getSupportFragmentManager();
         holder.playerFragment = (PlayerFragment) fm.findFragmentById(R.id.player_fragment);
         holder.endscreenFragment = (EndscreenFragment) fm.findFragmentById(R.id.endscreen_fragment);
-        holder.videoInfoContainer = findViewById(R.id.video_info_container);
+        holder.videoInfoContainer = (ViewGroup)findViewById(R.id.video_info_container);
         holder.description = ((TextView) findViewById(R.id.description));
         holder.hits = ((TextView) findViewById(R.id.hits));
         holder.duration = ((TextView) findViewById(R.id.duration));

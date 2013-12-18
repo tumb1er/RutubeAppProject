@@ -13,6 +13,7 @@ import android.widget.HeaderViewListAdapter;
 import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import ru.rutube.RutubeAPI.content.FeedContract;
@@ -35,6 +36,9 @@ import ru.rutube.RutubeFeed.ui.RelatedFeedFragment;
 public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
     public static final String INIT_HEADER = "init_header";
     protected static final boolean D = BuildConfig.DEBUG;
+    private View mLoader;
+    private View mEmptyList;
+
 
     protected static class ViewHolder extends RutubeVideoPageActivity.ViewHolder {
         ImageButton moreInfo;
@@ -47,7 +51,7 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
     protected ViewHolder mViewHolder;
 
     private ListView mListView; // список похожих видео
-    private View mInfoView;     // блок информации о ролике
+    private ViewGroup mInfoView;     // блок информации о ролике
     private View mHeaderView;   // контейнер, хранящий блок информации о ролике
     private boolean mHasInfoView = false;
     private boolean mDescriptionVisible = false;
@@ -101,6 +105,8 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
         Intent intent = getActivity().getIntent();
         if (intent.getBooleanExtra(INIT_HEADER, false))
             addHeaderView();
+        mLoader = v.findViewById(R.id.loader);
+        mEmptyList = v.findViewById(R.id.empty);
         return v;
     }
 
@@ -139,9 +145,10 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
      */
     public void setVideoInfo(Video video) {
         if (video == null){
-            toggleNoVideoInfo(true);
+            toggleNoVideoInfo();
             return;
         }
+        toggleVideoInfoLoader(false);
         mViewHolder.title.setText(video.getTitle());
         Author author = video.getAuthor();
         if (author != null) {
@@ -164,10 +171,10 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
 
     /**
      * Изменяет видимость заглушки у блока информации о видео
-     * @param show флаг видимости заглушки
      */
-    protected void toggleNoVideoInfo(boolean show) {
-
+    protected void toggleNoVideoInfo() {
+        ProgressBar loader = (ProgressBar)mViewHolder.videoInfoContainer.findViewById(R.id.video_info_loader);
+        loader.setProgressDrawable(getResources().getDrawable(R.drawable.sad_smile));
     }
 
     /**
@@ -235,7 +242,7 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
         // инициализирует и добавляет в ListView заголовок с информацией о видео.
         mHeaderView = getActivity().getLayoutInflater().inflate(R.layout.related_header, null);
         assert mHeaderView != null;
-        mInfoView = mHeaderView.findViewById(R.id.video_info);
+        mInfoView = (ViewGroup)mHeaderView.findViewById(R.id.video_info);
         assert mInfoView != null;
         mViewHolder = new ViewHolder();
         mViewHolder.title = ((TextView)mInfoView.findViewById(R.id.video_title));
@@ -247,7 +254,9 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
         mViewHolder.description = ((TextView)mInfoView.findViewById(R.id.description));
         mViewHolder.moreInfo = ((ImageButton)mInfoView.findViewById(R.id.moreImageButton));
         mViewHolder.commentLine = mInfoView.findViewById(R.id.commentLine);
-        mViewHolder.videoInfoContainer = mInfoView.findViewById(R.id.baseInfoContainer);
+        mViewHolder.videoInfoContainer = (ViewGroup)mInfoView.findViewById(R.id.baseInfoContainer);
+
+        toggleVideoInfoLoader(true);
 
         mViewHolder.title.setTypeface(normalFont);
         mViewHolder.from.setTypeface(lightFont);
@@ -258,16 +267,42 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
         mViewHolder.description.setTypeface(lightFont);
 
         mViewHolder.moreInfo.setOnClickListener(mOnMoreClickListener);
-        mViewHolder.moreInfo.setVisibility(View.VISIBLE);
         mViewHolder.author.setOnClickListener(mOnVideoElementClickListener);
 
         toggleDescription(false);
         mListView.setHeaderDividersEnabled(false);
     }
 
+    private void toggleVideoInfoLoader(boolean loading) {
+        ViewGroup container = mViewHolder.videoInfoContainer;
+        for(int i=0;i<container.getChildCount();i++) {
+            View c = container.getChildAt(i);
+            assert c != null;
+            if (c.getId() == R.id.video_info_loader)
+                c.setVisibility((loading)?View.VISIBLE:View.GONE);
+            else
+                c.setVisibility((loading)?View.GONE:View.VISIBLE);
+        }
+    }
+
     private void addHeaderView() {
         if (mHasInfoView) return;
         mHasInfoView = true;
         mListView.addHeaderView(mHeaderView);
+    }
+
+
+    @Override
+    public void setRefreshing() {
+        super.setRefreshing();
+        mLoader.setVisibility(View.VISIBLE);
+        mEmptyList.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void doneRefreshing() {
+        super.doneRefreshing();
+        mLoader.setVisibility(View.GONE);
+        mEmptyList.setVisibility(View.VISIBLE);
     }
 }

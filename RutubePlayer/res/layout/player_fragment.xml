@@ -17,7 +17,8 @@
     <com.android.volley.toolbox.NetworkImageView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:id="@+id/thumbnail" />
+        android:id="@+id/thumbnail"
+        android:scaleType="centerCrop"/>
 
     <ProgressBar
         android:id="@+id/load"

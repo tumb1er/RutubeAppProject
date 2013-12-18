@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
+import android.widget.ProgressBar;
 
 import com.huewu.pla.lib.MultiColumnListView;
 import com.huewu.pla.lib.internal.PLA_AdapterView;
@@ -22,6 +23,8 @@ public class PlaFeedFragment extends ru.rutube.RutubeFeed.ui.FeedFragment {
     private static final String LOG_TAG = PlaFeedFragment.class.getName();
     private static final boolean D = BuildConfig.DEBUG;
     private MultiColumnListView sgView;
+    private View mLoader;
+    private View mEmptyList;
 
     private PLA_AdapterView.OnItemClickListener onItemClickListener = new PLA_AdapterView.OnItemClickListener() {
         @Override
@@ -40,6 +43,8 @@ public class PlaFeedFragment extends ru.rutube.RutubeFeed.ui.FeedFragment {
         sgView = (MultiColumnListView)result.findViewById(R.id.feed_item_list);
         assert sgView != null;
         sgView.setOnItemClickListener(onItemClickListener);
+        mLoader = result.findViewById(R.id.loader);
+        mEmptyList = result.findViewById(R.id.empty);
         return result;
     }
 
@@ -57,5 +62,19 @@ public class PlaFeedFragment extends ru.rutube.RutubeFeed.ui.FeedFragment {
     public boolean onItemClick(FeedCursorAdapter.ClickTag position, String viewTag) {
         MainApplication.cardClick(getActivity(), viewTag);
         return super.onItemClick(position, viewTag);
+    }
+
+    @Override
+    public void setRefreshing() {
+        super.setRefreshing();
+        mLoader.setVisibility(View.VISIBLE);
+        mEmptyList.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void doneRefreshing() {
+        super.doneRefreshing();
+        mLoader.setVisibility(View.GONE);
+        mEmptyList.setVisibility(View.VISIBLE);
     }
 }

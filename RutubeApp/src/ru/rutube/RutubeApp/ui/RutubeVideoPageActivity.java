@@ -10,7 +10,9 @@ import android.support.v4.app.FragmentTransaction;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import ru.rutube.RutubeAPI.RutubeApp;
@@ -36,6 +38,7 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
     public static class ViewHolder extends VideoPageActivity.ViewHolder {
         public TextView from;
         public TextView created;
+        public ViewGroup baseInfoContainer;
     }
 
     private static final String LOG_TAG = RutubeVideoPageActivity.class.getName();
@@ -118,9 +121,13 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
     @Override
     public void setVideoInfo(Video video) {
         mRelatedFragment.setVideoInfo(video);
+        if (video == null){
+            toggleNoVideoInfo();
+            return;
+        }
+        toggleVideoInfoLoader(false);
         super.setVideoInfo(video);
-        if (video != null)
-            bindCreated(video);
+        bindCreated(video);
     }
 
     /**
@@ -156,6 +163,27 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         mRelatedFragment.toggleHeader(!mIsLandscape);
     }
 
+    protected void toggleNoVideoInfo() {
+        ProgressBar loader = (ProgressBar)mViewHolder.videoInfoContainer.findViewById(R.id.video_info_loader);
+        loader.setProgressDrawable(getResources().getDrawable(R.drawable.sad_smile));
+
+    }
+
+    protected void toggleVideoInfoLoader(boolean loading) {
+        ViewHolder holder = (ViewHolder)mViewHolder;
+        ViewGroup container = holder.baseInfoContainer;
+        for(int i=0;i<container.getChildCount();i++) {
+            View c = container.getChildAt(i);
+            assert c != null;
+            if (c.getId() == R.id.moreImageButton)
+                continue;
+            if (c.getId() == R.id.video_info_loader)
+                c.setVisibility((loading)?View.VISIBLE:View.GONE);
+            else
+                c.setVisibility((loading)?View.GONE:View.VISIBLE);
+        }
+    }
+
     @Override
     protected VideoPageActivity.ViewHolder getHolder() {
         return new ViewHolder();
@@ -165,8 +193,9 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
     protected void initHolder(VideoPageActivity.ViewHolder holder) {
         super.initHolder(holder);
         ViewHolder h = (ViewHolder)holder;
-        h.from = ((TextView)findViewById(R.id.from));
-        h.created = ((TextView)findViewById(R.id.created));
+        h.from = (TextView)findViewById(R.id.from);
+        h.created = (TextView)findViewById(R.id.created);
+        h.baseInfoContainer = (ViewGroup)findViewById(R.id.baseInfoContainer);
         mViewHolder = h;
     }
 
@@ -190,6 +219,8 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         holder.created.setTypeface(lightFont);
         holder.hits.setTypeface(lightFont);
         holder.description.setTypeface(lightFont);
+
+        toggleVideoInfoLoader(false);
 
         holder.author.setOnClickListener(mOnVideoElementClickListener);
     }
