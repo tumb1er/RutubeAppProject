@@ -258,7 +258,10 @@ public class VideoPageActivity extends SherlockFragmentActivity
 
     protected void bindDescription(Video video) {
         String description = video.getDescription();
-        mViewHolder.description.setText(Html.fromHtml(description));
+        if (description != null)
+            mViewHolder.description.setText(Html.fromHtml(description));
+        else
+            mViewHolder.description.setText(null);
     }
 
     protected void bindHits(Video video) {
