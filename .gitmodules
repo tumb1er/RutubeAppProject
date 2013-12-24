@@ -7,3 +7,6 @@
 [submodule "libs/ActionBarSherlock"]
 	path = libs/ActionBarSherlock
 	url = ssh://git@github.com/rutube/ActionBarSherlock
+[submodule "RutubeAPI/libs/DiskLruCache"]
+	path = RutubeAPI/libs/DiskLruCache
+	url = git@github.com:rutube/DiskLruCache.git
