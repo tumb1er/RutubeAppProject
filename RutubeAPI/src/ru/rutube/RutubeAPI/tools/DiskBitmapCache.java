@@ -1,5 +1,6 @@
 package ru.rutube.RutubeAPI.tools;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
@@ -9,31 +10,14 @@ import com.android.volley.toolbox.ImageLoader;
 import java.io.File;
 import java.nio.ByteBuffer;
 
-public class DiskBitmapCache extends DiskBasedCache implements ImageLoader.ImageCache {
-
-    public DiskBitmapCache(File rootDirectory, int maxCacheSizeInBytes) {
-        super(rootDirectory, maxCacheSizeInBytes);
+public class DiskBitmapCache extends DiskLruImageCache {
+    public DiskBitmapCache(Context context, String uniqueName, int diskCacheSize,
+                           Bitmap.CompressFormat compressFormat, int quality) {
+        super(context, uniqueName, diskCacheSize, compressFormat, quality);
     }
 
-    public DiskBitmapCache(File cacheDir) {
-        super(cacheDir);
-    }
-
-    public Bitmap getBitmap(String url) {
-
-        File file = getFileForKey(url);
-        if (file.exists())
-            return BitmapFactory.decodeFile(file.getAbsolutePath());
-        return null;
-    }
-
-    public void putBitmap(String url, Bitmap bitmap) {
-        final Entry entry = new Entry();
-
-        ByteBuffer buffer = ByteBuffer.allocate(bitmap.getRowBytes() * bitmap.getHeight());
-        bitmap.copyPixelsToBuffer(buffer);
-        entry.data = buffer.array();
-
-        put(url, entry);
+    @Override
+    public Bitmap getBitmap(String key) {
+        return super.getBitmap(key);
     }
 }
