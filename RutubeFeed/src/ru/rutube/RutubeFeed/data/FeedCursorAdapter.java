@@ -41,7 +41,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     protected static final SimpleDateFormat sqlDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static final boolean D = BuildConfig.DEBUG;
     public static final String PARAM_SIZE = "size";
-    public static String THUMBNAIL_SIZE = "m";
+    public String THUMBNAIL_SIZE = "m";
     protected Typeface mNormalFont;
     protected Typeface mLightFont;
     protected int item_layout_id = R.layout.feed_item;
