@@ -105,7 +105,7 @@ public class RutubeApp extends Application {
             return sBitmapCache;
         Context context = instance.getApplicationContext();
         assert context != null;
-        sBitmapCache = new MemDiskBitmapCache(getContext().getExternalCacheDir());
+        sBitmapCache = new MemDiskBitmapCache("thumbnails");
         return sBitmapCache;
     }
 
