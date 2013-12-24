@@ -178,6 +178,4 @@ public class RutubeApp extends Application {
             return String.format(getResources().getString(R.string.weeks_ago, seconds / (7 * 24 * 3600)));
         return reprDateFormat.format(created);
     }
-
-
 }
