@@ -546,6 +546,11 @@ public class PlayerController implements Parcelable, RequestListener {
         if (mState!= STATE_STARTING && mState != STATE_ERROR)
             throw new IllegalStateException(String.format("Can't change state to Playing from %d", mState));
         setState(STATE_PLAYING);
+        if (!mAttached){
+            if(D) Log.d(LOG_TAG, "Oops, not attached");
+            setState(STATE_COMPLETED);
+            return;
+        }
         mView.setLoadingCompleted();
         mView.toggleThumbnail(false);
         if (mVideoOffset > 0)
