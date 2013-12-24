@@ -27,9 +27,6 @@ import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
 public class RelatedCursorAdapter extends FeedCursorAdapter {
     protected static final boolean D = BuildConfig.DEBUG;
     private static final String LOG_TAG = RelatedCursorAdapter.class.getName();
-    static {
-        THUMBNAIL_SIZE = "s";
-    }
 
     protected static class ViewHolder extends FeedCursorAdapter.ViewHolder {
         public TextView hits;
@@ -37,6 +34,7 @@ public class RelatedCursorAdapter extends FeedCursorAdapter {
 
     public RelatedCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
         super(context, layout, c, from, to, flags);
+        THUMBNAIL_SIZE = "s";
     }
 
     @Override
