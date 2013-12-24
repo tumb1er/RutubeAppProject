@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.MotionEventCompat;
 import android.util.Log;
 import android.view.Display;
@@ -423,7 +424,8 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
     };
 
     protected boolean isFullscreen() {
-        return (getActivity().getWindow().getAttributes().flags
+        FragmentActivity activity = getActivity();
+        return activity != null && (activity.getWindow().getAttributes().flags
                 & WindowManager.LayoutParams.FLAG_FULLSCREEN) != 0;
     }
 
