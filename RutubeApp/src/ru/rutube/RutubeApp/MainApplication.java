@@ -88,4 +88,10 @@ public class MainApplication extends RutubeApp {
                 .build());
 
     }
+
+    public void reportError(Activity activity, String message) {
+        EasyTracker tracker = getTracker(activity);
+        tracker.send(MapBuilder.createException(message, false).build());
+    }
+
 }

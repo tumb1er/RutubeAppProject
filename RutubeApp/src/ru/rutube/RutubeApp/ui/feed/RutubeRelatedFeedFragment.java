@@ -76,7 +76,13 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
             if (D) Log.d(LOG_TAG, "element click: " + String.valueOf(view));
             try {
                 FeedCursorAdapter.ClickTag tag = (FeedCursorAdapter.ClickTag)view.getTag();
-                MainApplication.getInstance().openFeed(tag.href, getActivity(), tag.title);
+                if (tag != null)
+                    MainApplication.getInstance().openFeed(tag.href, getActivity(), tag.title);
+                else
+                    ((MainApplication)MainApplication.getInstance()).reportError(
+                            getActivity(), String.format("empty tag onClick at %s",
+                                String.valueOf(view)));
+
             } catch (ClassCastException e) {
                 Uri feedUri = (Uri)view.getTag();
                 MainApplication.getInstance().openFeed(feedUri, getActivity(), null);
