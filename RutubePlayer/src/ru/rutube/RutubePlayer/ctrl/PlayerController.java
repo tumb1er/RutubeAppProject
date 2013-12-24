@@ -365,8 +365,10 @@ public class PlayerController implements Parcelable, RequestListener {
             throw new IllegalStateException(
                     String.format("Can't change state to Completed from %d", mState));
         setState(STATE_COMPLETED);
-        mView.toggleThumbnail(true);
-        mView.onComplete();
+        if (mView != null) {
+            mView.toggleThumbnail(true);
+            mView.onComplete();
+        }
     }
 
     /**
