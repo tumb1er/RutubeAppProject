@@ -1,6 +1,7 @@
 package ru.rutube.RutubeApp.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -80,7 +81,9 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        MainApplication.playerActivityStart(this, String.valueOf(getIntent().getData()));
+        Intent intent = getIntent();
+        Uri data = (intent != null)? intent.getData(): null;
+        MainApplication.playerActivityStart(this, String.valueOf(data));
     }
 
     @Override
