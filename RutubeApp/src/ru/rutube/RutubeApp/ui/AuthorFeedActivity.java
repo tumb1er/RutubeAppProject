@@ -16,8 +16,14 @@ public class AuthorFeedActivity extends FeedActivity {
 
     @Override
     protected void onStart() {
-        super.onStart();
-        MainApplication.feedActivityStart(this, String.valueOf(getIntent().getData()));
+        try {
+            super.onStart();
+            MainApplication.feedActivityStart(this, String.valueOf(getIntent().getData()));
+        } catch (NullPointerException e) {
+            ((MainApplication)MainApplication.getInstance()).reportError(this,
+                    String.format("NullPointerException: %s", String.valueOf(e),
+                            String.valueOf(getIntent())));
+        }
     }
 
     @Override
