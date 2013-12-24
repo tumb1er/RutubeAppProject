@@ -1,5 +1,6 @@
 package ru.rutube.RutubeApp.ui;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
@@ -79,8 +80,14 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
 
     @Override
     protected void onStart() {
-        super.onStart();
-        MainApplication.playerActivityStart(this, String.valueOf(getIntent().getData()));
+        try {
+            super.onStart();
+            MainApplication.playerActivityStart(this, String.valueOf(getIntent().getData()));
+        } catch (ActivityNotFoundException e) {
+            ((MainApplication)MainApplication.getInstance()).reportError(this,
+                    String.format("ActivityNotFoundException: %s %s", e.toString(),
+                            String.valueOf(getIntent())));
+        }
     }
 
     @Override
