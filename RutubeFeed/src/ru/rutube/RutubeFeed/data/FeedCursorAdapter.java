@@ -40,6 +40,8 @@ import java.util.Date;
 public class FeedCursorAdapter extends SimpleCursorAdapter {
     protected static final SimpleDateFormat sqlDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static final boolean D = BuildConfig.DEBUG;
+    public static final String PARAM_SIZE = "size";
+    public static String THUMBNAIL_SIZE = "m";
     protected Typeface mNormalFont;
     protected Typeface mLightFont;
     protected int item_layout_id = R.layout.feed_item;
@@ -278,7 +280,15 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     protected void bindThumbnail(Cursor cursor, ViewHolder holder) {
         int thumbnailUriIndex = cursor.getColumnIndexOrThrow(FeedContract.FeedColumns.THUMBNAIL_URI);
         String thumbnailUri = cursor.getString(thumbnailUriIndex);
-        holder.thumbnail.setImageUrl(thumbnailUri, imageLoader);
+        holder.thumbnail.setImageUrl(getSizedThumbnailUri(thumbnailUri), imageLoader);
+    }
+
+    protected String getSizedThumbnailUri(String thumbnailUri) {
+        Uri uri = Uri.parse(thumbnailUri).buildUpon()
+                .appendQueryParameter(PARAM_SIZE, THUMBNAIL_SIZE)
+                .build();
+        assert uri != null;
+        return uri.toString();
     }
 
     protected void bindTitle(Cursor cursor, ViewHolder holder) {
