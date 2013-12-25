@@ -363,7 +363,7 @@ public class PlayerController implements Parcelable, RequestListener {
      * Включает тамнейл, вызывает у фрагмента обрабочтик onComplete
      */
     public void onCompletion() {
-        if (mState!= STATE_PLAYING)
+        if (mState!= STATE_PLAYING && mState != STATE_COMPLETED)
             throw new IllegalStateException(
                     String.format("Can't change state to Completed from %d", mState));
         setState(STATE_COMPLETED);
