@@ -20,6 +20,7 @@ import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -256,6 +257,9 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
             if (D) Log.d(LOG_TAG, "surfaceCreated");
             if (mPlayer == null)
                 initMediaPlayer();
+            Surface surface = surfaceHolder.getSurface();
+            if (surface == null || !surface.isValid())
+                return;
             mPlayer.setDisplay(surfaceHolder);
         }
 
