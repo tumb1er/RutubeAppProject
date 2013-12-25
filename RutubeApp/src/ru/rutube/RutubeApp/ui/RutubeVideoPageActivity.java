@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -264,19 +265,27 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
                 (isLandscape && !mIsFullscreen) ? View.VISIBLE : View.GONE);
 
         // layout_weight для плеера + карточки видео в зависимости от ориентации
-        View v = findViewById(R.id.video_container);
-        LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams)v.getLayoutParams();
-        lp.weight = getResources().getInteger(R.integer.video_container_weight);
+        LinearLayout vc = (LinearLayout)findViewById(R.id.video_container);
+        LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams)vc.getLayoutParams();
+        assert lp != null;
+        Resources resources = getResources();
+        lp.weight = resources.getInteger(R.integer.video_container_weight);
+        // weightSum для плеера + карточки видео зависит от того, видна ли карточка
+        int sum_weight = resources.getInteger(R.integer.video_info_player_weight_sum);
+        int player_weight = resources.getInteger(R.integer.video_player_weight);
+        vc.setWeightSum(isLandscape && !mIsFullscreen ? sum_weight : player_weight);
         if(D) Log.d(LOG_TAG, "VC weight: " + String.valueOf(lp.weight));
-        v.setLayoutParams(lp);
+        vc.setLayoutParams(lp);
+
 
         // карточка видео в похожих видна только в портретной ориентации
         mRelatedFragment.toggleHeader(!isLandscape);
 
         // layout_weight для похожих в зависимости от ориентации
-        v = mRelatedFragment.getView();
+        View v = mRelatedFragment.getView();
         lp =(LinearLayout.LayoutParams)v.getLayoutParams();
-        lp.weight = getResources().getInteger(R.integer.related_video_container_weight);
+        assert lp != null;
+        lp.weight = resources.getInteger(R.integer.related_video_container_weight);
         if(D) Log.d(LOG_TAG, "RC weight: " + String.valueOf(lp.weight));
         v.setLayoutParams(lp);
     }
