@@ -88,6 +88,10 @@ public class ContentMatcher {
         path = normalize(path);
         if (D) Log.d(LOG_TAG, "Matching with params: " + path);
         Uri result = uriMap.get(path);
+        if (result == null){
+            if (D) Log.d(LOG_TAG, "Not matched URL: " + path);
+            return null;
+        }
         result = result.buildUpon().appendPath(String.valueOf(id)).build();
         if (D) Log.d(LOG_TAG, "Matched: " + String.valueOf(result));
         return result;
