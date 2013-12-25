@@ -246,8 +246,10 @@ public class PlayerController implements Parcelable, RequestListener {
     public static PlayerController fromParcel(Parcel in) {
         // Странно, но иногда на строке чтения Uri возникает ClassNotFoundException,
         // поэтому вместо Uri храним в парселе строку
-        Uri videoUri = Uri.parse(in.readString());
-        Uri thumbnailUri = Uri.parse(in.readString());
+        String tmp = in.readString();
+        Uri videoUri = (tmp != null)? Uri.parse(tmp): null;
+        tmp = in.readString();
+        Uri thumbnailUri = (tmp != null)? Uri.parse(tmp): null;
         TrackInfo trackInfo = in.readParcelable(TrackInfo.class.getClassLoader());
         int state = in.readInt();
         int videoOffset = in.readInt();
