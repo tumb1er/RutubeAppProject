@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ACTIVITY_ENTRY_NAME</string>
+    <string name="now">fraîchement</string>
+    <string name="today">aujourd\'hui</string>
+    <string name="yesterday">hier</string>
+    <string name="days_ago_24">Il y a %d jours</string>
+    <string name="days_ago_59">Il y a %d jours</string>
+    <string name="week_ago">Il y a une semaine</string>
+    <string name="weeks_ago">Il y a %d semaines</string>
+    <string name="failed_to_load_data">Échec du chargement de données</string>
+    <string name="views5">%,d revues</string>
+    <string name="view1">%,d revue</string>
+    <string name="views21">%,d revues</string>
+    <string name="views4">%,d revues</string>
+</resources>

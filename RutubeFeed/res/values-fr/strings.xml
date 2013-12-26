@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tab_editors_feed">Rédaction</string>
+    <string name="tab_my_video">Mes vidéos</string>
+    <string name="tab_subscriptions">Souscriptions</string>
+    <string name="action_search">Recherche</string>
+    <string name="login">Connexion</string>
+    <string name="no_data">Pas de données</string>
+    <string name="logout">Déconnecter</string>
+    <string name="refresh">Rafraîchir</string>
+    <string name="search_title_format">Recherche: %s</string>
+    <string name="editors_choice">Choix de l\'éditeur</string>
+</resources>
