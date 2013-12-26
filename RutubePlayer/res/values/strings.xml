@@ -10,9 +10,7 @@
     <string name="video_not_allowed">Video blocked</string>
     <string name="video_deleted_by_user">Video deleted by author</string>
     <string name="video_deleted_by_admin">Video deleted by administration</string>
-    <string name="video_deleted_inappropriate">Video contained inapropriate content and was
-        deleted
-    </string>
+    <string name="video_deleted_inappropriate">Video contained inapropriate content and was deleted</string>
     <string name="video_deleted_by_rightholder">Video is deleted by rightholder</string>
     <string name="video_deleted">Video was deleted</string>
     <string name="video_doesnt_exist">Video doesn\'t exist</string>
