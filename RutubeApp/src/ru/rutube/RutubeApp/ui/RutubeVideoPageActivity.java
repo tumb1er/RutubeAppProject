@@ -42,6 +42,7 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         public TextView from;
         public TextView created;
         public ViewGroup baseInfoContainer;
+        public LinearLayout videoContainer;
     }
 
     private static final String LOG_TAG = RutubeVideoPageActivity.class.getName();
@@ -172,6 +173,8 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
                 (mIsLandscape && !mIsFullscreen) ? View.VISIBLE : View.GONE);
         // меняем видимость карточки видео в похожих в зависимости от ориентации
         mRelatedFragment.toggleHeader(!mIsLandscape);
+        // меняем веса в соответствии с видимостью заголовка
+        setWeights(mIsLandscape);
     }
 
     protected void toggleNoVideoInfo() {
@@ -207,6 +210,7 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         h.from = (TextView)findViewById(R.id.from);
         h.created = (TextView)findViewById(R.id.created);
         h.baseInfoContainer = (ViewGroup)findViewById(R.id.baseInfoContainer);
+        h.videoContainer = (LinearLayout)findViewById(R.id.video_container);
         mViewHolder = h;
     }
 
@@ -259,23 +263,13 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         // список похожих справа или снизу
         LinearLayout ll = (LinearLayout)findViewById(R.id.page);
         ll.setOrientation(isLandscape? LinearLayout.HORIZONTAL: LinearLayout.VERTICAL);
-
+        ViewHolder holder = (ViewHolder)mViewHolder;
         // основная карточка видео видна только в пейзажной ориентации и только не в фуллскрине
-        mViewHolder.videoInfoContainer.setVisibility(
+        holder.videoInfoContainer.setVisibility(
                 (isLandscape && !mIsFullscreen) ? View.VISIBLE : View.GONE);
-
-        // layout_weight для плеера + карточки видео в зависимости от ориентации
-        LinearLayout vc = (LinearLayout)findViewById(R.id.video_container);
-        LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams)vc.getLayoutParams();
-        assert lp != null;
         Resources resources = getResources();
-        lp.weight = resources.getInteger(R.integer.video_container_weight);
-        // weightSum для плеера + карточки видео зависит от того, видна ли карточка
-        int sum_weight = resources.getInteger(R.integer.video_info_player_weight_sum);
-        int player_weight = resources.getInteger(R.integer.video_player_weight);
-        vc.setWeightSum(isLandscape && !mIsFullscreen ? sum_weight : player_weight);
-        if(D) Log.d(LOG_TAG, "VC weight: " + String.valueOf(lp.weight));
-        vc.setLayoutParams(lp);
+        setWeights(isLandscape);
+        LinearLayout.LayoutParams lp;
 
 
         // карточка видео в похожих видна только в портретной ориентации
@@ -288,6 +282,21 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         lp.weight = resources.getInteger(R.integer.related_video_container_weight);
         if(D) Log.d(LOG_TAG, "RC weight: " + String.valueOf(lp.weight));
         v.setLayoutParams(lp);
+    }
+
+    private void setWeights(boolean isLandscape) {
+        ViewHolder holder = (ViewHolder)mViewHolder;
+        // layout_weight для плеера + карточки видео в зависимости от ориентации
+        LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams)holder.videoContainer.getLayoutParams();
+        assert lp != null;
+        Resources resources = getResources();
+        lp.weight = resources.getInteger(R.integer.video_container_weight);
+        // weightSum для плеера + карточки видео зависит от того, видна ли карточка
+        int sum_weight = resources.getInteger(R.integer.video_info_player_weight_sum);
+        int player_weight = resources.getInteger(R.integer.video_player_weight);
+        holder.videoContainer.setWeightSum(isLandscape && !mIsFullscreen ? sum_weight : player_weight);
+        if(D) Log.d(LOG_TAG, "VC weight: " + String.valueOf(lp.weight));
+        holder.videoContainer.setLayoutParams(lp);
     }
 
     /**
