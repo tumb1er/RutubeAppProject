@@ -53,7 +53,7 @@
     </LinearLayout>
     <fragment
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:id="@+id/related_video_container"
         class="ru.rutube.RutubeApp.ui.feed.RutubeRelatedFeedFragment"
         android:name="ru.rutube.RutubeApp.ui.feed.RutubeRelatedFeedFragment"
