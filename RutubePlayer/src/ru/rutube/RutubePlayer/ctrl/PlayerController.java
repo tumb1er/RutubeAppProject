@@ -17,6 +17,8 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import ru.rutube.RutubeAPI.BuildConfig;
@@ -457,6 +459,7 @@ public class PlayerController implements Parcelable, RequestListener {
         return mState;
     }
 
+
     /**
      * Осуществляет разбор ссылки на видео с целью получить ID видео
      * и подпись для приватного видео.
@@ -464,27 +467,44 @@ public class PlayerController implements Parcelable, RequestListener {
     private void parseVideoUri() {
         final List<String> segments = mVideoUri.getPathSegments();
         assert segments != null;
+        String videoId;
+        String signature = mVideoUri.getQueryParameter("p");
+        // /video/video_id
         if (segments.size() == 2 && segments.get(1).matches("[a-f\\d]{32}")) {
-            String videoId = segments.get(1);
+            videoId = segments.get(1);
             mVideo = new Video(videoId);
-        } else if (segments.size() == 3 &&
-                (segments.get(1).equals("private") || segments.get(1).equals("embed")) &&
-                segments.get(2).matches("[a-f\\d]{32}")) {
-            String videoId = segments.get(2);
-            String signature = mVideoUri.getQueryParameter("p");
-            mVideo = new Video(videoId, signature);
-        } else {
-            if (D) Log.d(LOG_TAG, "Uncaught url from intent-filter, starting browser.");
-            String packageName = "com.android.browser";
-            String className = "com.android.browser.BrowserActivity";
-            Intent internetIntent = new Intent(Intent.ACTION_VIEW);
-            internetIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-            internetIntent.setClassName(packageName, className);
-            internetIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            internetIntent.setData(mVideoUri);
-            mContext.startActivity(internetIntent);
-            ((Activity)mContext).finish();
+            return;
         }
+
+        // /video/private/video_id/
+        if (segments.size() == 3 && segments.get(1).equals("private") &&
+                segments.get(2).matches("[a-f\\d]{32}")) {
+            videoId = segments.get(2);
+            mVideo = new Video(videoId, signature);
+            return;
+        }
+
+        // /video/embed/...
+        if (segments.size() == 3 && segments.get(1).equals("embed")) {
+            String id = segments.get(2);
+            if (id.matches("[a-f\\d]{32}")) {
+                // /video/embed/video_id
+                mVideo = new Video(id, signature);
+                return;
+            } else if (id.matches("[\\d]+")) {
+                mVideo = new Video(Integer.parseInt(id), signature);
+                return;
+            }
+        }
+
+        if (D) Log.d(LOG_TAG, "Uncaught url from intent-filter, starting browser.");
+        Intent internetIntent = new Intent(Intent.ACTION_VIEW);
+        internetIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        // FIXME: errorMsg or smth
+        internetIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        internetIntent.setData(mVideoUri);
+        mContext.startActivity(internetIntent);
+        ((Activity)mContext).finish();
     }
 
     /**

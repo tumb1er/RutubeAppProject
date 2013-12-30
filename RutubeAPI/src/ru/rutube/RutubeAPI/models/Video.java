@@ -16,6 +16,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -81,6 +83,11 @@ public class Video implements Parcelable {
         mSignature = signature;
         mDuration = duration;
         mHits = hits;
+    }
+
+
+    public Video(int trackId, String signature) {
+        this(RutubeApp.md5(String.format("http://rutube.ru/tracks/%d.html", trackId)), signature);
     }
 
     private static Date parseDate(String data) {
