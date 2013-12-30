@@ -47,18 +47,7 @@ public class MemDiskBitmapCache implements ImageLoader.ImageCache {
     }
 
     protected String getKey(String url) {
-        if (D) Log.d(LOG_TAG, "Bitmap Key: " + url);
-        int keyStart = url.lastIndexOf('/');
-        int keyEnd = url.lastIndexOf('.');
-        if (keyEnd < keyStart) {
-            // ссылка на аватар без расширения, например, http://pic.rutube.ru/
-            return "notanimage";
-        }
-        int sizePos = url.lastIndexOf("size");
-        if (sizePos < 0)
-            return url.substring(keyStart + 1, keyEnd) + "n";
-        else
-            return url.substring(keyStart + 1, keyEnd) + url.substring(sizePos + 5, sizePos + 6);
+        return RutubeApp.md5(url);
     }
 
     @Override
