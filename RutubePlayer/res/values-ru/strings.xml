@@ -16,4 +16,5 @@
     <string name="video_is_hidden">Автор скрыл данное видео</string>
     <string name="video_playback_error">Ошибка воспроизведения видео</string>
     <string name="from">от:</string>
+    <string name="url_not_supported">Url не поддерживается приложением Rutube</string>
 </resources>

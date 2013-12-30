@@ -20,4 +20,5 @@
     <string name="from">from:</string>
 
     <string name="device_type">phone</string>
+    <string name="url_not_supported">This url is not supported by Rutube application</string>
 </resources>

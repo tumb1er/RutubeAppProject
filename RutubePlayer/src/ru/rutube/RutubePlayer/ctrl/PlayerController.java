@@ -1,6 +1,7 @@
 package ru.rutube.RutubePlayer.ctrl;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -9,6 +10,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 import android.util.SparseIntArray;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
@@ -73,6 +75,8 @@ public class PlayerController implements Parcelable, RequestListener {
         public void setLoading();
         public void setLoadingCompleted();
         public void toggleThumbnail(boolean visible);
+
+        public void toastError(String string);
     }
 
     public static final int STATE_NEW = 0;
@@ -499,11 +503,14 @@ public class PlayerController implements Parcelable, RequestListener {
 
         if (D) Log.d(LOG_TAG, "Uncaught url from intent-filter, starting browser.");
         Intent internetIntent = new Intent(Intent.ACTION_VIEW);
-        internetIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        //internetIntent.addCategory(Intent.CATEGORY_LAUNCHER);
         // FIXME: errorMsg or smth
         internetIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         internetIntent.setData(mVideoUri);
-        mContext.startActivity(internetIntent);
+        mView.toastError(RutubeApp.getContext().getString(R.string.url_not_supported));
+        try {
+            mContext.startActivity(internetIntent);
+        } catch (ActivityNotFoundException ignored) {}
         ((Activity)mContext).finish();
     }
 

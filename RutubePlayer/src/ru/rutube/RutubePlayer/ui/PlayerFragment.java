@@ -31,6 +31,7 @@ import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
@@ -574,6 +575,14 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
                 create();
         mDialog.setOnDismissListener(mErrorListener);
         mDialog.show();
+    }
+
+    @Override
+    public void toastError(String error) {
+        Activity activity = getActivity();
+        if (activity == null)
+            return;
+        Toast.makeText(activity, error, Toast.LENGTH_LONG).show();
     }
 
     @Override
