@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -13,15 +14,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import ru.rutube.RutubeAPI.BuildConfig;
+import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeAPI.models.User;
 import ru.rutube.RutubeApp.MainApplication;
 import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubeApp.ctrl.MainPageController;
+import ru.rutube.RutubeApp.data.MainTabsAdapter;
 import ru.rutube.RutubeApp.ui.dialog.LoginDialogFragment;
 import ru.rutube.RutubeApp.ui.feed.PlaEditorsFragment;
 import ru.rutube.RutubeApp.ui.feed.PlaFeedFragment;
 import ru.rutube.RutubeApp.ui.feed.PlaSubscriptionsFragment;
+import ru.rutube.RutubeFeed.ctrl.FeedController;
+import ru.rutube.RutubeFeed.ui.EditorsFeedFragment;
+import ru.rutube.RutubeFeed.ui.FeedFragment;
 
 import java.util.HashMap;
 
@@ -31,11 +37,27 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
     private static final int LOGIN_REQUEST_CODE = 1;
     private static final boolean D = BuildConfig.DEBUG;
 
+    private static final HashMap<String, Class<?>> sFragmentClassMap = new HashMap<String, Class<?>>();
+    private static final HashMap<String, Integer> sFeedUriResourceIdMap = new HashMap<String, Integer>();
+    static {
+        sFragmentClassMap.put(MainPageController.TAB_EDITORS, PlaEditorsFragment.class);
+        sFragmentClassMap.put(MainPageController.TAB_MY_VIDEO, PlaFeedFragment.class);
+        sFragmentClassMap.put(MainPageController.TAB_SUBSCRIPTIONS, PlaSubscriptionsFragment.class);
+
+        sFeedUriResourceIdMap.put(MainPageController.TAB_EDITORS, R.string.editors_uri);
+        sFeedUriResourceIdMap.put(MainPageController.TAB_MY_VIDEO, R.string.my_video_uri);
+        sFeedUriResourceIdMap.put(MainPageController.TAB_SUBSCRIPTIONS, R.string.subscription_uri);
+    }
+
     private MainPageController mController;
     private HashMap<String, ActionBar.Tab> mTabMap = new HashMap<String, ActionBar.Tab>();
     private HashMap<String, Fragment> mFragmentMap = new HashMap<String, Fragment>();
     private FragmentTransaction mFragmentTransaction;
     private String mCurrentFragmentTag;
+
+    ViewPager mViewPager;
+    MainTabsAdapter mTabsAdapter;
+
 
     @Override
     public boolean onCreatePanelMenu(int featureId, Menu menu) {
@@ -76,9 +98,20 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
         else
             mController = new MainPageController();
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.start_activity);
+
+        mViewPager = new ViewPager(this);
+        mViewPager.setId(R.id.feed_fragment_container);
+        setContentView(mViewPager);
+
+        final ActionBar bar = getSupportActionBar();
+        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        bar.setDisplayOptions(0, ActionBar.DISPLAY_SHOW_TITLE);
+
+        // setContentView(R.layout.start_activity);
+
+        mTabsAdapter = new MainTabsAdapter(this, mViewPager, this);
         mController.attach(this, this);
-        initTabs();
+        mController.initTabs();
     }
 
     @Override
@@ -195,10 +228,15 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
         assert actionBar != null;
         ActionBar.Tab tab = actionBar.newTab();
         tab.setText(title);
-        tab.setTabListener(this);
+        // tab.setTabListener(this);
         tab.setTag(tag);
         mTabMap.put(tag, tab);
-        actionBar.addTab(tab);
+        Bundle args = new Bundle();
+
+        args.putParcelable(Constants.Params.FEED_URI,
+                Uri.parse(RutubeApp.getUrl(sFeedUriResourceIdMap.get(tag))));
+        args.putString(Constants.Params.FEED_TITLE, tag);
+        mTabsAdapter.addTab(tab, sFragmentClassMap.get(tag), args);
     }
 
     /**
@@ -233,18 +271,6 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
             if (D) Log.d(LOG_TAG, "smth strange");
             super.onActivityResult(requestCode, resultCode, data);
         }
-    }
-
-    /**
-     * Настраивает таб-навигацию
-     */
-    private void initTabs() {
-        if (D) Log.d(LOG_TAG, "initTabs");
-        ActionBar actionBar = getSupportActionBar();
-        assert actionBar != null;
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        mController.initTabs();
-        if (D) Log.d(LOG_TAG, "initTabs done");
     }
 
     /**
