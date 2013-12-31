@@ -109,8 +109,8 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
 
         // setContentView(R.layout.start_activity);
 
-        mTabsAdapter = new MainTabsAdapter(this, mViewPager, this);
         mController.attach(this, this);
+        mTabsAdapter = new MainTabsAdapter(this, mViewPager);
         mController.initTabs();
     }
 
@@ -245,14 +245,15 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
      * @param feedUri uri ленты
      */
     public void showFeedFragment(String tag, Uri feedUri) {
-        // Транзакция может уже быть открыта, если метод вызывается в обработчике таб-навигации,
-        if (mFragmentTransaction != null){
-            replaceFragmentInTransaction(mFragmentTransaction, tag, feedUri);
-        } else {
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            replaceFragmentInTransaction(ft, tag, feedUri);
-            ft.commit();
-        }
+//        // Транзакция может уже быть открыта, если метод вызывается в обработчике таб-навигации,
+//        if (mFragmentTransaction != null){
+//            replaceFragmentInTransaction(mFragmentTransaction, tag, feedUri);
+//        } else {
+//            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+//            replaceFragmentInTransaction(ft, tag, feedUri);
+//            ft.commit();
+//        }
+        mTabsAdapter.setCurrentItem(tag);
     }
 
     @Override
@@ -330,6 +331,10 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
         args.putParcelable(Constants.Params.FEED_URI, feedUri);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public void onTabSelected(String tag) {
+        mController.onTabSelected(tag);
     }
 
     // TODO: обработка ссылок

@@ -257,13 +257,15 @@ public class FeedController implements Parcelable {
 
         @Override
         public void onVolleyError(VolleyError error) {
-            if (mView != null)
+            if (D) Log.d(LOG_TAG, "VolleyError: " + String.valueOf(error.networkResponse.statusCode));
+            if (mView != null && error.networkResponse.statusCode != 401)
                 mView.showError();
 
         }
 
         @Override
         public void onRequestError(int tag, RequestError error) {
+            if (D) Log.d(LOG_TAG, "RequestError: " + error.getMessage());
             if (mView != null)
                 mView.showError();
         }
