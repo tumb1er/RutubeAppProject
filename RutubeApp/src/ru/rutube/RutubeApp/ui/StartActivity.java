@@ -6,12 +6,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.models.Constants;
@@ -26,7 +25,7 @@ import ru.rutube.RutubeApp.ui.feed.PlaSubscriptionsFragment;
 
 import java.util.HashMap;
 
-public class StartActivity extends SherlockFragmentActivity implements MainPageController.MainPageView, ActionBar.TabListener {
+public class StartActivity extends ActionBarActivity implements MainPageController.MainPageView, ActionBar.TabListener {
     private static final String LOG_TAG = StartActivity.class.getName();
     private static final String CONTROLLER = "controller";
     private static final int LOGIN_REQUEST_CODE = 1;

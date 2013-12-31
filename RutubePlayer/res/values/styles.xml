@@ -4,10 +4,11 @@
     <style name="Widget">
     </style>
 
-    <style name="Player.__Theme" parent="Theme.Sherlock.Light.NoActionBar">
+    <style name="Player.__Theme" parent="Theme.AppCompat.Light">
     </style>
 
     <style name="Theme.Player" parent="Player.__Theme">
+        <item name="android:windowNoTitle">true</item>
         <item name="MediaControllerStyle">@style/Player.MediaController</item>
         <item name="InfoPanelStyle">@style/Player.MediaController.InfoPanel</item>
         <item name="VideoTitleStyle">@style/Player.MediaController.VideoTitle</item>

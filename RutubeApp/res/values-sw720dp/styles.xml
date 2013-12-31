@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="NewApi">
 
-    <style name="Rutube.ActionBarStyle" parent="Widget.Sherlock.Light.ActionBar.Solid">
+    <style name="Rutube.ActionBarStyle" parent="Widget.AppCompat.ActionBar.Solid">
         <!-- Фон ActionBar -->
         <item name="background">@color/action_bar_background</item>
         <item name="android:background">@color/action_bar_background</item>
@@ -11,7 +11,7 @@
         <item name="android:displayOptions">useLogo|showHome</item>
     </style>
 
-    <style name="Rutube.TabBar" parent="Widget.Sherlock.ActionBar.TabBar">
+    <style name="Rutube.TabBar" parent="Widget.AppCompat.ActionBar.TabBar">
         <!-- Фон заголовков вкладок -->
         <item name="background">@color/action_bar_background</item>
         <item name="android:background">@color/action_bar_background</item>

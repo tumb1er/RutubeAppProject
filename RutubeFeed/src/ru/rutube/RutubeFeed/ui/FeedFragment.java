@@ -7,9 +7,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -18,12 +24,6 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.widget.SearchView;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.RutubeApp;
@@ -40,7 +40,7 @@ import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
  * Time: 12:56
  * To change this template use File | Settings | File Templates.
  */
-public class FeedFragment extends SherlockFragment implements FeedController.FeedView, AdapterView.OnItemClickListener {
+public class FeedFragment extends Fragment implements FeedController.FeedView, AdapterView.OnItemClickListener {
     private static final String LOG_TAG = FeedFragment.class.getName();
     private static final boolean D = BuildConfig.DEBUG;
     protected FeedController mController;
@@ -100,7 +100,10 @@ public class FeedFragment extends SherlockFragment implements FeedController.Fee
     private void setupSearchMenuItem(MenuItem searchItem, Activity activity) {
         // Get the SearchView and set the searchable configuration
         SearchManager searchManager = (SearchManager) activity.getSystemService(Context.SEARCH_SERVICE);
-        mSearchView = (SearchView) searchItem.getActionView();
+
+        mSearchView = (SearchView)MenuItemCompat.getActionView(searchItem);
+        // mSearchView = (SearchView) searchItem.getActionView();
+
         assert mSearchView != null;
         // Assumes current activity is the searchable activity
         mSearchView.setSearchableInfo(searchManager.getSearchableInfo(activity.getComponentName()));
@@ -210,7 +213,10 @@ public class FeedFragment extends SherlockFragment implements FeedController.Fee
         LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         ImageView iv = (ImageView) inflater.inflate(R.layout.refresh_btn, null);
         iv.setOnClickListener(mRefreshClickListener);
-        mRefreshItem.setActionView(iv);
+
+        MenuItemCompat.setActionView(mRefreshItem, iv);
+        // mRefreshItem.setActionView(iv);
+
         super.onPrepareOptionsMenu(menu);
     }
 
@@ -234,14 +240,16 @@ public class FeedFragment extends SherlockFragment implements FeedController.Fee
         if (activity == null)
             return;
         if (!isLoading)
-            mRefreshItem.getActionView().startAnimation(mRotateAnimation);
+            MenuItemCompat.getActionView(mRefreshItem).startAnimation(mRotateAnimation);
+            // mRefreshItem.getActionView().startAnimation(mRotateAnimation);
     }
 
     public void doneRefreshing() {
         RutubeApp.stopLoading();
         if (mRefreshItem == null)
             return;
-        mRefreshItem.getActionView().clearAnimation();
+        MenuItemCompat.getActionView(mRefreshItem).clearAnimation();
+        //mRefreshItem.getActionView().clearAnimation();
     }
 
     @Override

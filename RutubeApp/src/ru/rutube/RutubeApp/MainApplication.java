@@ -2,14 +2,12 @@ package ru.rutube.RutubeApp;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.v4.app.FragmentActivity;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Fields;
 import com.google.analytics.tracking.android.MapBuilder;
 
 import ru.rutube.RutubeAPI.RutubeApp;
-import ru.rutube.RutubeApp.ui.AuthorFeedActivity;
 
 /**
  * Created by oleg on 7/30/13.

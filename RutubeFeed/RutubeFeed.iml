@@ -28,8 +28,10 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="actionbarsherlock" />
-    <orderEntry type="library" name="android-support-v41" level="project" />
+    <orderEntry type="library" name="GAv3" level="project" />
+    <orderEntry type="library" name="android-support-v4" level="project" />
+    <orderEntry type="library" name="android-support-v7-appcompat" level="project" />
+    <orderEntry type="module" module-name="appcompat" />
   </component>
 </module>
 

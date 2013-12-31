@@ -2,6 +2,7 @@
 <resources>
     <style name="Rutube"/>
     <style name="Rutube.Feed"/>
+    <style name="Widget"/>
 
     <style name="Rutube.Feed.Text">
         <item name="android:textSize">14sp</item>
@@ -13,7 +14,7 @@
         <item name="android:typeface">sans</item>
     </style>
 
-    <style name="Theme.Rutube.Feed" parent="Theme.Sherlock.Light">
+    <style name="Theme.Rutube.Feed" parent="@style/Theme.AppCompat.Light">
         <item name="FeedListStyle">@style/Rutube.Feed.List</item>
         <item name="FeedContainerStyle">@style/Rutube.Feed.Container</item>
         <item name="FeedDurationStyle">@style/Rutube.Feed.Duration</item>
