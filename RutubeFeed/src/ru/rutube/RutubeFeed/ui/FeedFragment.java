@@ -173,6 +173,12 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
     }
 
     @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (D) Log.d(LOG_TAG, "onAttach");
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
         mController.detach();
@@ -279,5 +285,20 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
 
     protected void setFeedUri(Uri feedUri) {
         this.feedUri = feedUri;
+    }
+
+    public void checkLoadMore() {
+        try {
+            if (D) Log.d(LOG_TAG, "checkLoadMore");
+            if (getListAdapter().getCount() == 0) {
+                if (D) Log.d(LOG_TAG, "Feed is empty");
+                mController.checkLoadMore();
+            }
+        } catch (NullPointerException ignored) {}
+
+    }
+
+    public void logout() {
+        mController.logout();
     }
 }

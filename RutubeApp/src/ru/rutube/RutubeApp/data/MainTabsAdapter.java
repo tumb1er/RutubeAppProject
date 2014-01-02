@@ -10,10 +10,12 @@ import android.util.Log;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeApp.BuildConfig;
 import ru.rutube.RutubeApp.ui.StartActivity;
+import ru.rutube.RutubeFeed.ui.FeedFragment;
 
 /**
  * Created by tumbler on 30.12.13.
@@ -26,6 +28,7 @@ public class MainTabsAdapter extends FragmentStatePagerAdapter
     private final ActionBar mActionBar;
     private final ViewPager mViewPager;
     private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
+    private final HashMap<String, FeedFragment> mFragments = new HashMap<String, FeedFragment>();
 
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
@@ -95,7 +98,14 @@ public class MainTabsAdapter extends FragmentStatePagerAdapter
     @Override
     public Fragment getItem(int position) {
         TabInfo info = mTabs.get(position);
-        return Fragment.instantiate(mActivity, info.clss.getName(), info.args);
+        FeedFragment f = (FeedFragment)Fragment.instantiate(mActivity, info.clss.getName(), info.args);
+        String tag = info.args.getString(Constants.Params.FEED_TITLE);
+        mFragments.put(tag, f);
+        return f;
+    }
+
+    public FeedFragment getItem(String tag) {
+        return mFragments.get(tag);
     }
 
     @Override

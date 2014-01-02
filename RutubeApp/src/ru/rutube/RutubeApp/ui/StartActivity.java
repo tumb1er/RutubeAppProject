@@ -31,7 +31,7 @@ import ru.rutube.RutubeFeed.ui.FeedFragment;
 
 import java.util.HashMap;
 
-public class StartActivity extends ActionBarActivity implements MainPageController.MainPageView, ActionBar.TabListener {
+public class StartActivity extends ActionBarActivity implements MainPageController.MainPageView {
     private static final String LOG_TAG = StartActivity.class.getName();
     private static final String CONTROLLER = "controller";
     private static final int LOGIN_REQUEST_CODE = 1;
@@ -51,21 +51,19 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
 
     private MainPageController mController;
     private HashMap<String, ActionBar.Tab> mTabMap = new HashMap<String, ActionBar.Tab>();
-    private HashMap<String, Fragment> mFragmentMap = new HashMap<String, Fragment>();
-    private FragmentTransaction mFragmentTransaction;
-    private String mCurrentFragmentTag;
 
     ViewPager mViewPager;
     MainTabsAdapter mTabsAdapter;
+    private MenuItem mLogoutItem;
 
 
     @Override
     public boolean onCreatePanelMenu(int featureId, Menu menu) {
         boolean result = super.onCreatePanelMenu(featureId, menu);
         User user = User.load(this);
-        MenuItem logoutItem = menu.findItem(ru.rutube.RutubeFeed.R.id.menu_logout);
-        assert logoutItem != null;
-        logoutItem.setVisible(!user.isAnonymous());
+        mLogoutItem = menu.findItem(ru.rutube.RutubeFeed.R.id.menu_logout);
+        assert mLogoutItem != null;
+        mLogoutItem.setVisible(!user.isAnonymous());
         return result;
     }
 
@@ -82,7 +80,8 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
     private void logout() {
         if (D) Log.d(LOG_TAG, "Logging out");
         mController.logout();
-        showError(getString(R.string.logouted));
+        mTabsAdapter.getItem(MainPageController.TAB_MY_VIDEO).logout();
+        mTabsAdapter.getItem(MainPageController.TAB_SUBSCRIPTIONS).logout();
     }
 
     @Override
@@ -107,8 +106,6 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         bar.setDisplayOptions(0, ActionBar.DISPLAY_SHOW_TITLE);
 
-        // setContentView(R.layout.start_activity);
-
         mController.attach(this, this);
         mTabsAdapter = new MainTabsAdapter(this, mViewPager);
         mController.initTabs();
@@ -130,41 +127,6 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
     protected void onResume() {
         super.onResume();
         mController.onResume();
-    }
-
-    @Override
-    public void onAttachFragment(Fragment fragment) {
-        // После вызова super.onCreate из сохраненного состояния автоматически восстанавливается
-        // последний фрагмент.
-        if(D) Log.d(LOG_TAG, "onAttachFragment: " + String.valueOf(fragment.getTag()));
-        super.onAttachFragment(fragment);
-        if (mFragmentMap.get(fragment.getTag()) == null)
-            mFragmentMap.put(fragment.getTag(), fragment);
-        // mCurrentFragment = fragment;
-    }
-
-    /**
-     * Проксирует обработку выбора вкладки в контроллер, попутно запоминая текущую транзакцию
-     * фрагмента для использования в обратном вызове
-     * @param tab тег вкладки
-     * @param fragmentTransaction
-     */
-    @Override
-    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        mFragmentTransaction = fragmentTransaction;
-        String tag = (String)tab.getTag();
-        mController.onTabSelected(tag);
-        mFragmentTransaction = null;
-    }
-
-    @Override
-    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-
-    }
-
-    @Override
-    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-
     }
 
     @Override
@@ -192,12 +154,19 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
     }
 
     @Override
+    public void onLogout() {
+        mLogoutItem.setVisible(false);
+        showError(getString(R.string.logouted));
+    }
+
+    @Override
     public void onLoginCanceled() {
         MainApplication.loginDialogFailed(this);
     }
 
     @Override
     public void onLoginSuccess() {
+        mLogoutItem.setVisible(true);
         MainApplication.loginDialogSuccess(this);
     }
 
@@ -228,7 +197,6 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
         assert actionBar != null;
         ActionBar.Tab tab = actionBar.newTab();
         tab.setText(title);
-        // tab.setTabListener(this);
         tab.setTag(tag);
         mTabMap.put(tag, tab);
         Bundle args = new Bundle();
@@ -245,15 +213,13 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
      * @param feedUri uri ленты
      */
     public void showFeedFragment(String tag, Uri feedUri) {
-//        // Транзакция может уже быть открыта, если метод вызывается в обработчике таб-навигации,
-//        if (mFragmentTransaction != null){
-//            replaceFragmentInTransaction(mFragmentTransaction, tag, feedUri);
-//        } else {
-//            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-//            replaceFragmentInTransaction(ft, tag, feedUri);
-//            ft.commit();
-//        }
+
         mTabsAdapter.setCurrentItem(tag);
+        FeedFragment fragment = mTabsAdapter.getItem(tag);
+        if (D) Log.d(LOG_TAG, "showFeedFragment: " + String.valueOf(fragment));
+        if (fragment != null)
+
+            fragment.checkLoadMore();
     }
 
     @Override
@@ -274,74 +240,8 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
         }
     }
 
-    /**
-     * Заменяет фрагмент ленты в UI рассчитывая на нахождение в контексте транзакции фрагмента.
-     */
-    private void replaceFragmentInTransaction(FragmentTransaction ft, String tag, Uri feedUri) {
-        Fragment old = getSupportFragmentManager().findFragmentById(R.id.feed_fragment_container);
-        if (old != null)
-            if (D) Log.d(LOG_TAG, "replace fragment: " + String.valueOf(old.getTag()) + " to " + tag);
-        else
-            if (D) Log.d(LOG_TAG, "replace fragment: null to " + tag);
-        // ищем фрагмент в локальном кэше
-        Fragment fragment = mFragmentMap.get(tag);
-        // не нашли, конструируем новый фрагмент с feedUri
-        if (fragment == null) {
-            if (D) Log.d(LOG_TAG, "Not in cache, creating");
-                    fragment = createFeedFragment(feedUri, tag);
-            // добавляем в кэш
-            mFragmentMap.put(tag, fragment);
-        }
-        Fragment prevFragment = mFragmentMap.get(mCurrentFragmentTag);
-        // Для ActionBarCompat рабочий код гораздо короче
-        // ft.replace(R.id.feed_fragment_container, fragment);
-        if (prevFragment != null){
-            if (D) Log.d(LOG_TAG, "Current not null");
-            if (prevFragment.equals(fragment)) {
-                if (D) Log.d(LOG_TAG, "Same fragment, not removing :)");
-                return;
-            }
-            if (D) Log.d(LOG_TAG, "Removing " + String.valueOf(prevFragment.getTag()));
-            ft.remove(prevFragment);
-            if (old != null)
-                ft.remove(old);
-        }
-        prevFragment = getSupportFragmentManager().findFragmentByTag(tag);
-        // История с IndexError внутри FragmentActivity - в интернетах пишут это из-за того, что
-        // идентичные фрагменты задваиваются при повторном добавлении.
-        if (prevFragment == null)
-            ft.add(R.id.feed_fragment_container, fragment, tag);
-        mCurrentFragmentTag = tag;
-    }
-    /**
-     * Конструирует новый фрагмент с лентой
-     * @param feedUri uri ленты
-     * @return готовый к использованию фрагмент ленты
-     */
-    private Fragment createFeedFragment(Uri feedUri, String tag) {
-        Fragment fragment;
-        if (tag.equals(MainPageController.TAB_SUBSCRIPTIONS))
-            fragment = new PlaSubscriptionsFragment();
-        else if (tag.equals(MainPageController.TAB_EDITORS))
-            fragment = new PlaEditorsFragment();
-        else
-            fragment = new PlaFeedFragment();
-
-        Bundle args = new Bundle();
-        args.putParcelable(Constants.Params.FEED_URI, feedUri);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     public void onTabSelected(String tag) {
         mController.onTabSelected(tag);
     }
 
-    // TODO: обработка ссылок
-
-//    @Override
-//    public void onLoginResult(int result) {
-//        if (result == RESULT_OK)
-//            processCurrentTab();
-//    }
 }
