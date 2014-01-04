@@ -169,12 +169,17 @@ public class VideoPageActivity extends FragmentActivity
     protected void onResume() {
         super.onResume();
         mController.attach(this, this);
+        getContentResolver().registerContentObserver(Settings.System.getUriFor
+                (Settings.System.ACCELEROMETER_ROTATION), true, mRotationObserver);
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         mController.detach();
+        mOrientationListener.disable();
+        getContentResolver().unregisterContentObserver(mRotationObserver);
     }
 
     @Override
@@ -361,8 +366,6 @@ public class VideoPageActivity extends FragmentActivity
 
         mOrientationListener = getOrientationEventListener();
         checkAutoOrientation();
-        getContentResolver().registerContentObserver(Settings.System.getUriFor
-                (Settings.System.ACCELEROMETER_ROTATION), true, mRotationObserver);
 
 
         ViewHolder holder = getHolder();
