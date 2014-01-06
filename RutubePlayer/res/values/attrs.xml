@@ -5,6 +5,8 @@
         <attr name="InfoPanelStyle" format="reference"/>
         <attr name="VideoTitleStyle" format="reference"/>
         <attr name="MenuButtonStyle" format="reference"/>
+        <attr name="ShareButtonStyle" format="reference"/>
+        <attr name="QualityButtonStyle" format="reference"/>
         <attr name="ControlPanelStyle" format="reference"/>
         <attr name="PlayButtonStyle" format="reference"/>
         <attr name="TimeTextStyle" format="reference"/>

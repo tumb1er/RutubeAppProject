@@ -13,6 +13,8 @@
         <item name="InfoPanelStyle">@style/Player.MediaController.InfoPanel</item>
         <item name="VideoTitleStyle">@style/Player.MediaController.VideoTitle</item>
         <item name="MenuButtonStyle">@style/Player.MediaController.MenuButton</item>
+        <item name="ShareButtonStyle">@style/Player.MediaController.ShareButton</item>
+        <item name="QualityButtonStyle">@style/Player.MediaController.QualityButton</item>
         <item name="ControlPanelStyle">@style/Player.MediaController.ControlPanel</item>
         <item name="PlayButtonStyle">@style/Player.MediaController.PlayButton</item>
         <item name="TimeTextStyle">@style/Player.MediaController.TimeText</item>
@@ -54,6 +56,19 @@
         <item name="android:layout_gravity">right|top</item>
         <item name="android:background">@color/transparent</item>
         <item name="android:src">@drawable/ic_action_overflow</item>
+    </style>
+
+    <style name="Player.MediaController.ShareButton" parent="Widget">
+        <item name="android:layout_gravity">right|top</item>
+        <item name="android:background">@color/transparent</item>
+        <item name="android:src">@drawable/ic_social_share</item>
+    </style>
+    <style name="Player.MediaController.QualityButton" parent="Widget">
+        <item name="android:layout_gravity">right|top</item>
+        <item name="android:background">@color/transparent</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:padding">5dp</item>
     </style>
 
     <style name="Player.MediaController.ControlPanel" parent="Widget">

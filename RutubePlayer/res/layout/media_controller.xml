@@ -24,14 +24,56 @@
             android:id="@+id/menu_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
             style="?attr/MenuButtonStyle" />
+
+        <ImageButton
+            android:id="@+id/share_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="?attr/ShareButtonStyle" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/info_panel"
+        android:id="@+id/menu_container"
+        android:visibility="gone"
+        android:orientation="horizontal"
+        >
+        <Button
+            android:id="@+id/quality_low"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LQ"
+            style="?attr/QualityButtonStyle" />
+        <Button
+            android:id="@+id/quality_mid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MQ"
+            style="?attr/QualityButtonStyle" />
+        <Button
+            android:id="@+id/quality_high"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="HQ"
+            style="?attr/QualityButtonStyle" />
+        <Button
+            android:id="@+id/quality_hd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="HD"
+            style="?attr/QualityButtonStyle" />
+
+
     </LinearLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         style="?attr/ControlPanelStyle">
 
         <ImageButton

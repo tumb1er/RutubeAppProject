@@ -87,6 +87,7 @@ public class RutubeMediaController extends FrameLayout {
     private boolean             mUseFastForward;
     private boolean             mFromXml;
     private boolean             mListenersSet;
+    private boolean             mMenuVisible;
     private View.OnClickListener mNextListener, mPrevListener;
     StringBuilder               mFormatBuilder;
     Formatter                   mFormatter;
@@ -100,6 +101,8 @@ public class RutubeMediaController extends FrameLayout {
     private Handler             mHandler = new MessageHandler(this);
     private View.OnTouchListener mOnTouchListener;
     private ToggleFullscreenListener mToggleFullscreenListener;
+    private ImageButton         mMenuButton;
+    private View                mMenuContainer;
 
     public void setToggleFullscreenListener(ToggleFullscreenListener toggleFullscreenListener) {
         this.mToggleFullscreenListener = toggleFullscreenListener;
@@ -115,7 +118,7 @@ public class RutubeMediaController extends FrameLayout {
         mContext = context;
         mUseFastForward = true;
         mFromXml = true;
-
+        mMenuVisible = false;
         Log.i(TAG, TAG);
     }
 
@@ -208,6 +211,12 @@ public class RutubeMediaController extends FrameLayout {
         mVideoTitle = (TextView) v.findViewById(R.id.mediacontroller_file_name);
         mFormatBuilder = new StringBuilder();
         mFormatter = new Formatter(mFormatBuilder, Locale.getDefault());
+
+        mMenuButton = (ImageButton) v.findViewById(R.id.menu_btn);
+        mMenuContainer = v.findViewById(R.id.menu_container);
+        if (mMenuButton != null && mMenuContainer != null){
+            mMenuButton.setOnClickListener(mMenuListener);
+        }
 
         installPrevNextListeners();
     }
@@ -535,6 +544,14 @@ public class RutubeMediaController extends FrameLayout {
             // the call to show() does not guarantee this because it is a
             // no-op if we are already showing.
             mHandler.sendEmptyMessage(SHOW_PROGRESS);
+        }
+    };
+
+    private OnClickListener mMenuListener = new OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            mMenuVisible = !mMenuVisible;
+            mMenuContainer.setVisibility(mMenuVisible?View.VISIBLE:View.GONE);
         }
     };
 

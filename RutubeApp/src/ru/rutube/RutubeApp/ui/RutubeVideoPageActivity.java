@@ -161,10 +161,6 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
             toggleRelatedFragment(false);
 
         super.toggleFullscreen(isFullscreen, rotate);
-        if (isFullscreen)
-            getSupportActionBar().hide();
-        else
-            getSupportActionBar().show();
         checkOrientation();
         if (rotate)
             transformLayout(mIsLandscape);
@@ -227,12 +223,6 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
 
     @Override
     protected void bindDuration(Video video) {}
-
-    @Override
-    protected void bindTitle(Video video) {
-        super.bindTitle(video);
-        setTitle(video.getTitle());
-    }
 
     @Override
     protected void init() {
