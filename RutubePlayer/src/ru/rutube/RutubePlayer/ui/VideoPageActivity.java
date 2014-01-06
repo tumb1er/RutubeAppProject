@@ -8,14 +8,17 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +37,7 @@ import ru.rutube.RutubePlayer.ctrl.VideoPageController;
  * Возможен старт по intent-action: ru.rutube.player.play c Uri видео вида:
  * http://rutube.ru/video/<video_id>/
  */
-public class VideoPageActivity extends FragmentActivity
+public class VideoPageActivity extends ActionBarActivity
         implements PlayerFragment.PlayerEventsListener,
         EndscreenFragment.ReplayListener,
         VideoPageController.VideoPageView {
@@ -101,6 +104,24 @@ public class VideoPageActivity extends FragmentActivity
         init();
         toggleFullscreen(mIsFullscreen, false);
         transformLayout(mIsLandscape);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.player_menu, menu);
+        return true;
     }
 
     @Override

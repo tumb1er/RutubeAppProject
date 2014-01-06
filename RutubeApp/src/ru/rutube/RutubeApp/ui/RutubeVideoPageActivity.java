@@ -10,10 +10,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -78,6 +82,7 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         getIntent().putExtra(RutubeRelatedFeedFragment.INIT_HEADER, true);
+        requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState);
     }
 
@@ -126,6 +131,8 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         toggleFullscreen(mIsLandscape, false);
     }
 
+
+
     /**
      * Переопределение методов VideoPageActivity
      */
@@ -154,6 +161,10 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
             toggleRelatedFragment(false);
 
         super.toggleFullscreen(isFullscreen, rotate);
+        if (isFullscreen)
+            getSupportActionBar().hide();
+        else
+            getSupportActionBar().show();
         checkOrientation();
         if (rotate)
             transformLayout(mIsLandscape);
@@ -216,6 +227,12 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
 
     @Override
     protected void bindDuration(Video video) {}
+
+    @Override
+    protected void bindTitle(Video video) {
+        super.bindTitle(video);
+        setTitle(video.getTitle());
+    }
 
     @Override
     protected void init() {
