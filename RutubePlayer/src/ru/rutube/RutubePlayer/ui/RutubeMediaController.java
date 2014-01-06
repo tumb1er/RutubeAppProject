@@ -28,6 +28,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.MediaController;
@@ -103,6 +104,17 @@ public class RutubeMediaController extends FrameLayout {
     private ToggleFullscreenListener mToggleFullscreenListener;
     private ImageButton         mMenuButton;
     private View                mMenuContainer;
+    private Button mQualityLQButton;
+    private Button mQualityMQButton;
+    private Button mQualityHQButton;
+    private Button mQualityHDButton;
+    private OnClickListener mOnQualityClickListener = new OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            int id = view.getId();
+
+        }
+    };
 
     public void setToggleFullscreenListener(ToggleFullscreenListener toggleFullscreenListener) {
         this.mToggleFullscreenListener = toggleFullscreenListener;
@@ -217,6 +229,16 @@ public class RutubeMediaController extends FrameLayout {
         if (mMenuButton != null && mMenuContainer != null){
             mMenuButton.setOnClickListener(mMenuListener);
         }
+
+        mQualityLQButton = (Button) v.findViewById(R.id.quality_low);
+        mQualityMQButton = (Button) v.findViewById(R.id.quality_mid);
+        mQualityHQButton = (Button) v.findViewById(R.id.quality_high);
+        mQualityHDButton = (Button) v.findViewById(R.id.quality_hd);
+
+        mQualityLQButton.setOnClickListener(mOnQualityClickListener);
+        mQualityMQButton.setOnClickListener(mOnQualityClickListener);
+        mQualityHQButton.setOnClickListener(mOnQualityClickListener);
+        mQualityHDButton.setOnClickListener(mOnQualityClickListener);
 
         installPrevNextListeners();
     }
