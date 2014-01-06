@@ -24,6 +24,7 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.RutubeApp;
@@ -33,6 +34,7 @@ import ru.rutube.RutubeFeed.R;
 import ru.rutube.RutubeFeed.ctrl.FeedController;
 import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
 import ru.rutube.RutubeFeed.feed.BasicFeedImpl;
+import ru.rutube.RutubeFeed.feed.SubscriptionsFeedImpl;
 
 /**
  * Created with IntelliJ IDEA.
@@ -334,6 +336,21 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
     public void logout() {
         mController.logout();
     }
+
+    public void setFeedImplementation(FeedImpl feedImpl) {
+        feedImpl.setContext(getActivity());
+        mFeedImpl = feedImpl;
+    }
+
+    public void setEmptyText(String text) {
+        View v = getView();
+        if (v == null)
+            return;
+        TextView tv = (TextView)v.findViewById(R.id.empty);
+        if (tv!= null)
+            tv.setText(text);
+    }
+
 
     public interface FeedImpl {
         public FeedCursorAdapter initAdapter();
