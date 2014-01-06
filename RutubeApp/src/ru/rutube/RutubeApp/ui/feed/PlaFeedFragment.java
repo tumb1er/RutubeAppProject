@@ -83,4 +83,31 @@ public class PlaFeedFragment extends ru.rutube.RutubeFeed.ui.FeedFragment {
         mLoader.setVisibility(View.GONE);
         mEmptyList.setVisibility(View.VISIBLE);
     }
+
+
+    @Override
+    public void setSelectedItem(final int position) {
+        try {
+            sgView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    sgView.setSelection(position);
+                    View v = sgView.getChildAt(position);
+                    if (v != null)
+                        v.requestFocus();
+                }
+            }, 1);
+
+
+        } catch (NullPointerException ignored) {}
+    }
+
+    @Override
+    public int getCurrentPosition() {
+        try{
+            return sgView.getFirstVisiblePosition();
+        } catch (NullPointerException ignored) {
+            return 0;
+        }
+    }
 }
