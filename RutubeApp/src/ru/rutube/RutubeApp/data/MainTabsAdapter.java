@@ -15,6 +15,8 @@ import java.util.HashMap;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeApp.BuildConfig;
 import ru.rutube.RutubeApp.ui.StartActivity;
+import ru.rutube.RutubeApp.ui.feed.PlaFeedFragmentFactory;
+import ru.rutube.RutubeFeed.feed.FeedFragmentFactory;
 import ru.rutube.RutubeFeed.ui.FeedFragment;
 
 /**
@@ -29,7 +31,7 @@ public class MainTabsAdapter extends FragmentStatePagerAdapter
     private final ViewPager mViewPager;
     private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
     private final HashMap<String, FeedFragment> mFragments = new HashMap<String, FeedFragment>();
-
+    private final FeedFragmentFactory mFragmentFactory = new PlaFeedFragmentFactory();
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
         Object tag = tab.getTag();
@@ -62,11 +64,11 @@ public class MainTabsAdapter extends FragmentStatePagerAdapter
     }
 
     static final class TabInfo {
-        private final Class<?> clss;
+        private final int feedType;
         private final Bundle args;
 
-        TabInfo(Class<?> _class, Bundle _args) {
-            clss = _class;
+        TabInfo(int _feedType, Bundle _args) {
+            feedType = _feedType;
             args = _args;
         }
     }
@@ -81,8 +83,8 @@ public class MainTabsAdapter extends FragmentStatePagerAdapter
         mViewPager.setOnPageChangeListener(this);
     }
 
-    public void addTab(ActionBar.Tab tab, Class<?> clss, Bundle args) {
-        TabInfo info = new TabInfo(clss, args);
+    public void addTab(ActionBar.Tab tab, int feedType, Bundle args) {
+        TabInfo info = new TabInfo(feedType, args);
         tab.setTag(info);
         tab.setTabListener(this);
         mTabs.add(info);
@@ -98,7 +100,8 @@ public class MainTabsAdapter extends FragmentStatePagerAdapter
     @Override
     public Fragment getItem(int position) {
         TabInfo info = mTabs.get(position);
-        FeedFragment f = (FeedFragment)Fragment.instantiate(mActivity, info.clss.getName(), info.args);
+        FeedFragment f = mFragmentFactory.getFeedFragment(info.feedType);
+        f.setArguments(info.args);
         String tag = info.args.getString(Constants.Params.FEED_TITLE);
         mFragments.put(tag, f);
         return f;

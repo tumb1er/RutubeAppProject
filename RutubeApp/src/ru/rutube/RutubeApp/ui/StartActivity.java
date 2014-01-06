@@ -26,6 +26,7 @@ import ru.rutube.RutubeApp.ui.feed.PlaEditorsFragment;
 import ru.rutube.RutubeApp.ui.feed.PlaFeedFragment;
 import ru.rutube.RutubeApp.ui.feed.PlaSubscriptionsFragment;
 import ru.rutube.RutubeFeed.ctrl.FeedController;
+import ru.rutube.RutubeFeed.feed.FeedFragmentFactory;
 import ru.rutube.RutubeFeed.ui.EditorsFeedFragment;
 import ru.rutube.RutubeFeed.ui.FeedFragment;
 
@@ -37,12 +38,12 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
     private static final int LOGIN_REQUEST_CODE = 1;
     private static final boolean D = BuildConfig.DEBUG;
 
-    private static final HashMap<String, Class<?>> sFragmentClassMap = new HashMap<String, Class<?>>();
+    private static final HashMap<String, Integer> sFragmentClassMap = new HashMap<String, Integer>();
     private static final HashMap<String, Integer> sFeedUriResourceIdMap = new HashMap<String, Integer>();
     static {
-        sFragmentClassMap.put(MainPageController.TAB_EDITORS, PlaEditorsFragment.class);
-        sFragmentClassMap.put(MainPageController.TAB_MY_VIDEO, PlaFeedFragment.class);
-        sFragmentClassMap.put(MainPageController.TAB_SUBSCRIPTIONS, PlaSubscriptionsFragment.class);
+        sFragmentClassMap.put(MainPageController.TAB_EDITORS, FeedFragmentFactory.EDITORS);
+        sFragmentClassMap.put(MainPageController.TAB_MY_VIDEO, FeedFragmentFactory.COMMON);
+        sFragmentClassMap.put(MainPageController.TAB_SUBSCRIPTIONS, FeedFragmentFactory.SUBSCRIPTIONS);
 
         sFeedUriResourceIdMap.put(MainPageController.TAB_EDITORS, R.string.editors_uri);
         sFeedUriResourceIdMap.put(MainPageController.TAB_MY_VIDEO, R.string.my_video_uri);

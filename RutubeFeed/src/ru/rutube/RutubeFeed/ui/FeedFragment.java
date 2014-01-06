@@ -32,6 +32,7 @@ import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeFeed.R;
 import ru.rutube.RutubeFeed.ctrl.FeedController;
 import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
+import ru.rutube.RutubeFeed.feed.BasicFeedImpl;
 
 /**
  * Created with IntelliJ IDEA.
@@ -60,6 +61,15 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
             refreshFeed();
         }
     };
+    private FeedFragment.FeedImpl mFeedImpl;
+
+    public FeedFragment(FeedImpl feedImpl) {
+        mFeedImpl = feedImpl;
+    }
+
+    public FeedFragment() {
+        mFeedImpl = new BasicFeedImpl();
+    }
 
     @Override
     public void openFeed(Uri feedUri, String title) {
@@ -145,12 +155,7 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
 
     @Override
     public FeedCursorAdapter initAdapter() {
-        return new FeedCursorAdapter(getActivity(),
-            R.layout.feed_item,
-            null,
-            new String[]{FeedContract.FeedColumns.TITLE, FeedContract.FeedColumns.THUMBNAIL_URI},
-            new int[]{R.id.titleTextView, R.id.thumbnailImageView},
-            0);
+        return mFeedImpl.initAdapter();
     }
 
     public void showError() {
@@ -173,6 +178,8 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
             mController = new FeedController(getFeedUri(), 0);
         else
             mController = savedInstanceState.getParcelable(CONTROLLER);
+        // в FeedImpl необходимо наличие валидного контекста на момент вызова Controller.attach
+        mFeedImpl.setContext(getActivity());
         mController.attach(getActivity(), this);
     }
 
@@ -326,5 +333,10 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
 
     public void logout() {
         mController.logout();
+    }
+
+    public interface FeedImpl {
+        public FeedCursorAdapter initAdapter();
+        public void setContext(Context context);
     }
 }

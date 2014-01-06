@@ -33,6 +33,12 @@ public class PlaFeedFragment extends ru.rutube.RutubeFeed.ui.FeedFragment {
         }
     };
 
+    public PlaFeedFragment(FeedImpl feedImpl) {
+        super(feedImpl);
+    }
+
+    public PlaFeedFragment() {
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
