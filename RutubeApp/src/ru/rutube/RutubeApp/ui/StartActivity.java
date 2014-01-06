@@ -62,8 +62,8 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
         boolean result = super.onCreatePanelMenu(featureId, menu);
         User user = User.load(this);
         mLogoutItem = menu.findItem(ru.rutube.RutubeFeed.R.id.menu_logout);
-        assert mLogoutItem != null;
-        mLogoutItem.setVisible(!user.isAnonymous());
+        if (mLogoutItem != null)
+            mLogoutItem.setVisible(!user.isAnonymous());
         return result;
     }
 
@@ -100,6 +100,7 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
 
         mViewPager = new ViewPager(this);
         mViewPager.setId(R.id.feed_fragment_container);
+        mViewPager.setOffscreenPageLimit(3);
         setContentView(mViewPager);
 
         final ActionBar bar = getSupportActionBar();

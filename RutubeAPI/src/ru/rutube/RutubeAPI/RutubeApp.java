@@ -31,7 +31,7 @@ public class RutubeApp extends Application {
     private static RutubeApp instance;
 
     private RequestQueue requestQueue;
-    private volatile boolean mLoadingFeed;
+    private volatile static boolean mLoadingFeed;
 
     public RutubeApp() {
         instance = this;
@@ -147,15 +147,16 @@ public class RutubeApp extends Application {
         return resultUri.toString();
     }
 
-    public static boolean isLoadingFeed() {
-        return instance.mLoadingFeed;
+
+    public static synchronized boolean isLoadingFeed() {
+        return mLoadingFeed;
     }
 
     public static void startLoading() {
-        instance.mLoadingFeed = true;
+        mLoadingFeed = true;
     }
     public static void stopLoading() {
-        instance.mLoadingFeed = false;
+        mLoadingFeed = false;
     }
 
 

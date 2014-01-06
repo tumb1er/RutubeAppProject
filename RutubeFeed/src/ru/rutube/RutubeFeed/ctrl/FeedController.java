@@ -79,6 +79,10 @@ public class FeedController implements Parcelable {
         public boolean onItemClick(FeedCursorAdapter.ClickTag position, String viewTag);
 
         public void openFeed(Uri feedUri, String title);
+
+        public void setSelectedItem(int mItemRequested);
+
+        public int getCurrentPosition();
     }
 
     private static final int LOADER_ID = 1;
@@ -96,10 +100,11 @@ public class FeedController implements Parcelable {
     private int mUpdatedPage = 0;
 
 
-    public FeedController(Uri feedUri) {
+    public FeedController(Uri feedUri, int itemRequested) {
         mContext = null;
         mView = null;
         mFeedUri = feedUri;
+        mItemRequested = itemRequested;
     }
 
     /**
@@ -146,6 +151,8 @@ public class FeedController implements Parcelable {
         FeedCursorAdapter adapter = prepareFeedCursorAdapter();
         mView.getLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks);
         mView.setListAdapter(adapter);
+        if (D) Log.d(LOG_TAG, "Attach position: " + String.valueOf(mItemRequested));
+        mView.setSelectedItem(mItemRequested);
         mAttached = true;
         loadPage(1);
     }
@@ -173,11 +180,13 @@ public class FeedController implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeParcelable(mFeedUri, i);
+        parcel.writeInt(mItemRequested);
     }
 
     public static FeedController fromParcel(Parcel in) {
         Uri feedUri = in.readParcelable(Uri.class.getClassLoader());
-        return new FeedController(feedUri);
+        int itemRequested = in.readInt();
+        return new FeedController(feedUri, itemRequested);
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -203,6 +212,7 @@ public class FeedController implements Parcelable {
         return adapter;
     }
 
+    private int mItemRequested = 0;
     /**
      * Обрабатывает события "нужно загрузить следующую страницу", приходящие от адаптера
      */
@@ -217,6 +227,10 @@ public class FeedController implements Parcelable {
 
         @Override
         public void onItemRequested(int position) {
+            int currentPosition = mView.getCurrentPosition() + 1;
+            if (currentPosition > 1)
+                mItemRequested = currentPosition;
+            if (D) Log.d(LOG_TAG, String.format("onItemRequested: %d %d", mItemRequested, position));
             int page = (position / mPerPage) + 1;
             if (mLoading == 0 && mHasNext && page > mUpdatedPage) {
                 mUpdatedPage = page;
@@ -313,6 +327,8 @@ public class FeedController implements Parcelable {
         public void onLoadFinished(Loader<Cursor> arg0, Cursor cursor) {
             if (D) Log.d(LOG_TAG, "onLoadFinished " + String.valueOf(cursor.getCount()));
             ((CursorAdapter) mView.getListAdapter()).swapCursor(cursor);
+            mView.setSelectedItem(mItemRequested);
+            if (D) Log.d(LOG_TAG, "setPosition: " + String.valueOf(mItemRequested));
             // Грузим следующую страницу только если кэш в БД невалидный
             if ((cursor.getCount() < mPerPage) && mHasNext) {
                 if (D) Log.d(LOG_TAG, "load more from olf");

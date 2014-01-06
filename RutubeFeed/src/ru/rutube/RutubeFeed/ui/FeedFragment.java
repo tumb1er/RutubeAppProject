@@ -43,6 +43,7 @@ import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
 public class FeedFragment extends Fragment implements FeedController.FeedView, AdapterView.OnItemClickListener {
     private static final String LOG_TAG = FeedFragment.class.getName();
     private static final boolean D = BuildConfig.DEBUG;
+    private static final String CONTROLLER = "controller";
     protected FeedController mController;
     private MenuItem mRefreshItem;
     private Uri feedUri;
@@ -166,9 +167,12 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
         doneRefreshing();
     }
 
-    private void init() {
+    private void init(Bundle savedInstanceState) {
         initFeedUri();
-        mController = new FeedController(getFeedUri());
+        if (savedInstanceState == null)
+            mController = new FeedController(getFeedUri(), 0);
+        else
+            mController = savedInstanceState.getParcelable(CONTROLLER);
         mController.attach(getActivity(), this);
     }
 
@@ -185,11 +189,17 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(CONTROLLER, mController);
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (D) Log.d(LOG_TAG, "onActivityCreated");
         setHasOptionsMenu(true);
-        init();
+        init(savedInstanceState);
     }
 
     protected void initFeedUri() {
@@ -296,6 +306,22 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
             }
         } catch (NullPointerException ignored) {}
 
+    }
+
+    @Override
+    public void setSelectedItem(int position) {
+        try {
+            sgView.setSelection(position);
+        } catch (NullPointerException ignored) {}
+    }
+
+    @Override
+    public int getCurrentPosition() {
+        try{
+            return sgView.getFirstVisiblePosition();
+        } catch (NullPointerException ignored) {
+            return 0;
+        }
     }
 
     public void logout() {
