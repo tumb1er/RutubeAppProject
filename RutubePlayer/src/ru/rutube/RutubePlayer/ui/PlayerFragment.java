@@ -362,6 +362,7 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
     protected MediaPlayer.OnErrorListener mOnErrorListener = new MediaPlayer.OnErrorListener() {
         @Override
         public boolean onError(MediaPlayer mediaPlayer, int i, int i2) {
+            // FIXME: error reporting
             if (D) Log.d(LOG_TAG, String.format("onError %d %d", i, i2));
             mController.onPlaybackError();
             return true;
@@ -506,6 +507,7 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         super.onPause();
         if (D) Log.d(LOG_TAG, "onPause");
         mController.onPause();
+        // после setStreamUri(null) здесь может быть NPE
         if (mPlayer != null) {
             mPlayer.reset();
             // невыполнение release загоняет плеер в ошибочное состояние, которое выливается в ошибку
@@ -737,6 +739,8 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
                 mPrepared = false;
                 if (D) Log.d(LOG_TAG, "setVideoUri: Preparing!");
                 mPlayer.setDataSource(getActivity(), uri);
+                // После "сброса" плеера Surface заклинивает (freeze), поэтому надо заново
+                // выполнять setDisplay.
                 mPlayer.setDisplay(mVideoView.getHolder());
                 mPlayer.prepareAsync();
                 if (D) Log.d(LOG_TAG, "setVideoUri done");
@@ -745,6 +749,7 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
                 e.printStackTrace();
             }
         else {
+            // Неплохо при полной остановке проигрывания освобождать ресурсы.
             mPlayer.reset();
             mPlayer.release();
             mMediaController.setMediaPlayer(null);
