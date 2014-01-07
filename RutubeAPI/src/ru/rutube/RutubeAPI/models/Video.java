@@ -139,13 +139,9 @@ public class Video implements Parcelable {
             public void onResponse(JSONObject response) {
                 if (D) Log.d(LOG_TAG, "Options: " + String.valueOf(response));
                 try {
-                    Boolean allowed = parseAllowed(response);
-                    Integer errCode = parseErrCode(response);
-                    Uri thumbnailUri = parsePlayThumbnailUri(response);
+                    PlayOptions options = parsePlayOptions(response);
                     Bundle bundle = new Bundle();
-                    bundle.putBoolean(Constants.Result.ACL_ALLOWED, allowed);
-                    bundle.putInt(Constants.Result.ACL_ERRCODE, errCode);
-                    bundle.putParcelable(Constants.Result.PLAY_THUMBNAIL, thumbnailUri);
+                    bundle.putParcelable(Constants.Result.PLAY_OPTIONS, options);
                     requestListener.onResult(Requests.PLAY_OPTIONS, bundle);
                 } catch (JSONException e) {
                     RequestListener.RequestError error = new RequestListener.RequestError(e.getMessage());
@@ -172,24 +168,13 @@ public class Video implements Parcelable {
             return 0;
         }
     }
-
-    private Uri parsePlayThumbnailUri(JSONObject response) throws JSONException {
-        return Uri.parse(response.getString(JSON_THUMBNAIL_URL));
-    }
-
-    private Boolean parseAllowed(JSONObject response) throws JSONException {
-        JSONObject acl = response.getJSONObject(JSON_ACL_ACCESS);
-        return acl.optBoolean(JSON_ALLOWED, false);
-    }
-
-    private Integer parseErrCode(JSONObject response) throws JSONException {
-        JSONObject acl = response.getJSONObject(JSON_ACL_ACCESS);
-        return acl.optInt(JSON_ACL_ERRCODE, 0);
-    }
-
     protected TrackInfo parseTrackInfo(JSONObject data) throws JSONException {
         if (D) Log.d(LOG_TAG, "Result: " + data.toString());
         return TrackInfo.fromJSON(data);
+    }
+
+    protected PlayOptions parsePlayOptions(JSONObject data) throws JSONException {
+        return PlayOptions.fromJSON(data);
     }
 
     public JsonObjectRequest getTrackInfoRequest(Context context, RequestListener listener) {

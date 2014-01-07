@@ -21,12 +21,15 @@ import com.android.volley.toolbox.Volley;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.HttpTransport;
 import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.models.Constants;
+import ru.rutube.RutubeAPI.models.PlayOptions;
 import ru.rutube.RutubeAPI.models.TrackInfo;
 import ru.rutube.RutubeAPI.models.Video;
 import ru.rutube.RutubeAPI.requests.RequestListener;
@@ -77,6 +80,8 @@ public class PlayerController implements Parcelable, RequestListener {
         public void toggleThumbnail(boolean visible);
 
         public void toastError(String string);
+
+        public void limitQuality(int quality);
     }
 
     public static final int STATE_NEW = 0;
@@ -87,15 +92,17 @@ public class PlayerController implements Parcelable, RequestListener {
 
     private static final String LOG_TAG = PlayerController.class.getName();
     private static final boolean D = BuildConfig.DEBUG;
-    private static final int TOTAL_REQUESTS_NEEDED = 4;
+    private static final int TOTAL_REQUESTS_NEEDED = 3;
 
     protected RequestQueue mRequestQueue;
     protected ImageLoader mImageLoader;
 
     private Uri mVideoUri;
-    private Uri mStreamUri;
+    private ArrayList<Uri> mStreams;
     private Video mVideo;
     private TrackInfo mTrackInfo;
+    private PlayOptions mPlayOptions;
+
     private int mState;
     private int mVideoOffset;
     private SparseIntArray mOptionsErrorMap;
@@ -122,79 +129,87 @@ public class PlayerController implements Parcelable, RequestListener {
      */
     @Override
     public void onResult(int tag, Bundle result) {
-
-        if (tag == Requests.TRACK_INFO) {
-            if (D) Log.d(LOG_TAG, "Got Trackinfo");
-            mTrackInfo = result.getParcelable(Constants.Result.TRACKINFO);
-            assert mView != null;
-            if (mTrackInfo == null) {
-                Integer errCode = result.getInt(Constants.Result.TRACKINFO_ERROR);
-                if (D) Log.e(LOG_TAG, "Track info error " + String.valueOf(errCode));
-                mRequestQueue.cancelAll(Requests.PLAY_OPTIONS);
-                if (mState == STATE_ERROR)
-                    return;
-                setState(STATE_ERROR);
-                mView.showError(mContext.getResources().getString(
-                            mTrackInfoErrorMap.get(errCode, R.string.video_deleted)));
-                return;
-            }
-            mView.setVideoTitle(mTrackInfo.getTitle());
-            if (mPlaybackAllowed == null || mPlaybackAllowed){
-            //    mView.setStreamUri(mTrackInfo.getBalancerUrl());
-                JsonObjectRequest request = mTrackInfo.getMP4UrlRequest(mContext, this);
-                mRequestQueue.add(request);
-            }
-            mPlayRequestStage++;
+        switch(tag){
+            case Requests.TRACK_INFO:
+                TrackInfo trackInfo = result.getParcelable(Constants.Result.TRACKINFO);
+                processTrackInfoResult(trackInfo);
+                break;
+            case Requests.PLAY_OPTIONS:
+                PlayOptions playOptions = result.getParcelable(Constants.Result.PLAY_OPTIONS);
+                processPlayOptionsResult(playOptions);
+                break;
+            case Requests.BALANCER_JSON:
+                processBalancerResult(result);
+                break;
+            default:
+                break;
         }
-
-        if (tag == Requests.PLAY_OPTIONS) {
-            if (D) Log.d(LOG_TAG, "Got PlayOptions");
-            mPlaybackAllowed = result.getBoolean(Constants.Result.ACL_ALLOWED, false);
-            Integer errCode = result.getInt(Constants.Result.ACL_ERRCODE, 0);
-            if (!mPlaybackAllowed) {
-                if (D) Log.w(LOG_TAG, "Playback not allowed");
-                mRequestQueue.cancelAll(Requests.TRACK_INFO);
-                mRequestQueue.cancelAll(Requests.BALANCER_JSON);
-                if (mState == STATE_ERROR)
-                    return;
-                setState(STATE_ERROR);
-                Integer error_resource;
-                if (errCode == 0){
-                    errCode = result.getInt(Constants.Result.TRACKINFO_ERROR, 0);
-                    error_resource = mTrackInfoErrorMap.get(errCode, R.string.video_deleted);
-                } else {
-                    error_resource = mOptionsErrorMap.get(errCode, R.string.failed_to_load_data);
-                }
-                mView.showError(mContext.getResources().getString(error_resource));
-                return;
-            } else {
-//                if (mTrackInfo != null) {
-//                    mView.setStreamUri(mTrackInfo.getBalancerUrl());
-//                }
-                if (mStreamUri != null) {
-                    mView.setStreamUri(mStreamUri);
-                }
-                if (mThumbnailUri == null){
-                    Uri thumbnailUri = result.getParcelable(Constants.Result.PLAY_THUMBNAIL);
-                    mView.setThumbnailUri(thumbnailUri);
-                }
-            }
-            mPlayRequestStage++;
-        }
-
-        if (tag == Requests.BALANCER_JSON) {
-            if (D) Log.d(LOG_TAG, "Got Balancer Result");
-            String mp4url = result.getString(Constants.Result.MP4_URL);
-            if (D) Log.d(LOG_TAG, "Got mp4 uri: " + mp4url);
-            if (mp4url != null) {
-                mStreamUri = Uri.parse(mp4url);
-                if (mPlaybackAllowed != null && mPlaybackAllowed)
-                    mView.setStreamUri(mStreamUri);
-            }
-            mPlayRequestStage++;
-        }
-
         checkReadyToPlay();
+    }
+
+    protected void processBalancerResult(Bundle result) {
+        if (D) Log.d(LOG_TAG, "Got Balancer Result " + String.valueOf(result));
+        String[] mp4urls = result.getStringArray(Constants.Result.MP4_URL);
+        if (mView != null && mp4urls != null && mp4urls.length > 0) {
+            if (D) Log.d(LOG_TAG, "Got mp4 uri: " + mp4urls.toString());
+            mStreams = new ArrayList<Uri>();
+            for (String uri: mp4urls)
+                mStreams.add(Uri.parse(uri));
+
+            if (mPlaybackAllowed != null && mPlaybackAllowed){
+                mView.setStreamUri(getStreamUri());
+                mView.limitQuality(mStreams.size() - 1);
+            }
+        }
+        mPlayRequestStage++;
+    }
+
+    private Uri getStreamUri() {
+        int max_uri = mStreams.size();
+        int current_uri = mContext.getSharedPreferences("player", Context.MODE_PRIVATE).getInt("selected_quality", 0);
+        return mStreams.get(Math.min(max_uri, current_uri));
+    }
+
+    protected void processPlayOptionsResult(PlayOptions result) {
+        if (D) Log.d(LOG_TAG, "Got PlayOptions");
+        mPlayOptions = result;
+        mPlaybackAllowed = result.getAclAllowed();
+        Integer errCode = result.getAclErrorCode();
+        if (!mPlaybackAllowed) {
+            if (D) Log.w(LOG_TAG, "Playback not allowed");
+            mRequestQueue.cancelAll(Requests.TRACK_INFO);
+            if (mState == STATE_ERROR)
+                return;
+            setState(STATE_ERROR);
+            Integer error_resource;
+            if (errCode == 0){
+                errCode = result.getTrackInfoErrorCode();
+                error_resource = mTrackInfoErrorMap.get(errCode, R.string.video_deleted);
+            } else {
+                error_resource = mOptionsErrorMap.get(errCode, R.string.failed_to_load_data);
+            }
+            mView.showError(mContext.getResources().getString(error_resource));
+            return;
+        } else {
+            JsonObjectRequest request = result.getMP4UrlRequest(mContext, this);
+            mRequestQueue.add(request);
+
+            if (mThumbnailUri == null){
+                Uri thumbnailUri = result.getThumbnailUri();
+                mView.setThumbnailUri(thumbnailUri);
+            }
+        }
+        mPlayRequestStage++;
+    }
+
+    protected void processTrackInfoResult(TrackInfo result) {
+        if (D) Log.d(LOG_TAG, "Got Trackinfo");
+        mTrackInfo = result;
+        assert mView != null;
+        if (mTrackInfo == null) {
+            return;
+        }
+        mView.setVideoTitle(mTrackInfo.getTitle());
     }
 
     @Override
@@ -314,7 +329,7 @@ public class PlayerController implements Parcelable, RequestListener {
         setState(STATE_STARTING);
         mVideoOffset = 0;
         mView.toggleThumbnail(false);
-        mView.setStreamUri(mStreamUri);
+        mView.setStreamUri(getStreamUri());
         mView.setVideoTitle(mTrackInfo.getTitle());
         mPlayRequestStage = TOTAL_REQUESTS_NEEDED - 1;
     }
@@ -341,7 +356,7 @@ public class PlayerController implements Parcelable, RequestListener {
     public void onResume() {
         if (D) Log.d(LOG_TAG, "onResume: state=" + String.valueOf(mState));
         if (mState == STATE_PLAYING){
-            mView.setStreamUri(mStreamUri);
+            mView.setStreamUri(getStreamUri());
             mView.setVideoTitle(mTrackInfo.getTitle());
             mPlayRequestStage = TOTAL_REQUESTS_NEEDED - 1;
             setState(STATE_STARTING);
@@ -536,7 +551,7 @@ public class PlayerController implements Parcelable, RequestListener {
                 mState = STATE_STARTING;
                 mView.setVideoTitle(mTrackInfo.getTitle());
                 mPlayRequestStage = TOTAL_REQUESTS_NEEDED - 1;
-                mView.setStreamUri(mStreamUri);
+                mView.setStreamUri(getStreamUri());
                 mView.setLoadingCompleted();
                 break;
             case STATE_COMPLETED:
