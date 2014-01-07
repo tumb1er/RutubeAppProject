@@ -131,6 +131,14 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         }
     };
 
+    protected RutubeMediaController.QualitySelectListener mQualitySelectListener = new RutubeMediaController.QualitySelectListener() {
+        @Override
+        public void onQualitySelected(int quality) {
+            mController.onQualitySelected(quality);
+        }
+    };
+
+
     protected Animation.AnimationListener mVolumeAnimationListener = new Animation.AnimationListener() {
         @Override
         public void onAnimationStart(Animation animation) {
@@ -350,7 +358,7 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
     protected MediaPlayer.OnErrorListener mOnErrorListener = new MediaPlayer.OnErrorListener() {
         @Override
         public boolean onError(MediaPlayer mediaPlayer, int i, int i2) {
-            if (D) Log.d(LOG_TAG, "onError");
+            if (D) Log.d(LOG_TAG, String.format("onError %d %d", i, i2));
             mController.onPlaybackError();
             return true;
         }
@@ -557,9 +565,10 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
     }
 
     @Override
-    public void setStreamUri(Uri uri) {
-        if (D) Log.d(LOG_TAG, "setStreamUri " + String.valueOf(uri));
+    public void setStreamUri(Uri uri, int quality) {
+        if (D) Log.d(LOG_TAG, String.format("setStreamUri %d: %s", quality, String.valueOf(uri)));
         setVideoUri(uri);
+        mMediaController.selectQuality(quality);
         mStreamUri = uri;
     }
 
@@ -614,6 +623,12 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
     @Override
     public void setVideoTitle(String title) {
         mMediaController.setVideoTitle(title);
+    }
+
+    @Override
+    public void limitQuality(int quality) {
+        if (mMediaController != null)
+            mMediaController.limitQuality(quality);
     }
 
     @Override
@@ -699,6 +714,7 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         mMediaController.setAnchorView((ViewGroup) view.findViewById(R.id.center_video_view));
         mMediaController.setOnTouchListener(mOnTouchListener);
         mMediaController.setToggleFullscreenListener(mToggleFullscreenListener);
+        mMediaController.setQualitySelectListener(mQualitySelectListener);
         return;
     }
 
@@ -713,9 +729,10 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
                     initMediaPlayer();
                 mPlayer.reset();
                 mPrepared = false;
-                if (D) Log.d(LOG_TAG, "Preparing!");
+                if (D) Log.d(LOG_TAG, "setVideoUri: Preparing!");
                 mPlayer.setDataSource(getActivity(), uri);
                 mPlayer.prepareAsync();
+                if (D) Log.d(LOG_TAG, "setVideoUri done");
                 mBufferingPercent = 0;
             } catch (IOException e) {
                 e.printStackTrace();

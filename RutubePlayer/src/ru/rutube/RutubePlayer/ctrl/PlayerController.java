@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -41,6 +42,9 @@ import ru.rutube.RutubePlayer.R;
  */
 public class PlayerController implements Parcelable, RequestListener {
 
+    public static final String PREFS_PLAYER = "player";
+    public static final String PREFS_QUALITY = "selected_quality";
+
     /**
      * Интерфейс для представления плеера
      */
@@ -49,7 +53,7 @@ public class PlayerController implements Parcelable, RequestListener {
          * Задает Uri видеопотока видеоэлементу
          * @param uri Uri видеопотока
          */
-        public void setStreamUri(Uri uri);
+        public void setStreamUri(Uri uri, int quality);
 
         public void setVideoTitle(String title);
         public void setThumbnailUri(Uri uri);
@@ -102,6 +106,7 @@ public class PlayerController implements Parcelable, RequestListener {
     private Video mVideo;
     private TrackInfo mTrackInfo;
     private PlayOptions mPlayOptions;
+    private int mSelectedUri;
 
     private int mState;
     private int mVideoOffset;
@@ -147,6 +152,19 @@ public class PlayerController implements Parcelable, RequestListener {
         checkReadyToPlay();
     }
 
+    public void onQualitySelected(int quality) {
+        if (D) Log.d(LOG_TAG, "Quality selected: " + String.valueOf(quality));
+        if (mStreams != null && quality < mStreams.size()) {
+            mSelectedUri = quality;
+            SharedPreferences prefs = mContext.getSharedPreferences(PREFS_PLAYER, Context.MODE_PRIVATE);
+            prefs.edit().putInt(PREFS_QUALITY, quality).commit();
+            mView.setStreamUri(null, 0);
+            // Именно так восстанавливается проигрывание после приостановки работы
+            restoreFromState();
+        }
+    }
+
+
     protected void processBalancerResult(Bundle result) {
         if (D) Log.d(LOG_TAG, "Got Balancer Result " + String.valueOf(result));
         String[] mp4urls = result.getStringArray(Constants.Result.MP4_URL);
@@ -157,17 +175,23 @@ public class PlayerController implements Parcelable, RequestListener {
                 mStreams.add(Uri.parse(uri));
 
             if (mPlaybackAllowed != null && mPlaybackAllowed){
-                mView.setStreamUri(getStreamUri());
-                mView.limitQuality(mStreams.size() - 1);
+                setStreamUri();
             }
         }
         mPlayRequestStage++;
     }
 
-    private Uri getStreamUri() {
+    private void setStreamUri() {
+        if (!mAttached)
+            return;
+        int quality = getSelectedQuality();
+        mView.setStreamUri(mStreams.get(quality), quality);
+        mView.limitQuality(mStreams.size() - 1);
+    }
+
+    private int getSelectedQuality() {
         int max_uri = mStreams.size();
-        int current_uri = mContext.getSharedPreferences("player", Context.MODE_PRIVATE).getInt("selected_quality", 0);
-        return mStreams.get(Math.min(max_uri, current_uri));
+        return Math.min(max_uri, mSelectedUri);
     }
 
     protected void processPlayOptionsResult(PlayOptions result) {
@@ -329,7 +353,7 @@ public class PlayerController implements Parcelable, RequestListener {
         setState(STATE_STARTING);
         mVideoOffset = 0;
         mView.toggleThumbnail(false);
-        mView.setStreamUri(getStreamUri());
+        setStreamUri();
         mView.setVideoTitle(mTrackInfo.getTitle());
         mPlayRequestStage = TOTAL_REQUESTS_NEEDED - 1;
     }
@@ -344,7 +368,12 @@ public class PlayerController implements Parcelable, RequestListener {
         mVideoOffset = mView.getCurrentOffset();
         if (D) Log.d(LOG_TAG, "onPause: offset = " + String.valueOf(mVideoOffset));
         mView.stopPlayback();
-        mView.setStreamUri(null);
+        resetStreamUri();
+    }
+
+    private void resetStreamUri() {
+        mView.setStreamUri(null, 0);
+        mView.limitQuality(4);
     }
 
     /**
@@ -356,7 +385,7 @@ public class PlayerController implements Parcelable, RequestListener {
     public void onResume() {
         if (D) Log.d(LOG_TAG, "onResume: state=" + String.valueOf(mState));
         if (mState == STATE_PLAYING){
-            mView.setStreamUri(getStreamUri());
+            setStreamUri();
             mView.setVideoTitle(mTrackInfo.getTitle());
             mPlayRequestStage = TOTAL_REQUESTS_NEEDED - 1;
             setState(STATE_STARTING);
@@ -405,7 +434,6 @@ public class PlayerController implements Parcelable, RequestListener {
         }
     }
 
-
     /**
      * Обработка события инициализации VideoView
      */
@@ -433,6 +461,7 @@ public class PlayerController implements Parcelable, RequestListener {
             mView.setThumbnailUri(mThumbnailUri);
         }
         mAttached = true;
+        mSelectedUri = mContext.getSharedPreferences(PREFS_PLAYER, Context.MODE_PRIVATE).getInt(PREFS_QUALITY, 0);
         if (mState != STATE_NEW)
             restoreFromState();
     }
@@ -551,14 +580,14 @@ public class PlayerController implements Parcelable, RequestListener {
                 mState = STATE_STARTING;
                 mView.setVideoTitle(mTrackInfo.getTitle());
                 mPlayRequestStage = TOTAL_REQUESTS_NEEDED - 1;
-                mView.setStreamUri(getStreamUri());
+                setStreamUri();
                 mView.setLoadingCompleted();
                 break;
             case STATE_COMPLETED:
                 // На момент сохранения был показан эндскрин.
                 // Делаем так, чтобы плеер не начал в фоне воспроизводить видео, восстанавливаем
                 // состояние элементов управления,
-                mView.setStreamUri(null);
+                resetStreamUri();
                 mView.toggleThumbnail(true);
                 mView.stopPlayback();
                 mView.setLoadingCompleted();
