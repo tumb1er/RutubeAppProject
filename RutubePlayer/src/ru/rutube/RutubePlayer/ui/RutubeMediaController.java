@@ -18,6 +18,7 @@
 package ru.rutube.RutubePlayer.ui;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -108,20 +109,86 @@ public class RutubeMediaController extends FrameLayout {
     private Button mQualityMQButton;
     private Button mQualityHQButton;
     private Button mQualityHDButton;
+    private QualitySelectListener mQualitySelectListener;
     private OnClickListener mOnQualityClickListener = new OnClickListener() {
         @Override
         public void onClick(View view) {
             int id = view.getId();
-
+            int quality = 0;
+            if (id == R.id.quality_mid) {
+                quality = 1;
+            }
+            if (id == R.id.quality_high) {
+                quality = 2;
+            }
+            if (id == R.id.quality_hd) {
+                quality = 3;
+            }
+            if (mQualitySelectListener != null) {
+                mQualitySelectListener.onQualitySelected(quality);
+            }
         }
+
     };
 
-    public void setToggleFullscreenListener(ToggleFullscreenListener toggleFullscreenListener) {
-        this.mToggleFullscreenListener = toggleFullscreenListener;
+    public void setToggleFullscreenListener(ToggleFullscreenListener listener) {
+        mToggleFullscreenListener = listener;
     }
 
     public static interface ToggleFullscreenListener {
         public void toggleFullscreen();
+    }
+
+    public static interface QualitySelectListener {
+        public void onQualitySelected(int quality);
+    }
+
+    public void setQualitySelectListener(QualitySelectListener listener) {
+        mQualitySelectListener = listener;
+    }
+
+    public void selectQuality(int quality) {
+        Resources resources = getResources();
+        if (resources == null) return;
+        int selected_color = resources.getColor(R.color.quality_selected);
+        int unselected_color = resources.getColor(R.color.quality_unselected);
+
+        mQualityLQButton.setTextColor(unselected_color);
+        mQualityMQButton.setTextColor(unselected_color);
+        mQualityHQButton.setTextColor(unselected_color);
+        mQualityHDButton.setTextColor(unselected_color);
+
+        switch (quality) {
+            default:
+                mQualityLQButton.setTextColor(selected_color);
+                break;
+            case 1:
+                mQualityMQButton.setTextColor(selected_color);
+                break;
+            case 2:
+                mQualityHQButton.setTextColor(selected_color);
+                break;
+            case 3:
+                mQualityHDButton.setTextColor(selected_color);
+                break;
+        }
+    }
+
+    public void limitQuality(int quality) {
+        mQualityLQButton.setVisibility(VISIBLE);
+        mQualityHQButton.setVisibility(VISIBLE);
+        mQualityHDButton.setVisibility(VISIBLE);
+        switch(quality) {
+            case 0:
+                mQualityMQButton.setVisibility(GONE);
+            case 1:
+                mQualityHQButton.setVisibility(GONE);
+            case 2:
+                mQualityHDButton.setVisibility(GONE);
+                break;
+            default:
+                break;
+        }
     }
 
     public RutubeMediaController(Context context, AttributeSet attrs) {
