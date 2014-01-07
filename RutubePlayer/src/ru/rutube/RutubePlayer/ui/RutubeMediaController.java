@@ -127,6 +127,7 @@ public class RutubeMediaController extends FrameLayout {
             if (mQualitySelectListener != null) {
                 mQualitySelectListener.onQualitySelected(quality);
             }
+            hide();
         }
 
     };
@@ -415,6 +416,8 @@ public class RutubeMediaController extends FrameLayout {
 
         try {
             mAnchor.removeView(this);
+            mMenuVisible = false;
+            mMenuContainer.setVisibility(GONE);
             mHandler.removeMessages(SHOW_PROGRESS);
         } catch (IllegalArgumentException ex) {
             Log.w("MediaController", "already removed");

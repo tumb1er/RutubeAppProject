@@ -60,6 +60,7 @@ public class Video implements Parcelable {
     private Author mAuthor;
     private String mSignature;
     private TrackInfo mTrackInfo;
+    private PlayOptions mPlayOptions;
     private int mDuration;
     private int mHits;
 
@@ -139,9 +140,9 @@ public class Video implements Parcelable {
             public void onResponse(JSONObject response) {
                 if (D) Log.d(LOG_TAG, "Options: " + String.valueOf(response));
                 try {
-                    PlayOptions options = parsePlayOptions(response);
+                    mPlayOptions = parsePlayOptions(response);
                     Bundle bundle = new Bundle();
-                    bundle.putParcelable(Constants.Result.PLAY_OPTIONS, options);
+                    bundle.putParcelable(Constants.Result.PLAY_OPTIONS, mPlayOptions);
                     requestListener.onResult(Requests.PLAY_OPTIONS, bundle);
                 } catch (JSONException e) {
                     RequestListener.RequestError error = new RequestListener.RequestError(e.getMessage());
@@ -269,11 +270,11 @@ public class Video implements Parcelable {
     }
 
     public JsonObjectRequest getYastRequest(Context context) {
-        assert mTrackInfo != null;
+        assert mPlayOptions != null;
         assert context != null;
         if (D)
-            Log.d(LOG_TAG, "Context: " + String.valueOf(context) + " TI: " + String.valueOf(mTrackInfo));
-        String yastUrl = String.format(context.getString(R.string.yastUri), mTrackInfo.getTrackId());
+            Log.d(LOG_TAG, "Context: " + String.valueOf(context) + " TI: " + String.valueOf(mPlayOptions));
+        String yastUrl = String.format(context.getString(R.string.yastUri), mPlayOptions.getTrackId());
         Uri uri = Uri.parse(yastUrl).buildUpon()
                 .appendQueryParameter("referer", context.getString(R.string.referer))
                 .build();

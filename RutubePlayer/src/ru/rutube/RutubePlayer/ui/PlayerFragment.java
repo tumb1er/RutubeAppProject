@@ -283,6 +283,10 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         @Override
         public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
             if (D) Log.d(LOG_TAG, "surfaceDestroyed");
+            if (mPlayer != null) {
+                mPlayer.release();
+                mPlayer = null;
+            }
         }
     };
 
@@ -502,11 +506,13 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         super.onPause();
         if (D) Log.d(LOG_TAG, "onPause");
         mController.onPause();
-        mPlayer.reset();
-        // невыполнение release загоняет плеер в ошибочное состояние, которое выливается в ошибку
-        // Error (1, -110), После release плеер необходимо инициализировать заново.
-        mPlayer.release();
-        mPlayer = null;
+        if (mPlayer != null) {
+            mPlayer.reset();
+            // невыполнение release загоняет плеер в ошибочное состояние, которое выливается в ошибку
+            // Error (1, -110), После release плеер необходимо инициализировать заново.
+            mPlayer.release();
+            mPlayer = null;
+        }
         // messageHandler после детача получает очередное сообщение о прогрессе и пытается вызвать
         // у деинициализированного плеера getDuration. Результат - ISE/NPE.
         mMediaController.setMediaPlayer(null);
@@ -731,12 +737,19 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
                 mPrepared = false;
                 if (D) Log.d(LOG_TAG, "setVideoUri: Preparing!");
                 mPlayer.setDataSource(getActivity(), uri);
+                mPlayer.setDisplay(mVideoView.getHolder());
                 mPlayer.prepareAsync();
                 if (D) Log.d(LOG_TAG, "setVideoUri done");
                 mBufferingPercent = 0;
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        else {
+            mPlayer.reset();
+            mPlayer.release();
+            mMediaController.setMediaPlayer(null);
+            mPlayer = null;
+        }
 //            mVideoView.setVideoURI(uri);
     }
 

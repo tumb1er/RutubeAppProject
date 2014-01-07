@@ -145,25 +145,26 @@ public class PlayerController implements Parcelable, RequestListener {
                 break;
             case Requests.BALANCER_JSON:
                 processBalancerResult(result);
+                checkReadyToPlay();
                 break;
             default:
                 break;
         }
-        checkReadyToPlay();
     }
 
     public void onQualitySelected(int quality) {
         if (D) Log.d(LOG_TAG, "Quality selected: " + String.valueOf(quality));
         if (mStreams != null && quality < mStreams.size()) {
+            mVideoOffset = mView.getCurrentOffset();
             mSelectedUri = quality;
             SharedPreferences prefs = mContext.getSharedPreferences(PREFS_PLAYER, Context.MODE_PRIVATE);
             prefs.edit().putInt(PREFS_QUALITY, quality).commit();
             mView.setStreamUri(null, 0);
+            mView.setLoading();
             // Именно так восстанавливается проигрывание после приостановки работы
             restoreFromState();
         }
     }
-
 
     protected void processBalancerResult(Bundle result) {
         if (D) Log.d(LOG_TAG, "Got Balancer Result " + String.valueOf(result));
@@ -190,7 +191,7 @@ public class PlayerController implements Parcelable, RequestListener {
     }
 
     private int getSelectedQuality() {
-        int max_uri = mStreams.size();
+        int max_uri = mStreams.size() - 1;
         return Math.min(max_uri, mSelectedUri);
     }
 
@@ -581,7 +582,6 @@ public class PlayerController implements Parcelable, RequestListener {
                 mView.setVideoTitle(mTrackInfo.getTitle());
                 mPlayRequestStage = TOTAL_REQUESTS_NEEDED - 1;
                 setStreamUri();
-                mView.setLoadingCompleted();
                 break;
             case STATE_COMPLETED:
                 // На момент сохранения был показан эндскрин.
@@ -616,6 +616,7 @@ public class PlayerController implements Parcelable, RequestListener {
      * и командует плееру начать просмотр
      */
     private void startPlayback(boolean sendViewed) {
+        if (D) Log.d(LOG_TAG, "Starting playback");
         if (mState!= STATE_STARTING && mState != STATE_ERROR)
             throw new IllegalStateException(String.format("Can't change state to Playing from %d", mState));
         setState(STATE_PLAYING);
@@ -626,8 +627,10 @@ public class PlayerController implements Parcelable, RequestListener {
         }
         mView.setLoadingCompleted();
         mView.toggleThumbnail(false);
-        if (mVideoOffset > 0)
+        if (D) Log.d(LOG_TAG, String.format("Offset: %d", mVideoOffset));
+        if (mVideoOffset > 0) {
             mView.seekTo(mVideoOffset);
+        }
         mView.startPlayback();
         if (sendViewed) {
             JsonObjectRequest request = mVideo.getYastRequest(mContext);
