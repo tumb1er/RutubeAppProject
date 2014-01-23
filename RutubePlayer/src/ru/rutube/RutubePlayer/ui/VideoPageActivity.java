@@ -123,9 +123,22 @@ public class VideoPageActivity extends ActionBarActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.player_menu, menu);
+        try {
+            MenuInflater menuInflater = getMenuInflater();
+            menuInflater.inflate(R.menu.player_menu, menu);
+        } catch (NullPointerException ignored) {
+            return false;
+        }
         return true;
+    }
+
+    @Override
+    public boolean onCreatePanelMenu(int featureId, Menu menu) {
+        try {
+            return super.onCreatePanelMenu(featureId, menu);
+        } catch(NullPointerException ignored) {
+            return false;
+        }
     }
 
     @Override
