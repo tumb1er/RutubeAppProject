@@ -33,7 +33,7 @@ public class VideoTag {
     public static VideoTag fromJSON(JSONObject data) throws JSONException {
         int id = data.getInt(JSON_ID);
         String tag = data.getString(JSON_NAME);
-        String message = data.getString(JSON_COMMENT);
+        String message = data.optString(JSON_COMMENT);
         return new VideoTag(id, tag, message);
     }
 

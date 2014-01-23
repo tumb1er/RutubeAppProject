@@ -14,8 +14,8 @@ import com.android.volley.toolbox.Volley;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.HttpTransport;
-import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.models.Constants;
+import ru.rutube.RutubeAPI.models.TrackInfo;
 import ru.rutube.RutubeAPI.models.Video;
 import ru.rutube.RutubeAPI.requests.RequestListener;
 import ru.rutube.RutubeAPI.requests.Requests;
@@ -34,19 +34,29 @@ public class VideoPageController implements Parcelable, RequestListener {
     private Context mContext;
 
     private Uri mVideoUri;
+    private TrackInfo mTrackInfo;
     private Video mVideo;
+    private int mVideoInfoRequests;
+
+    private static final int totalVideoInfoRequests = 2;
 
     @Override
     public void onResult(int tag, Bundle result) {
+        if (tag == Requests.TRACK_INFO) {
+            mTrackInfo = result.getParcelable(Constants.Result.TRACKINFO);
+            mVideoInfoRequests += 1;
+            setVideoInfo();
+        }
         if (tag == Requests.VIDEO) {
             mVideo = result.getParcelable(Constants.Result.VIDEO);
+            mVideoInfoRequests += 1;
             setVideoInfo();
         }
     }
 
     private void setVideoInfo() {
-        if (mView != null)
-            mView.setVideoInfo(mVideo);
+        if (mView != null && mVideoInfoRequests >= totalVideoInfoRequests)
+            mView.setVideoInfo(mTrackInfo, mVideo);
     }
 
     @Override
@@ -77,18 +87,19 @@ public class VideoPageController implements Parcelable, RequestListener {
 
         public void toggleFullscreen(boolean isFullscreen, boolean rotate);
 
-        public void setVideoInfo(Video mVideo);
+        public void setVideoInfo(TrackInfo trackInfo, Video video);
 
         boolean isFullscreen();
     }
 
     public VideoPageController(Uri videoUri) {
-        this(videoUri, null);
+        this(videoUri, null, null);
     }
 
-    public VideoPageController(Uri videoUri, Video video){
+    public VideoPageController(Uri videoUri, Video video, TrackInfo trackInfo){
         mVideoUri = videoUri;
         mVideo = video;
+        mTrackInfo = trackInfo;
     }
 
     public void attach(Context context, VideoPageView view) {
@@ -97,15 +108,17 @@ public class VideoPageController implements Parcelable, RequestListener {
         mRequestQueue = Volley.newRequestQueue(context,
                 new HttpClientStack(HttpTransport.getHttpClient()));
         mAttached = true;
-        if (mVideo != null) {
-            mView.setVideoInfo(mVideo);
+        if (mTrackInfo != null && mVideo != null) {
+            mView.setVideoInfo(mTrackInfo, mVideo);
         }
         startRequests();
     }
 
     private void startRequests() {
         String videoId = mVideoUri.getLastPathSegment();
+        mVideoInfoRequests = 0;
         mVideo = new Video(videoId);
+        mRequestQueue.add(mVideo.getTrackInfoRequest(mContext, this));
         mRequestQueue.add(mVideo.getVideoRequest(mContext, this));
     }
 
@@ -139,7 +152,8 @@ public class VideoPageController implements Parcelable, RequestListener {
     public static VideoPageController fromParcel(Parcel in) {
         Uri videoUri = in.readParcelable(Uri.class.getClassLoader());
         Video video = in.readParcelable(Video.class.getClassLoader());
-        return new VideoPageController(videoUri, video);
+        TrackInfo trackInfo = in.readParcelable(TrackInfo.class.getClassLoader());
+        return new VideoPageController(videoUri, video, trackInfo);
     }
 
     @Override
@@ -151,6 +165,7 @@ public class VideoPageController implements Parcelable, RequestListener {
     public void writeToParcel(Parcel parcel, int flags) {
         parcel.writeParcelable(mVideoUri, flags);
         parcel.writeParcelable(mVideo, flags);
+        parcel.writeParcelable(mTrackInfo, flags);
     }
 
     @SuppressWarnings("UnusedDeclaration")

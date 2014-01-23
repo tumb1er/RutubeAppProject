@@ -27,6 +27,7 @@ import android.widget.TextView;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.models.Author;
+import ru.rutube.RutubeAPI.models.TrackInfo;
 import ru.rutube.RutubeAPI.models.Video;
 import ru.rutube.RutubePlayer.R;
 import ru.rutube.RutubePlayer.ctrl.VideoPageController;
@@ -173,12 +174,17 @@ public class VideoPageActivity extends ActionBarActivity
     }
 
     @Override
-    public void setVideoInfo(Video video) {
+    public void setVideoInfo(TrackInfo trackInfo, Video video) {
         bindTitle(video);
         bindAuthor(video);
         bindDuration(video);
         bindHits(video);
         bindDescription(video);
+        bindTags(trackInfo);
+    }
+
+    protected void bindTags(TrackInfo trackInfo) {
+        
     }
 
     @Override

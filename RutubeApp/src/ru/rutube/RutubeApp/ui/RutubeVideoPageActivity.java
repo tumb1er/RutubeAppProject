@@ -24,6 +24,7 @@ import android.widget.TextView;
 
 import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.models.Author;
+import ru.rutube.RutubeAPI.models.TrackInfo;
 import ru.rutube.RutubeAPI.models.Video;
 import ru.rutube.RutubeApp.MainApplication;
 import ru.rutube.RutubeApp.R;
@@ -138,14 +139,14 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
      */
 
     @Override
-    public void setVideoInfo(Video video) {
+    public void setVideoInfo(TrackInfo trackInfo, Video video) {
         mRelatedFragment.setVideoInfo(video);
-        if (video == null){
+        if (trackInfo == null){
             toggleNoVideoInfo();
             return;
         }
         toggleVideoInfoLoader(false);
-        super.setVideoInfo(video);
+        super.setVideoInfo(trackInfo, video);
         bindCreated(video);
     }
 
