@@ -85,7 +85,9 @@ public class TrackInfo implements Parcelable {
     }
 
     protected static Author parseAuthor(JSONObject data) throws JSONException {
-        data = data.getJSONObject(JSON_AUTHOR);
+        data = data.optJSONObject(JSON_AUTHOR);
+        if( data == null)
+            return null;
         int id = data.getInt(JSON_AUTHOR_ID);
         String name = data.getString(JSON_AUTHOR_NAME);
         return new Author(null, id, name);

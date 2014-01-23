@@ -17,4 +17,5 @@
     <string name="remind_password">Rappeler le mot de passe</string>
     <string name="nothing_found">Rien trouvé</string>
     <string name="logouted">Déconnecté.</string>
+    <string name="no_author">No Author</string>
 </resources>

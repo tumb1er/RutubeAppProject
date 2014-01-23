@@ -17,4 +17,5 @@
     <string name="remind_password">Забыл пароль</string>
     <string name="nothing_found">Ничего не найдено</string>
     <string name="logouted">Вы вышли из аккаунта.</string>
+    <string name="no_author">Без автора</string>
 </resources>

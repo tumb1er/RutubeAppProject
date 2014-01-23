@@ -96,7 +96,7 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/from"
             android:id="@+id/author_name"
-            android:text="author name"
+            android:text="@string/no_author"
             android:paddingLeft="3dp"
             android:paddingRight="3dp"
             android:linksClickable="true"
