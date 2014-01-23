@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Menu;
@@ -22,13 +24,17 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.List;
+
 import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.models.Author;
 import ru.rutube.RutubeAPI.models.TrackInfo;
 import ru.rutube.RutubeAPI.models.Video;
+import ru.rutube.RutubeAPI.models.VideoTag;
 import ru.rutube.RutubeApp.MainApplication;
 import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubeApp.ui.feed.RutubeRelatedFeedFragment;
+import ru.rutube.RutubeApp.views.LinkTextView;
 import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
 import ru.rutube.RutubeFeed.helpers.Typefaces;
 import ru.rutube.RutubePlayer.ui.VideoPageActivity;
@@ -48,6 +54,8 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         public TextView created;
         public ViewGroup baseInfoContainer;
         public LinearLayout videoContainer;
+        public LinkTextView tags;
+
     }
 
     private static final String LOG_TAG = RutubeVideoPageActivity.class.getName();
@@ -75,6 +83,15 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
             }
         }
     };
+
+    protected LinkTextView.OnLinkClickListener mOnTagLinkClickListener  = new LinkTextView.OnLinkClickListener() {
+        @Override
+        public void onLinkClick(String url, String title) {
+            Uri feedUri = Uri.parse(url);
+            MainApplication.getInstance().openFeed(feedUri, RutubeVideoPageActivity.this, title);
+        }
+    };
+
 
     /**
      * Переопределение методов Activity
@@ -140,7 +157,7 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
 
     @Override
     public void setVideoInfo(TrackInfo trackInfo, Video video) {
-        mRelatedFragment.setVideoInfo(video);
+        mRelatedFragment.setVideoInfo(video, trackInfo);
         if (trackInfo == null){
             toggleNoVideoInfo();
             return;
@@ -148,6 +165,34 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         toggleVideoInfoLoader(false);
         super.setVideoInfo(trackInfo, video);
         bindCreated(video);
+    }
+
+    @Override
+    protected void bindTags(TrackInfo trackInfo) {
+        List<VideoTag> tags = trackInfo.getTags();
+        if (tags == null)
+            return;
+        String text = "";
+        for (VideoTag tag: tags) {
+            text += tag.getHtml(this) + " ";
+        }
+        boolean tags_visible = !tags.isEmpty();
+        LinkTextView tv = ((ViewHolder)mViewHolder).tags;
+        View v = mViewHolder.description;
+        int pl = v.getPaddingLeft();
+        int pt = v.getPaddingTop();
+        int pr = v.getPaddingRight();
+        int pb = v.getPaddingBottom();
+        if (tags_visible) {
+            tv.setVisibility(View.VISIBLE);
+            v.setBackgroundResource(R.drawable.video_info_bg);
+        } else {
+            tv.setVisibility(View.GONE);
+            v.setBackgroundResource(R.drawable.last_related_bg);
+        }
+        v.setPadding(pl, pt, pr, pb);
+        tv.setText(Html.fromHtml(text));
+
     }
 
     /**
@@ -219,6 +264,7 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         h.created = (TextView)findViewById(R.id.created);
         h.baseInfoContainer = (ViewGroup)findViewById(R.id.baseInfoContainer);
         h.videoContainer = (LinearLayout)findViewById(R.id.video_container);
+        h.tags = (LinkTextView) findViewById(R.id.tags_list);
         mViewHolder = h;
     }
 
@@ -242,6 +288,9 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         holder.created.setTypeface(lightFont);
         holder.hits.setTypeface(lightFont);
         holder.description.setTypeface(lightFont);
+        holder.tags.setTypeface(normalFont);
+        holder.tags.setMovementMethod(LinkMovementMethod.getInstance());
+        holder.tags.setOnLinkClickListener(mOnTagLinkClickListener);
 
         toggleVideoInfoLoader(false);
 

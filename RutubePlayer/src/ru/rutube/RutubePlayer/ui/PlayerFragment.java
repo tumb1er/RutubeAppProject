@@ -741,7 +741,12 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
                 mPlayer.setDataSource(getActivity(), uri);
                 // После "сброса" плеера Surface заклинивает (freeze), поэтому надо заново
                 // выполнять setDisplay.
-                mPlayer.setDisplay(mVideoView.getHolder());
+
+                // Однако иногда возникает IAE (Surface has been released), с которым достаточно
+                // ничего не делать
+                try {
+                    mPlayer.setDisplay(mVideoView.getHolder());
+                } catch (IllegalArgumentException ignored) {}
                 mPlayer.prepareAsync();
                 if (D) Log.d(LOG_TAG, "setVideoUri done");
                 mBufferingPercent = 0;

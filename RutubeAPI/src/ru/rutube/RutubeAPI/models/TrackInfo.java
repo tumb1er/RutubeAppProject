@@ -196,4 +196,7 @@ public class TrackInfo implements Parcelable {
         return mDuration;
     }
 
+    public List<VideoTag> getTags() {
+        return mTags;
+    }
 }

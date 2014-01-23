@@ -124,8 +124,21 @@
         android:padding="10dp"
         android:background="@drawable/last_related_bg"
         android:layout_below="@+id/commentLine"
-        android:layout_alignParentBottom="true"
         android:textColor="#FF6C6C6C" />
+
+    <!-- список тегов текстом -->
+    <ru.rutube.RutubeApp.views.LinkTextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tags_list"
+        android:padding="10dp"
+        android:visibility="gone"
+        android:background="@drawable/last_related_bg"
+        android:layout_below="@+id/description"
+        android:layout_alignParentBottom="true"
+        android:textColor="#FF333333"
+        android:textColorLink="#FF333333"
+        />
 
 
 </RelativeLayout>

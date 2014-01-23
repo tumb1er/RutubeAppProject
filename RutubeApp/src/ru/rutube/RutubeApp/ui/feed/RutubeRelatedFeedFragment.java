@@ -5,6 +5,8 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,14 +20,19 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.List;
+
 import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.models.Author;
+import ru.rutube.RutubeAPI.models.TrackInfo;
 import ru.rutube.RutubeAPI.models.Video;
+import ru.rutube.RutubeAPI.models.VideoTag;
 import ru.rutube.RutubeApp.BuildConfig;
 import ru.rutube.RutubeApp.MainApplication;
 import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubeApp.data.RelatedCursorAdapter;
 import ru.rutube.RutubeApp.ui.RutubeVideoPageActivity;
+import ru.rutube.RutubeApp.views.LinkTextView;
 import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
 import ru.rutube.RutubeFeed.helpers.Typefaces;
 import ru.rutube.RutubeFeed.ui.RelatedFeedFragment;
@@ -40,6 +47,14 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
     protected static final boolean D = BuildConfig.DEBUG;
     private View mLoader;
     private View mEmptyList;
+    protected LinkTextView.OnLinkClickListener mOnTagLinkClickListener  = new LinkTextView.OnLinkClickListener() {
+        @Override
+        public void onLinkClick(String url, String title) {
+            Uri feedUri = Uri.parse(url);
+            MainApplication.getInstance().openFeed(feedUri, getActivity(), title);
+        }
+    };
+    private boolean mTagsVisible;
 
 
     protected static class ViewHolder extends RutubeVideoPageActivity.ViewHolder {
@@ -155,11 +170,39 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
         return super.onItemClick(position, viewTag);
     }
 
+    protected void bindTags(TrackInfo trackInfo) {
+        List<VideoTag> tags = trackInfo.getTags();
+        if (tags == null)
+            return;
+        String text = "";
+        for (VideoTag tag: tags) {
+            text += tag.getHtml(getActivity()) + " ";
+        }
+        mTagsVisible = !tags.isEmpty();
+        LinkTextView tv = mViewHolder.tags;
+        View v = mViewHolder.description;
+        int pl = v.getPaddingLeft();
+        int pt = v.getPaddingTop();
+        int pr = v.getPaddingRight();
+        int pb = v.getPaddingBottom();
+        int tags_visibility = (mTagsVisible && mDescriptionVisible)? View.VISIBLE:View.GONE;
+        if (mTagsVisible) {
+            tv.setVisibility(tags_visibility);
+            v.setBackgroundResource(R.drawable.video_info_bg);
+        } else {
+            tv.setVisibility(tags_visibility);
+            v.setBackgroundResource(R.drawable.last_related_bg);
+        }
+        v.setPadding(pl, pt, pr, pb);
+        tv.setText(Html.fromHtml(text));
+
+    }
+
     /**
      * Проставляет значения элементам блока информации о видео
      * @param video объект модели Video.
      */
-    public void setVideoInfo(Video video) {
+    public void setVideoInfo(Video video, TrackInfo trackInfo) {
         if (video == null){
             toggleNoVideoInfo();
             return;
@@ -183,6 +226,7 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
             mViewHolder.description.setText(null);
 
         mViewHolder.created.setText(MainApplication.getInstance().getCreatedText(video.getCreated()));
+        bindTags(trackInfo);
     }
 
     /**
@@ -243,6 +287,9 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
         int visibility = visible? View.VISIBLE: View.GONE;
         mViewHolder.commentLine.setVisibility(visibility);
         mViewHolder.description.setVisibility(visibility);
+        if (!mTagsVisible)
+            visibility = View.GONE;
+        mViewHolder.tags.setVisibility(visibility);
     }
 
     protected void toggleDescription() {
@@ -271,6 +318,7 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
         mViewHolder.moreInfo = ((ImageButton)mInfoView.findViewById(R.id.moreImageButton));
         mViewHolder.commentLine = mInfoView.findViewById(R.id.commentLine);
         mViewHolder.videoInfoContainer = (ViewGroup)mInfoView.findViewById(R.id.baseInfoContainer);
+        mViewHolder.tags = (LinkTextView) mInfoView.findViewById(R.id.tags_list);
 
         toggleVideoInfoLoader(true);
 
@@ -281,6 +329,9 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
         mViewHolder.created.setTypeface(lightFont);
         mViewHolder.hits.setTypeface(lightFont);
         mViewHolder.description.setTypeface(lightFont);
+        mViewHolder.tags.setTypeface(normalFont);
+        mViewHolder.tags.setMovementMethod(LinkMovementMethod.getInstance());
+        mViewHolder.tags.setOnLinkClickListener(mOnTagLinkClickListener);
 
         mViewHolder.moreInfo.setOnClickListener(mOnMoreClickListener);
         mViewHolder.author.setOnClickListener(mOnVideoElementClickListener);

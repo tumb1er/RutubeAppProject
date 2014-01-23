@@ -25,10 +25,13 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import java.util.List;
+
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.models.Author;
 import ru.rutube.RutubeAPI.models.TrackInfo;
 import ru.rutube.RutubeAPI.models.Video;
+import ru.rutube.RutubeAPI.models.VideoTag;
 import ru.rutube.RutubePlayer.R;
 import ru.rutube.RutubePlayer.ctrl.VideoPageController;
 
@@ -184,7 +187,7 @@ public class VideoPageActivity extends ActionBarActivity
     }
 
     protected void bindTags(TrackInfo trackInfo) {
-        
+        // нет такой функциональности
     }
 
     @Override
