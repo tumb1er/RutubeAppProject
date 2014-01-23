@@ -124,6 +124,7 @@ public class VideoPageActivity extends ActionBarActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         try {
+            // Samsung Galaxy Note, Galaxy S3 - NPE где-то в недрах андроида.
             MenuInflater menuInflater = getMenuInflater();
             menuInflater.inflate(R.menu.player_menu, menu);
         } catch (NullPointerException ignored) {
@@ -135,6 +136,7 @@ public class VideoPageActivity extends ActionBarActivity
     @Override
     public boolean onCreatePanelMenu(int featureId, Menu menu) {
         try {
+            // Samsung Galaxy Note, Galaxy S3 - NPE где-то в недрах андроида.
             return super.onCreatePanelMenu(featureId, menu);
         } catch(NullPointerException ignored) {
             return false;
