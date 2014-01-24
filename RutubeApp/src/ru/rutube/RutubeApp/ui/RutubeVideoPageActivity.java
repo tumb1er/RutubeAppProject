@@ -99,8 +99,11 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         getIntent().putExtra(RutubeRelatedFeedFragment.INIT_HEADER, true);
         super.onCreate(savedInstanceState);
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null)
+        try {
+            // ActionBar может вообще отсутствовать, а может существовать, однако при попытке
+            // скрыть его - вызывать NPE (HTC One).
             actionBar.hide();
+        } catch (NullPointerException ignored) {}
     }
 
     @Override
