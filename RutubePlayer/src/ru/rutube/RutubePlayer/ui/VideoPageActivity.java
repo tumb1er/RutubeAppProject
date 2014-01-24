@@ -3,6 +3,8 @@ package ru.rutube.RutubePlayer.ui;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.database.ContentObserver;
 import android.hardware.SensorManager;
@@ -10,6 +12,7 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -28,6 +31,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ru.rutube.RutubeAPI.BuildConfig;
@@ -51,6 +55,7 @@ public class VideoPageActivity extends ActionBarActivity
     protected static final boolean D = BuildConfig.DEBUG;
     protected static int mLayoutResId = R.layout.player_activity;
     private boolean mIsAutorotateEnabled;
+    private Video mVideo;
 
     protected static class ViewHolder {
         public PlayerFragment playerFragment;
@@ -92,14 +97,58 @@ public class VideoPageActivity extends ActionBarActivity
     };
 
     protected void doShare() {
-        Uri videoUri = getIntent().getData();
-        assert videoUri != null;
-        if (D) Log.d(LOG_TAG, "Sharing: " + String.valueOf(videoUri));
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("text/plain");
-        intent.putExtra(Intent.EXTRA_TEXT, videoUri.toString());
-        intent.putExtra(android.content.Intent.EXTRA_SUBJECT, getString(R.string.share_text));
-        startActivity(Intent.createChooser(intent, getString(R.string.share)));
+        Uri uri = getIntent().getData();
+        if (uri == null)
+            return;
+        String videoUri = uri.toString();
+        String subject;
+        String default_text;
+        if (mVideo == null) {
+            subject = getString(R.string.share_text);
+            default_text = videoUri;
+        } else {
+            subject = mVideo.getTitle();
+            default_text = mVideo.getTitle() + " " + videoUri;
+        }
+        String text;
+
+        // http://stackoverflow.com/questions/5734678/
+        List<Intent> targetedShareIntents = new ArrayList<Intent>();
+        Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        PackageManager packageManager = getPackageManager();
+        if (packageManager == null) return;
+        List<ResolveInfo> resInfo = packageManager.queryIntentActivities(shareIntent, 0);
+        if (!resInfo.isEmpty()){
+            for (ResolveInfo resolveInfo : resInfo) {
+                ActivityInfo activityInfo = resolveInfo.activityInfo;
+                if (activityInfo == null)
+                    continue;
+                String packageName = activityInfo.packageName;
+                Intent targetedShareIntent = new Intent(android.content.Intent.ACTION_SEND);
+                targetedShareIntent.setType("text/plain");
+                targetedShareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
+
+                if (packageName.startsWith("com.facebook")){
+                    text = videoUri;
+                } else if (packageName.equals("com.twitter.android")) {
+                    text = default_text + getString(R.string.share_twitter);
+                } else {
+                    text = default_text;
+                }
+                targetedShareIntent.putExtra(android.content.Intent.EXTRA_TEXT, text);
+
+                targetedShareIntent.setPackage(packageName);
+                targetedShareIntents.add(targetedShareIntent);
+
+
+            }
+            Intent chooserIntent = Intent.createChooser(targetedShareIntents.remove(0), "Select app to share");
+
+            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toArray(new Parcelable[]{}));
+
+            startActivity(chooserIntent);
+        }
     }
 
     /**
@@ -214,6 +263,7 @@ public class VideoPageActivity extends ActionBarActivity
 
     @Override
     public void setVideoInfo(TrackInfo trackInfo, Video video) {
+        mVideo = video;
         bindTitle(video);
         bindAuthor(video);
         bindDuration(video);

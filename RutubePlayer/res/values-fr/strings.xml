@@ -3,6 +3,7 @@
     <string name="replay">Revoir</string>
     <string name="share">Partager</string>
     <string name="share_text">Voir Rutube</string>
+    <string name="share_twitter">via @rutube_ru</string>
     <string name="region_not_allowed">Vidéo n\'est pas accessible pour ce pays</string>
     <string name="mobile_not_allowed">Vidéo n\'est pas accesible sur les appareils mobiles</string>
     <string name="anonymous_not_allowed">Vidéo n\'est pas accesible pour les utilisateurs non autorisés</string>
