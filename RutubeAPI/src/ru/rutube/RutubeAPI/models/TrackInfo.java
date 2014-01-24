@@ -16,11 +16,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.R;
-import ru.rutube.RutubeAPI.requests.AuthJsonObjectRequest;
 import ru.rutube.RutubeAPI.requests.RequestListener;
 import ru.rutube.RutubeAPI.requests.Requests;
 
@@ -36,32 +36,71 @@ public class TrackInfo implements Parcelable {
     public static final String STREAM_TYPE_M3U8 = "m3u8";
     public static final String STREAM_TYPE_JSON = "json";
     public static final String JSON_TRACK_ID = "track_id";
-    private static final String JSON_RESULTS = "results";
+    public static final String JSON_RESULTS = "results";
+    public static final String JSON_AUTHOR_ID = "id";
+    public static final String JSON_TAGS = "tags";
+    public static final String JSON_AUTHOR_NAME = "name";
+    public static final String JSON_AUTHOR = "author";
+    public static final String JSON_DURATION = "duration";
     private static final String LOG_TAG = TrackInfo.class.getName();
     private static final boolean D = BuildConfig.DEBUG;
+    private List<VideoTag> mTags;
+    private Author mAuthor;
 
     private Uri mBalancerUrl;
     private int mTrackId;
     private String mTitle;
+    private int mDuration;
 
-    public TrackInfo(Uri balancerUrl, int trackId, String title) {
-        this.mBalancerUrl = balancerUrl;
-        this.mTrackId = trackId;
+    public TrackInfo(Uri balancerUrl, int trackId, String title, List<VideoTag> tags, Author author,
+                     int duration) {
+        mBalancerUrl = balancerUrl;
+        mTrackId = trackId;
+        mTags = tags;
         mTitle = title;
+        mAuthor = author;
+        mDuration = duration;
     }
 
     public static TrackInfo fromParcel(Parcel parcel) {
         Uri balancerUrl = parcel.readParcelable(Uri.class.getClassLoader());
         int trackId = parcel.readInt();
         String title = parcel.readString();
-        return new TrackInfo(balancerUrl, trackId, title);
+        ArrayList tags_list = parcel.readArrayList(VideoTag.class.getClassLoader());
+        List<VideoTag> tags = (ArrayList<VideoTag>) tags_list;
+        Author author = parcel.readParcelable(Author.class.getClassLoader());
+        int duration = parcel.readInt();
+        return new TrackInfo(balancerUrl, trackId, title, tags, author, duration);
     }
 
     public static TrackInfo fromJSON(JSONObject data) throws JSONException {
         JSONObject balancer = data.getJSONObject(VIDEO_BALANCER);
         int trackId = data.getInt(JSON_TRACK_ID);
         String title = data.getString("title");
-        return new TrackInfo(Uri.parse(balancer.getString(STREAM_TYPE_M3U8)), trackId, title);
+        List<VideoTag> tags = parseTags(data);
+        Author author = parseAuthor(data);
+        Uri streamUri = Uri.parse(balancer.getString(STREAM_TYPE_M3U8));
+        int duration = data.getInt(JSON_DURATION);
+        return new TrackInfo(streamUri, trackId, title, tags, author, duration);
+    }
+
+    protected static Author parseAuthor(JSONObject data) throws JSONException {
+        data = data.optJSONObject(JSON_AUTHOR);
+        if( data == null)
+            return null;
+        int id = data.getInt(JSON_AUTHOR_ID);
+        String name = data.getString(JSON_AUTHOR_NAME);
+        return new Author(null, id, name);
+    }
+
+    protected static List<VideoTag> parseTags(JSONObject data) throws JSONException {
+        JSONArray tags_json = data.getJSONArray(JSON_TAGS);
+        ArrayList<VideoTag> result = new ArrayList<VideoTag>(tags_json.length());
+        for (int i=0; i<tags_json.length(); i++) {
+            JSONObject item = tags_json.getJSONObject(i);
+            result.add(i, VideoTag.fromJSON(item));
+        }
+        return result;
     }
 
     // Parcelable implementation
@@ -83,9 +122,11 @@ public class TrackInfo implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeParcelable(mBalancerUrl, i);
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeParcelable(mBalancerUrl, flags);
         parcel.writeInt(mTrackId);
+        parcel.writeArray(mTags.toArray());
+        parcel.writeParcelable(mAuthor, flags);
     }
 
     public String getTitle() {
@@ -99,6 +140,8 @@ public class TrackInfo implements Parcelable {
     public int getTrackId(){
         return mTrackId;
     }
+
+    public Author getAuthor() { return mAuthor; }
 
     public JsonObjectRequest getMP4UrlRequest(Context context, RequestListener listener) {
         String balancerUrl = mBalancerUrl.toString().replace(STREAM_TYPE_M3U8, STREAM_TYPE_JSON);
@@ -149,5 +192,13 @@ public class TrackInfo implements Parcelable {
                 requestListener.onResult(tag, bundle);
             }
         };
+    }
+
+    public int getDuration() {
+        return mDuration;
+    }
+
+    public List<VideoTag> getTags() {
+        return mTags;
     }
 }

@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="NewApi">
 
-    <style name="Rutube.ActionBarStyle" parent="Widget.Sherlock.Light.ActionBar.Solid">
+    <style name="Rutube.ActionBarStyle" parent="Widget.AppCompat.Light.ActionBar.Solid">
         <!-- Фон ActionBar -->
         <item name="background">@color/action_bar_background</item>
         <item name="android:background">@color/action_bar_background</item>

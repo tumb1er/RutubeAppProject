@@ -18,6 +18,7 @@
 package ru.rutube.RutubePlayer.ui;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -28,6 +29,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.MediaController;
@@ -87,6 +89,7 @@ public class RutubeMediaController extends FrameLayout {
     private boolean             mUseFastForward;
     private boolean             mFromXml;
     private boolean             mListenersSet;
+    private boolean             mMenuVisible;
     private View.OnClickListener mNextListener, mPrevListener;
     StringBuilder               mFormatBuilder;
     Formatter                   mFormatter;
@@ -100,13 +103,93 @@ public class RutubeMediaController extends FrameLayout {
     private Handler             mHandler = new MessageHandler(this);
     private View.OnTouchListener mOnTouchListener;
     private ToggleFullscreenListener mToggleFullscreenListener;
+    private ImageButton         mMenuButton;
+    private View                mMenuContainer;
+    private Button mQualityLQButton;
+    private Button mQualityMQButton;
+    private Button mQualityHQButton;
+    private Button mQualityHDButton;
+    private QualitySelectListener mQualitySelectListener;
+    private OnClickListener mOnQualityClickListener = new OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            int id = view.getId();
+            int quality = 0;
+            if (id == R.id.quality_mid) {
+                quality = 1;
+            }
+            if (id == R.id.quality_high) {
+                quality = 2;
+            }
+            if (id == R.id.quality_hd) {
+                quality = 3;
+            }
+            if (mQualitySelectListener != null) {
+                mQualitySelectListener.onQualitySelected(quality);
+            }
+            hide();
+        }
 
-    public void setToggleFullscreenListener(ToggleFullscreenListener toggleFullscreenListener) {
-        this.mToggleFullscreenListener = toggleFullscreenListener;
+    };
+
+    public void setToggleFullscreenListener(ToggleFullscreenListener listener) {
+        mToggleFullscreenListener = listener;
     }
 
     public static interface ToggleFullscreenListener {
         public void toggleFullscreen();
+    }
+
+    public static interface QualitySelectListener {
+        public void onQualitySelected(int quality);
+    }
+
+    public void setQualitySelectListener(QualitySelectListener listener) {
+        mQualitySelectListener = listener;
+    }
+
+    public void selectQuality(int quality) {
+        Resources resources = getResources();
+        if (resources == null) return;
+        int selected_color = resources.getColor(R.color.quality_selected);
+        int unselected_color = resources.getColor(R.color.quality_unselected);
+
+        mQualityLQButton.setTextColor(unselected_color);
+        mQualityMQButton.setTextColor(unselected_color);
+        mQualityHQButton.setTextColor(unselected_color);
+        mQualityHDButton.setTextColor(unselected_color);
+
+        switch (quality) {
+            default:
+                mQualityLQButton.setTextColor(selected_color);
+                break;
+            case 1:
+                mQualityMQButton.setTextColor(selected_color);
+                break;
+            case 2:
+                mQualityHQButton.setTextColor(selected_color);
+                break;
+            case 3:
+                mQualityHDButton.setTextColor(selected_color);
+                break;
+        }
+    }
+
+    public void limitQuality(int quality) {
+        mQualityLQButton.setVisibility(VISIBLE);
+        mQualityHQButton.setVisibility(VISIBLE);
+        mQualityHDButton.setVisibility(VISIBLE);
+        switch(quality) {
+            case 0:
+                mQualityMQButton.setVisibility(GONE);
+            case 1:
+                mQualityHQButton.setVisibility(GONE);
+            case 2:
+                mQualityHDButton.setVisibility(GONE);
+                break;
+            default:
+                break;
+        }
     }
 
     public RutubeMediaController(Context context, AttributeSet attrs) {
@@ -115,7 +198,7 @@ public class RutubeMediaController extends FrameLayout {
         mContext = context;
         mUseFastForward = true;
         mFromXml = true;
-
+        mMenuVisible = false;
         Log.i(TAG, TAG);
     }
 
@@ -208,6 +291,22 @@ public class RutubeMediaController extends FrameLayout {
         mVideoTitle = (TextView) v.findViewById(R.id.mediacontroller_file_name);
         mFormatBuilder = new StringBuilder();
         mFormatter = new Formatter(mFormatBuilder, Locale.getDefault());
+
+        mMenuButton = (ImageButton) v.findViewById(R.id.menu_btn);
+        mMenuContainer = v.findViewById(R.id.menu_container);
+        if (mMenuButton != null && mMenuContainer != null){
+            mMenuButton.setOnClickListener(mMenuListener);
+        }
+
+        mQualityLQButton = (Button) v.findViewById(R.id.quality_low);
+        mQualityMQButton = (Button) v.findViewById(R.id.quality_mid);
+        mQualityHQButton = (Button) v.findViewById(R.id.quality_high);
+        mQualityHDButton = (Button) v.findViewById(R.id.quality_hd);
+
+        mQualityLQButton.setOnClickListener(mOnQualityClickListener);
+        mQualityMQButton.setOnClickListener(mOnQualityClickListener);
+        mQualityHQButton.setOnClickListener(mOnQualityClickListener);
+        mQualityHDButton.setOnClickListener(mOnQualityClickListener);
 
         installPrevNextListeners();
     }
@@ -317,6 +416,8 @@ public class RutubeMediaController extends FrameLayout {
 
         try {
             mAnchor.removeView(this);
+            mMenuVisible = false;
+            mMenuContainer.setVisibility(GONE);
             mHandler.removeMessages(SHOW_PROGRESS);
         } catch (IllegalArgumentException ex) {
             Log.w("MediaController", "already removed");
@@ -535,6 +636,14 @@ public class RutubeMediaController extends FrameLayout {
             // the call to show() does not guarantee this because it is a
             // no-op if we are already showing.
             mHandler.sendEmptyMessage(SHOW_PROGRESS);
+        }
+    };
+
+    private OnClickListener mMenuListener = new OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            mMenuVisible = !mMenuVisible;
+            mMenuContainer.setVisibility(mMenuVisible?View.VISIBLE:View.GONE);
         }
     };
 

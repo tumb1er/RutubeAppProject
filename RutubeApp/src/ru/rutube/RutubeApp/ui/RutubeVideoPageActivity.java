@@ -10,6 +10,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -18,12 +21,17 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.List;
+
 import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.models.Author;
+import ru.rutube.RutubeAPI.models.TrackInfo;
 import ru.rutube.RutubeAPI.models.Video;
+import ru.rutube.RutubeAPI.models.VideoTag;
 import ru.rutube.RutubeApp.MainApplication;
 import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubeApp.ui.feed.RutubeRelatedFeedFragment;
+import ru.rutube.RutubeApp.views.LinkTextView;
 import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
 import ru.rutube.RutubeFeed.helpers.Typefaces;
 import ru.rutube.RutubePlayer.ui.VideoPageActivity;
@@ -42,6 +50,9 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         public TextView from;
         public TextView created;
         public ViewGroup baseInfoContainer;
+        public LinearLayout videoContainer;
+        public LinkTextView tags;
+
     }
 
     private static final String LOG_TAG = RutubeVideoPageActivity.class.getName();
@@ -70,6 +81,15 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         }
     };
 
+    protected LinkTextView.OnLinkClickListener mOnTagLinkClickListener  = new LinkTextView.OnLinkClickListener() {
+        @Override
+        public void onLinkClick(String url, String title) {
+            Uri feedUri = Uri.parse(url);
+            MainApplication.getInstance().openFeed(feedUri, RutubeVideoPageActivity.this, title);
+        }
+    };
+
+
     /**
      * Переопределение методов Activity
      */
@@ -78,6 +98,9 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
     public void onCreate(Bundle savedInstanceState) {
         getIntent().putExtra(RutubeRelatedFeedFragment.INIT_HEADER, true);
         super.onCreate(savedInstanceState);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null)
+            actionBar.hide();
     }
 
     @Override
@@ -125,20 +148,50 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         toggleFullscreen(mIsLandscape, false);
     }
 
+
+
     /**
      * Переопределение методов VideoPageActivity
      */
 
     @Override
-    public void setVideoInfo(Video video) {
-        mRelatedFragment.setVideoInfo(video);
-        if (video == null){
+    public void setVideoInfo(TrackInfo trackInfo, Video video) {
+        mRelatedFragment.setVideoInfo(video, trackInfo);
+        if (trackInfo == null){
             toggleNoVideoInfo();
             return;
         }
         toggleVideoInfoLoader(false);
-        super.setVideoInfo(video);
+        super.setVideoInfo(trackInfo, video);
         bindCreated(video);
+    }
+
+    @Override
+    protected void bindTags(TrackInfo trackInfo) {
+        List<VideoTag> tags = trackInfo.getTags();
+        if (tags == null)
+            return;
+        String text = "";
+        for (VideoTag tag: tags) {
+            text += tag.getHtml(this) + " ";
+        }
+        boolean tags_visible = !tags.isEmpty();
+        LinkTextView tv = ((ViewHolder)mViewHolder).tags;
+        View v = mViewHolder.description;
+        int pl = v.getPaddingLeft();
+        int pt = v.getPaddingTop();
+        int pr = v.getPaddingRight();
+        int pb = v.getPaddingBottom();
+        if (tags_visible) {
+            tv.setVisibility(View.VISIBLE);
+            v.setBackgroundResource(R.drawable.video_info_bg);
+        } else {
+            tv.setVisibility(View.GONE);
+            v.setBackgroundResource(R.drawable.last_related_bg);
+        }
+        v.setPadding(pl, pt, pr, pb);
+        tv.setText(Html.fromHtml(text));
+
     }
 
     /**
@@ -161,6 +214,8 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         // при переходе в режим страницы видео похожие добавляются после изменения ориентации.
         if (!isFullscreen)
             toggleRelatedFragment(true);
+        // меняем веса в соответствии с видимостью заголовка
+        setVideoContainerWeight();
     }
 
     /**
@@ -207,6 +262,8 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         h.from = (TextView)findViewById(R.id.from);
         h.created = (TextView)findViewById(R.id.created);
         h.baseInfoContainer = (ViewGroup)findViewById(R.id.baseInfoContainer);
+        h.videoContainer = (LinearLayout)findViewById(R.id.video_container);
+        h.tags = (LinkTextView) findViewById(R.id.tags_list);
         mViewHolder = h;
     }
 
@@ -230,6 +287,9 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         holder.created.setTypeface(lightFont);
         holder.hits.setTypeface(lightFont);
         holder.description.setTypeface(lightFont);
+        holder.tags.setTypeface(normalFont);
+        holder.tags.setMovementMethod(LinkMovementMethod.getInstance());
+        holder.tags.setOnLinkClickListener(mOnTagLinkClickListener);
 
         toggleVideoInfoLoader(false);
 
@@ -259,35 +319,39 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
         // список похожих справа или снизу
         LinearLayout ll = (LinearLayout)findViewById(R.id.page);
         ll.setOrientation(isLandscape? LinearLayout.HORIZONTAL: LinearLayout.VERTICAL);
-
+        ViewHolder holder = (ViewHolder)mViewHolder;
         // основная карточка видео видна только в пейзажной ориентации и только не в фуллскрине
-        mViewHolder.videoInfoContainer.setVisibility(
+        holder.videoInfoContainer.setVisibility(
                 (isLandscape && !mIsFullscreen) ? View.VISIBLE : View.GONE);
 
-        // layout_weight для плеера + карточки видео в зависимости от ориентации
-        LinearLayout vc = (LinearLayout)findViewById(R.id.video_container);
-        LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams)vc.getLayoutParams();
-        assert lp != null;
-        Resources resources = getResources();
-        lp.weight = resources.getInteger(R.integer.video_container_weight);
-        // weightSum для плеера + карточки видео зависит от того, видна ли карточка
-        int sum_weight = resources.getInteger(R.integer.video_info_player_weight_sum);
-        int player_weight = resources.getInteger(R.integer.video_player_weight);
-        vc.setWeightSum(isLandscape && !mIsFullscreen ? sum_weight : player_weight);
-        if(D) Log.d(LOG_TAG, "VC weight: " + String.valueOf(lp.weight));
-        vc.setLayoutParams(lp);
-
+        setVideoContainerWeight();
 
         // карточка видео в похожих видна только в портретной ориентации
         mRelatedFragment.toggleHeader(!isLandscape);
 
+        setRelatedFragmentWeight();
+    }
+
+    private void setRelatedFragmentWeight() {
         // layout_weight для похожих в зависимости от ориентации
         View v = mRelatedFragment.getView();
+        Resources resources = getResources();
+        LinearLayout.LayoutParams lp;
         lp =(LinearLayout.LayoutParams)v.getLayoutParams();
         assert lp != null;
         lp.weight = resources.getInteger(R.integer.related_video_container_weight);
         if(D) Log.d(LOG_TAG, "RC weight: " + String.valueOf(lp.weight));
         v.setLayoutParams(lp);
+    }
+
+    private void setVideoContainerWeight() {
+        ViewHolder holder = (ViewHolder)mViewHolder;
+        // layout_weight для плеера + карточки видео в зависимости от ориентации
+        LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams)holder.videoContainer.getLayoutParams();
+        assert lp != null;
+        Resources resources = getResources();
+        lp.weight = resources.getInteger(R.integer.video_container_weight);
+        holder.videoContainer.setLayoutParams(lp);
     }
 
     /**

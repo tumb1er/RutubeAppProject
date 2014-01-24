@@ -4,14 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/page"
-    android:orientation="horizontal"
-    android:weightSum="@integer/video_container_related_weight_sum">
+    android:orientation="horizontal">
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="@integer/video_container_weight"
         android:orientation="vertical"
-        android:weightSum="@integer/video_info_player_weight_sum"
         android:id="@+id/video_container"
         >
 
@@ -53,7 +51,7 @@
     </LinearLayout>
     <fragment
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:id="@+id/related_video_container"
         class="ru.rutube.RutubeApp.ui.feed.RutubeRelatedFeedFragment"
         android:name="ru.rutube.RutubeApp.ui.feed.RutubeRelatedFeedFragment"

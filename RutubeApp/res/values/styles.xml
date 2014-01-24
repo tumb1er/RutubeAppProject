@@ -10,7 +10,7 @@
         <item name="actionBarTabBarStyle">@style/Rutube.TabBar</item>
         <item name="android:actionBarTabBarStyle">@style/Rutube.TabBar</item>
         <item name="actionBarTabStyle">@style/Rutube.TabView</item>
-        <item name="android:actionBarTabStyle">@style/Widget.Sherlock.ActionBar.TabView</item>
+        <item name="android:actionBarTabStyle">@style/Rutube.TabView</item>
         <item name="actionBarTabTextStyle">@style/Rutube.TabText</item>
         <item name="android:actionBarTabTextStyle">@style/Rutube.TabText</item>
 
@@ -34,7 +34,7 @@
 
     </style>
 
-    <style name="Theme.Rutube.Base" parent="Theme.Sherlock.Light">
+    <style name="Theme.Rutube.Base" parent="Theme.AppCompat.Light">
         <!-- иконка поиска в элементе поиска -->
         <item name="searchViewSearchIcon">@drawable/ic_action_search</item>
         <!-- иконка приложения (не лого) -->
@@ -44,10 +44,12 @@
         <!-- иконка HomeAsUp при активном поле поиска-->
         <item name="icon">?attr/rutubeAppIcon</item>
         <item name="android:icon">?attr/rutubeAppIcon</item>
+        <item name="logo">@drawable/logo</item>
+        <item name="android:logo">@drawable/logo</item>
 
     </style>
 
-    <style name="Rutube.ActionBarStyle" parent="Widget.Sherlock.Light.ActionBar.Solid">
+    <style name="Rutube.ActionBarStyle" parent="Widget.AppCompat.Light.ActionBar.Solid">
         <!-- Фон ActionBar -->
         <item name="background">@color/action_bar_background</item>
         <item name="android:background">@color/action_bar_background</item>
@@ -56,23 +58,21 @@
         <item name="android:displayOptions">useLogo|showHome</item>
     </style>
 
-    <style name="Rutube.TabBar" parent="Widget.Sherlock.ActionBar.TabBar">
-        <!-- Фон заголовков вкладок -->
+    <style name="Rutube.TabBar" parent="Widget.AppCompat.Light.ActionBar.TabBar">
+        <!-- Фон блока заголовков вкладок -->
         <item name="background">@drawable/tab_bar_background</item>
         <item name="android:background">@drawable/tab_bar_background</item>
-        <!--<item name="background">@color/tab_bar_background</item>-->
-        <!--<item name="android:background">@color/tab_bar_background</item>-->
         <!-- разделитель табов -->
         <item name="divider">@color/action_bar_divider</item>
         <item name="android:divider">@color/action_bar_divider</item>
-        <!--<item name="actionBarDivider">@color/action_bar_divider</item>-->
-        <!--<item name="android:actionBarDivider">@color/action_bar_divider</item>-->
     </style>
 
-    <style name="Rutube.TabView" parent="Widget.Sherlock.ActionBar.TabView">
+    <style name="Rutube.TabView" parent="Widget.AppCompat.Light.ActionBar.TabView">
+        <item name="background">@drawable/tab_bar_background</item>
+        <item name="android:background">@drawable/tab_bar_background</item>
     </style>
 
-    <style name="Rutube.TabText" parent="Widget.Sherlock.ActionBar.TabText">
+    <style name="Rutube.TabText" parent="Widget.AppCompat.Light.ActionBar.TabText">
         <item name="android:textColor">@color/tab_text</item>
         <item name="android:textSize">14dp</item>
     </style>

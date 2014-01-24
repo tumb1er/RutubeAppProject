@@ -5,11 +5,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListAdapter;
-import android.widget.ProgressBar;
 
-import com.huewu.pla.lib.MultiColumnListView;
-import com.huewu.pla.lib.internal.PLA_AdapterView;
+import com.etsy.android.grid.StaggeredGridView;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeApp.MainApplication;
@@ -22,17 +21,24 @@ import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
 public class PlaFeedFragment extends ru.rutube.RutubeFeed.ui.FeedFragment {
     private static final String LOG_TAG = PlaFeedFragment.class.getName();
     private static final boolean D = BuildConfig.DEBUG;
-    private MultiColumnListView sgView;
     private View mLoader;
     private View mEmptyList;
+    private StaggeredGridView sgView;
 
-    private PLA_AdapterView.OnItemClickListener onItemClickListener = new PLA_AdapterView.OnItemClickListener() {
+    private AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
-        public void onItemClick(PLA_AdapterView<?> parent, View view, int position, long id) {
+        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
             MainApplication.cardClick(getActivity());
             mController.onListItemClick(position);
         }
     };
+
+    public PlaFeedFragment(FeedImpl feedImpl) {
+        super(feedImpl);
+    }
+
+    public PlaFeedFragment() {
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -40,7 +46,7 @@ public class PlaFeedFragment extends ru.rutube.RutubeFeed.ui.FeedFragment {
         if (D) Log.d(LOG_TAG, "onCreateView");
         View result = inflater.inflate(R.layout.pla_feed_fragment, container, false);
         assert result != null;
-        sgView = (MultiColumnListView)result.findViewById(R.id.feed_item_list);
+        sgView = (StaggeredGridView)result.findViewById(R.id.feed_item_list);
         assert sgView != null;
         sgView.setOnItemClickListener(onItemClickListener);
         mLoader = result.findViewById(R.id.loader);
@@ -76,5 +82,32 @@ public class PlaFeedFragment extends ru.rutube.RutubeFeed.ui.FeedFragment {
         super.doneRefreshing();
         mLoader.setVisibility(View.GONE);
         mEmptyList.setVisibility(View.VISIBLE);
+    }
+
+
+    @Override
+    public void setSelectedItem(final int position) {
+        try {
+            sgView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    sgView.setSelection(position);
+                    View v = sgView.getChildAt(position);
+                    if (v != null)
+                        v.requestFocus();
+                }
+            }, 1);
+
+
+        } catch (NullPointerException ignored) {}
+    }
+
+    @Override
+    public int getCurrentPosition() {
+        try{
+            return sgView.getFirstVisiblePosition();
+        } catch (NullPointerException ignored) {
+            return 0;
+        }
     }
 }

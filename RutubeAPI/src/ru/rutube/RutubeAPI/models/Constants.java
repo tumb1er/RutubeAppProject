@@ -22,6 +22,7 @@ public final class Constants {
         public static final String BALANCER_ERROR = "ru.rutube.bl.error";
         public static final String MP4_URL = "ru.rutube.bl.mp4_url";
         public static final String VIDEO = "ru.rutube.api.video";
+        public static final String PLAY_OPTIONS = "ru.rutube.api.play.options";
     }
 
     public final class Params {

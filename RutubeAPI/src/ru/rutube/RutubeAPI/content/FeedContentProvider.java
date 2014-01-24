@@ -378,9 +378,47 @@ public class FeedContentProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(Uri uri, String s, String[] strings) {
+    public int delete(Uri uri, String where, String[] whereArgs) {
         Context context = getContext();
         assert context != null;
+        String table;
+        int uriType = sUriMatcher.match(uri);
+        if (D) Log.d(LOG_TAG, "Delete: " + String.valueOf(uri));
+        switch (uriType) {
+            case EDITORS:
+                table = FeedContract.Editors.CONTENT_PATH;
+                break;
+            case MY_VIDEO:
+                table = FeedContract.MyVideo.CONTENT_PATH;
+                break;
+            case SUBSCRIPTION:
+                table = FeedContract.Subscriptions.CONTENT_PATH;
+                break;
+            case SEARCH_RESULTS:
+                table = FeedContract.SearchResults.CONTENT_PATH;
+                break;
+            case SEARCH_QUERY:
+                table = FeedContract.SearchQuery.CONTENT_PATH;
+                break;
+            case RELATED_VIDEO:
+                table = FeedContract.RelatedVideo.CONTENT_PATH;
+                break;
+            case AUTHOR_VIDEO:
+                table = FeedContract.AuthorVideo.CONTENT_PATH;
+                break;
+            case TAGS_VIDEO:
+                table = FeedContract.TagsVideo.CONTENT_PATH;
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI: " + uri);
+        }
+        SQLiteDatabase sqlDB = dbHelper.getWritableDatabase();
+        assert sqlDB != null;
+        sqlDB.delete(table, where, whereArgs);
+        Cursor c = sqlDB.rawQuery("SELECT COUNT(*) as cnt FROM " + table, null);
+        c.moveToFirst();
+        int count = c.getInt(c.getColumnIndex("cnt"));
+        if (D) Log.d(LOG_TAG, "After delete: " + String.valueOf(count));
         context.getContentResolver().notifyChange(uri, null);
         return 0;
     }

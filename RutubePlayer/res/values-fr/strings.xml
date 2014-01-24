@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="replay">Revoir</string>
+    <string name="share">Partager</string>
+    <string name="share_text">Voir Rutube</string>
+    <string name="region_not_allowed">Vidéo n\'est pas accessible pour ce pays</string>
+    <string name="mobile_not_allowed">Vidéo n\'est pas accesible sur les appareils mobiles</string>
+    <string name="anonymous_not_allowed">Vidéo n\'est pas accesible pour les utilisateurs non autorisés</string>
+    <string name="video_not_allowed">Vidéo est bloqué</string>
+    <string name="video_deleted_by_user">Vidéo supprimée par l\'auteur</string>
+    <string name="video_deleted_by_admin">Vidéo supprimée en raison de violations du site d\'administration</string>
+    <string name="video_deleted_inappropriate">Vidéo supprimée car contient les contenus illicites</string>
+    <string name="video_deleted_by_rightholder">Vidéo supprimée titulaire</string>
+    <string name="video_deleted">Vidéo supprimée</string>
+    <string name="video_doesnt_exist">Vidéo n\'existe pas</string>
+    <string name="video_is_hidden">Dissimulé par cette vidéo</string>
+    <string name="video_playback_error">Erreur de lecture de la vidéo</string>
+    <string name="from">de:</string>
+</resources>

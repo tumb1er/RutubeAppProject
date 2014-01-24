@@ -41,6 +41,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     protected static final SimpleDateFormat sqlDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static final boolean D = BuildConfig.DEBUG;
     public static final String PARAM_SIZE = "size";
+    public static final String AVATAR_STUB = "http://pic.rutube.ru/";
     public String THUMBNAIL_SIZE = "m";
     protected Typeface mNormalFont;
     protected Typeface mLightFont;
@@ -238,7 +239,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
         holder.avatar.setVisibility(visibility);
         holder.footer.setVisibility(visibility);
         holder.avatar.setDefaultImageRes(authorId);
-        if (avatarUri != null)
+        if (avatarUri != null && !avatarUri.equals(AVATAR_STUB))
             holder.avatar.setImageUrl(avatarUri, imageLoader);
         else
             holder.avatar.resetImageResource(authorId);

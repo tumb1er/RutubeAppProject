@@ -1,6 +1,7 @@
 package ru.rutube.RutubeApp.ctrl;
 
 import android.content.Context;
+import android.content.pm.ProviderInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -19,7 +20,9 @@ import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.HttpTransport;
 import ru.rutube.RutubeAPI.R;
 import ru.rutube.RutubeAPI.RutubeApp;
+import ru.rutube.RutubeAPI.content.FeedContentProvider;
 import ru.rutube.RutubeAPI.models.Constants;
+import ru.rutube.RutubeAPI.models.Feed;
 import ru.rutube.RutubeAPI.models.User;
 import ru.rutube.RutubeAPI.requests.RequestListener;
 import ru.rutube.RutubeAPI.requests.Requests;
@@ -77,8 +80,15 @@ public class MainPageController implements Parcelable, RequestListener {
 
     public void logout() {
         mUser.deleteToken(mContext);
+        Uri contentUri = new Feed(feedUriMap.get(TAB_MY_VIDEO), mContext).getContentUri();
+        mContext.getContentResolver().delete(contentUri, null, null);
+        contentUri = new Feed(feedUriMap.get(TAB_SUBSCRIPTIONS), mContext).getContentUri();
+        mContext.getContentResolver().delete(contentUri, null, null);
+        if (D) Log.d(LOG_TAG, "cache flushed");
+        mView.onLogout();
         mSelectedTab = TAB_EDITORS;
         mView.selectTab(mSelectedTab);
+
     }
 
     public interface MainPageView {
@@ -94,6 +104,8 @@ public class MainPageController implements Parcelable, RequestListener {
         void onLoginCanceled();
 
         void onLoginSuccess();
+
+        void onLogout();
     }
 
     private Context mContext = null;
@@ -119,6 +131,7 @@ public class MainPageController implements Parcelable, RequestListener {
     }
 
     public void loginSuccessful() {
+        if (D) Log.d(LOG_TAG, "Login successful");
         mUser = User.load(mContext);
         Uri feedUri = feedUriMap.get(mAfterLoginTab);
         mSelectedTab = mAfterLoginTab;

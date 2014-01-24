@@ -12,6 +12,8 @@ import android.os.Bundle;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -29,7 +31,7 @@ public class RutubeApp extends Application {
     private static RutubeApp instance;
 
     private RequestQueue requestQueue;
-    private volatile boolean mLoadingFeed;
+    private volatile static boolean mLoadingFeed;
 
     public RutubeApp() {
         instance = this;
@@ -145,15 +147,16 @@ public class RutubeApp extends Application {
         return resultUri.toString();
     }
 
-    public static boolean isLoadingFeed() {
-        return instance.mLoadingFeed;
+
+    public static synchronized boolean isLoadingFeed() {
+        return mLoadingFeed;
     }
 
     public static void startLoading() {
-        instance.mLoadingFeed = true;
+        mLoadingFeed = true;
     }
     public static void stopLoading() {
-        instance.mLoadingFeed = false;
+        mLoadingFeed = false;
     }
 
 
@@ -178,4 +181,29 @@ public class RutubeApp extends Application {
             return String.format(getResources().getString(R.string.weeks_ago, seconds / (7 * 24 * 3600)));
         return reprDateFormat.format(created);
     }
+
+    public static String md5(final String s) {
+        try {
+            // Create MD5 Hash
+            MessageDigest digest = java.security.MessageDigest
+                    .getInstance("MD5");
+            digest.update(s.getBytes());
+            byte messageDigest[] = digest.digest();
+
+            // Create Hex String
+            StringBuffer hexString = new StringBuffer();
+            for (int i = 0; i < messageDigest.length; i++) {
+                String h = Integer.toHexString(0xFF & messageDigest[i]);
+                while (h.length() < 2)
+                    h = "0" + h;
+                hexString.append(h);
+            }
+            return hexString.toString();
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
 }
