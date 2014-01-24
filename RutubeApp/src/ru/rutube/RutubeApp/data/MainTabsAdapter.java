@@ -118,12 +118,10 @@ public class MainTabsAdapter extends FragmentStatePagerAdapter
     @Override
     public void onPageSelected(int position) {
         if (D) Log.d(LOG_TAG, "onPageSelected: " + String.valueOf(position));
-        if (D) {
-            TabInfo info = mTabs.get(position);
-            String tag = info.args.getString(Constants.Params.FEED_TITLE);
-            Log.d(LOG_TAG, "onPageSelected: " + tag);
-            mActivity.onTabSelected(tag);
-        }
+        TabInfo info = mTabs.get(position);
+        String tag = info.args.getString(Constants.Params.FEED_TITLE);
+        if (D) Log.d(LOG_TAG, "onPageSelected: " + tag);
+        mActivity.onTabSelected(tag);
         mActionBar.setSelectedNavigationItem(position);
     }
 
