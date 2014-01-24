@@ -1,10 +1,13 @@
 package ru.rutube.RutubePlayer.ui;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.database.ContentObserver;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
@@ -80,6 +83,24 @@ public class VideoPageActivity extends ActionBarActivity
             mOrientationListener.enable();
         }
     };
+
+    protected RutubeMediaController.ShareListener mShareListener = new RutubeMediaController.ShareListener() {
+        @Override
+        public void onShare() {
+            doShare();
+        }
+    };
+
+    protected void doShare() {
+        Uri videoUri = getIntent().getData();
+        assert videoUri != null;
+        if (D) Log.d(LOG_TAG, "Sharing: " + String.valueOf(videoUri));
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_TEXT, videoUri.toString());
+        intent.putExtra(android.content.Intent.EXTRA_SUBJECT, getString(R.string.share_text));
+        startActivity(Intent.createChooser(intent, getString(R.string.share)));
+    }
 
     /**
      * Обработчик изменения настроек автоповорота
@@ -417,7 +438,9 @@ public class VideoPageActivity extends ActionBarActivity
         initHolder(holder);
 
         mViewHolder.playerFragment.setPlayerStateListener(this);
+        mViewHolder.playerFragment.setShareListener(mShareListener);
         mViewHolder.endscreenFragment.setReplayListener(this);
+        mViewHolder.endscreenFragment.setShareListener(mShareListener);
 
         toggleEndscreen(false);
 

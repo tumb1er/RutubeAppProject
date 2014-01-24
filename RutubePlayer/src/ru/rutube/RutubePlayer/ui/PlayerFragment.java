@@ -53,6 +53,8 @@ import ru.rutube.RutubePlayer.views.VideoFrameLayout;
  */
 public class PlayerFragment extends Fragment implements PlayerController.PlayerView {
 
+    private RutubeMediaController.ShareListener mShareListener;
+
     public boolean onKeyDown(int keyCode) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_VOLUME_DOWN:
@@ -662,6 +664,12 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         return mDialog;
     }
 
+    public void setShareListener(RutubeMediaController.ShareListener listener) {
+        mShareListener = listener;
+        if (mMediaController != null)
+            mMediaController.setShareListener(mShareListener);
+    }
+
     /**
      * Повторное воспроизведение видео
      */
@@ -723,6 +731,7 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         mMediaController.setOnTouchListener(mOnTouchListener);
         mMediaController.setToggleFullscreenListener(mToggleFullscreenListener);
         mMediaController.setQualitySelectListener(mQualitySelectListener);
+        mMediaController.setShareListener(mShareListener);
         return;
     }
 

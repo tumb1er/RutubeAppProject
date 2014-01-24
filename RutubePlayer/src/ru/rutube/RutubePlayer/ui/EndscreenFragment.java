@@ -27,7 +27,7 @@ public class EndscreenFragment extends Fragment {
     private static final boolean D = BuildConfig.DEBUG;
 
     private ReplayListener mReplayListener;
-
+    private RutubeMediaController.ShareListener mShareListener;
 
     protected View.OnClickListener mReplayBtnListener = new View.OnClickListener() {
         @Override
@@ -40,22 +40,10 @@ public class EndscreenFragment extends Fragment {
     protected View.OnClickListener mShareBtnListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            share();
+            if (mShareListener != null)
+                mShareListener.onShare();
         }
     };
-
-    private void share() {
-        Activity activity = getActivity();
-        assert activity != null;
-        Uri videoUri = activity.getIntent().getData();
-        assert videoUri != null;
-        if (D) Log.d(LOG_TAG, "Sharing: " + String.valueOf(videoUri));
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("text/plain");
-        intent.putExtra(Intent.EXTRA_TEXT, videoUri.toString());
-        intent.putExtra(android.content.Intent.EXTRA_SUBJECT, activity.getString(R.string.share_text));
-        startActivity(Intent.createChooser(intent, activity.getString(R.string.share)));
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -71,6 +59,10 @@ public class EndscreenFragment extends Fragment {
 
     public void setReplayListener(ReplayListener listener) {
         mReplayListener = listener;
+    }
+
+    public void setShareListener(RutubeMediaController.ShareListener listener) {
+        mShareListener = listener;
     }
 
 

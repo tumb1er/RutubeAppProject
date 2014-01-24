@@ -109,7 +109,10 @@ public class RutubeMediaController extends FrameLayout {
     private Button mQualityMQButton;
     private Button mQualityHQButton;
     private Button mQualityHDButton;
+    private ImageButton mShareButton;
     private QualitySelectListener mQualitySelectListener;
+    private ShareListener mShareListener;
+
     private OnClickListener mOnQualityClickListener = new OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -131,6 +134,13 @@ public class RutubeMediaController extends FrameLayout {
         }
 
     };
+    private OnClickListener mOnShareClickListener = new OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (mShareListener != null)
+                mShareListener.onShare();
+        }
+    };
 
     public void setToggleFullscreenListener(ToggleFullscreenListener listener) {
         mToggleFullscreenListener = listener;
@@ -142,6 +152,14 @@ public class RutubeMediaController extends FrameLayout {
 
     public static interface QualitySelectListener {
         public void onQualitySelected(int quality);
+    }
+
+    public static interface ShareListener {
+        public void onShare();
+    }
+
+    public void setShareListener(ShareListener listener) {
+        mShareListener = listener;
     }
 
     public void setQualitySelectListener(QualitySelectListener listener) {
@@ -302,11 +320,13 @@ public class RutubeMediaController extends FrameLayout {
         mQualityMQButton = (Button) v.findViewById(R.id.quality_mid);
         mQualityHQButton = (Button) v.findViewById(R.id.quality_high);
         mQualityHDButton = (Button) v.findViewById(R.id.quality_hd);
+        mShareButton     = (ImageButton) v.findViewById(R.id.share_btn);
 
         mQualityLQButton.setOnClickListener(mOnQualityClickListener);
         mQualityMQButton.setOnClickListener(mOnQualityClickListener);
         mQualityHQButton.setOnClickListener(mOnQualityClickListener);
         mQualityHDButton.setOnClickListener(mOnQualityClickListener);
+        mShareButton.setOnClickListener(mOnShareClickListener);
 
         installPrevNextListeners();
     }
