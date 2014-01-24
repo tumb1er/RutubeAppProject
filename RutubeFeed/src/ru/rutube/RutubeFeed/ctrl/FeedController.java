@@ -25,6 +25,7 @@ import ru.rutube.RutubeAPI.content.FeedContentProvider;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeAPI.models.Feed;
 import ru.rutube.RutubeAPI.models.FeedItem;
+import ru.rutube.RutubeAPI.models.User;
 import ru.rutube.RutubeAPI.requests.RequestListener;
 import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
 
@@ -58,6 +59,7 @@ public class FeedController implements Parcelable {
     }
 
     public void logout() {
+        User.load(mContext).deleteToken(mContext);
         mFeed = null;
     }
 
@@ -298,7 +300,7 @@ public class FeedController implements Parcelable {
             if (mView != null && error.networkResponse.statusCode != 401)
                 mView.showError();
             else {
-                mFeed = null;
+                logout();
             }
             requestDone();
         }
