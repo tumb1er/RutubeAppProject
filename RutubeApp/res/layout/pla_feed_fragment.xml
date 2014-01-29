@@ -20,7 +20,7 @@
         android:gravity="center"
         android:indeterminateDrawable="@anim/loader"
         android:layout_centerInParent="true" />
-    <com.etsy.android.grid.StaggeredGridView
+    <ru.rutube.RutubeApp.views.RutubeStaggeredGridView
         android:id="@+id/feed_item_list"
         app:column_count_portrait="@integer/columns_portrait"
         app:column_count_landscape="@integer/columns_landscape"
