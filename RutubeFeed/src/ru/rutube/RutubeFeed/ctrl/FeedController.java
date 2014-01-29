@@ -334,6 +334,7 @@ public class FeedController implements Parcelable {
         @Override
         public void onLoadFinished(Loader<Cursor> arg0, Cursor cursor) {
             if (D) Log.d(LOG_TAG, "onLoadFinished " + String.valueOf(cursor.getCount()));
+            if (mView == null) return;
             ((CursorAdapter) mView.getListAdapter()).swapCursor(cursor);
             mView.setSelectedItem(mItemRequested);
             if (D) Log.d(LOG_TAG, "setPosition: " + String.valueOf(mItemRequested));
