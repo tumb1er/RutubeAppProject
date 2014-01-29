@@ -22,6 +22,7 @@
         <item name="SeekBarStyle">@style/Player.MediaController.ProgressBar</item>
         <item name="FullscreenButtonStyle">@style/Player.MediaController.FullscreenButton</item>
         <item name="PlayerLoaderStyle">@style/Player.Loader</item>
+        <item name="PlayerVolumeStyle">@style/Player.Volume</item>
         <item name="EndscreenContainerStyle">@style/Player.Endscreen.Container</item>
         <item name="EndscreenShareButtonStyle">@style/Player.Endscreen.Button.Share</item>
         <item name="EndscreenReplayButtonStyle">@style/Player.Endscreen.Button.Replay</item>
@@ -142,6 +143,10 @@
 
     <style name="Player.Endscreen.Button.Replay">
         <item name="android:drawableLeft">@drawable/ic_action_replay</item>
+    </style>
+
+    <style name="Player.Volume" parent="Widget">
+        <item name="android:layout_marginLeft">20dp</item>
     </style>
 
 </resources>
