@@ -125,8 +125,10 @@ public class TrackInfo implements Parcelable {
     public void writeToParcel(Parcel parcel, int flags) {
         parcel.writeParcelable(mBalancerUrl, flags);
         parcel.writeInt(mTrackId);
+        parcel.writeString(mTitle);
         parcel.writeArray(mTags.toArray());
         parcel.writeParcelable(mAuthor, flags);
+        parcel.writeInt(mDuration);
     }
 
     public String getTitle() {
