@@ -2,4 +2,10 @@
 <resources>
     <attr name="rutubeAppIcon" format="reference"/>
     <attr name="FeedLoaderStyle" format="reference"/>
+
+    <attr name="LoginClearButtonStyle" format="reference"/>
+    <attr name="LoginLoginTextEditStyle" format="reference"/>
+    <attr name="LoginPasswordTextEditStyle" format="reference"/>
+    <attr name="LoginRemindLinkStyle" format="reference"/>
+    <attr name="LoginRegistrationLinkStyle" format="reference"/>
 </resources>

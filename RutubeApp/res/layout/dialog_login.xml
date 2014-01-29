@@ -9,51 +9,36 @@
             android:id="@+id/btnClear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="8dp"
             android:layout_gravity="right|center_vertical"
             android:contentDescription="@string/clear"
-            android:src="@drawable/ic_action_clear_light"/>
+        style="?attr/LoginClearButtonStyle" />
 
     <EditText
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:inputType="textEmailAddress"
             android:id="@+id/email"
-            android:autoText="false"
-            android:lines="1"
-            android:linksClickable="false"
-            android:hint="@string/email"/>
+            style="?attr/LoginLoginTextEditStyle" />
 
     <EditText
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPassword"
-            android:hint="@string/password"
-            android:ems="10"
-            android:id="@+id/password"/>
+        android:id="@+id/password"
+        style="?attr/LoginPasswordTextEditStyle" />
 
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/remindUrl"
-            android:textSize="16sp"
-            android:linksClickable="false"
-            android:text="Remind password"
-            android:paddingTop="25dp"
-            android:paddingBottom="5dp"
-            android:textAlignment="center"
-            android:layout_gravity="center_horizontal"/>
+        android:text="@string/remind_password"
+        android:layout_gravity="center_horizontal"
+        style="?attr/LoginRemindLinkStyle" />
 
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/registerUrl"
-            android:textSize="16sp"
-            android:linksClickable="false"
-            android:text="Registration"
-            android:textAlignment="center"
-            android:layout_gravity="center_horizontal"
-            android:paddingTop="10dp"
-            android:paddingBottom="5dp"/>
+        android:text="@string/registration"
+        android:layout_gravity="center_horizontal"
+        style="?attr/LoginRegistrationLinkStyle" />
 
 </LinearLayout>

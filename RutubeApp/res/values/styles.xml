@@ -34,8 +34,14 @@
         <item name="FeedLoaderStyle">@style/Rutube.Feed.Loader</item>
         <item name="FeedRefreshButtonStyle">@style/Rutube.Feed.RefreshButton</item>
 
-
+        <item name="LoginClearButtonStyle">@style/Rutube.Login.ClearButton</item>
+        <item name="LoginLoginTextEditStyle">@style/Rutube.Login.LoginEditText</item>
+        <item name="LoginPasswordTextEditStyle">@style/Rutube.Login.PasswordEditText</item>
+        <item name="LoginRemindLinkStyle">@style/Rutube.Login.Link.Remind</item>
+        <item name="LoginRegistrationLinkStyle">@style/Rutube.Login.Link.Registration</item>
     </style>
+
+    <style name="Rutube.Login"/>
 
     <style name="Theme.Rutube.Base" parent="Theme.AppCompat.Light">
         <!-- иконка поиска в элементе поиска -->
@@ -115,4 +121,38 @@
         <item name="android:scrollbars">none</item>
         <item name="android:divider">@drawable/feed_item_divider</item>
     </style>
+
+    <style name="Rutube.Login.ClearButton">
+        <item name="android:layout_marginRight">8dp</item>
+        <item name="android:src">@drawable/ic_action_clear_light</item>
+    </style>
+
+    <style name="Rutube.Login.LoginEditText">
+        <item name="android:inputType">textEmailAddress</item>
+        <item name="android:autoText">false</item>
+        <item name="android:lines">1</item>
+        <item name="android:linksClickable">false</item>
+        <item name="android:hint">@string/email</item>
+    </style>
+
+    <style name="Rutube.Login.PasswordEditText">
+        <item name="android:inputType">textPassword</item>
+        <item name="android:ems">10</item>
+        <item name="android:hint">@string/password</item>
+
+    </style>
+    <style name="Rutube.Login.Link">
+        <item name="android:textSize">16sp</item>
+        <item name="android:linksClickable">false</item>
+        <item name="android:paddingTop">25dp</item>
+        <item name="android:paddingBottom">5dp</item>
+        <item name="android:textAlignment">center</item>
+
+    </style>
+    <style name="Rutube.Login.Link.Remind">
+    </style>
+
+    <style name="Rutube.Login.Link.Registration">
+    </style>
+
 </resources>
