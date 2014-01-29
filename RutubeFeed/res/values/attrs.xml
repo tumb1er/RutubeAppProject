@@ -19,5 +19,7 @@
         <attr name="FeedTagTitleStyle" format="reference"/>
         <attr name="FeedTagCommentStyle" format="reference"/>
 
+        <attr name="FeedRefreshButtonStyle" format="reference"/>
+
     </declare-styleable>
 </resources>

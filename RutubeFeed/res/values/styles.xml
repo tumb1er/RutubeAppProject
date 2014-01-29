@@ -33,6 +33,8 @@
         <item name="FeedTagTitleStyle">@style/Rutube.Feed.TagTitle</item>
         <item name="FeedTagCommentStyle">@style/Rutube.Feed.TagComment</item>
 
+        <item name="FeedRefreshButtonStyle">@style/Rutube.Feed.RefreshButton</item>
+
     </style>
 
     <style name="Rutube.Feed.Container" parent="Widget">
@@ -161,5 +163,11 @@
         <item name="android:background">@color/footer_background</item>
         <item name="android:paddingLeft">@dimen/tag_comment_padding_left</item>
         <item name="android:paddingRight">@dimen/card_inner_padding</item>
+    </style>
+
+    <style name="Rutube.Feed.RefreshButton">
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">12dp</item>
+        <item name="android:contentDescription">@string/refresh</item>
     </style>
 </resources>

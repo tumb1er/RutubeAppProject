@@ -32,6 +32,8 @@
         <item name="FeedTagTitleStyle">@style/Rutube.Feed.TagTitle</item>
         <item name="FeedTagCommentStyle">@style/Rutube.Feed.TagComment</item>
         <item name="FeedLoaderStyle">@style/Rutube.Feed.Loader</item>
+        <item name="FeedRefreshButtonStyle">@style/Rutube.Feed.RefreshButton</item>
+
 
     </style>
 
@@ -84,6 +86,7 @@
         <item name="android:logo">@drawable/logo_cut</item>
         <item name="actionBarStyle">@style/Rutube.Feed.ActionBarStyle</item>
         <item name="android:actionBarStyle">@style/Rutube.Feed.ActionBarStyle</item>
+
 
     </style>
 
