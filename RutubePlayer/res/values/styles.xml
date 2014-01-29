@@ -9,6 +9,7 @@
 
     <style name="Theme.Player" parent="Player.__Theme">
         <item name="android:windowNoTitle">true</item>
+
         <item name="MediaControllerStyle">@style/Player.MediaController</item>
         <item name="InfoPanelStyle">@style/Player.MediaController.InfoPanel</item>
         <item name="VideoTitleStyle">@style/Player.MediaController.VideoTitle</item>
@@ -20,9 +21,14 @@
         <item name="TimeTextStyle">@style/Player.MediaController.TimeText</item>
         <item name="SeekBarStyle">@style/Player.MediaController.ProgressBar</item>
         <item name="FullscreenButtonStyle">@style/Player.MediaController.FullscreenButton</item>
+        <item name="PlayerLoaderStyle">@style/Player.Loader</item>
+        <item name="EndscreenContainerStyle">@style/Player.Endscreen.Container</item>
+        <item name="EndscreenShareButtonStyle">@style/Player.Endscreen.Button.Share</item>
+        <item name="EndscreenReplayButtonStyle">@style/Player.Endscreen.Button.Replay</item>
+
         <item name="SeekBarThumbDrawable">@drawable/seekbar_circle</item>
         <item name="SeekBarDrawable">@drawable/seekbar_progress</item>
-        <item name="PlayerLoaderStyle">@style/Player.Loader</item>
+
     </style>
 
     <style name="Player.MediaController" parent="Widget">
@@ -119,6 +125,23 @@
     <style name="Player.Loader" parent="Widget">
         <item name="android:progressDrawable">@anim/loader</item>
         <item name="android:indeterminateDrawable">@anim/loader</item>
+    </style>
+
+    <style name="Player.Endscreen.Container" parent="Widget">
+        <item name="android:background">@color/endscreen_shade</item>
+    </style>
+
+    <style name="Player.Endscreen.Button" parent="Widget">
+        <item name="android:textColor">@color/endscreen_button_text</item>
+        <item name="android:minWidth">@dimen/min_endscreen_button_width</item>
+    </style>
+
+    <style name="Player.Endscreen.Button.Share">
+        <item name="android:drawableLeft">@drawable/ic_action_share</item>
+    </style>
+
+    <style name="Player.Endscreen.Button.Replay">
+        <item name="android:drawableLeft">@drawable/ic_action_replay</item>
     </style>
 
 </resources>

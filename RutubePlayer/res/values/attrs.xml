@@ -15,5 +15,8 @@
         <attr name="SeekBarDrawable" format="reference"/>
         <attr name="FullscreenButtonStyle" format="reference"/>
         <attr name="PlayerLoaderStyle" format="reference"/>
+        <attr name="EndscreenContainerStyle" format="reference"/>
+        <attr name="EndscreenShareButtonStyle" format="reference"/>
+        <attr name="EndscreenReplayButtonStyle" format="reference"/>
     </declare-styleable>
 </resources>

@@ -95,6 +95,5 @@
     <style name="Theme.Rutube.Video" parent="Theme.Player">
         <item name="FeedTitleStyle">@style/Rutube.Feed.Title</item>
         <item name="FeedAuthorStyle">@style/Rutube.Feed.Author</item>
-        <item name="PlayerLoaderStyle">@style/Player.Loader</item>
     </style>
 </resources>
