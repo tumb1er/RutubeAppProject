@@ -61,7 +61,7 @@
     <style name="Player.MediaController.ShareButton" parent="Widget">
         <item name="android:layout_gravity">right|top</item>
         <item name="android:background">@color/transparent</item>
-        <item name="android:src">@drawable/ic_social_share</item>
+        <item name="android:src">@drawable/ic_action_share</item>
     </style>
     <style name="Player.MediaController.QualityButton" parent="Widget">
         <item name="android:layout_gravity">right|top</item>

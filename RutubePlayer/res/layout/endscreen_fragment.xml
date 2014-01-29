@@ -16,14 +16,16 @@
                 android:layout_height="wrap_content"
                 android:text="@string/replay"
                 android:id="@+id/replay_btn"
-                android:drawableLeft="@drawable/ic_av_replay"
+                android:textColor="@color/endscreen_button_text"
+                android:drawableLeft="@drawable/ic_action_replay"
                 android:minWidth="150dp"/>
         <Button
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/share"
                 android:id="@+id/share_btn"
-                android:drawableLeft="@drawable/ic_social_share"
+                android:textColor="@color/endscreen_button_text"
+                android:drawableLeft="@drawable/ic_action_share"
                 android:minWidth="150dp"/>
     </LinearLayout>
 </LinearLayout>
