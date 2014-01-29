@@ -292,7 +292,7 @@ public class FeedController implements Parcelable {
         public void onVolleyError(VolleyError error) {
             if (error.networkResponse == null)
             {
-                mView.showError();
+                if (mView!= null) mView.showError();
                 requestDone();
                 return;
             }
