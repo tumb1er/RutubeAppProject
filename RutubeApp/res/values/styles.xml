@@ -16,7 +16,7 @@
 
         <!-- Обязательные ссылки на стили для лент -->
         <item name="FeedListStyle">@style/Rutube.Feed.List</item>
-        <item name="FeedContainerStyle">@style/Rutube.Feed.Container</item>
+        <item name="FeedContainerStyle">@style/Rutube.Feed.Container.Custom</item>
         <item name="FeedDurationStyle">@style/Rutube.Feed.Duration</item>
         <item name="FeedTitleStyle">@style/Rutube.Feed.Title</item>
         <item name="FeedDescriptionStyle">@style/Rutube.Feed.Description</item>
@@ -31,6 +31,7 @@
         <item name="FeedTagStyle">@style/Rutube.Feed.Tag</item>
         <item name="FeedTagTitleStyle">@style/Rutube.Feed.TagTitle</item>
         <item name="FeedTagCommentStyle">@style/Rutube.Feed.TagComment</item>
+        <item name="FeedLoaderStyle">@style/Rutube.Feed.Loader</item>
 
     </style>
 
@@ -83,6 +84,7 @@
         <item name="android:logo">@drawable/logo_cut</item>
         <item name="actionBarStyle">@style/Rutube.Feed.ActionBarStyle</item>
         <item name="android:actionBarStyle">@style/Rutube.Feed.ActionBarStyle</item>
+
     </style>
 
     <style name="Rutube.Feed.ActionBarStyle" parent="Rutube.ActionBarStyle">
@@ -95,5 +97,19 @@
     <style name="Theme.Rutube.Video" parent="Theme.Player">
         <item name="FeedTitleStyle">@style/Rutube.Feed.Title</item>
         <item name="FeedAuthorStyle">@style/Rutube.Feed.Author</item>
+        <item name="FeedContainerStyle">@style/Rutube.Feed.Container.Custom</item>
+    </style>
+
+    <style name="Rutube.Feed.Loader">
+        <item name="android:indeterminateDrawable">@anim/loader</item>
+    </style>
+
+    <style name="Rutube.Feed.Container.Custom">
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+        <item name="android:background">@color/feed_background</item>
+        <item name="android:dividerHeight">1dp</item>
+        <item name="android:scrollbars">none</item>
+        <item name="android:divider">@drawable/feed_item_divider</item>
     </style>
 </resources>

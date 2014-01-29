@@ -18,18 +18,12 @@
         android:layout_height="wrap_content"
         android:id="@+id/loader"
         android:gravity="center"
-        android:indeterminateDrawable="@anim/loader"
-        android:layout_centerInParent="true" />
+        android:layout_centerInParent="true"
+        style="?attr/FeedLoaderStyle" />
     <ListView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@android:id/list"
         android:layout_gravity="center"
-        android:paddingLeft="0dp"
-        android:paddingRight="0dp"
-        android:background="@color/feed_background"
-        android:dividerHeight="1dp"
-        android:scrollbars="none"
-        android:divider="@drawable/feed_item_divider"
-        style="@style/Rutube.Feed.Container" />
+        style="?attr/FeedContainerStyle" />
 </RelativeLayout>
