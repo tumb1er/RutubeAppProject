@@ -346,7 +346,7 @@ public class PlayerController implements Parcelable, RequestListener {
      */
     public void replay() {
         // если проигрывание уже началось, не инициируем его снова.
-        if (mState == STATE_STARTING)
+        if (mState == STATE_STARTING || mState == STATE_PLAYING)
             return;
         if (mState!= STATE_COMPLETED)
             throw new IllegalStateException(
