@@ -18,8 +18,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/loader"
         android:gravity="center"
-        android:indeterminateDrawable="@anim/loader"
-        android:layout_centerInParent="true" />
+        android:layout_centerInParent="true"
+        style="?attr/FeedLoaderStyle"/>
     <ru.rutube.RutubeApp.views.RutubeStaggeredGridView
         android:id="@+id/feed_item_list"
         app:column_count_portrait="@integer/columns_portrait"
