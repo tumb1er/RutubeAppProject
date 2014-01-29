@@ -10,4 +10,6 @@
     <string name="refresh">Обновить</string>
     <string name="search_title_format">Поиск: %s</string>
     <string name="editors_choice">выбор редакции</string>
+    <string name="author">Автор</string>
+    <string name="created">Created</string>
 </resources>
