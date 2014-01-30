@@ -6,6 +6,7 @@
     <dimen name="related_card_padding_top">10dp</dimen>
     <dimen name="related_thumbnail_width">90dp</dimen>
     <dimen name="related_thumbnail_height">60dp</dimen>
+    <dimen name="related_thumbnail_margin">6dp</dimen>
 
     <integer name="video_container_weight">7</integer>
     <integer name="related_video_container_weight">4</integer>

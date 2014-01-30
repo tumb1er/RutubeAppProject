@@ -200,6 +200,7 @@
         <item name="android:layout_width">@dimen/related_thumbnail_width</item>
         <item name="android:layout_height">@dimen/related_thumbnail_height</item>
         <item name="android:scaleType">centerCrop</item>
+        <item name="android:layout_margin">@dimen/related_thumbnail_margin</item>
     </style>
 
     <style name="Rutube.Feed.Related.Title">

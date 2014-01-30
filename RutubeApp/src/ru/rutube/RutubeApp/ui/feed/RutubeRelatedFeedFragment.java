@@ -20,6 +20,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ru.rutube.RutubeAPI.content.FeedContract;
@@ -171,9 +172,11 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
     }
 
     protected void bindTags(TrackInfo trackInfo) {
-        List<VideoTag> tags = trackInfo.getTags();
-        if (tags == null)
-            return;
+        List<VideoTag> tags;
+        if (trackInfo == null)
+            tags = new ArrayList<VideoTag>();
+        else
+            tags = trackInfo.getTags();
         String text = "";
         for (VideoTag tag: tags) {
             text += tag.getHtml(getActivity()) + " ";

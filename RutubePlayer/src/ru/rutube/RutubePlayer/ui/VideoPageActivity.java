@@ -264,6 +264,8 @@ public class VideoPageActivity extends ActionBarActivity
     @Override
     public void setVideoInfo(TrackInfo trackInfo, Video video) {
         mVideo = video;
+        if (video == null || trackInfo == null)
+            return;
         bindTitle(video);
         bindAuthor(video);
         bindDuration(video);

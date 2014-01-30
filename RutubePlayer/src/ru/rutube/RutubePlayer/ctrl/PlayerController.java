@@ -198,6 +198,12 @@ public class PlayerController implements Parcelable, RequestListener {
     protected void processPlayOptionsResult(PlayOptions result) {
         if (D) Log.d(LOG_TAG, "Got PlayOptions");
         mPlayOptions = result;
+        if (result == null)
+        {
+            setState(STATE_ERROR);
+            mRequestQueue.cancelAll(Requests.TRACK_INFO);
+            return;
+        }
         mPlaybackAllowed = result.getAclAllowed();
         Integer errCode = result.getAclErrorCode();
         if (!mPlaybackAllowed) {

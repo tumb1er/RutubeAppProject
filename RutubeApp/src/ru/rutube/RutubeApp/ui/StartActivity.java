@@ -10,6 +10,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.RutubeApp;
@@ -166,12 +167,13 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
     }
 
     private void showError(String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.
-                setTitle(android.R.string.dialog_alert_title).
-                setMessage(message).
-                create().
-                show();
+        Toast.makeText(this, message, 1).show();
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        builder.
+//                setTitle(android.R.string.dialog_alert_title).
+//                setMessage(message).
+//                create().
+//                show();
     }
 
     /**
