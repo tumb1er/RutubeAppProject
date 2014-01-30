@@ -39,9 +39,11 @@
         <item name="LoginPasswordTextEditStyle">@style/Rutube.Login.PasswordEditText</item>
         <item name="LoginRemindLinkStyle">@style/Rutube.Login.Link.Remind</item>
         <item name="LoginRegistrationLinkStyle">@style/Rutube.Login.Link.Registration</item>
+
     </style>
 
     <style name="Rutube.Login"/>
+    <style name="Rutube.Feed.Related"/>
 
     <style name="Theme.Rutube.Base" parent="Theme.AppCompat.Light">
         <!-- иконка поиска в элементе поиска -->
@@ -107,6 +109,14 @@
         <item name="FeedTitleStyle">@style/Rutube.Feed.Title</item>
         <item name="FeedAuthorStyle">@style/Rutube.Feed.Author</item>
         <item name="FeedContainerStyle">@style/Rutube.Feed.Container.Custom</item>
+
+        <item name="RelatedContainerStyle">@style/Rutube.Feed.Related.Container</item>
+        <item name="RelatedCardStyle">@style/Rutube.Feed.Related.Card</item>
+        <item name="RelatedStubStyle">@style/Rutube.Feed.Related.Stub</item>
+        <item name="RelatedThumbnailStyle">@style/Rutube.Feed.Related.Thumbnail</item>
+        <item name="RelatedTitleStyle">@style/Rutube.Feed.Related.Title</item>
+        <item name="RelatedHitsStyle">@style/Rutube.Feed.Related.Hits</item>
+        <item name="RelatedAuthorStyle">@style/Rutube.Feed.Related.Author</item>
     </style>
 
     <style name="Rutube.Feed.Loader">
@@ -153,6 +163,48 @@
     </style>
 
     <style name="Rutube.Login.Link.Registration">
+    </style>
+
+    <style name="Rutube.Feed.Related.Container">
+        <item name="android:background">@color/feed_background</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+    </style>
+
+    <style name="Rutube.Feed.Related.Card">
+        <item name="android:background">@color/card_background</item>
+        <item name="android:padding">6dp</item>
+        <item name="android:paddingLeft">10dp</item>
+    </style>
+
+    <style name="Rutube.Feed.Related.Stub">
+        <item name="android:layout_width">90dp</item>
+        <item name="android:layout_height">60dp</item>
+        <item name="android:background">@drawable/thumbnail_stub_small</item>
+    </style>
+
+    <style name="Rutube.Feed.Related.Thumbnail">
+        <item name="android:layout_width">90dp</item>
+        <item name="android:layout_height">60dp</item>
+        <item name="android:scaleType">centerCrop</item>
+    </style>
+
+    <style name="Rutube.Feed.Related.Title">
+        <item name="android:maxLines">2</item>
+        <item name="android:textSize">14dp</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:textColor">#FF6C6C6C</item>
+    </style>
+
+    <style name="Rutube.Feed.Related.Hits">
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:textColor">#FFA9A9A9</item>
+    </style>
+
+    <style name="Rutube.Feed.Related.Author" parent="Rutube.Feed.Author">
+        <item name="android:paddingLeft">10dp</item>
     </style>
 
 </resources>

@@ -8,4 +8,12 @@
     <attr name="LoginPasswordTextEditStyle" format="reference"/>
     <attr name="LoginRemindLinkStyle" format="reference"/>
     <attr name="LoginRegistrationLinkStyle" format="reference"/>
+
+    <attr name="RelatedContainerStyle" format="reference"/>
+    <attr name="RelatedCardStyle" format="reference"/>
+    <attr name="RelatedStubStyle" format="reference"/>
+    <attr name="RelatedThumbnailStyle" format="reference"/>
+    <attr name="RelatedTitleStyle" format="reference"/>
+    <attr name="RelatedHitsStyle" format="reference"/>
+    <attr name="RelatedAuthorStyle" format="reference"/>
 </resources>
