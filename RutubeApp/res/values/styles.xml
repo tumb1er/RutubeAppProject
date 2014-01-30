@@ -44,6 +44,7 @@
 
     <style name="Rutube.Login"/>
     <style name="Rutube.Feed.Related"/>
+    <style name="Rutube.Player.Info" parent="Widget"/>
 
     <style name="Theme.Rutube.Base" parent="Theme.AppCompat.Light">
         <!-- иконка поиска в элементе поиска -->
@@ -117,6 +118,18 @@
         <item name="RelatedTitleStyle">@style/Rutube.Feed.Related.Title</item>
         <item name="RelatedHitsStyle">@style/Rutube.Feed.Related.Hits</item>
         <item name="RelatedAuthorStyle">@style/Rutube.Feed.Related.Author</item>
+
+        <item name="VideoInfoContainerStyle">@style/Rutube.Player.Info.Container</item>
+        <item name="VideoInfoMainBlockStyle">@style/Rutube.Player.Info.MainBlock</item>
+        <item name="VideoInfoTitleStyle">@style/Rutube.Player.Info.Title</item>
+        <item name="VideoInfoCreatedStyle">@style/Rutube.Player.Info.Text</item>
+        <item name="VideoInfoHitsStyle">@style/Rutube.Player.Info.Text</item>
+        <item name="VideoInfoFromStyle">@style/Rutube.Player.Info.Text</item>
+        <item name="VideoInfoBulletStyle">@style/Rutube.Player.Info.Bullet</item>
+        <item name="VideoInfoMoreButtonStyle">@style/Rutube.Player.Info.MoreButton</item>
+        <item name="VideoInfoAuthorStyle">@style/Rutube.Player.Info.Author</item>
+        <item name="VideoInfoDescriptionStyle">@style/Rutube.Player.Info.Description</item>
+        <item name="VideoInfoTagsListStyle">@style/Rutube.Player.Info.TagsList</item>
     </style>
 
     <style name="Rutube.Feed.Loader">
@@ -205,6 +218,64 @@
 
     <style name="Rutube.Feed.Related.Author" parent="Rutube.Feed.Author">
         <item name="android:paddingLeft">10dp</item>
+    </style>
+
+    <style name="Rutube.Player.Info.Container">
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">@dimen/video_info_padding_right</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:background">@color/feed_background</item>
+    </style>
+
+    <style name="Rutube.Player.Info.MainBlock">
+        <item name="android:background">@drawable/video_info_bg</item>
+        <item name="android:padding">10dp</item>
+    </style>
+
+    <style name="Rutube.Player.Info.Title">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">18dp</item>
+        <item name="android:textColor">@color/primary_video_info</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">2</item>
+    </style>
+
+    <style name="Rutube.Player.Info.Text">
+        <item name="android:textColor">@color/extra_info_color</item>
+    </style>
+
+    <style name="Rutube.Player.Info.Bullet" parent="Rutube.Player.Info.Text">
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+        <item name="android:text">•</item>
+    </style>
+
+    <style name="Rutube.Player.Info.MoreButton">
+        <item name="android:background">@color/transparent</item>
+        <item name="android:padding">15dp</item>
+    </style>
+
+    <style name="Rutube.Player.Info.Author">
+        <item name="android:paddingLeft">3dp</item>
+        <item name="android:paddingRight">3dp</item>
+        <item name="android:linksClickable">true</item>
+        <item name="android:autoLink">web</item>
+        <item name="android:textColor">@color/primary_video_info</item>
+    </style>
+
+    <style name="Rutube.Player.Info.Description">
+        <item name="android:textSize">14dp</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:background">@drawable/last_related_bg</item>
+        <item name="android:textColor">@color/secondary_video_info</item>
+    </style>
+
+    <style name="Rutube.Player.Info.TagsList">
+        <item name="android:padding">10dp</item>
+        <item name="android:background">@drawable/last_related_bg</item>
+        <item name="android:textColor">@color/primary_video_info</item>
+        <item name="android:textColorLink">@color/primary_video_info</item>
     </style>
 
 </resources>

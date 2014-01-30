@@ -4,23 +4,17 @@
     android:layout_height="wrap_content"
     android:layout_weight="1"
     android:id="@+id/video_info"
-    android:paddingBottom="0dp"
-    android:paddingLeft="10dp"
-    android:paddingRight="@dimen/video_info_padding_right"
-    android:paddingTop="10dp"
-    android:background="@color/feed_background"
-    >
+    style="?attr/VideoInfoContainerStyle">
 
+    <!--android:layout_marginTop="0dp"-->
     <RelativeLayout
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/video_info_bg"
-    android:padding="10dp"
-    android:focusableInTouchMode="true"
-    android:layout_alignParentLeft="true"
-    android:layout_alignParentTop="true"
-    android:layout_marginTop="0dp"
-    android:id="@+id/baseInfoContainer">
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:focusableInTouchMode="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:id="@+id/baseInfoContainer"
+        style="?attr/VideoInfoMainBlockStyle">
 
         <!-- loader -->
         <ProgressBar
@@ -28,28 +22,23 @@
             android:layout_height="wrap_content"
             android:id="@+id/video_info_loader"
             android:gravity="center"
-            android:indeterminateDrawable="@anim/loader"
-            android:layout_centerInParent="true" />
+            android:layout_centerInParent="true"
+            style="?attr/FeedLoaderStyle"/>
 
         <!-- Название ролика -->
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="Video Title"
-            android:textStyle="bold"
-            android:textSize="18dp"
-            android:textColor="#FF353535"
-            android:ellipsize="end"
-            android:maxLines="2"
-            android:id="@+id/video_title" />
+            android:id="@+id/video_title"
+            style="?attr/VideoInfoTitleStyle" />
         <!-- Дата создания под названием -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/created"
             android:layout_below="@+id/video_title"
-            android:text="21.11.2013"
-            android:textColor="#FFACACAC" />
+            style="?attr/VideoInfoCreatedStyle" />
         <!-- буллет -->
         <TextView
             android:layout_width="wrap_content"
@@ -57,20 +46,15 @@
             android:layout_toRightOf="@+id/created"
             android:id="@+id/bullet"
             android:layout_below="@+id/video_title"
-            android:text="•"
-            android:phoneNumber="false"
-            android:textColor="#FFACACAC"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp" />
+            style="?attr/VideoInfoBulletStyle" />
         <!-- количество просмотров -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/bullet"
             android:layout_below="@+id/video_title"
-            android:text="100500"
             android:id="@+id/hits"
-            android:textColor="#FFACACAC" />
+            style="?attr/VideoInfoHitsStyle" />
         <!-- кнопка резака -->
         <ImageButton
             android:layout_width="wrap_content"
@@ -78,10 +62,9 @@
             android:layout_alignParentRight="true"
             android:id="@+id/moreImageButton"
             android:src="@drawable/more_info_btn_left"
-            android:background="#00000000"
             android:visibility="invisible"
-            android:padding="15dp"
-            android:layout_centerVertical="true" />
+            android:layout_centerVertical="true"
+            style="?attr/VideoInfoMoreButtonStyle" />
         <!-- От -->
         <TextView
             android:layout_width="wrap_content"
@@ -89,7 +72,7 @@
             android:id="@+id/from"
             android:text="@string/from"
             android:layout_below="@+id/created"
-            android:textColor="#FFACACAC" />
+            style="?attr/VideoInfoCreatedStyle" />
         <!-- Имя автора -->
         <TextView
             android:layout_width="wrap_content"
@@ -97,12 +80,8 @@
             android:layout_toRightOf="@+id/from"
             android:id="@+id/author_name"
             android:text="@string/no_author"
-            android:paddingLeft="3dp"
-            android:paddingRight="3dp"
-            android:linksClickable="true"
-            android:autoLink="web"
             android:layout_below="@+id/created"
-            android:textColor="#FF353535" />
+            style="?attr/VideoInfoAuthorStyle" />
     </RelativeLayout>
 
 
@@ -112,33 +91,25 @@
         android:layout_height="2px"
         android:id="@+id/commentLine"
         android:layout_below="@+id/baseInfoContainer"
-        android:background="#FFEEEEEE" />
+        android:background="@color/video_info_line" />
 
     <!-- описание ролика -->
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Description"
-        android:textSize="14dp"
         android:id="@+id/description"
-        android:padding="10dp"
-        android:background="@drawable/last_related_bg"
         android:layout_below="@+id/commentLine"
-        android:textColor="#FF6C6C6C" />
+        style="?attr/VideoInfoDescriptionStyle" />
 
     <!-- список тегов текстом -->
     <ru.rutube.RutubeApp.views.LinkTextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/tags_list"
-        android:padding="10dp"
         android:visibility="gone"
-        android:background="@drawable/last_related_bg"
         android:layout_below="@+id/description"
         android:layout_alignParentBottom="true"
-        android:textColor="#FF333333"
-        android:textColorLink="#FF333333"
-        />
-
+        style="?attr/VideoInfoTagsListStyle" />
 
 </RelativeLayout>

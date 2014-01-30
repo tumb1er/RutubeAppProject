@@ -7,4 +7,8 @@
     <color name="tab_text">#FF555555</color>
     <color name="tab_selected_marker">#FF33B5E5</color>
     <color name="action_bar_divider">#FFD7D7D7</color>
+    <color name="video_info_line">#FFEEEEEE</color>
+    <color name="primary_video_info">#FF353535</color>
+    <color name="secondary_video_info">#FF6C6C6C</color>
+    <color name="extra_info_color">#FFACACAC</color>
 </resources>
