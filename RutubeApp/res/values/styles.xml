@@ -178,14 +178,14 @@
     </style>
 
     <style name="Rutube.Feed.Related.Stub">
-        <item name="android:layout_width">90dp</item>
-        <item name="android:layout_height">60dp</item>
+        <item name="android:layout_width">@dimen/related_thumbnail_width</item>
+        <item name="android:layout_height">@dimen/related_thumbnail_height</item>
         <item name="android:background">@drawable/thumbnail_stub_small</item>
     </style>
 
     <style name="Rutube.Feed.Related.Thumbnail">
-        <item name="android:layout_width">90dp</item>
-        <item name="android:layout_height">60dp</item>
+        <item name="android:layout_width">@dimen/related_thumbnail_width</item>
+        <item name="android:layout_height">@dimen/related_thumbnail_height</item>
         <item name="android:scaleType">centerCrop</item>
     </style>
 
