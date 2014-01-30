@@ -23,7 +23,7 @@
             <fragment
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:name="ru.rutube.RutubePlayer.ui.PlayerFragment"
+                android:name="ru.rutube.RutubeApp.ui.player.RutubePlayerFragment"
                 android:id="@+id/player_fragment"
                 android:layout_gravity="center"
                 tools:layout="@layout/player_fragment" />

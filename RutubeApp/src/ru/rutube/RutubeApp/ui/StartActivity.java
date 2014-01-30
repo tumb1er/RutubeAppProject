@@ -167,13 +167,7 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
     }
 
     private void showError(String message) {
-        Toast.makeText(this, message, 1).show();
-//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//        builder.
-//                setTitle(android.R.string.dialog_alert_title).
-//                setMessage(message).
-//                create().
-//                show();
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     /**

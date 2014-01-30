@@ -365,6 +365,10 @@ public class PlayerController implements Parcelable, RequestListener {
         mPlayRequestStage = TOTAL_REQUESTS_NEEDED - 1;
     }
 
+    public Uri getVideoUri(){
+        return mVideoUri;
+    }
+
     /**
      * Обработка события Fragment.onPause
      *
