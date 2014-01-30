@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Player" parent="Theme.AppCompat.Light">
+        <item name="android:windowNoTitle">true</item>
+
+        <item name="MediaControllerStyle">@style/Player.MediaController</item>
+        <item name="InfoPanelStyle">@style/Player.MediaController.InfoPanel</item>
+        <item name="VideoTitleStyle">@style/Player.MediaController.VideoTitle</item>
+        <item name="MenuButtonStyle">@style/Player.MediaController.MenuButton</item>
+        <item name="ShareButtonStyle">@style/Player.MediaController.ShareButton</item>
+        <item name="QualityButtonStyle">@style/Player.MediaController.QualityButton</item>
+        <item name="ControlPanelStyle">@style/Player.MediaController.ControlPanel</item>
+        <item name="PlayButtonStyle">@style/Player.MediaController.PlayButton</item>
+        <item name="TimeTextStyle">@style/Player.MediaController.TimeText</item>
+        <item name="SeekBarStyle">@style/Player.MediaController.ProgressBar</item>
+        <item name="FullscreenButtonStyle">@style/Player.MediaController.FullscreenButton</item>
+        <item name="PlayerLoaderStyle">@style/Player.Loader</item>
+        <item name="PlayerVolumeStyle">@style/Player.Volume</item>
+        <item name="EndscreenContainerStyle">@style/Player.Endscreen.Container</item>
+        <item name="EndscreenShareButtonStyle">@style/Player.Endscreen.Button.Share</item>
+        <item name="EndscreenReplayButtonStyle">@style/Player.Endscreen.Button.Replay</item>
+
+        <item name="SeekBarThumbDrawable">@drawable/seekbar_circle</item>
+        <item name="SeekBarDrawable">@drawable/seekbar_progress</item>
+
+    </style>
+</resources>
