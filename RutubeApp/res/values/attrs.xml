@@ -2,6 +2,7 @@
 <resources>
     <attr name="rutubeAppIcon" format="reference"/>
     <attr name="FeedLoaderStyle" format="reference"/>
+    <attr name="VideoInfoScrollerStyle" format="reference"/>
 
     <attr name="LoginClearButtonStyle" format="reference"/>
     <attr name="LoginLoginTextEditStyle" format="reference"/>
@@ -16,4 +17,5 @@
     <attr name="RelatedTitleStyle" format="reference"/>
     <attr name="RelatedHitsStyle" format="reference"/>
     <attr name="RelatedAuthorStyle" format="reference"/>
+
 </resources>

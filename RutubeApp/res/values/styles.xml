@@ -2,64 +2,11 @@
 <resources xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="NewApi">
 
-    <!-- Переопределение ссылок на стили в теме -->
-    <style name="Theme.Rutube" parent="Theme.Rutube.Base">
-        <!-- Ссылки на стили для ActionBarSherlock -->
-        <item name="actionBarStyle">@style/Rutube.ActionBarStyle</item>
-        <item name="android:actionBarStyle">@style/Rutube.ActionBarStyle</item>
-        <item name="actionBarTabBarStyle">@style/Rutube.TabBar</item>
-        <item name="android:actionBarTabBarStyle">@style/Rutube.TabBar</item>
-        <item name="actionBarTabStyle">@style/Rutube.TabView</item>
-        <item name="android:actionBarTabStyle">@style/Rutube.TabView</item>
-        <item name="actionBarTabTextStyle">@style/Rutube.TabText</item>
-        <item name="android:actionBarTabTextStyle">@style/Rutube.TabText</item>
-
-        <!-- Обязательные ссылки на стили для лент -->
-        <item name="FeedListStyle">@style/Rutube.Feed.List</item>
-        <item name="FeedContainerStyle">@style/Rutube.Feed.Container.Custom</item>
-        <item name="FeedDurationStyle">@style/Rutube.Feed.Duration</item>
-        <item name="FeedTitleStyle">@style/Rutube.Feed.Title</item>
-        <item name="FeedDescriptionStyle">@style/Rutube.Feed.Description</item>
-        <item name="FeedThumbnailStyle">@style/Rutube.Feed.Thumbnail</item>
-        <item name="FeedCardStyle">@style/Rutube.Feed.Card</item>
-        <item name="FeedCreatedStyle">@style/Rutube.Feed.Created</item>
-        <item name="FeedAvatarStyle">@style/Rutube.Feed.Avatar</item>
-        <item name="FeedAuthorStyle">@style/Rutube.Feed.Author</item>
-        <item name="FeedFooterStyle">@style/Rutube.Feed.Footer</item>
-        <item name="FeedHorizontalLineStyle">@style/Rutube.Feed.Line</item>
-        <item name="FeedTagListStyle">@style/Rutube.Feed.TagList</item>
-        <item name="FeedTagStyle">@style/Rutube.Feed.Tag</item>
-        <item name="FeedTagTitleStyle">@style/Rutube.Feed.TagTitle</item>
-        <item name="FeedTagCommentStyle">@style/Rutube.Feed.TagComment</item>
-        <item name="FeedLoaderStyle">@style/Rutube.Feed.Loader</item>
-        <item name="FeedRefreshButtonStyle">@style/Rutube.Feed.RefreshButton</item>
-
-        <item name="LoginClearButtonStyle">@style/Rutube.Login.ClearButton</item>
-        <item name="LoginLoginTextEditStyle">@style/Rutube.Login.LoginEditText</item>
-        <item name="LoginPasswordTextEditStyle">@style/Rutube.Login.PasswordEditText</item>
-        <item name="LoginRemindLinkStyle">@style/Rutube.Login.Link.Remind</item>
-        <item name="LoginRegistrationLinkStyle">@style/Rutube.Login.Link.Registration</item>
-
-    </style>
 
     <style name="Rutube.Login"/>
     <style name="Rutube.Feed.Related"/>
     <style name="Rutube.Player.Info" parent="Widget"/>
 
-    <style name="Theme.Rutube.Base" parent="Theme.AppCompat.Light">
-        <!-- иконка поиска в элементе поиска -->
-        <item name="searchViewSearchIcon">@drawable/ic_action_search</item>
-        <!-- иконка приложения (не лого) -->
-        <item name="rutubeAppIcon">@drawable/logo_cut</item>
-        <!-- фон для кнопки "домой" -->
-        <item name="actionBarItemBackground">@drawable/home_widget_background</item>
-        <!-- иконка HomeAsUp при активном поле поиска-->
-        <item name="icon">?attr/rutubeAppIcon</item>
-        <item name="android:icon">?attr/rutubeAppIcon</item>
-        <item name="logo">@drawable/logo</item>
-        <item name="android:logo">@drawable/logo</item>
-
-    </style>
 
     <style name="Rutube.ActionBarStyle" parent="Widget.AppCompat.Light.ActionBar.Solid">
         <!-- Фон ActionBar -->
@@ -89,47 +36,10 @@
         <item name="android:textSize">14dp</item>
     </style>
 
-    <!-- Тема для лент в новом окне -->
-    <style name="Theme.Rutube.Feed" parent="Theme.Rutube">
-        <item name="logo">@drawable/logo_cut</item>
-        <item name="android:logo">@drawable/logo_cut</item>
-        <item name="actionBarStyle">@style/Rutube.Feed.ActionBarStyle</item>
-        <item name="android:actionBarStyle">@style/Rutube.Feed.ActionBarStyle</item>
-
-
-    </style>
-
     <style name="Rutube.Feed.ActionBarStyle" parent="Rutube.ActionBarStyle">
         <!-- показывать Title -->
         <item name="displayOptions">useLogo|showHome|showTitle</item>
         <item name="android:displayOptions">useLogo|showHome|showTitle</item>
-    </style>
-
-    <!-- Тема для страницы видео и плеера -->
-    <style name="Theme.Rutube.Video" parent="Theme.Player">
-        <item name="FeedTitleStyle">@style/Rutube.Feed.Title</item>
-        <item name="FeedAuthorStyle">@style/Rutube.Feed.Author</item>
-        <item name="FeedContainerStyle">@style/Rutube.Feed.Container.Custom</item>
-
-        <item name="RelatedContainerStyle">@style/Rutube.Feed.Related.Container</item>
-        <item name="RelatedCardStyle">@style/Rutube.Feed.Related.Card</item>
-        <item name="RelatedStubStyle">@style/Rutube.Feed.Related.Stub</item>
-        <item name="RelatedThumbnailStyle">@style/Rutube.Feed.Related.Thumbnail</item>
-        <item name="RelatedTitleStyle">@style/Rutube.Feed.Related.Title</item>
-        <item name="RelatedHitsStyle">@style/Rutube.Feed.Related.Hits</item>
-        <item name="RelatedAuthorStyle">@style/Rutube.Feed.Related.Author</item>
-
-        <item name="VideoInfoContainerStyle">@style/Rutube.Player.Info.Container</item>
-        <item name="VideoInfoMainBlockStyle">@style/Rutube.Player.Info.MainBlock</item>
-        <item name="VideoInfoTitleStyle">@style/Rutube.Player.Info.Title</item>
-        <item name="VideoInfoCreatedStyle">@style/Rutube.Player.Info.Text</item>
-        <item name="VideoInfoHitsStyle">@style/Rutube.Player.Info.Text</item>
-        <item name="VideoInfoFromStyle">@style/Rutube.Player.Info.Text</item>
-        <item name="VideoInfoBulletStyle">@style/Rutube.Player.Info.Bullet</item>
-        <item name="VideoInfoMoreButtonStyle">@style/Rutube.Player.Info.MoreButton</item>
-        <item name="VideoInfoAuthorStyle">@style/Rutube.Player.Info.Author</item>
-        <item name="VideoInfoDescriptionStyle">@style/Rutube.Player.Info.Description</item>
-        <item name="VideoInfoTagsListStyle">@style/Rutube.Player.Info.TagsList</item>
     </style>
 
     <style name="Rutube.Feed.Loader">
@@ -277,6 +187,10 @@
         <item name="android:background">@drawable/last_related_bg</item>
         <item name="android:textColor">@color/primary_video_info</item>
         <item name="android:textColorLink">@color/primary_video_info</item>
+    </style>
+
+    <style name="Rutube.Player.Info.ScrollContainer">
+        <item name="android:background">@color/feed_background</item>
     </style>
 
 </resources>
