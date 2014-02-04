@@ -764,9 +764,12 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
             }
         else {
             // Неплохо при полной остановке проигрывания освобождать ресурсы.
-            mPlayer.reset();
-            mPlayer.release();
-            mMediaController.setMediaPlayer(null);
+            if (mPlayer != null){
+                mPlayer.reset();
+                mPlayer.release();
+            }
+            if (mMediaController != null)
+                mMediaController.setMediaPlayer(null);
             mPlayer = null;
         }
 //            mVideoView.setVideoURI(uri);
