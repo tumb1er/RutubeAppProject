@@ -375,4 +375,10 @@ public class RutubeRelatedFeedFragment extends RelatedFeedFragment {
         mLoader.setVisibility(View.GONE);
         mEmptyList.setVisibility(View.VISIBLE);
     }
+
+    @Override
+    public void openPlayer(Uri uri, Uri thumbnailUri) {
+        MainApplication.playerOpened(getActivity(), "related_fragment");
+        super.openPlayer(uri, thumbnailUri);
+    }
 }

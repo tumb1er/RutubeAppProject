@@ -74,12 +74,16 @@ public class MainApplication extends RutubeApp {
     public static void relatedCardClick(Activity activity, String tag) {
         EasyTracker tracker = getTracker(activity);
         tracker.send(MapBuilder.createEvent("ui_actions", "related_click", tag, null).build());
-
     }
 
     public static void playerError(Activity activity, String message, String videoId) {
         EasyTracker tracker = getTracker(activity);
         tracker.send(MapBuilder.createEvent("errors", message, videoId, null).build());
+    }
+
+    public static void playerOpened(Activity activity, String tag) {
+        EasyTracker tracker = getTracker(activity);
+        tracker.send(MapBuilder.createEvent("conversion", "open_player", tag, null).build());
     }
 
     public static void feedActivityStart(Activity activity, String tag) {

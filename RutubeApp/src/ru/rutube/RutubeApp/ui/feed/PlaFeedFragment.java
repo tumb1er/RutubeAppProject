@@ -1,5 +1,6 @@
 package ru.rutube.RutubeApp.ui.feed;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,6 +26,8 @@ public class PlaFeedFragment extends ru.rutube.RutubeFeed.ui.FeedFragment {
     private View mEmptyList;
     private StaggeredGridView sgView;
 
+    protected String mStatsFeedTag = "feed_fragment";
+
     private AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -37,7 +40,10 @@ public class PlaFeedFragment extends ru.rutube.RutubeFeed.ui.FeedFragment {
         super(feedImpl);
     }
 
-    public PlaFeedFragment() {
+    public PlaFeedFragment() {}
+
+    public void setStatsFeedTag(String tag) {
+        mStatsFeedTag = tag;
     }
 
     @Override
@@ -68,6 +74,12 @@ public class PlaFeedFragment extends ru.rutube.RutubeFeed.ui.FeedFragment {
     public boolean onItemClick(FeedCursorAdapter.ClickTag position, String viewTag) {
         MainApplication.cardClick(getActivity(), viewTag);
         return super.onItemClick(position, viewTag);
+    }
+
+    @Override
+    public void openPlayer(Uri uri, Uri thumbnailUri) {
+        MainApplication.playerOpened(getActivity(), mStatsFeedTag);
+        super.openPlayer(uri, thumbnailUri);
     }
 
     @Override
