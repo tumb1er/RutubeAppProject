@@ -262,7 +262,7 @@ public class Video implements Parcelable {
         assert uri != null;
         JsonObjectRequest request = new AuthJsonObjectRequest(uri.toString(),
                 null, getPlayOptionsListener(listener), getErrorListener(Requests.PLAY_OPTIONS, listener),
-                User.loadToken(context));
+                User.loadToken());
         request.setShouldCache(true);
         request.setTag(Requests.PLAY_OPTIONS);
         if (D) Log.d(LOG_TAG, "Play Options URL: " + uri.toString());

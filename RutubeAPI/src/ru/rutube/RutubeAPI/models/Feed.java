@@ -45,7 +45,7 @@ public class Feed<FeedItemT extends FeedItem> {
      * @param context
      */
     public Feed(Uri feedUri, Context context) {
-        String token = User.loadToken(context);
+        String token = User.loadToken();
         Uri contentUri = getContentUri(feedUri, context);
         mToken = token;
         mFeedUri = normalizeFeedUri(feedUri, context);

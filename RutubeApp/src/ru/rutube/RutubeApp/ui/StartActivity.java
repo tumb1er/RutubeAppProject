@@ -55,7 +55,7 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
     @Override
     public boolean onCreatePanelMenu(int featureId, Menu menu) {
         boolean result = super.onCreatePanelMenu(featureId, menu);
-        User user = User.load(this);
+        User user = User.load();
         mLogoutItem = menu.findItem(ru.rutube.RutubeFeed.R.id.menu_logout);
         if (mLogoutItem != null)
             mLogoutItem.setVisible(!user.isAnonymous());
@@ -75,8 +75,10 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
     private void logout() {
         if (D) Log.d(LOG_TAG, "Logging out");
         mController.logout();
-        mTabsAdapter.getItem(MainPageController.TAB_MY_VIDEO).logout();
-        mTabsAdapter.getItem(MainPageController.TAB_SUBSCRIPTIONS).logout();
+        FeedFragment f = mTabsAdapter.getItem(MainPageController.TAB_MY_VIDEO);
+        if (f!= null) f.logout();
+        f = mTabsAdapter.getItem(MainPageController.TAB_SUBSCRIPTIONS);
+        if (f!= null) f.logout();
     }
 
     @Override
@@ -151,7 +153,8 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
 
     @Override
     public void onLogout() {
-        mLogoutItem.setVisible(false);
+        if (mLogoutItem != null)
+            mLogoutItem.setVisible(false);
         showError(getString(R.string.logouted));
     }
 
@@ -162,7 +165,8 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
 
     @Override
     public void onLoginSuccess() {
-        mLogoutItem.setVisible(true);
+        if (mLogoutItem != null)
+            mLogoutItem.setVisible(true);
         MainApplication.loginDialogSuccess(this);
     }
 
