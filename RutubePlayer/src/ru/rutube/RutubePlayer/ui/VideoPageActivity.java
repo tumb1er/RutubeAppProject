@@ -132,7 +132,7 @@ public class VideoPageActivity extends ActionBarActivity
                 if (packageName.startsWith("com.facebook")){
                     text = videoUri;
                 } else if (packageName.equals("com.twitter.android")) {
-                    text = default_text + getString(R.string.share_twitter);
+                    text = default_text + " " + getString(R.string.share_twitter);
                 } else {
                     text = default_text;
                 }
