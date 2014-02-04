@@ -75,8 +75,10 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
     private void logout() {
         if (D) Log.d(LOG_TAG, "Logging out");
         mController.logout();
-        mTabsAdapter.getItem(MainPageController.TAB_MY_VIDEO).logout();
-        mTabsAdapter.getItem(MainPageController.TAB_SUBSCRIPTIONS).logout();
+        FeedFragment f = mTabsAdapter.getItem(MainPageController.TAB_MY_VIDEO);
+        if (f!= null) f.logout();
+        f = mTabsAdapter.getItem(MainPageController.TAB_SUBSCRIPTIONS);
+        if (f!= null) f.logout();
     }
 
     @Override
