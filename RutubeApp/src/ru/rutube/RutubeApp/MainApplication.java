@@ -77,6 +77,11 @@ public class MainApplication extends RutubeApp {
 
     }
 
+    public static void playerError(Activity activity, String message, String videoId) {
+        EasyTracker tracker = getTracker(activity);
+        tracker.send(MapBuilder.createEvent("errors", message, videoId, null).build());
+    }
+
     public static void feedActivityStart(Activity activity, String tag) {
         EasyTracker tracker = getTracker(activity);
         tracker.set(Fields.SCREEN_NAME, "Feed");

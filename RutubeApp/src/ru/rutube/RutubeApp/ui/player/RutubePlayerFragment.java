@@ -27,9 +27,8 @@ public class RutubePlayerFragment extends PlayerFragment {
                 try {
                     videoId = mController.getVideoUri().getLastPathSegment();
                 } catch (Exception ignored) {}
-                MainApplication app = (MainApplication)(RutubeApp.getInstance());
-                app.reportError(getActivity(), String.format("MediaPlayer error (%d, %d) at %s",
-                        i, i2, videoId));
+                MainApplication.playerError(getActivity(), String.format("MediaPlayer error (%d, %d)",
+                        i, i2), videoId);
                 mController.onPlaybackError();
                 return true;
             }
