@@ -151,7 +151,8 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
 
     @Override
     public void onLogout() {
-        mLogoutItem.setVisible(false);
+        if (mLogoutItem != null)
+            mLogoutItem.setVisible(false);
         showError(getString(R.string.logouted));
     }
 
@@ -162,7 +163,8 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
 
     @Override
     public void onLoginSuccess() {
-        mLogoutItem.setVisible(true);
+        if (mLogoutItem != null)
+            mLogoutItem.setVisible(true);
         MainApplication.loginDialogSuccess(this);
     }
 
