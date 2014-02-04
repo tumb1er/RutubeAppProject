@@ -23,6 +23,7 @@ import com.android.volley.toolbox.Volley;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.prefs.Preferences;
 
@@ -286,11 +287,13 @@ public class PlayerController implements Parcelable, RequestListener {
 
     }
 
-    protected PlayerController(Uri videoUri, Uri thumbnailUri, int state, int offset, TrackInfo trackInfo) {
+    protected PlayerController(Uri videoUri, Uri thumbnailUri, int state, int offset, TrackInfo trackInfo,
+                               ArrayList<Uri> streams) {
         this(videoUri, thumbnailUri);
         mState = state;
         mVideoOffset = offset;
         mTrackInfo = trackInfo;
+        mStreams = streams;
     }
 
     // Реализация Parcelable
@@ -305,7 +308,15 @@ public class PlayerController implements Parcelable, RequestListener {
         TrackInfo trackInfo = in.readParcelable(TrackInfo.class.getClassLoader());
         int state = in.readInt();
         int videoOffset = in.readInt();
-        return new PlayerController(videoUri, thumbnailUri, state, videoOffset, trackInfo);
+        int streamCount = in.readInt();
+        String[] streams = new String[streamCount];
+        in.readStringArray(streams);
+        ArrayList<Uri> streamUris = new ArrayList<Uri>();
+        for (String url: streams) {
+            streamUris.add(Uri.parse(url));
+        }
+        return new PlayerController(videoUri, thumbnailUri, state, videoOffset, trackInfo,
+                streamUris);
     }
 
     @Override
@@ -326,6 +337,12 @@ public class PlayerController implements Parcelable, RequestListener {
         parcel.writeParcelable(mTrackInfo, i);
         parcel.writeInt(mState);
         parcel.writeInt(mVideoOffset);
+        parcel.writeInt(mStreams.size());
+        String[] urls = new String[mStreams.size()];
+        for (int j=0; j<mStreams.size(); j++) {
+            urls[j] = mStreams.get(j).toString();
+        }
+        parcel.writeStringArray(urls);
     }
 
     @SuppressWarnings("UnusedDeclaration")
