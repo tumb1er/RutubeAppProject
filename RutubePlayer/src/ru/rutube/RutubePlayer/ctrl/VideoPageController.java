@@ -55,7 +55,8 @@ public class VideoPageController implements Parcelable, RequestListener {
     }
 
     private void setVideoInfo() {
-        if (mView != null && mVideoInfoRequests >= totalVideoInfoRequests)
+        if (mView != null && mVideoInfoRequests >= totalVideoInfoRequests &&
+                mVideo != null && mTrackInfo != null)
             mView.setVideoInfo(mTrackInfo, mVideo);
     }
 
