@@ -55,7 +55,7 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
     @Override
     public boolean onCreatePanelMenu(int featureId, Menu menu) {
         boolean result = super.onCreatePanelMenu(featureId, menu);
-        User user = User.load(this);
+        User user = User.load();
         mLogoutItem = menu.findItem(ru.rutube.RutubeFeed.R.id.menu_logout);
         if (mLogoutItem != null)
             mLogoutItem.setVisible(!user.isAnonymous());

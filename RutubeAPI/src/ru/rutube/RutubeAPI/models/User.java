@@ -43,31 +43,30 @@ public class User {
     /**
      * Возвращает новый объект пользователя.
      * По возможности, инициализирует токен авторизации
-     * @param context контекст для доступа к файлу настроек
      * @return новый объект пользователя
      */
-    public static User load(Context context) {
-        String token = loadToken(context);
+    public static User load() {
+        String token = loadToken();
         return new User(token);
     }
 
     /**
      * Загружает токен из файла настроек приложения
-     * @param context контекст для доступа к файлу настроек
      * @return токен авторизации
      */
-    public static String loadToken(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences(USER_DETAILS, Context.MODE_PRIVATE);
+    public static String loadToken() {
+        Context context = RutubeApp.getInstance();
+        SharedPreferences prefs = context
+                .getSharedPreferences(USER_DETAILS, Context.MODE_PRIVATE);
         return prefs.getString(TOKEN, null);
     }
 
     /**
      * Сохраняет данные авторизации в файле настроек приложения
-     * @param context контекст для доступа к файлу настроек
      * @param token токен авторизации
      */
-    public static void saveToken(Context context, String token) {
-
+    public static void saveToken(String token) {
+        Context context = RutubeApp.getInstance();
         SharedPreferences prefs = context.getSharedPreferences(USER_DETAILS, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(TOKEN, token);
@@ -229,8 +228,8 @@ public class User {
         return requestData;
     }
 
-    public void deleteToken(Context context) {
+    public void deleteToken() {
         mToken = null;
-        User.saveToken(context, null);
+        User.saveToken(null);
     }
 }

@@ -43,7 +43,7 @@ public class MainPageController implements Parcelable, RequestListener {
     @Override
     public void onResult(int tag, Bundle result) {
         String token = result.getString(Constants.Result.TOKEN);
-        User.saveToken(mContext, token);
+        User.saveToken(token);
         loginSuccessful();
     }
 
@@ -79,7 +79,7 @@ public class MainPageController implements Parcelable, RequestListener {
     }
 
     public void logout() {
-        mUser.deleteToken(mContext);
+        mUser.deleteToken();
         Uri contentUri = new Feed(feedUriMap.get(TAB_MY_VIDEO), mContext).getContentUri();
         mContext.getContentResolver().delete(contentUri, null, null);
         contentUri = new Feed(feedUriMap.get(TAB_SUBSCRIPTIONS), mContext).getContentUri();
@@ -132,7 +132,7 @@ public class MainPageController implements Parcelable, RequestListener {
 
     public void loginSuccessful() {
         if (D) Log.d(LOG_TAG, "Login successful");
-        mUser = User.load(mContext);
+        mUser = User.load();
         Uri feedUri = feedUriMap.get(mAfterLoginTab);
         mSelectedTab = mAfterLoginTab;
         mView.showFeedFragment(mAfterLoginTab, feedUri);
@@ -146,7 +146,7 @@ public class MainPageController implements Parcelable, RequestListener {
         mView = view;
         mRequestQueue = Volley.newRequestQueue(context,
             new HttpClientStack(HttpTransport.getHttpClient()));
-        mUser = User.load(context);
+        mUser = User.load();
         initFeedUriMap();
         mAttached = true;
     }
