@@ -19,14 +19,20 @@ import com.android.volley.toolbox.HttpClientStack;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.HttpTransport;
+import ru.rutube.RutubeAPI.content.ContentMatcher;
 import ru.rutube.RutubeAPI.content.FeedContentProvider;
+import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeAPI.models.Feed;
 import ru.rutube.RutubeAPI.models.FeedItem;
 import ru.rutube.RutubeAPI.models.User;
 import ru.rutube.RutubeAPI.requests.RequestListener;
+import ru.rutube.RutubeFeed.R;
 import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
 
 /**
@@ -100,6 +106,7 @@ public class FeedController implements Parcelable {
     private boolean mHasNext = true;
     private boolean mAttached = false;
     private int mUpdatedPage = 0;
+    private boolean mInvalidated = false;
 
 
     public FeedController(Uri feedUri, int itemRequested) {
@@ -286,6 +293,7 @@ public class FeedController implements Parcelable {
             if (mLoading > 0) mLoading -= 1;
             if (mLoading == 0 && mView != null)
                 mView.doneRefreshing();
+            invalidateCache();
         }
 
         @Override
@@ -313,6 +321,18 @@ public class FeedController implements Parcelable {
             requestDone();
         }
     };
+
+    private void invalidateCache() {
+        if (mInvalidated)
+            return;
+        mInvalidated = true;
+        Uri contentUri = ContentMatcher.from(mContext).getContentUri(mFeedUri);
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.MINUTE, -mContext.getResources().getInteger(R.integer.cache_expire));
+        String where = FeedContract.FeedColumns.CACHED + String.format(
+                " < '%s'", FeedItem.sSqlDateTimeFormat.format(c.getTime()));
+        mContext.getContentResolver().delete(contentUri, where, null);
+    }
 
     /**
      * Обработчик запросов к БД
