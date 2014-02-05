@@ -80,9 +80,9 @@ public class MainPageController implements Parcelable, RequestListener {
 
     public void logout() {
         mUser.deleteToken();
-        Uri contentUri = new Feed(feedUriMap.get(TAB_MY_VIDEO), mContext).getContentUri();
+        Uri contentUri = new Feed(feedUriMap.get(TAB_MY_VIDEO)).getContentUri();
         mContext.getContentResolver().delete(contentUri, null, null);
-        contentUri = new Feed(feedUriMap.get(TAB_SUBSCRIPTIONS), mContext).getContentUri();
+        contentUri = new Feed(feedUriMap.get(TAB_SUBSCRIPTIONS)).getContentUri();
         mContext.getContentResolver().delete(contentUri, null, null);
         if (D) Log.d(LOG_TAG, "cache flushed");
         mView.onLogout();

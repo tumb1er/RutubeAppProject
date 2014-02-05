@@ -24,6 +24,7 @@ import java.util.Date;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.HttpTransport;
+import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.content.ContentMatcher;
 import ru.rutube.RutubeAPI.content.FeedContentProvider;
 import ru.rutube.RutubeAPI.content.FeedContract;
@@ -60,7 +61,7 @@ public class FeedController implements Parcelable {
 
     private Feed getFeedModel() {
         if (mFeed == null)
-            mFeed = new Feed(mFeedUri, mContext);
+            mFeed = new Feed(mFeedUri);
         return mFeed;
     }
 
@@ -139,7 +140,7 @@ public class FeedController implements Parcelable {
     public void onListItemClick(int position) {
         if (D) Log.d(LOG_TAG, "onListItemClick");
         Cursor c = (Cursor) mView.getListAdapter().getItem(position);
-        FeedItem item = Feed.loadFeedItem(mContext, c, mFeedUri);
+        FeedItem item = Feed.loadFeedItem(c, mFeedUri);
         Uri uri = item.getVideoUri(mContext);
         mView.openPlayer(uri, item.getThumbnailUri());
     }
@@ -326,12 +327,13 @@ public class FeedController implements Parcelable {
         if (mInvalidated)
             return;
         mInvalidated = true;
-        Uri contentUri = ContentMatcher.from(mContext).getContentUri(mFeedUri);
+        Uri contentUri = Feed.getContentUri(mFeedUri);
         Calendar c = Calendar.getInstance();
-        c.add(Calendar.MINUTE, -mContext.getResources().getInteger(R.integer.cache_expire));
+        int minutes_expire = RutubeApp.getInstance().getResources().getInteger(R.integer.cache_expire);
+        c.add(Calendar.MINUTE, -minutes_expire);
         String where = FeedContract.FeedColumns.CACHED + String.format(
                 " < '%s'", FeedItem.sSqlDateTimeFormat.format(c.getTime()));
-        mContext.getContentResolver().delete(contentUri, where, null);
+        RutubeApp.getInstance().getContentResolver().delete(contentUri, where, null);
     }
 
     /**
@@ -382,7 +384,7 @@ public class FeedController implements Parcelable {
         }
         mView.setRefreshing();
         mLoading += 1;
-        JsonObjectRequest request = getFeedModel().getFeedRequest(page, mContext, mLoadPageRequestListener);
+        JsonObjectRequest request = getFeedModel().getFeedRequest(page, mLoadPageRequestListener);
         if (nocache)
             mRequestQueue.getCache().remove(request.getCacheKey());
         mRequestQueue.add(request);

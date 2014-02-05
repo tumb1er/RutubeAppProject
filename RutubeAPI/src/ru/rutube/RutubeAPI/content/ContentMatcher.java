@@ -10,6 +10,7 @@ import android.util.Log;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.R;
+import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.models.FeedItem;
 
 import java.util.Date;
@@ -97,7 +98,8 @@ public class ContentMatcher {
         return result;
     }
 
-    public Uri getRelatedVideoContentUri(Context context, Uri feedUri) {
+    public Uri getRelatedVideoContentUri(Uri feedUri) {
+        Context context = RutubeApp.getInstance();
         String path = feedUri.getPath();
         assert path != null;
         if (!path.startsWith("/"))
@@ -116,8 +118,9 @@ public class ContentMatcher {
                 String.valueOf(related_video_id)).build();
     }
 
-    public Uri getSearchContentUri(Context context, Uri feedUri) {
+    public Uri getSearchContentUri(Uri feedUri) {
         if (D) Log.d(LOG_TAG, "Matching search: " + feedUri.toString());
+        Context context = RutubeApp.getInstance();
         String path = feedUri.getPath();
         assert path != null;
         if (!path.startsWith("/"))
@@ -172,4 +175,7 @@ public class ContentMatcher {
     }
 
 
+    public static ContentMatcher getInstance() {
+        return from(RutubeApp.getInstance());
+    }
 }

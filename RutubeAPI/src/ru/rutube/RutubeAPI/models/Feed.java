@@ -18,6 +18,7 @@ import org.json.JSONObject;
 import java.util.Arrays;
 
 import ru.rutube.RutubeAPI.BuildConfig;
+import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.content.ContentMatcher;
 import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.requests.AuthJsonObjectRequest;
@@ -42,13 +43,12 @@ public class Feed<FeedItemT extends FeedItem> {
     /**
      * Конструктор объекта ленты
      * @param feedUri ссылка на API ленты
-     * @param context
      */
-    public Feed(Uri feedUri, Context context) {
+    public Feed(Uri feedUri) {
         String token = User.loadToken();
-        Uri contentUri = getContentUri(feedUri, context);
+        Uri contentUri = getContentUri(feedUri);
         mToken = token;
-        mFeedUri = normalizeFeedUri(feedUri, context);
+        mFeedUri = normalizeFeedUri(feedUri);
         mContentUri = contentUri;
         try {
             mIntForeignKeyId = Integer.parseInt(contentUri.getLastPathSegment());
@@ -59,20 +59,20 @@ public class Feed<FeedItemT extends FeedItem> {
         }
     }
 
-    private static Uri normalizeFeedUri(Uri feedUri, Context context) {
-        ContentMatcher cm = ContentMatcher.from(context);
+    private static Uri normalizeFeedUri(Uri feedUri) {
+        ContentMatcher cm = ContentMatcher.getInstance();
         String path = cm.normalize(feedUri.getEncodedPath());
         return feedUri.buildUpon().encodedPath(path).build();
     }
 
-    private static Uri getContentUri(Uri feedUri, Context context) {
-        ContentMatcher contentMatcher = ContentMatcher.from(context);
+    public static Uri getContentUri(Uri feedUri) {
+        ContentMatcher contentMatcher = ContentMatcher.getInstance();
         Uri result = contentMatcher.getContentUri(feedUri);
         if (result == null) {
-            result = contentMatcher.getRelatedVideoContentUri(context, feedUri);
+            result = contentMatcher.getRelatedVideoContentUri(feedUri);
         }
         if (result == null) {
-            result = contentMatcher.getSearchContentUri(context, feedUri);
+            result = contentMatcher.getSearchContentUri(feedUri);
         }
         return result;
     }
@@ -80,18 +80,17 @@ public class Feed<FeedItemT extends FeedItem> {
     /**
      * Конструирует запрос к API ленты
      * @param page номер страницы
-     * @param context
      * @param requestListener
      * @return
      */
-    public JsonObjectRequest getFeedRequest(int page, Context context, RequestListener requestListener) {
+    public JsonObjectRequest getFeedRequest(int page, RequestListener requestListener) {
         Uri uri = mFeedUri.buildUpon()
                 .appendQueryParameter(PARAM_PAGE, String.valueOf(page))
                 .build();
         assert uri!= null;
         if (D) Log.d(LOG_TAG, "Fetching: "+ uri.toString());
         JsonObjectRequest request = new AuthJsonObjectRequest(uri.toString(), null,
-                getFeedPageListener(context, requestListener),
+                getFeedPageListener(requestListener),
                 getErrorListener(requestListener), mToken);
         request.setShouldCache(true);
         request.setTag(Requests.FEED_PAGE);
@@ -104,12 +103,11 @@ public class Feed<FeedItemT extends FeedItem> {
 
     /**
      * Разбирает ответ API ленты и сохраняет результаты в БД.
-     * @param context
      * @param response
      * @return
      * @throws JSONException
      */
-    protected Bundle parseFeedPage(Context context, JSONObject response) throws JSONException {
+    protected Bundle parseFeedPage(JSONObject response) throws JSONException {
         Bundle bundle = new Bundle();
         int perPage = response.getInt("per_page");
         int page = response.getInt("page");
@@ -126,6 +124,7 @@ public class Feed<FeedItemT extends FeedItem> {
             feedItems[i] = row;
         }
         if (D) Log.d(LOG_TAG, "Inserting items: " + Arrays.toString(feedItems));
+        Context context = RutubeApp.getInstance();
         try {
             context.getContentResolver().bulkInsert(mContentUri, feedItems);
         } catch (Exception e) {
@@ -192,17 +191,16 @@ public class Feed<FeedItemT extends FeedItem> {
 
     /**
      * Конструирует прокси для обработки ответа от API ленты
-     * @param context
      * @param requestListener
      * @return
      */
-    private Response.Listener<JSONObject> getFeedPageListener(final Context context, final RequestListener requestListener)
+    private Response.Listener<JSONObject> getFeedPageListener(final RequestListener requestListener)
     {
         return new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    Bundle bundle = parseFeedPage(context, response);
+                    Bundle bundle = parseFeedPage(response);
                     requestListener.onResult(Requests.FEED_PAGE, bundle);
                 } catch (JSONException e) {
                     RequestListener.RequestError error = new RequestListener.RequestError(e.getMessage());
@@ -227,8 +225,8 @@ public class Feed<FeedItemT extends FeedItem> {
         };
     }
 
-    public static FeedItem loadFeedItem(Context context, Cursor c, Uri feedUri) {
-        Uri contentUri = getContentUri(feedUri, context);
+    public static FeedItem loadFeedItem(Cursor c, Uri feedUri) {
+        Uri contentUri = getContentUri(feedUri);
         if (contentUri.equals(FeedContract.MyVideo.CONTENT_URI))
             return MyVideoFeedItem.fromCursor(c);
         return FeedItem.fromCursor(c);

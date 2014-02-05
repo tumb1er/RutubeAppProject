@@ -122,8 +122,8 @@
             />
         <provider
                 android:authorities="ru.rutube.RutubeFeed.content.SearchSuggestProvider"
-                android:name="ru.rutube.RutubeFeed.content.SearchSuggestProvider" >
-        </provider>
+                android:name="ru.rutube.RutubeFeed.content.SearchSuggestProvider"
+            />
 
     </application>
 

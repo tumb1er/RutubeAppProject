@@ -438,18 +438,6 @@ public class FeedContentProvider extends ContentProvider {
             int count = c.getInt(c.getColumnIndex("cnt"));
             c.close();
             Log.d(LOG_TAG, "After delete: " + String.valueOf(count));
-            if (table.equals(FeedContract.MyVideo.CONTENT_PATH)) {
-                c = sqlDB.rawQuery("SELECT _id, cached_ts FROM " + table, null);
-                c.moveToFirst();
-                Log.d(LOG_TAG, table);
-                for (int i=0;i<c.getCount(); i++) {
-                    String vid = c.getString(c.getColumnIndex(FeedContract.FeedColumns._ID));
-                    String cached_ts = c.getString(c.getColumnIndex(FeedContract.FeedColumns.CACHED));
-                    Log.d(LOG_TAG, "CCC: " + vid + " cached " + cached_ts);
-                    c.moveToNext();
-                }
-                c.close();
-            }
         }
         context.getContentResolver().notifyChange(uri, null);
         return 0;

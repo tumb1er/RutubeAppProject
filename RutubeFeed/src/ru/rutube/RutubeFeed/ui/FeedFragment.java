@@ -49,6 +49,7 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
     private static final String CONTROLLER = "controller";
     protected FeedController mController;
     private MenuItem mRefreshItem;
+    private MenuItem mSearchItem;
     private Uri feedUri;
     private ListView sgView;
     private SearchView mSearchView;
@@ -64,6 +65,35 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
         }
     };
     private FeedFragment.FeedImpl mFeedImpl;
+    protected SearchView.OnQueryTextListener mOnQueryTextListener = new SearchView.OnQueryTextListener() {
+        @Override
+        public boolean onQueryTextSubmit(String s) {
+            if (D) Log.d(LOG_TAG, "SEARCH SUBMIT");
+            closeSearchWidget();
+            return false;
+        }
+
+        @Override
+        public boolean onQueryTextChange(String s) {
+            return false;
+        }
+    };
+
+    protected SearchView.OnSuggestionListener mOnSuggestionListener = new SearchView.OnSuggestionListener() {
+
+        @Override
+        public boolean onSuggestionSelect(int i) {
+            if (D) Log.d(LOG_TAG, "SEARCH-SUGGEST SELECT");
+            return false;
+        }
+
+        @Override
+        public boolean onSuggestionClick(int i) {
+            if (D) Log.d(LOG_TAG, "SEARCH-SUGGEST CLICK");
+            closeSearchWidget();
+            return false;
+        }
+    };
 
     public FeedFragment(FeedImpl feedImpl) {
         mFeedImpl = feedImpl;
@@ -101,28 +131,12 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
         if (menu.size() == 0)
             inflater.inflate(R.menu.feed_menu, menu);
         mRefreshItem = menu.findItem(R.id.menu_refresh);
-        MenuItem searchItem = menu.findItem(R.id.menu_search);
-        assert searchItem != null;
+        mSearchItem = menu.findItem(R.id.menu_search);
+        assert mSearchItem != null;
         Activity activity = getActivity();
         // Иногда успевает вызваться в момент, когда активити недоступно.
         if (activity != null)
-            setupSearchMenuItem(searchItem, activity);
-
-    }
-
-    private void setupSearchMenuItem(MenuItem searchItem, Activity activity) {
-        // Get the SearchView and set the searchable configuration
-        SearchManager searchManager = (SearchManager) activity.getSystemService(Context.SEARCH_SERVICE);
-
-        mSearchView = (SearchView)MenuItemCompat.getActionView(searchItem);
-        // mSearchView = (SearchView) searchItem.getActionView();
-
-        if (mSearchView != null) {
-            // Assumes current activity is the searchable activity
-            mSearchView.setSearchableInfo(searchManager.getSearchableInfo(activity.getComponentName()));
-            mSearchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
-            mSearchView.setFocusable(false);
-        }
+            setupSearchMenuItem(mSearchItem, activity);
     }
 
     @Override
@@ -137,6 +151,32 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
         if (D) Log.d(LOG_TAG, "super.onOptionsItemSelected");
         return super.onOptionsItemSelected(item);
 
+    }
+
+    protected void setupSearchMenuItem(MenuItem searchItem, Activity activity) {
+        // Get the SearchView and set the searchable configuration
+        SearchManager searchManager = (SearchManager) activity.getSystemService(Context.SEARCH_SERVICE);
+
+        mSearchView = (SearchView)MenuItemCompat.getActionView(searchItem);
+        // mSearchView = (SearchView) searchItem.getActionView();
+
+        if (mSearchView != null) {
+            // Assumes current activity is the searchable activity
+            mSearchView.setSearchableInfo(searchManager.getSearchableInfo(activity.getComponentName()));
+            mSearchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+            mSearchView.setFocusable(false);
+            mSearchView.setQueryRefinementEnabled(true);
+            mSearchView.setOnQueryTextListener(mOnQueryTextListener);
+            mSearchView.setOnSuggestionListener(mOnSuggestionListener);
+        }
+    }
+
+    protected void closeSearchWidget() {
+        if (mSearchItem != null) {
+            if (D) Log.d(LOG_TAG, "collapsing");
+            MenuItemCompat.collapseActionView(mSearchItem);
+            mSearchView.onActionViewCollapsed();
+        }
     }
 
     protected void refreshFeed() {
