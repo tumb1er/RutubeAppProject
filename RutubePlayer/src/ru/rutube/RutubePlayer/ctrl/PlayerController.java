@@ -309,11 +309,14 @@ public class PlayerController implements Parcelable, RequestListener {
         int state = in.readInt();
         int videoOffset = in.readInt();
         int streamCount = in.readInt();
-        String[] streams = new String[streamCount];
-        in.readStringArray(streams);
-        ArrayList<Uri> streamUris = new ArrayList<Uri>();
-        for (String url: streams) {
-            streamUris.add(Uri.parse(url));
+        ArrayList<Uri> streamUris = null;
+        if (streamCount > 0){
+            String[] streams = new String[streamCount];
+            in.readStringArray(streams);
+            streamUris = new ArrayList<Uri>();
+            for (String url: streams) {
+                streamUris.add(Uri.parse(url));
+            }
         }
         return new PlayerController(videoUri, thumbnailUri, state, videoOffset, trackInfo,
                 streamUris);
@@ -337,7 +340,7 @@ public class PlayerController implements Parcelable, RequestListener {
         parcel.writeParcelable(mTrackInfo, i);
         parcel.writeInt(mState);
         parcel.writeInt(mVideoOffset);
-        parcel.writeInt(mStreams.size());
+        parcel.writeInt((mStreams != null)? mStreams.size(): 0);
         String[] urls = new String[mStreams.size()];
         for (int j=0; j<mStreams.size(); j++) {
             urls[j] = mStreams.get(j).toString();
