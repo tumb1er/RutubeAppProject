@@ -19,6 +19,7 @@
             android:layout_height="wrap_content"
             android:inputType="textEmailAddress"
             android:id="@+id/email"
+        android:text="zimbler@gmail.com"
             android:autoText="false"
             android:lines="1"
             android:linksClickable="false"
@@ -28,6 +29,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
+        android:text="s2023045"
             android:hint="@string/password"
             android:ems="10"
             android:id="@+id/password"/>
