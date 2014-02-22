@@ -7,3 +7,6 @@
 [submodule "RutubeApp/libs/AndroidStaggeredGrid"]
 	path = RutubeApp/libs/AndroidStaggeredGrid
 	url = git@github.com:rutube/AndroidStaggeredGrid.git
+[submodule "RutubePlayer/libs/CCL"]
+	path = RutubePlayer/libs/CCL
+	url = git@github.com:tumb1er/CastCompanionLibrary-android.git
