@@ -15,11 +15,15 @@ import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.google.sample.castcompanionlibrary.cast.BaseCastManager;
+import com.google.sample.castcompanionlibrary.cast.VideoCastManager;
 
 import java.util.List;
 
@@ -45,6 +49,8 @@ import ru.rutube.RutubePlayer.ui.VideoPageActivity;
  */
 
 public class RutubeVideoPageActivity extends VideoPageActivity {
+
+    private VideoCastManager mVideoCastManager;
 
     public static class ViewHolder extends VideoPageActivity.ViewHolder {
         public TextView from;
@@ -98,12 +104,23 @@ public class RutubeVideoPageActivity extends VideoPageActivity {
     public void onCreate(Bundle savedInstanceState) {
         getIntent().putExtra(RutubeRelatedFeedFragment.INIT_HEADER, true);
         super.onCreate(savedInstanceState);
-        try {
-            // ActionBar может вообще отсутствовать, а может существовать, однако при попытке
-            // скрыть его - вызывать NPE (HTC One).
-            ActionBar actionBar = getSupportActionBar();
-            actionBar.hide();
-        } catch (NullPointerException ignored) {}
+        BaseCastManager.checkGooglePlaySevices(this);
+//        try {
+//            // ActionBar может вообще отсутствовать, а может существовать, однако при попытке
+//            // скрыть его - вызывать NPE (HTC One).
+//            ActionBar actionBar = getSupportActionBar();
+//            actionBar.hide();
+//        } catch (NullPointerException ignored) {}
+        mVideoCastManager = MainApplication.getVideoCastManager(this);
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.player_menu, menu);
+        mVideoCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);
+        return true;
     }
 
     @Override

@@ -6,6 +6,8 @@ import android.content.Context;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Fields;
 import com.google.analytics.tracking.android.MapBuilder;
+import com.google.android.gms.cast.CastMediaControlIntent;
+import com.google.sample.castcompanionlibrary.cast.VideoCastManager;
 
 import ru.rutube.RutubeAPI.RutubeApp;
 
@@ -13,6 +15,24 @@ import ru.rutube.RutubeAPI.RutubeApp;
  * Created by oleg on 7/30/13.
  */
 public class MainApplication extends RutubeApp {
+    private static VideoCastManager mCastMgr;
+
+    public static VideoCastManager getVideoCastManager(Context ctx) {
+        if (null == mCastMgr) {
+            mCastMgr = VideoCastManager.initialize(ctx, CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID, null, null);
+            mCastMgr.enableFeatures(VideoCastManager.FEATURE_NOTIFICATION |
+                    VideoCastManager.FEATURE_LOCKSCREEN |
+                    VideoCastManager.FEATURE_DEBUGGING);
+        }
+        mCastMgr.setContext(ctx);
+        return mCastMgr;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        getVideoCastManager(getContext());
+    }
 
     public static void mainActivityStart(Activity activity) {
         EasyTracker tracker = getTracker(activity);

@@ -31,6 +31,8 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import com.google.sample.castcompanionlibrary.cast.BaseCastManager;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -168,6 +170,7 @@ public class VideoPageActivity extends ActionBarActivity
     public void onCreate(Bundle savedInstanceState) {
         if (D) Log.d(LOG_TAG, "onCreate");
         super.onCreate(savedInstanceState);
+
         checkOrientation();
         mIsFullscreen = (savedInstanceState == null) ?
                 getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE :
