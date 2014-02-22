@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 import ru.rutube.RutubeAPI.BuildConfig;
+import ru.rutube.RutubeAPI.models.FeedItem;
 
 /**
  * Created with IntelliJ IDEA.
@@ -378,9 +379,66 @@ public class FeedContentProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(Uri uri, String s, String[] strings) {
+    public int delete(Uri uri, String where, String[] whereArgs) {
         Context context = getContext();
         assert context != null;
+        String table;
+        int uriType = sUriMatcher.match(uri);
+        if (D) Log.d(LOG_TAG, "Delete: " + String.valueOf(uri));
+        switch (uriType) {
+            case EDITORS:
+                table = FeedContract.Editors.CONTENT_PATH;
+                break;
+            case MY_VIDEO:
+                table = FeedContract.MyVideo.CONTENT_PATH;
+                break;
+            case SUBSCRIPTION:
+                table = FeedContract.Subscriptions.CONTENT_PATH;
+                break;
+            case SEARCH_RESULTS:
+                table = FeedContract.SearchResults.CONTENT_PATH;
+                break;
+            case SEARCH_QUERY:
+                table = FeedContract.SearchQuery.CONTENT_PATH;
+                break;
+            case RELATED_VIDEO:
+                table = FeedContract.RelatedVideo.CONTENT_PATH;
+                break;
+            case AUTHOR_VIDEO:
+                table = FeedContract.AuthorVideo.CONTENT_PATH;
+                break;
+            case TAGS_VIDEO:
+                table = FeedContract.TagsVideo.CONTENT_PATH;
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI: " + uri);
+        }
+        SQLiteDatabase sqlDB = dbHelper.getWritableDatabase();
+        assert sqlDB != null;
+        final String base_query = "SELECT COUNT(*) as cnt FROM " + table;
+        if (D) {
+            Cursor c = sqlDB.rawQuery(base_query, null);
+            c.moveToFirst();
+            int count = c.getInt(c.getColumnIndex("cnt"));
+            Log.d(LOG_TAG, "Before delete: " + String.valueOf(count));
+            c.close();
+            if (where != null) {
+                c = sqlDB.rawQuery("SELECT COUNT(*) as cnt FROM " + table + " WHERE " + where, whereArgs);
+                c.moveToFirst();
+                count = c.getInt(c.getColumnIndex("cnt"));
+                Log.d(LOG_TAG, "Delete Where: " + where);
+                Log.d(LOG_TAG, "For delete: " + String.valueOf(count));
+                c.close();
+            }
+        }
+        sqlDB.delete(table, where, whereArgs);
+        if (D) {
+            Cursor c = sqlDB.rawQuery(base_query, null);
+            c.moveToFirst();
+            int count = c.getInt(c.getColumnIndex("cnt"));
+            c.close();
+            Log.d(LOG_TAG, "After delete: " + String.valueOf(count));
+        }
         context.getContentResolver().notifyChange(uri, null);
         return 0;
     }
@@ -432,7 +490,8 @@ public class FeedContentProvider extends ContentProvider {
                 FeedContract.FeedColumns.AUTHOR_ID,
                 FeedContract.FeedColumns.AUTHOR_NAME,
                 FeedContract.FeedColumns.AVATAR_URI,
-                FeedContract.FeedColumns.DURATION
+                FeedContract.FeedColumns.DURATION,
+                FeedContract.FeedColumns.CACHED
         };
 
         ArrayList<String> columnList = new ArrayList<String>(Arrays.asList(available));
@@ -482,7 +541,8 @@ public class FeedContentProvider extends ContentProvider {
             " author_id INTEGER NULL," +
             " author_name VARCHAR(120)," +
             " avatar_url VARCHAR(255)," +
-            " duration INTEGER NULL";
+            " duration INTEGER NULL," +
+            " cached_ts DATETIME DEFAULT (datetime('now','localtime'))";
 
     private static final String MY_VIDEO_COLUMNS_SQL =
             FEED_COLUMNS_SQL + "," +
@@ -541,7 +601,7 @@ public class FeedContentProvider extends ContentProvider {
 
     private static final String SQL_DROP_TABLE = "DROP TABLE %s";
 
-    private static final int DB_VERSION = 6;
+    private static final int DB_VERSION = 7;
 
     protected static final class MainDatabaseHelper extends SQLiteOpenHelper {
 
@@ -582,7 +642,7 @@ public class FeedContentProvider extends ContentProvider {
                     case 3:
                         // писать кучу дополнительного кода ради ALTER TABLE ADD COLUMN не хочется
                         // поэтому тупо удаляем модифицируемые таблицы и создаем их заново.
-                        String[] tables = {
+                        final String[] tables = {
                                 FeedContract.Editors.CONTENT_PATH,
                                 FeedContract.MyVideo.CONTENT_PATH,
                                 FeedContract.Subscriptions.CONTENT_PATH,
@@ -603,6 +663,27 @@ public class FeedContentProvider extends ContentProvider {
                         break;
                     case 5:
                         db.execSQL(SQL_CREATE_TAGS_VIDEO_QUERY);
+                        break;
+                    case 6:
+                        final String[] tables6 = {
+                                FeedContract.Editors.CONTENT_PATH,
+                                FeedContract.MyVideo.CONTENT_PATH,
+                                FeedContract.Subscriptions.CONTENT_PATH,
+                                FeedContract.SearchResults.CONTENT_PATH,
+                                FeedContract.RelatedVideo.CONTENT_PATH,
+                                FeedContract.AuthorVideo.CONTENT_PATH,
+                                FeedContract.TagsVideo.CONTENT_PATH,
+                        };
+                        String dt = FeedItem.sSqlDateTimeFormat.format(new Date());
+                        for (String t : tables6) {
+                            String query = String.format("ALTER TABLE %s ADD COLUMN %s DATETIME" +
+                                    " DEFAULT '%s'", t,
+                                    FeedContract.FeedColumns.CACHED,
+                                    dt);
+                            db.execSQL(query);
+                        }
+                        break;
+
                     default:
                         break;
                 }

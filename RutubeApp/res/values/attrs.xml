@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <attr name="rutubeAppIcon" format="reference"/>
+    <attr name="FeedLoaderStyle" format="reference"/>
+    <attr name="VideoInfoScrollerStyle" format="reference"/>
+
+    <attr name="LoginClearButtonStyle" format="reference"/>
+    <attr name="LoginLoginTextEditStyle" format="reference"/>
+    <attr name="LoginPasswordTextEditStyle" format="reference"/>
+    <attr name="LoginRemindLinkStyle" format="reference"/>
+    <attr name="LoginRegistrationLinkStyle" format="reference"/>
+
+    <attr name="RelatedContainerStyle" format="reference"/>
+    <attr name="RelatedCardStyle" format="reference"/>
+    <attr name="RelatedStubStyle" format="reference"/>
+    <attr name="RelatedThumbnailStyle" format="reference"/>
+    <attr name="RelatedTitleStyle" format="reference"/>
+    <attr name="RelatedHitsStyle" format="reference"/>
+    <attr name="RelatedAuthorStyle" format="reference"/>
 
 </resources>

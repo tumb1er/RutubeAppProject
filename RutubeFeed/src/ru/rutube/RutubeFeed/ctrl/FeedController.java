@@ -19,13 +19,21 @@ import com.android.volley.toolbox.HttpClientStack;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.HttpTransport;
+import ru.rutube.RutubeAPI.RutubeApp;
+import ru.rutube.RutubeAPI.content.ContentMatcher;
 import ru.rutube.RutubeAPI.content.FeedContentProvider;
+import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeAPI.models.Feed;
 import ru.rutube.RutubeAPI.models.FeedItem;
+import ru.rutube.RutubeAPI.models.User;
 import ru.rutube.RutubeAPI.requests.RequestListener;
+import ru.rutube.RutubeFeed.R;
 import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
 
 /**
@@ -51,6 +59,17 @@ public class FeedController implements Parcelable {
         VIEW_TAG_TITLE
     };
 
+    private Feed getFeedModel() {
+        if (mFeed == null)
+            mFeed = new Feed(mFeedUri);
+        return mFeed;
+    }
+
+    public void logout() {
+        User.load().deleteToken();
+        mFeed = null;
+    }
+
 
     /**
      * Контракт пользовательского интерфейса
@@ -69,6 +88,10 @@ public class FeedController implements Parcelable {
         public boolean onItemClick(FeedCursorAdapter.ClickTag position, String viewTag);
 
         public void openFeed(Uri feedUri, String title);
+
+        public void setSelectedItem(int mItemRequested);
+
+        public int getCurrentPosition();
     }
 
     private static final int LOADER_ID = 1;
@@ -84,12 +107,14 @@ public class FeedController implements Parcelable {
     private boolean mHasNext = true;
     private boolean mAttached = false;
     private int mUpdatedPage = 0;
+    private boolean mInvalidated = false;
 
 
-    public FeedController(Uri feedUri) {
+    public FeedController(Uri feedUri, int itemRequested) {
         mContext = null;
         mView = null;
         mFeedUri = feedUri;
+        mItemRequested = itemRequested;
     }
 
     /**
@@ -101,13 +126,21 @@ public class FeedController implements Parcelable {
     }
 
     /**
+     * При возобновлении работы фрагмента проверят возможность обновить страницу.
+     */
+    public void checkLoadMore() {
+        if (D) Log.d(LOG_TAG, "Force load first page");
+        loadPage(1, true);
+    }
+
+    /**
      * По клику на элементе ленты открывает плеер
      * @param position индекс выбранного элемента
      */
     public void onListItemClick(int position) {
         if (D) Log.d(LOG_TAG, "onListItemClick");
         Cursor c = (Cursor) mView.getListAdapter().getItem(position);
-        FeedItem item = Feed.loadFeedItem(mContext, c, mFeedUri);
+        FeedItem item = Feed.loadFeedItem(c, mFeedUri);
         Uri uri = item.getVideoUri(mContext);
         mView.openPlayer(uri, item.getThumbnailUri());
     }
@@ -125,11 +158,11 @@ public class FeedController implements Parcelable {
         mView = view;
         mRequestQueue = Volley.newRequestQueue(context,
             new HttpClientStack(HttpTransport.getHttpClient()));
-        mFeed = new Feed(mFeedUri, mContext);
-
         FeedCursorAdapter adapter = prepareFeedCursorAdapter();
         mView.getLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks);
         mView.setListAdapter(adapter);
+        if (D) Log.d(LOG_TAG, "Attach position: " + String.valueOf(mItemRequested));
+        mView.setSelectedItem(mItemRequested);
         mAttached = true;
         loadPage(1);
     }
@@ -144,6 +177,7 @@ public class FeedController implements Parcelable {
         mContext = null;
         mView = null;
         mAttached = false;
+        mFeed = null;
     }
 
     // Реализация Parcelable
@@ -156,11 +190,13 @@ public class FeedController implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeParcelable(mFeedUri, i);
+        parcel.writeInt(mItemRequested);
     }
 
     public static FeedController fromParcel(Parcel in) {
         Uri feedUri = in.readParcelable(Uri.class.getClassLoader());
-        return new FeedController(feedUri);
+        int itemRequested = in.readInt();
+        return new FeedController(feedUri, itemRequested);
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -186,6 +222,7 @@ public class FeedController implements Parcelable {
         return adapter;
     }
 
+    private int mItemRequested = 0;
     /**
      * Обрабатывает события "нужно загрузить следующую страницу", приходящие от адаптера
      */
@@ -200,6 +237,10 @@ public class FeedController implements Parcelable {
 
         @Override
         public void onItemRequested(int position) {
+            int currentPosition = mView.getCurrentPosition() + 1;
+            if (currentPosition > 1)
+                mItemRequested = currentPosition;
+            if (D) Log.d(LOG_TAG, String.format("onItemRequested: %d %d", mItemRequested, position));
             int page = (position / mPerPage) + 1;
             if (mLoading == 0 && mHasNext && page > mUpdatedPage) {
                 mUpdatedPage = page;
@@ -241,7 +282,7 @@ public class FeedController implements Parcelable {
                 return;
             FeedCursorAdapter listAdapter = (FeedCursorAdapter)mView.getListAdapter();
             if (listAdapter.getCount() == 0)
-                mContext.getContentResolver().notifyChange(mFeed.getContentUri(), null);
+                mContext.getContentResolver().notifyChange(getFeedModel().getContentUri(), null);
             mPerPage = result.getInt(Constants.Result.PER_PAGE);
             mHasNext = result.getBoolean(Constants.Result.HAS_NEXT);
             listAdapter.setPerPage(mPerPage);
@@ -253,21 +294,47 @@ public class FeedController implements Parcelable {
             if (mLoading > 0) mLoading -= 1;
             if (mLoading == 0 && mView != null)
                 mView.doneRefreshing();
+            invalidateCache();
         }
 
         @Override
         public void onVolleyError(VolleyError error) {
-            if (mView != null)
+            if (error.networkResponse == null)
+            {
+                if (mView!= null) mView.showError();
+                requestDone();
+                return;
+            }
+            if (D) Log.d(LOG_TAG, "VolleyError: " + String.valueOf(error.networkResponse.statusCode));
+            if (mView != null && error.networkResponse.statusCode != 401)
                 mView.showError();
-
+            else {
+                logout();
+            }
+            requestDone();
         }
 
         @Override
         public void onRequestError(int tag, RequestError error) {
+            if (D) Log.d(LOG_TAG, "RequestError: " + error.getMessage());
             if (mView != null)
                 mView.showError();
+            requestDone();
         }
     };
+
+    private void invalidateCache() {
+        if (mInvalidated)
+            return;
+        mInvalidated = true;
+        Uri contentUri = Feed.getContentUri(mFeedUri);
+        Calendar c = Calendar.getInstance();
+        int minutes_expire = RutubeApp.getInstance().getResources().getInteger(R.integer.cache_expire);
+        c.add(Calendar.MINUTE, -minutes_expire);
+        String where = FeedContract.FeedColumns.CACHED + String.format(
+                " < '%s'", FeedItem.sSqlDateTimeFormat.format(c.getTime()));
+        RutubeApp.getInstance().getContentResolver().delete(contentUri, where, null);
+    }
 
     /**
      * Обработчик запросов к БД
@@ -278,8 +345,8 @@ public class FeedController implements Parcelable {
         public Loader<Cursor> onCreateLoader(int loaderId, Bundle arg1) {
             return new CursorLoader(
                     mContext,
-                    mFeed.getContentUri(),
-                    FeedContentProvider.getProjection(mFeed.getContentUri()),
+                    getFeedModel().getContentUri(),
+                    FeedContentProvider.getProjection(getFeedModel().getContentUri()),
                     null,
                     null,
                     null
@@ -289,7 +356,10 @@ public class FeedController implements Parcelable {
         @Override
         public void onLoadFinished(Loader<Cursor> arg0, Cursor cursor) {
             if (D) Log.d(LOG_TAG, "onLoadFinished " + String.valueOf(cursor.getCount()));
+            if (mView == null) return;
             ((CursorAdapter) mView.getListAdapter()).swapCursor(cursor);
+            mView.setSelectedItem(mItemRequested);
+            if (D) Log.d(LOG_TAG, "setPosition: " + String.valueOf(mItemRequested));
             // Грузим следующую страницу только если кэш в БД невалидный
             if ((cursor.getCount() < mPerPage) && mHasNext) {
                 if (D) Log.d(LOG_TAG, "load more from olf");
@@ -308,11 +378,13 @@ public class FeedController implements Parcelable {
      * @param page номер страницы с 1
      */
     private void loadPage(int page, boolean nocache) {
-        if (mLoading != 0)
+        if (mLoading != 0) {
+            if (D) Log.d(LOG_TAG, "isLoading, returning");
             return;
+        }
         mView.setRefreshing();
         mLoading += 1;
-        JsonObjectRequest request = mFeed.getFeedRequest(page, mContext, mLoadPageRequestListener);
+        JsonObjectRequest request = getFeedModel().getFeedRequest(page, mLoadPageRequestListener);
         if (nocache)
             mRequestQueue.getCache().remove(request.getCacheKey());
         mRequestQueue.add(request);

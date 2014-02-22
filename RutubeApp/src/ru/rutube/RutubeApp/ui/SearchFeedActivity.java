@@ -1,17 +1,22 @@
 package ru.rutube.RutubeApp.ui;
 
-import com.google.analytics.tracking.android.EasyTracker;
+import android.os.Bundle;
 
 import ru.rutube.RutubeApp.MainApplication;
 import ru.rutube.RutubeApp.R;
+import ru.rutube.RutubeApp.ui.feed.PlaFeedFragment;
 
 /**
  * Created by tumbler on 18.08.13.
  */
 public class SearchFeedActivity extends ru.rutube.RutubeFeed.ui.SearchFeedActivity {
+
     @Override
-    public void setContentView(int layoutResID) {
-        super.setContentView(R.layout.search_feed_activity);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        PlaFeedFragment f = (PlaFeedFragment)getSupportFragmentManager().findFragmentById(R.id.feed_fragment);
+        f.setStatsFeedTag("search_feed");
+        f.setEmptyText(getResources().getText(R.string.nothing_found).toString());
     }
 
     @Override
@@ -25,5 +30,7 @@ public class SearchFeedActivity extends ru.rutube.RutubeFeed.ui.SearchFeedActivi
         super.onStop();
         MainApplication.activityStop(this);
     }
+
+
 
 }

@@ -152,8 +152,10 @@ public class LoginDialogFragment extends DialogFragment implements TextView.OnEd
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
         if (hasFocus) {
+            try {
             getDialog().getWindow().setSoftInputMode(
                     WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+            } catch (NullPointerException ignored) {}
         }
     }
 

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -21,12 +22,16 @@ import com.android.volley.toolbox.Volley;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.HttpTransport;
 import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.models.Constants;
+import ru.rutube.RutubeAPI.models.PlayOptions;
 import ru.rutube.RutubeAPI.models.TrackInfo;
 import ru.rutube.RutubeAPI.models.Video;
 import ru.rutube.RutubeAPI.requests.RequestListener;
@@ -38,6 +43,9 @@ import ru.rutube.RutubePlayer.R;
  */
 public class PlayerController implements Parcelable, RequestListener {
 
+    public static final String PREFS_PLAYER = "player";
+    public static final String PREFS_QUALITY = "selected_quality";
+
     /**
      * Интерфейс для представления плеера
      */
@@ -46,7 +54,7 @@ public class PlayerController implements Parcelable, RequestListener {
          * Задает Uri видеопотока видеоэлементу
          * @param uri Uri видеопотока
          */
-        public void setStreamUri(Uri uri);
+        public void setStreamUri(Uri uri, int quality);
 
         public void setVideoTitle(String title);
         public void setThumbnailUri(Uri uri);
@@ -77,6 +85,8 @@ public class PlayerController implements Parcelable, RequestListener {
         public void toggleThumbnail(boolean visible);
 
         public void toastError(String string);
+
+        public void limitQuality(int quality);
     }
 
     public static final int STATE_NEW = 0;
@@ -87,15 +97,18 @@ public class PlayerController implements Parcelable, RequestListener {
 
     private static final String LOG_TAG = PlayerController.class.getName();
     private static final boolean D = BuildConfig.DEBUG;
-    private static final int TOTAL_REQUESTS_NEEDED = 4;
+    private static final int TOTAL_REQUESTS_NEEDED = 3;
 
     protected RequestQueue mRequestQueue;
     protected ImageLoader mImageLoader;
 
     private Uri mVideoUri;
-    private Uri mStreamUri;
+    private ArrayList<Uri> mStreams;
     private Video mVideo;
     private TrackInfo mTrackInfo;
+    private PlayOptions mPlayOptions;
+    private int mSelectedUri;
+
     private int mState;
     private int mVideoOffset;
     private SparseIntArray mOptionsErrorMap;
@@ -122,79 +135,113 @@ public class PlayerController implements Parcelable, RequestListener {
      */
     @Override
     public void onResult(int tag, Bundle result) {
-
-        if (tag == Requests.TRACK_INFO) {
-            if (D) Log.d(LOG_TAG, "Got Trackinfo");
-            mTrackInfo = result.getParcelable(Constants.Result.TRACKINFO);
-            assert mView != null;
-            if (mTrackInfo == null) {
-                Integer errCode = result.getInt(Constants.Result.TRACKINFO_ERROR);
-                if (D) Log.e(LOG_TAG, "Track info error " + String.valueOf(errCode));
-                mRequestQueue.cancelAll(Requests.PLAY_OPTIONS);
-                if (mState == STATE_ERROR)
-                    return;
-                setState(STATE_ERROR);
-                mView.showError(mContext.getResources().getString(
-                            mTrackInfoErrorMap.get(errCode, R.string.video_deleted)));
-                return;
-            }
-            mView.setVideoTitle(mTrackInfo.getTitle());
-            if (mPlaybackAllowed == null || mPlaybackAllowed){
-            //    mView.setStreamUri(mTrackInfo.getBalancerUrl());
-                JsonObjectRequest request = mTrackInfo.getMP4UrlRequest(mContext, this);
-                mRequestQueue.add(request);
-            }
-            mPlayRequestStage++;
+        switch(tag){
+            case Requests.TRACK_INFO:
+                TrackInfo trackInfo = result.getParcelable(Constants.Result.TRACKINFO);
+                processTrackInfoResult(trackInfo);
+                break;
+            case Requests.PLAY_OPTIONS:
+                PlayOptions playOptions = result.getParcelable(Constants.Result.PLAY_OPTIONS);
+                processPlayOptionsResult(playOptions);
+                break;
+            case Requests.BALANCER_JSON:
+                processBalancerResult(result);
+                checkReadyToPlay();
+                break;
+            default:
+                break;
         }
+    }
 
-        if (tag == Requests.PLAY_OPTIONS) {
-            if (D) Log.d(LOG_TAG, "Got PlayOptions");
-            mPlaybackAllowed = result.getBoolean(Constants.Result.ACL_ALLOWED, false);
-            Integer errCode = result.getInt(Constants.Result.ACL_ERRCODE, 0);
-            if (!mPlaybackAllowed) {
-                if (D) Log.w(LOG_TAG, "Playback not allowed");
-                mRequestQueue.cancelAll(Requests.TRACK_INFO);
-                mRequestQueue.cancelAll(Requests.BALANCER_JSON);
-                if (mState == STATE_ERROR)
-                    return;
-                setState(STATE_ERROR);
-                Integer error_resource;
-                if (errCode == 0){
-                    errCode = result.getInt(Constants.Result.TRACKINFO_ERROR, 0);
-                    error_resource = mTrackInfoErrorMap.get(errCode, R.string.video_deleted);
-                } else {
-                    error_resource = mOptionsErrorMap.get(errCode, R.string.failed_to_load_data);
-                }
-                mView.showError(mContext.getResources().getString(error_resource));
+    public void onQualitySelected(int quality) {
+        if (D) Log.d(LOG_TAG, "Quality selected: " + String.valueOf(quality));
+        if (mStreams != null && quality < mStreams.size()) {
+            mVideoOffset = mView.getCurrentOffset();
+            mSelectedUri = quality;
+            SharedPreferences prefs = mContext.getSharedPreferences(PREFS_PLAYER, Context.MODE_PRIVATE);
+            prefs.edit().putInt(PREFS_QUALITY, quality).commit();
+            mView.setStreamUri(null, 0);
+            mView.setLoading();
+            // Именно так восстанавливается проигрывание после приостановки работы
+            restoreFromState();
+        }
+    }
+
+    protected void processBalancerResult(Bundle result) {
+        if (D) Log.d(LOG_TAG, "Got Balancer Result " + String.valueOf(result));
+        String[] mp4urls = result.getStringArray(Constants.Result.MP4_URL);
+        if (mView != null && mp4urls != null && mp4urls.length > 0) {
+            if (D) Log.d(LOG_TAG, "Got mp4 uri: " + mp4urls.toString());
+            mStreams = new ArrayList<Uri>();
+            for (String uri: mp4urls)
+                mStreams.add(Uri.parse(uri));
+
+            if (mPlaybackAllowed != null && mPlaybackAllowed){
+                setStreamUri();
+            }
+        }
+        mPlayRequestStage++;
+    }
+
+    private void setStreamUri() {
+        if (!mAttached)
+            return;
+        int quality = getSelectedQuality();
+        mView.setStreamUri(mStreams.get(quality), quality);
+        mView.limitQuality(mStreams.size() - 1);
+    }
+
+    private int getSelectedQuality() {
+        int max_uri = mStreams.size() - 1;
+        return Math.min(max_uri, mSelectedUri);
+    }
+
+    protected void processPlayOptionsResult(PlayOptions result) {
+        if (D) Log.d(LOG_TAG, "Got PlayOptions");
+        mPlayOptions = result;
+        if (result == null)
+        {
+            setState(STATE_ERROR);
+            mRequestQueue.cancelAll(Requests.TRACK_INFO);
+            return;
+        }
+        mPlaybackAllowed = result.getAclAllowed();
+        Integer errCode = result.getAclErrorCode();
+        if (!mPlaybackAllowed) {
+            if (D) Log.w(LOG_TAG, "Playback not allowed");
+            mRequestQueue.cancelAll(Requests.TRACK_INFO);
+            if (mState == STATE_ERROR)
                 return;
+            setState(STATE_ERROR);
+            Integer error_resource;
+            if (errCode == 0){
+                errCode = result.getTrackInfoErrorCode();
+                error_resource = mTrackInfoErrorMap.get(errCode, R.string.video_deleted);
             } else {
-//                if (mTrackInfo != null) {
-//                    mView.setStreamUri(mTrackInfo.getBalancerUrl());
-//                }
-                if (mStreamUri != null) {
-                    mView.setStreamUri(mStreamUri);
-                }
-                if (mThumbnailUri == null){
-                    Uri thumbnailUri = result.getParcelable(Constants.Result.PLAY_THUMBNAIL);
-                    mView.setThumbnailUri(thumbnailUri);
-                }
+                error_resource = mOptionsErrorMap.get(errCode, R.string.failed_to_load_data);
             }
-            mPlayRequestStage++;
-        }
+            mView.showError(mContext.getResources().getString(error_resource));
+            return;
+        } else {
+            JsonObjectRequest request = result.getMP4UrlRequest(mContext, this);
+            mRequestQueue.add(request);
 
-        if (tag == Requests.BALANCER_JSON) {
-            if (D) Log.d(LOG_TAG, "Got Balancer Result");
-            String mp4url = result.getString(Constants.Result.MP4_URL);
-            if (D) Log.d(LOG_TAG, "Got mp4 uri: " + mp4url);
-            if (mp4url != null) {
-                mStreamUri = Uri.parse(mp4url);
-                if (mPlaybackAllowed != null && mPlaybackAllowed)
-                    mView.setStreamUri(mStreamUri);
+            if (mThumbnailUri == null){
+                Uri thumbnailUri = result.getThumbnailUri();
+                mView.setThumbnailUri(thumbnailUri);
             }
-            mPlayRequestStage++;
         }
+        mPlayRequestStage++;
+    }
 
-        checkReadyToPlay();
+    protected void processTrackInfoResult(TrackInfo result) {
+        if (D) Log.d(LOG_TAG, "Got Trackinfo");
+        mTrackInfo = result;
+        assert mView != null;
+        if (mTrackInfo == null) {
+            return;
+        }
+        mView.setVideoTitle(mTrackInfo.getTitle());
     }
 
     @Override
@@ -240,11 +287,13 @@ public class PlayerController implements Parcelable, RequestListener {
 
     }
 
-    protected PlayerController(Uri videoUri, Uri thumbnailUri, int state, int offset, TrackInfo trackInfo) {
+    protected PlayerController(Uri videoUri, Uri thumbnailUri, int state, int offset, TrackInfo trackInfo,
+                               ArrayList<Uri> streams) {
         this(videoUri, thumbnailUri);
         mState = state;
         mVideoOffset = offset;
         mTrackInfo = trackInfo;
+        mStreams = streams;
     }
 
     // Реализация Parcelable
@@ -259,7 +308,18 @@ public class PlayerController implements Parcelable, RequestListener {
         TrackInfo trackInfo = in.readParcelable(TrackInfo.class.getClassLoader());
         int state = in.readInt();
         int videoOffset = in.readInt();
-        return new PlayerController(videoUri, thumbnailUri, state, videoOffset, trackInfo);
+        int streamCount = in.readInt();
+        ArrayList<Uri> streamUris = null;
+        if (streamCount > 0){
+            String[] streams = new String[streamCount];
+            in.readStringArray(streams);
+            streamUris = new ArrayList<Uri>();
+            for (String url: streams) {
+                streamUris.add(Uri.parse(url));
+            }
+        }
+        return new PlayerController(videoUri, thumbnailUri, state, videoOffset, trackInfo,
+                streamUris);
     }
 
     @Override
@@ -280,6 +340,12 @@ public class PlayerController implements Parcelable, RequestListener {
         parcel.writeParcelable(mTrackInfo, i);
         parcel.writeInt(mState);
         parcel.writeInt(mVideoOffset);
+        parcel.writeInt((mStreams != null)? mStreams.size(): 0);
+        String[] urls = new String[mStreams.size()];
+        for (int j=0; j<mStreams.size(); j++) {
+            urls[j] = mStreams.get(j).toString();
+        }
+        parcel.writeStringArray(urls);
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -306,7 +372,7 @@ public class PlayerController implements Parcelable, RequestListener {
      */
     public void replay() {
         // если проигрывание уже началось, не инициируем его снова.
-        if (mState == STATE_STARTING)
+        if (mState == STATE_STARTING || mState == STATE_PLAYING)
             return;
         if (mState!= STATE_COMPLETED)
             throw new IllegalStateException(
@@ -314,9 +380,13 @@ public class PlayerController implements Parcelable, RequestListener {
         setState(STATE_STARTING);
         mVideoOffset = 0;
         mView.toggleThumbnail(false);
-        mView.setStreamUri(mStreamUri);
+        setStreamUri();
         mView.setVideoTitle(mTrackInfo.getTitle());
         mPlayRequestStage = TOTAL_REQUESTS_NEEDED - 1;
+    }
+
+    public Uri getVideoUri(){
+        return mVideoUri;
     }
 
     /**
@@ -329,7 +399,12 @@ public class PlayerController implements Parcelable, RequestListener {
         mVideoOffset = mView.getCurrentOffset();
         if (D) Log.d(LOG_TAG, "onPause: offset = " + String.valueOf(mVideoOffset));
         mView.stopPlayback();
-        mView.setStreamUri(null);
+        resetStreamUri();
+    }
+
+    private void resetStreamUri() {
+        mView.setStreamUri(null, 0);
+        mView.limitQuality(4);
     }
 
     /**
@@ -341,7 +416,7 @@ public class PlayerController implements Parcelable, RequestListener {
     public void onResume() {
         if (D) Log.d(LOG_TAG, "onResume: state=" + String.valueOf(mState));
         if (mState == STATE_PLAYING){
-            mView.setStreamUri(mStreamUri);
+            setStreamUri();
             mView.setVideoTitle(mTrackInfo.getTitle());
             mPlayRequestStage = TOTAL_REQUESTS_NEEDED - 1;
             setState(STATE_STARTING);
@@ -390,7 +465,6 @@ public class PlayerController implements Parcelable, RequestListener {
         }
     }
 
-
     /**
      * Обработка события инициализации VideoView
      */
@@ -418,6 +492,7 @@ public class PlayerController implements Parcelable, RequestListener {
             mView.setThumbnailUri(mThumbnailUri);
         }
         mAttached = true;
+        mSelectedUri = mContext.getSharedPreferences(PREFS_PLAYER, Context.MODE_PRIVATE).getInt(PREFS_QUALITY, 0);
         if (mState != STATE_NEW)
             restoreFromState();
     }
@@ -536,14 +611,13 @@ public class PlayerController implements Parcelable, RequestListener {
                 mState = STATE_STARTING;
                 mView.setVideoTitle(mTrackInfo.getTitle());
                 mPlayRequestStage = TOTAL_REQUESTS_NEEDED - 1;
-                mView.setStreamUri(mStreamUri);
-                mView.setLoadingCompleted();
+                setStreamUri();
                 break;
             case STATE_COMPLETED:
                 // На момент сохранения был показан эндскрин.
                 // Делаем так, чтобы плеер не начал в фоне воспроизводить видео, восстанавливаем
                 // состояние элементов управления,
-                mView.setStreamUri(null);
+                resetStreamUri();
                 mView.toggleThumbnail(true);
                 mView.stopPlayback();
                 mView.setLoadingCompleted();
@@ -572,6 +646,7 @@ public class PlayerController implements Parcelable, RequestListener {
      * и командует плееру начать просмотр
      */
     private void startPlayback(boolean sendViewed) {
+        if (D) Log.d(LOG_TAG, "Starting playback");
         if (mState!= STATE_STARTING && mState != STATE_ERROR)
             throw new IllegalStateException(String.format("Can't change state to Playing from %d", mState));
         setState(STATE_PLAYING);
@@ -582,8 +657,10 @@ public class PlayerController implements Parcelable, RequestListener {
         }
         mView.setLoadingCompleted();
         mView.toggleThumbnail(false);
-        if (mVideoOffset > 0)
+        if (D) Log.d(LOG_TAG, String.format("Offset: %d", mVideoOffset));
+        if (mVideoOffset > 0) {
             mView.seekTo(mVideoOffset);
+        }
         mView.startPlayback();
         if (sendViewed) {
             JsonObjectRequest request = mVideo.getYastRequest(mContext);

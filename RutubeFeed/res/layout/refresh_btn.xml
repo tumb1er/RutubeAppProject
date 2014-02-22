@@ -4,7 +4,4 @@
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
            android:src="@drawable/ic_navigation_refresh"
-           android:paddingLeft="12dp"
-           android:paddingRight="12dp"
-           android:contentDescription="@string/refresh"
-/>
+    style="?attr/FeedRefreshButtonStyle" />

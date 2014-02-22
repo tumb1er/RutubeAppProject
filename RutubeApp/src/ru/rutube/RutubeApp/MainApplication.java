@@ -2,14 +2,12 @@ package ru.rutube.RutubeApp;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.v4.app.FragmentActivity;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Fields;
 import com.google.analytics.tracking.android.MapBuilder;
 
 import ru.rutube.RutubeAPI.RutubeApp;
-import ru.rutube.RutubeApp.ui.AuthorFeedActivity;
 
 /**
  * Created by oleg on 7/30/13.
@@ -76,7 +74,16 @@ public class MainApplication extends RutubeApp {
     public static void relatedCardClick(Activity activity, String tag) {
         EasyTracker tracker = getTracker(activity);
         tracker.send(MapBuilder.createEvent("ui_actions", "related_click", tag, null).build());
+    }
 
+    public static void playerError(Activity activity, String message, String videoId) {
+        EasyTracker tracker = getTracker(activity);
+        tracker.send(MapBuilder.createEvent("errors", message, videoId, null).build());
+    }
+
+    public static void playerOpened(Activity activity, String tag) {
+        EasyTracker tracker = getTracker(activity);
+        tracker.send(MapBuilder.createEvent("conversion", "open_player", tag, null).build());
     }
 
     public static void feedActivityStart(Activity activity, String tag) {

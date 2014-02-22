@@ -2,6 +2,7 @@
 <resources>
     <style name="Rutube"/>
     <style name="Rutube.Feed"/>
+    <style name="Widget"/>
 
     <style name="Rutube.Feed.Text">
         <item name="android:textSize">14sp</item>
@@ -11,27 +12,6 @@
     <style name="Rutube.Feed.LightText">
         <item name="android:textSize">14sp</item>
         <item name="android:typeface">sans</item>
-    </style>
-
-    <style name="Theme.Rutube.Feed" parent="Theme.Sherlock.Light">
-        <item name="FeedListStyle">@style/Rutube.Feed.List</item>
-        <item name="FeedContainerStyle">@style/Rutube.Feed.Container</item>
-        <item name="FeedDurationStyle">@style/Rutube.Feed.Duration</item>
-        <item name="FeedTitleStyle">@style/Rutube.Feed.Title</item>
-        <item name="FeedDescriptionStyle">@style/Rutube.Feed.Description</item>
-        <item name="FeedThumbnailStyle">@style/Rutube.Feed.Thumbnail</item>
-        <item name="FeedCardStyle">@style/Rutube.Feed.Card</item>
-        <item name="FeedCreatedStyle">@style/Rutube.Feed.Created</item>
-        <item name="FeedAvatarStyle">@style/Rutube.Feed.Avatar</item>
-        <item name="FeedAuthorStyle">@style/Rutube.Feed.Author</item>
-        <item name="FeedFooterStyle">@style/Rutube.Feed.Footer</item>
-        <item name="FeedHorizontalLineStyle">@style/Rutube.Feed.Line</item>
-
-        <item name="FeedTagListStyle">@style/Rutube.Feed.TagList</item>
-        <item name="FeedTagStyle">@style/Rutube.Feed.Tag</item>
-        <item name="FeedTagTitleStyle">@style/Rutube.Feed.TagTitle</item>
-        <item name="FeedTagCommentStyle">@style/Rutube.Feed.TagComment</item>
-
     </style>
 
     <style name="Rutube.Feed.Container" parent="Widget">
@@ -160,5 +140,11 @@
         <item name="android:background">@color/footer_background</item>
         <item name="android:paddingLeft">@dimen/tag_comment_padding_left</item>
         <item name="android:paddingRight">@dimen/card_inner_padding</item>
+    </style>
+
+    <style name="Rutube.Feed.RefreshButton">
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">12dp</item>
+        <item name="android:contentDescription">@string/refresh</item>
     </style>
 </resources>

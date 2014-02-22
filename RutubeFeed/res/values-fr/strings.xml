@@ -10,4 +10,6 @@
     <string name="refresh">Rafraîchir</string>
     <string name="search_title_format">Recherche: %s</string>
     <string name="editors_choice">Choix de l\'éditeur</string>
+    <string name="author">Auteur</string>
+    <string name="created">Établi</string>
 </resources>

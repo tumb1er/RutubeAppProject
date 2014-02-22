@@ -1,31 +1,44 @@
 package ru.rutube.RutubePlayer.ui;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.database.ContentObserver;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
+import java.util.ArrayList;
+import java.util.List;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.models.Author;
+import ru.rutube.RutubeAPI.models.TrackInfo;
 import ru.rutube.RutubeAPI.models.Video;
+import ru.rutube.RutubeAPI.models.VideoTag;
 import ru.rutube.RutubePlayer.R;
 import ru.rutube.RutubePlayer.ctrl.VideoPageController;
 
@@ -35,13 +48,14 @@ import ru.rutube.RutubePlayer.ctrl.VideoPageController;
  * Возможен старт по intent-action: ru.rutube.player.play c Uri видео вида:
  * http://rutube.ru/video/<video_id>/
  */
-public class VideoPageActivity extends SherlockFragmentActivity
+public class VideoPageActivity extends ActionBarActivity
         implements PlayerFragment.PlayerEventsListener,
         EndscreenFragment.ReplayListener,
         VideoPageController.VideoPageView {
     protected static final boolean D = BuildConfig.DEBUG;
     protected static int mLayoutResId = R.layout.player_activity;
     private boolean mIsAutorotateEnabled;
+    private Video mVideo;
 
     protected static class ViewHolder {
         public PlayerFragment playerFragment;
@@ -75,6 +89,68 @@ public class VideoPageActivity extends SherlockFragmentActivity
         }
     };
 
+    protected RutubeMediaController.ShareListener mShareListener = new RutubeMediaController.ShareListener() {
+        @Override
+        public void onShare() {
+            doShare();
+        }
+    };
+
+    protected void doShare() {
+        Uri uri = getIntent().getData();
+        if (uri == null)
+            return;
+        String videoUri = uri.toString();
+        String subject;
+        String default_text;
+        if (mVideo == null) {
+            subject = getString(R.string.share_text);
+            default_text = videoUri;
+        } else {
+            subject = mVideo.getTitle();
+            default_text = mVideo.getTitle() + " " + videoUri;
+        }
+        String text;
+
+        // http://stackoverflow.com/questions/5734678/
+        List<Intent> targetedShareIntents = new ArrayList<Intent>();
+        Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        PackageManager packageManager = getPackageManager();
+        if (packageManager == null) return;
+        List<ResolveInfo> resInfo = packageManager.queryIntentActivities(shareIntent, 0);
+        if (!resInfo.isEmpty()){
+            for (ResolveInfo resolveInfo : resInfo) {
+                ActivityInfo activityInfo = resolveInfo.activityInfo;
+                if (activityInfo == null)
+                    continue;
+                String packageName = activityInfo.packageName;
+                Intent targetedShareIntent = new Intent(android.content.Intent.ACTION_SEND);
+                targetedShareIntent.setType("text/plain");
+                targetedShareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
+
+                if (packageName.startsWith("com.facebook")){
+                    text = videoUri;
+                } else if (packageName.equals("com.twitter.android")) {
+                    text = default_text + " " + getString(R.string.share_twitter);
+                } else {
+                    text = default_text;
+                }
+                targetedShareIntent.putExtra(android.content.Intent.EXTRA_TEXT, text);
+
+                targetedShareIntent.setPackage(packageName);
+                targetedShareIntents.add(targetedShareIntent);
+
+
+            }
+            Intent chooserIntent = Intent.createChooser(targetedShareIntents.remove(0), "Select app to share");
+
+            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toArray(new Parcelable[]{}));
+
+            startActivity(chooserIntent);
+        }
+    }
+
     /**
      * Обработчик изменения настроек автоповорота
      */
@@ -102,6 +178,39 @@ public class VideoPageActivity extends SherlockFragmentActivity
         init();
         toggleFullscreen(mIsFullscreen, false);
         transformLayout(mIsLandscape);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        try {
+            // Samsung Galaxy Note, Galaxy S3 - NPE где-то в недрах андроида.
+            MenuInflater menuInflater = getMenuInflater();
+            menuInflater.inflate(R.menu.player_menu, menu);
+        } catch (NullPointerException ignored) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onCreatePanelMenu(int featureId, Menu menu) {
+        try {
+            // Samsung Galaxy Note, Galaxy S3 - NPE где-то в недрах андроида.
+            return super.onCreatePanelMenu(featureId, menu);
+        } catch(NullPointerException ignored) {
+            return false;
+        }
     }
 
     @Override
@@ -153,12 +262,20 @@ public class VideoPageActivity extends SherlockFragmentActivity
     }
 
     @Override
-    public void setVideoInfo(Video video) {
+    public void setVideoInfo(TrackInfo trackInfo, Video video) {
+        mVideo = video;
+        if (video == null || trackInfo == null)
+            return;
         bindTitle(video);
         bindAuthor(video);
         bindDuration(video);
         bindHits(video);
         bindDescription(video);
+        bindTags(trackInfo);
+    }
+
+    protected void bindTags(TrackInfo trackInfo) {
+        // нет такой функциональности
     }
 
     @Override
@@ -170,12 +287,17 @@ public class VideoPageActivity extends SherlockFragmentActivity
     protected void onResume() {
         super.onResume();
         mController.attach(this, this);
+        getContentResolver().registerContentObserver(Settings.System.getUriFor
+                (Settings.System.ACCELEROMETER_ROTATION), true, mRotationObserver);
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         mController.detach();
+        mOrientationListener.disable();
+        getContentResolver().unregisterContentObserver(mRotationObserver);
     }
 
     @Override
@@ -362,15 +484,15 @@ public class VideoPageActivity extends SherlockFragmentActivity
 
         mOrientationListener = getOrientationEventListener();
         checkAutoOrientation();
-        getContentResolver().registerContentObserver(Settings.System.getUriFor
-                (Settings.System.ACCELEROMETER_ROTATION), true, mRotationObserver);
 
 
         ViewHolder holder = getHolder();
         initHolder(holder);
 
         mViewHolder.playerFragment.setPlayerStateListener(this);
+        mViewHolder.playerFragment.setShareListener(mShareListener);
         mViewHolder.endscreenFragment.setReplayListener(this);
+        mViewHolder.endscreenFragment.setShareListener(mShareListener);
 
         toggleEndscreen(false);
 

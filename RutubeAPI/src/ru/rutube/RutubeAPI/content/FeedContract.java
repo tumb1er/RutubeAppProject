@@ -26,6 +26,7 @@ public final class FeedContract {
         public static final String AUTHOR_NAME = "author_name";
         public static final String AVATAR_URI = "avatar_url";
         public static final String DURATION = "duration";
+        public static final String CACHED = "cached_ts";
     }
 
     public interface TagsColumns {

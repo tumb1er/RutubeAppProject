@@ -60,6 +60,7 @@ public class Video implements Parcelable {
     private Author mAuthor;
     private String mSignature;
     private TrackInfo mTrackInfo;
+    private PlayOptions mPlayOptions;
     private int mDuration;
     private int mHits;
 
@@ -139,13 +140,9 @@ public class Video implements Parcelable {
             public void onResponse(JSONObject response) {
                 if (D) Log.d(LOG_TAG, "Options: " + String.valueOf(response));
                 try {
-                    Boolean allowed = parseAllowed(response);
-                    Integer errCode = parseErrCode(response);
-                    Uri thumbnailUri = parsePlayThumbnailUri(response);
+                    mPlayOptions = parsePlayOptions(response);
                     Bundle bundle = new Bundle();
-                    bundle.putBoolean(Constants.Result.ACL_ALLOWED, allowed);
-                    bundle.putInt(Constants.Result.ACL_ERRCODE, errCode);
-                    bundle.putParcelable(Constants.Result.PLAY_THUMBNAIL, thumbnailUri);
+                    bundle.putParcelable(Constants.Result.PLAY_OPTIONS, mPlayOptions);
                     requestListener.onResult(Requests.PLAY_OPTIONS, bundle);
                 } catch (JSONException e) {
                     RequestListener.RequestError error = new RequestListener.RequestError(e.getMessage());
@@ -172,24 +169,13 @@ public class Video implements Parcelable {
             return 0;
         }
     }
-
-    private Uri parsePlayThumbnailUri(JSONObject response) throws JSONException {
-        return Uri.parse(response.getString(JSON_THUMBNAIL_URL));
-    }
-
-    private Boolean parseAllowed(JSONObject response) throws JSONException {
-        JSONObject acl = response.getJSONObject(JSON_ACL_ACCESS);
-        return acl.optBoolean(JSON_ALLOWED, false);
-    }
-
-    private Integer parseErrCode(JSONObject response) throws JSONException {
-        JSONObject acl = response.getJSONObject(JSON_ACL_ACCESS);
-        return acl.optInt(JSON_ACL_ERRCODE, 0);
-    }
-
     protected TrackInfo parseTrackInfo(JSONObject data) throws JSONException {
         if (D) Log.d(LOG_TAG, "Result: " + data.toString());
         return TrackInfo.fromJSON(data);
+    }
+
+    protected PlayOptions parsePlayOptions(JSONObject data) throws JSONException {
+        return PlayOptions.fromJSON(data);
     }
 
     public JsonObjectRequest getTrackInfoRequest(Context context, RequestListener listener) {
@@ -276,7 +262,7 @@ public class Video implements Parcelable {
         assert uri != null;
         JsonObjectRequest request = new AuthJsonObjectRequest(uri.toString(),
                 null, getPlayOptionsListener(listener), getErrorListener(Requests.PLAY_OPTIONS, listener),
-                User.loadToken(context));
+                User.loadToken());
         request.setShouldCache(true);
         request.setTag(Requests.PLAY_OPTIONS);
         if (D) Log.d(LOG_TAG, "Play Options URL: " + uri.toString());
@@ -284,11 +270,11 @@ public class Video implements Parcelable {
     }
 
     public JsonObjectRequest getYastRequest(Context context) {
-        assert mTrackInfo != null;
+        assert mPlayOptions != null;
         assert context != null;
         if (D)
-            Log.d(LOG_TAG, "Context: " + String.valueOf(context) + " TI: " + String.valueOf(mTrackInfo));
-        String yastUrl = String.format(context.getString(R.string.yastUri), mTrackInfo.getTrackId());
+            Log.d(LOG_TAG, "Context: " + String.valueOf(context) + " TI: " + String.valueOf(mPlayOptions));
+        String yastUrl = String.format(context.getString(R.string.yastUri), mPlayOptions.getTrackId());
         Uri uri = Uri.parse(yastUrl).buildUpon()
                 .appendQueryParameter("referer", context.getString(R.string.referer))
                 .build();

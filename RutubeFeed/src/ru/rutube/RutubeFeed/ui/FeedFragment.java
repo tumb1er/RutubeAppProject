@@ -7,9 +7,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -18,12 +24,7 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.widget.SearchView;
+import android.widget.TextView;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.RutubeApp;
@@ -32,6 +33,8 @@ import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeFeed.R;
 import ru.rutube.RutubeFeed.ctrl.FeedController;
 import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
+import ru.rutube.RutubeFeed.feed.BasicFeedImpl;
+import ru.rutube.RutubeFeed.feed.SubscriptionsFeedImpl;
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,11 +43,13 @@ import ru.rutube.RutubeFeed.data.FeedCursorAdapter;
  * Time: 12:56
  * To change this template use File | Settings | File Templates.
  */
-public class FeedFragment extends SherlockFragment implements FeedController.FeedView, AdapterView.OnItemClickListener {
+public class FeedFragment extends Fragment implements FeedController.FeedView, AdapterView.OnItemClickListener {
     private static final String LOG_TAG = FeedFragment.class.getName();
     private static final boolean D = BuildConfig.DEBUG;
+    private static final String CONTROLLER = "controller";
     protected FeedController mController;
     private MenuItem mRefreshItem;
+    private MenuItem mSearchItem;
     private Uri feedUri;
     private ListView sgView;
     private SearchView mSearchView;
@@ -59,6 +64,44 @@ public class FeedFragment extends SherlockFragment implements FeedController.Fee
             refreshFeed();
         }
     };
+    private FeedFragment.FeedImpl mFeedImpl;
+    protected SearchView.OnQueryTextListener mOnQueryTextListener = new SearchView.OnQueryTextListener() {
+        @Override
+        public boolean onQueryTextSubmit(String s) {
+            if (D) Log.d(LOG_TAG, "SEARCH SUBMIT");
+            closeSearchWidget();
+            return false;
+        }
+
+        @Override
+        public boolean onQueryTextChange(String s) {
+            return false;
+        }
+    };
+
+    protected SearchView.OnSuggestionListener mOnSuggestionListener = new SearchView.OnSuggestionListener() {
+
+        @Override
+        public boolean onSuggestionSelect(int i) {
+            if (D) Log.d(LOG_TAG, "SEARCH-SUGGEST SELECT");
+            return false;
+        }
+
+        @Override
+        public boolean onSuggestionClick(int i) {
+            if (D) Log.d(LOG_TAG, "SEARCH-SUGGEST CLICK");
+            closeSearchWidget();
+            return false;
+        }
+    };
+
+    public FeedFragment(FeedImpl feedImpl) {
+        mFeedImpl = feedImpl;
+    }
+
+    public FeedFragment() {
+        mFeedImpl = new BasicFeedImpl();
+    }
 
     @Override
     public void openFeed(Uri feedUri, String title) {
@@ -88,24 +131,12 @@ public class FeedFragment extends SherlockFragment implements FeedController.Fee
         if (menu.size() == 0)
             inflater.inflate(R.menu.feed_menu, menu);
         mRefreshItem = menu.findItem(R.id.menu_refresh);
-        MenuItem searchItem = menu.findItem(R.id.menu_search);
-        assert searchItem != null;
+        mSearchItem = menu.findItem(R.id.menu_search);
+        assert mSearchItem != null;
         Activity activity = getActivity();
         // Иногда успевает вызваться в момент, когда активити недоступно.
         if (activity != null)
-            setupSearchMenuItem(searchItem, activity);
-
-    }
-
-    private void setupSearchMenuItem(MenuItem searchItem, Activity activity) {
-        // Get the SearchView and set the searchable configuration
-        SearchManager searchManager = (SearchManager) activity.getSystemService(Context.SEARCH_SERVICE);
-        mSearchView = (SearchView) searchItem.getActionView();
-        assert mSearchView != null;
-        // Assumes current activity is the searchable activity
-        mSearchView.setSearchableInfo(searchManager.getSearchableInfo(activity.getComponentName()));
-        mSearchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
-        mSearchView.setFocusable(false);
+            setupSearchMenuItem(mSearchItem, activity);
     }
 
     @Override
@@ -120,6 +151,32 @@ public class FeedFragment extends SherlockFragment implements FeedController.Fee
         if (D) Log.d(LOG_TAG, "super.onOptionsItemSelected");
         return super.onOptionsItemSelected(item);
 
+    }
+
+    protected void setupSearchMenuItem(MenuItem searchItem, Activity activity) {
+        // Get the SearchView and set the searchable configuration
+        SearchManager searchManager = (SearchManager) activity.getSystemService(Context.SEARCH_SERVICE);
+
+        mSearchView = (SearchView)MenuItemCompat.getActionView(searchItem);
+        // mSearchView = (SearchView) searchItem.getActionView();
+
+        if (mSearchView != null) {
+            // Assumes current activity is the searchable activity
+            mSearchView.setSearchableInfo(searchManager.getSearchableInfo(activity.getComponentName()));
+            mSearchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+            mSearchView.setFocusable(false);
+            mSearchView.setQueryRefinementEnabled(true);
+            mSearchView.setOnQueryTextListener(mOnQueryTextListener);
+            mSearchView.setOnSuggestionListener(mOnSuggestionListener);
+        }
+    }
+
+    protected void closeSearchWidget() {
+        if (mSearchItem != null) {
+            if (D) Log.d(LOG_TAG, "collapsing");
+            MenuItemCompat.collapseActionView(mSearchItem);
+            mSearchView.onActionViewCollapsed();
+        }
     }
 
     protected void refreshFeed() {
@@ -141,12 +198,7 @@ public class FeedFragment extends SherlockFragment implements FeedController.Fee
 
     @Override
     public FeedCursorAdapter initAdapter() {
-        return new FeedCursorAdapter(getActivity(),
-            R.layout.feed_item,
-            null,
-            new String[]{FeedContract.FeedColumns.TITLE, FeedContract.FeedColumns.THUMBNAIL_URI},
-            new int[]{R.id.titleTextView, R.id.thumbnailImageView},
-            0);
+        return mFeedImpl.initAdapter();
     }
 
     public void showError() {
@@ -163,10 +215,21 @@ public class FeedFragment extends SherlockFragment implements FeedController.Fee
         doneRefreshing();
     }
 
-    private void init() {
+    private void init(Bundle savedInstanceState) {
         initFeedUri();
-        mController = new FeedController(getFeedUri());
+        if (savedInstanceState == null)
+            mController = new FeedController(getFeedUri(), 0);
+        else
+            mController = savedInstanceState.getParcelable(CONTROLLER);
+        // в FeedImpl необходимо наличие валидного контекста на момент вызова Controller.attach
+        mFeedImpl.setContext(getActivity());
         mController.attach(getActivity(), this);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (D) Log.d(LOG_TAG, "onAttach");
     }
 
     @Override
@@ -176,11 +239,17 @@ public class FeedFragment extends SherlockFragment implements FeedController.Fee
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(CONTROLLER, mController);
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (D) Log.d(LOG_TAG, "onActivityCreated");
         setHasOptionsMenu(true);
-        init();
+        init(savedInstanceState);
     }
 
     protected void initFeedUri() {
@@ -210,7 +279,10 @@ public class FeedFragment extends SherlockFragment implements FeedController.Fee
         LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         ImageView iv = (ImageView) inflater.inflate(R.layout.refresh_btn, null);
         iv.setOnClickListener(mRefreshClickListener);
-        mRefreshItem.setActionView(iv);
+
+        MenuItemCompat.setActionView(mRefreshItem, iv);
+        // mRefreshItem.setActionView(iv);
+
         super.onPrepareOptionsMenu(menu);
     }
 
@@ -234,14 +306,16 @@ public class FeedFragment extends SherlockFragment implements FeedController.Fee
         if (activity == null)
             return;
         if (!isLoading)
-            mRefreshItem.getActionView().startAnimation(mRotateAnimation);
+            MenuItemCompat.getActionView(mRefreshItem).startAnimation(mRotateAnimation);
+            // mRefreshItem.getActionView().startAnimation(mRotateAnimation);
     }
 
     public void doneRefreshing() {
         RutubeApp.stopLoading();
         if (mRefreshItem == null)
             return;
-        mRefreshItem.getActionView().clearAnimation();
+        MenuItemCompat.getActionView(mRefreshItem).clearAnimation();
+        //mRefreshItem.getActionView().clearAnimation();
     }
 
     @Override
@@ -271,5 +345,56 @@ public class FeedFragment extends SherlockFragment implements FeedController.Fee
 
     protected void setFeedUri(Uri feedUri) {
         this.feedUri = feedUri;
+    }
+
+    public void checkLoadMore() {
+        try {
+            if (D) Log.d(LOG_TAG, "checkLoadMore");
+            if (getListAdapter().getCount() == 0) {
+                if (D) Log.d(LOG_TAG, "Feed is empty");
+                mController.checkLoadMore();
+            }
+        } catch (NullPointerException ignored) {}
+
+    }
+
+    @Override
+    public void setSelectedItem(int position) {
+        try {
+            sgView.setSelection(position);
+        } catch (NullPointerException ignored) {}
+    }
+
+    @Override
+    public int getCurrentPosition() {
+        try{
+            return sgView.getFirstVisiblePosition();
+        } catch (NullPointerException ignored) {
+            return 0;
+        }
+    }
+
+    public void logout() {
+        mController.logout();
+    }
+
+    public void setFeedImplementation(FeedImpl feedImpl) {
+        feedImpl.setContext(getActivity());
+        mFeedImpl = feedImpl;
+    }
+
+    public void setEmptyText(String text) {
+        View v = getView();
+        if (v == null)
+            return;
+        TextView tv = (TextView)v.findViewById(R.id.empty);
+        if (tv!= null)
+            tv.setText(text);
+    }
+
+
+    public interface FeedImpl {
+        public FeedCursorAdapter initAdapter();
+        public void setContext(Context context);
     }
 }

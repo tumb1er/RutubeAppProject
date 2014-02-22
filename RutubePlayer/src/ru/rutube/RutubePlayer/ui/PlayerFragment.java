@@ -53,6 +53,8 @@ import ru.rutube.RutubePlayer.views.VideoFrameLayout;
  */
 public class PlayerFragment extends Fragment implements PlayerController.PlayerView {
 
+    private RutubeMediaController.ShareListener mShareListener;
+
     public boolean onKeyDown(int keyCode) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_VOLUME_DOWN:
@@ -130,6 +132,14 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
             mPlayerEventsListener.onDoubleTap();
         }
     };
+
+    protected RutubeMediaController.QualitySelectListener mQualitySelectListener = new RutubeMediaController.QualitySelectListener() {
+        @Override
+        public void onQualitySelected(int quality) {
+            mController.onQualitySelected(quality);
+        }
+    };
+
 
     protected Animation.AnimationListener mVolumeAnimationListener = new Animation.AnimationListener() {
         @Override
@@ -275,6 +285,10 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         @Override
         public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
             if (D) Log.d(LOG_TAG, "surfaceDestroyed");
+            if (mPlayer != null) {
+                mPlayer.release();
+                mPlayer = null;
+            }
         }
     };
 
@@ -350,7 +364,8 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
     protected MediaPlayer.OnErrorListener mOnErrorListener = new MediaPlayer.OnErrorListener() {
         @Override
         public boolean onError(MediaPlayer mediaPlayer, int i, int i2) {
-            if (D) Log.d(LOG_TAG, "onError");
+            // FIXME: error reporting
+            if (D) Log.d(LOG_TAG, String.format("onError %d %d", i, i2));
             mController.onPlaybackError();
             return true;
         }
@@ -494,11 +509,14 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         super.onPause();
         if (D) Log.d(LOG_TAG, "onPause");
         mController.onPause();
-        mPlayer.reset();
-        // невыполнение release загоняет плеер в ошибочное состояние, которое выливается в ошибку
-        // Error (1, -110), После release плеер необходимо инициализировать заново.
-        mPlayer.release();
-        mPlayer = null;
+        // после setStreamUri(null) здесь может быть NPE
+        if (mPlayer != null) {
+            mPlayer.reset();
+            // невыполнение release загоняет плеер в ошибочное состояние, которое выливается в ошибку
+            // Error (1, -110), После release плеер необходимо инициализировать заново.
+            mPlayer.release();
+            mPlayer = null;
+        }
         // messageHandler после детача получает очередное сообщение о прогрессе и пытается вызвать
         // у деинициализированного плеера getDuration. Результат - ISE/NPE.
         mMediaController.setMediaPlayer(null);
@@ -557,9 +575,10 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
     }
 
     @Override
-    public void setStreamUri(Uri uri) {
-        if (D) Log.d(LOG_TAG, "setStreamUri " + String.valueOf(uri));
+    public void setStreamUri(Uri uri, int quality) {
+        if (D) Log.d(LOG_TAG, String.format("setStreamUri %d: %s", quality, String.valueOf(uri)));
         setVideoUri(uri);
+        mMediaController.selectQuality(quality);
         mStreamUri = uri;
     }
 
@@ -617,6 +636,12 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
     }
 
     @Override
+    public void limitQuality(int quality) {
+        if (mMediaController != null)
+            mMediaController.limitQuality(quality);
+    }
+
+    @Override
     public void setThumbnailUri(Uri uri) {
         View view = getView();
         assert view != null;
@@ -637,6 +662,12 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
 
     public Dialog getDialog() {
         return mDialog;
+    }
+
+    public void setShareListener(RutubeMediaController.ShareListener listener) {
+        mShareListener = listener;
+        if (mMediaController != null)
+            mMediaController.setShareListener(mShareListener);
     }
 
     /**
@@ -699,6 +730,8 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
         mMediaController.setAnchorView((ViewGroup) view.findViewById(R.id.center_video_view));
         mMediaController.setOnTouchListener(mOnTouchListener);
         mMediaController.setToggleFullscreenListener(mToggleFullscreenListener);
+        mMediaController.setQualitySelectListener(mQualitySelectListener);
+        mMediaController.setShareListener(mShareListener);
         return;
     }
 
@@ -713,13 +746,32 @@ public class PlayerFragment extends Fragment implements PlayerController.PlayerV
                     initMediaPlayer();
                 mPlayer.reset();
                 mPrepared = false;
-                if (D) Log.d(LOG_TAG, "Preparing!");
+                if (D) Log.d(LOG_TAG, "setVideoUri: Preparing!");
                 mPlayer.setDataSource(getActivity(), uri);
+                // После "сброса" плеера Surface заклинивает (freeze), поэтому надо заново
+                // выполнять setDisplay.
+
+                // Однако иногда возникает IAE (Surface has been released), с которым достаточно
+                // ничего не делать
+                try {
+                    mPlayer.setDisplay(mVideoView.getHolder());
+                } catch (IllegalArgumentException ignored) {}
                 mPlayer.prepareAsync();
+                if (D) Log.d(LOG_TAG, "setVideoUri done");
                 mBufferingPercent = 0;
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        else {
+            // Неплохо при полной остановке проигрывания освобождать ресурсы.
+            if (mPlayer != null){
+                mPlayer.reset();
+                mPlayer.release();
+            }
+            if (mMediaController != null)
+                mMediaController.setMediaPlayer(null);
+            mPlayer = null;
+        }
 //            mVideoView.setVideoURI(uri);
     }
 

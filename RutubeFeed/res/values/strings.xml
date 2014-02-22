@@ -17,4 +17,6 @@
     <string name="logout">Logout</string>
     <string name="search_title_format">Search: %s</string>
     <string name="editors_choice">Editors choice</string>
+    <string name="author">Author</string>
+    <string name="created">Created</string>
 </resources>

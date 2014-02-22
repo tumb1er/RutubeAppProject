@@ -3,6 +3,7 @@
     <string name="replay">Повторить</string>
     <string name="share">Поделиться</string>
     <string name="share_text">Смотрите на Rutube</string>
+    <string name="share_twitter">с помощью @rutube_ru</string>
     <string name="region_not_allowed">Видео недоступно для данной страны</string>
     <string name="mobile_not_allowed">Видео недоступно на мобильных устройствах</string>
     <string name="anonymous_not_allowed">Видео недоступно для неавторизованных пользователей</string>

@@ -99,7 +99,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Author"
+                android:text="@string/author"
                 android:id="@+id/authorTextView"
                 android:layout_centerVertical="true"
                 style="?attr/FeedAuthorStyle"
@@ -111,7 +111,7 @@
                 android:id="@+id/createdTextView"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Created"
+                android:text="@string/created"
                 android:layout_alignParentRight="false"
                 android:layout_centerVertical="true"
                 android:contentDescription="created"

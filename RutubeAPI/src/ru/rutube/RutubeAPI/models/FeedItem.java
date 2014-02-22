@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.R;
 import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.content.FeedContract;
@@ -27,7 +29,7 @@ import ru.rutube.RutubeAPI.content.FeedContract;
  * To change this template use File | Settings | File Templates.
  */
 public class FeedItem implements Parcelable {
-    public final static SimpleDateFormat sJsonDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    public static final SimpleDateFormat sJsonDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     public static final SimpleDateFormat sSqlDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     protected static final String JSON_TITLE = "title";
     protected static final String JSON_DESCIPTION = "description";
@@ -37,6 +39,8 @@ public class FeedItem implements Parcelable {
     protected static final String JSON_THUMBNAIL_URL = "thumbnail_url";
     protected static final String JSON_VIDEO_ID = "id";
     protected static final String JSON_DURATION = "duration";
+    private static final boolean D = BuildConfig.DEBUG;
+    private static final String LOG_TAG = FeedItem.class.getName();
 
     private String title;
     private String description;
@@ -212,6 +216,10 @@ public class FeedItem implements Parcelable {
         if (authorId > 0) {
              author = Author.fromCursor(c);
         }
+        if (D) {
+            String cached_ts = c.getString(c.getColumnIndex(FeedContract.FeedColumns.CACHED));
+            Log.d(LOG_TAG, videoId + " cached " + String.valueOf(cached_ts));
+        }
         int duration = c.getInt(c.getColumnIndex(FeedContract.FeedColumns.DURATION));
         return new FeedItem(title, description, created, thumbnailUri, videoId, author, duration);
 
@@ -224,6 +232,7 @@ public class FeedItem implements Parcelable {
         row.put(FeedContract.FeedColumns.CREATED, sSqlDateTimeFormat.format(created));
         row.put(FeedContract.FeedColumns.THUMBNAIL_URI, thumbnailUri.toString());
         row.put(FeedContract.FeedColumns.DURATION, duration);
+        row.put(FeedContract.FeedColumns.CACHED, sSqlDateTimeFormat.format(new Date()));
 
         if (author != null) {
             row.put(FeedContract.FeedColumns.AUTHOR_ID, author.getId());

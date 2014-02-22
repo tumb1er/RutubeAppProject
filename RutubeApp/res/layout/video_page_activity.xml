@@ -23,7 +23,7 @@
             <fragment
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:name="ru.rutube.RutubePlayer.ui.PlayerFragment"
+                android:name="ru.rutube.RutubeApp.ui.player.RutubePlayerFragment"
                 android:id="@+id/player_fragment"
                 android:layout_gravity="center"
                 tools:layout="@layout/player_fragment" />
@@ -43,7 +43,7 @@
             android:layout_height="0dp"
             android:layout_weight="@integer/video_info_weight"
             android:id="@+id/video_info_container"
-            android:background="@color/feed_background">
+            style="?attr/VideoInfoScrollerStyle">
 
             <include layout="@layout/video_info"/>
 
