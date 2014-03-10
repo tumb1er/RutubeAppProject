@@ -95,10 +95,10 @@
                 <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/tags/video/" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="ru.rutube.RutubeFeed.ui.FeedActivity"
-            android:label="@string/app_name">
-        </activity>
+        <!--<activity-->
+            <!--android:name="ru.rutube.RutubeFeed.ui.FeedActivity"-->
+            <!--android:label="@string/app_name">-->
+        <!--</activity>-->
         <!--<activity android:name=".ui.UploadActivity">-->
             <!--<intent-filter android:label="@string/app_name">-->
                 <!--<action android:name="ru.rutube.api.upload"/>-->

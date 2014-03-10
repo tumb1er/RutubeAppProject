@@ -1,15 +1,21 @@
 package ru.rutube.RutubeApp.ui;
 
-import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.internal.widget.ScrollingTabContainerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import ru.rutube.RutubeAPI.BuildConfig;
@@ -50,6 +56,9 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
     ViewPager mViewPager;
     MainTabsAdapter mTabsAdapter;
     private MenuItem mLogoutItem;
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private PagerTabStrip mPagerTabStrip;
 
 
     @Override
@@ -62,9 +71,26 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
         return result;
     }
 
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
         if (id == ru.rutube.RutubeFeed.R.id.menu_logout) {
             logout();
             return true;
@@ -94,19 +120,51 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
         else
             mController = new MainPageController();
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.start_activity);
+//        mViewPager = new ViewPager(this);
+//        mViewPager.setId(R.id.feed_fragment_container);
+//        mViewPager.setOffscreenPageLimit(3);
+//        setContentView(mViewPager);
+        mViewPager = (ViewPager)findViewById(R.id.content_frame);
 
-        mViewPager = new ViewPager(this);
-        mViewPager.setId(R.id.feed_fragment_container);
-        mViewPager.setOffscreenPageLimit(3);
-        setContentView(mViewPager);
+        ScrollingTabContainerView v = new ScrollingTabContainerView(this);
+        v.setVisibility(View.VISIBLE);
+
+
 
         final ActionBar bar = getSupportActionBar();
-        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        bar.setDisplayOptions(0, ActionBar.DISPLAY_SHOW_TITLE);
+//        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+//        bar.setDisplayOptions(0, ActionBar.DISPLAY_SHOW_TITLE);
 
         mController.attach(this, this);
         mTabsAdapter = new MainTabsAdapter(this, mViewPager);
         mController.initTabs();
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerToggle = new ActionBarDrawerToggle(
+                this,                  /* host Activity */
+                mDrawerLayout,         /* DrawerLayout object */
+                R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
+                R.string.drawer_open,  /* "open drawer" description */
+                R.string.drawer_closed  /* "close drawer" description */
+        ) {
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                getSupportActionBar().setTitle("mTitle");
+            }
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                getSupportActionBar().setTitle("mDrawerTitle");
+            }
+        };
+
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
     }
 
     @Override

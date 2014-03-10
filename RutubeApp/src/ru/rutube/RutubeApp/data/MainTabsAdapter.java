@@ -73,6 +73,10 @@ public class MainTabsAdapter extends FragmentStatePagerAdapter
         }
     }
 
+    @Override
+    public CharSequence getPageTitle(int position) {
+        return "title";
+    }
 
     public MainTabsAdapter(StartActivity activity, ViewPager pager) {
         super(activity.getSupportFragmentManager());
@@ -88,7 +92,7 @@ public class MainTabsAdapter extends FragmentStatePagerAdapter
         tab.setTag(info);
         tab.setTabListener(this);
         mTabs.add(info);
-        mActionBar.addTab(tab);
+       // mActionBar.addTab(tab);
         notifyDataSetChanged();
     }
 
@@ -122,7 +126,7 @@ public class MainTabsAdapter extends FragmentStatePagerAdapter
         String tag = info.args.getString(Constants.Params.FEED_TITLE);
         if (D) Log.d(LOG_TAG, "onPageSelected: " + tag);
         mActivity.onTabSelected(tag);
-        mActionBar.setSelectedNavigationItem(position);
+//        mActionBar.setSelectedNavigationItem(position);
     }
 
     @Override
