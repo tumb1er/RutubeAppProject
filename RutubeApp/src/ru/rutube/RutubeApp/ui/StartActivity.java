@@ -26,6 +26,7 @@ import ru.rutube.RutubeApp.MainApplication;
 import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubeApp.ctrl.MainPageController;
 import ru.rutube.RutubeApp.data.MainTabsAdapter;
+import ru.rutube.RutubeApp.data.NavAdapter;
 import ru.rutube.RutubeApp.ui.dialog.LoginDialogFragment;
 import ru.rutube.RutubeFeed.feed.FeedFragmentFactory;
 import ru.rutube.RutubeFeed.ui.FeedFragment;
@@ -180,10 +181,9 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
         };
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-        // mDrawerList = (ListView) findViewById(R.id.left_drawer);
-        // String[] items = {"Главная", "Мой Rutube", "Настройки"};
-        //mDrawerList.setAdapter(new NavAdapter(RutubeApp.getContext(), R.layout.drawer_list_item, items));
-        // mDrawerList.addHeaderView(new TextView(this));
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        String[] items = {"Главная", "Мой Rutube", "Настройки"};
+        mDrawerList.setAdapter(new NavAdapter(RutubeApp.getContext(), R.layout.drawer_list_item, items));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
     }
