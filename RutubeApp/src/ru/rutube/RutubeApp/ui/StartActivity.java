@@ -14,8 +14,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import ru.rutube.RutubeAPI.BuildConfig;
@@ -182,8 +184,12 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
-        String[] items = {"Главная", "Мой Rutube", "Настройки"};
+        String[] items = {};
         mDrawerList.setAdapter(new NavAdapter(RutubeApp.getContext(), R.layout.drawer_list_item, items));
+        TextView tv = (TextView)getLayoutInflater().inflate(R.layout.drawer_list_item, null);
+        assert tv != null;
+        tv.setText("Настройки");
+        mDrawerList.addFooterView(tv);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
     }
