@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.internal.widget.ScrollingTabContainerView;
 import android.util.Log;
 
 
@@ -27,11 +28,12 @@ public class MainTabsAdapter extends FragmentStatePagerAdapter
     private static final boolean D = BuildConfig.DEBUG;
     private static final String LOG_TAG = MainTabsAdapter.class.getName();
     private final StartActivity mActivity;
-    private final ActionBar mActionBar;
     private final ViewPager mViewPager;
     private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
     private final HashMap<String, FeedFragment> mFragments = new HashMap<String, FeedFragment>();
     private final FeedFragmentFactory mFragmentFactory = new PlaFeedFragmentFactory();
+    private final ScrollingTabContainerView mTabBar;
+
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
         Object tag = tab.getTag();
@@ -81,7 +83,7 @@ public class MainTabsAdapter extends FragmentStatePagerAdapter
     public MainTabsAdapter(StartActivity activity, ViewPager pager) {
         super(activity.getSupportFragmentManager());
         mActivity = activity;
-        mActionBar = activity.getSupportActionBar();
+        mTabBar = activity.getTabBar();
         mViewPager = pager;
         mViewPager.setAdapter(this);
         mViewPager.setOnPageChangeListener(this);
@@ -92,6 +94,8 @@ public class MainTabsAdapter extends FragmentStatePagerAdapter
         tab.setTag(info);
         tab.setTabListener(this);
         mTabs.add(info);
+        // FIXME:
+        mTabBar.addTab(tab, false);
        // mActionBar.addTab(tab);
         notifyDataSetChanged();
     }
@@ -127,6 +131,8 @@ public class MainTabsAdapter extends FragmentStatePagerAdapter
         if (D) Log.d(LOG_TAG, "onPageSelected: " + tag);
         mActivity.onTabSelected(tag);
 //        mActionBar.setSelectedNavigationItem(position);
+        // FIXME:
+        mTabBar.setTabSelected(position);
     }
 
     @Override

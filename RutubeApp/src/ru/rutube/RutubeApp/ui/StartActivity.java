@@ -2,11 +2,9 @@ package ru.rutube.RutubeApp.ui;
 
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -16,6 +14,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import ru.rutube.RutubeAPI.BuildConfig;
@@ -58,7 +58,8 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
     private MenuItem mLogoutItem;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
-    private PagerTabStrip mPagerTabStrip;
+    private ScrollingTabContainerView mTabBar;
+    private ListView mDrawerList;
 
 
     @Override
@@ -113,6 +114,10 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
         super.onDestroy();
     }
 
+    public ScrollingTabContainerView getTabBar() {
+        return mTabBar;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         if (savedInstanceState != null)
@@ -127,9 +132,22 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
 //        setContentView(mViewPager);
         mViewPager = (ViewPager)findViewById(R.id.content_frame);
 
-        ScrollingTabContainerView v = new ScrollingTabContainerView(this);
-        v.setVisibility(View.VISIBLE);
+        mTabBar = new ScrollingTabContainerView(this);
+        mTabBar.setVisibility(View.VISIBLE);
+//        ViewGroup.LayoutParams lp = mTabBar.getLayoutParams();
+//        if (lp == null) {
+//            lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.FILL_PARENT);
+//            mTabBar.setLayoutParams(lp);
+//        } else {
+//            lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+//            lp.height = ViewGroup.LayoutParams.FILL_PARENT;
+//        }
 
+        LinearLayout mTabFrame = (LinearLayout)findViewById(R.id.tabbar);
+        int height = getResources().getDimensionPixelSize(R.dimen.abc_action_bar_stacked_max_height);
+        Log.d(LOG_TAG, String.format("WWW: %d", height));
+        mTabBar.setContentHeight(height);
+        mTabFrame.addView(mTabBar, 0);
 
 
         final ActionBar bar = getSupportActionBar();
@@ -162,7 +180,10 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
         };
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-
+        // mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        // String[] items = {"Главная", "Мой Rutube", "Настройки"};
+        //mDrawerList.setAdapter(new NavAdapter(RutubeApp.getContext(), R.layout.drawer_list_item, items));
+        // mDrawerList.addHeaderView(new TextView(this));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
     }
