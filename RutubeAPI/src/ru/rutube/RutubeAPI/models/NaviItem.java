@@ -1,6 +1,8 @@
 package ru.rutube.RutubeAPI.models;
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -17,6 +19,7 @@ import org.json.JSONObject;
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.R;
 import ru.rutube.RutubeAPI.RutubeApp;
+import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.requests.AuthJsonObjectRequest;
 import ru.rutube.RutubeAPI.requests.RequestListener;
 import ru.rutube.RutubeAPI.requests.Requests;
@@ -60,6 +63,14 @@ public class NaviItem implements Parcelable {
         return new NaviItem(name, title, link, position);
     }
 
+    public static NaviItem fromCursor(Cursor c) {
+        String name = c.getString(c.getColumnIndex(FeedContract.Navigation.NAME));
+        String title = c.getString(c.getColumnIndex(FeedContract.Navigation.TITLE));
+        String link = c.getString(c.getColumnIndex(FeedContract.Navigation.LINK));
+        int position = c.getInt(c.getColumnIndex(FeedContract.Navigation.POSITION));
+        return new NaviItem(name, title, link, position);
+    }
+
     public static JsonObjectRequest getNaviLinksRequest(RequestListener requestListener) {
         String uri = RutubeApp.getUrl(R.string.menu_links);
         assert uri!= null;
@@ -78,6 +89,8 @@ public class NaviItem implements Parcelable {
             public void onResponse(JSONObject response) {
                 try {
                     parseJSONResponse(response);
+                    if (listener != null)
+                        listener.onResult(Requests.MENU_LINKS, null);
                 } catch (JSONException e) {
                     if (listener != null)
                         listener.onRequestError(Requests.MENU_LINKS,
@@ -89,13 +102,23 @@ public class NaviItem implements Parcelable {
 
     protected static void parseJSONResponse(JSONObject response) throws JSONException {
         JSONArray links = response.getJSONArray(JSON_LINKS);
-        ContentValues[] feedItems = new ContentValues[links.length()];
+        ContentValues[] naviItems = new ContentValues[links.length()];
         for (int i=0; i<links.length(); i++) {
             JSONObject data = links.getJSONObject(i);
             NaviItem item = fromJSON(data);
             ContentValues row = fillRow(item);
             if (D) Log.d(LOG_TAG, "NAVI: " + data.toString());
+            naviItems[i] = row;
         }
+        Context context = RutubeApp.getInstance();
+        try {
+            context.getContentResolver().bulkInsert(FeedContract.Navigation.CONTENT_URI, naviItems);
+        } catch (Exception e) {
+            // TODO: обработать ошибку вставки в БД.
+            e.printStackTrace();
+        }
+        context.getContentResolver().notifyChange(FeedContract.Navigation.CONTENT_URI, null);
+        if (D) Log.d(LOG_TAG, "Operation finished");
     }
 
     private static ContentValues fillRow(NaviItem item) {
@@ -105,6 +128,10 @@ public class NaviItem implements Parcelable {
     }
 
     private void fillRow(ContentValues row) {
+        row.put(FeedContract.Navigation.NAME, mName);
+        row.put(FeedContract.Navigation.TITLE, mTitle);
+        row.put(FeedContract.Navigation.LINK, mLink);
+        row.put(FeedContract.Navigation.POSITION, mPosition);
     }
 
     private static Response.ErrorListener getErrorListener(final RequestListener listener)
@@ -129,7 +156,11 @@ public class NaviItem implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel parcel, int i) {
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeString(mName);
+        parcel.writeString(mTitle);
+        parcel.writeString(mLink);
+        parcel.writeInt(mPosition);
 
     }
 
@@ -144,4 +175,8 @@ public class NaviItem implements Parcelable {
             return new NaviItem[size];
         }
     };
+
+    public String getLink() {
+        return mLink;
+    }
 }

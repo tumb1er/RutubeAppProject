@@ -1,6 +1,7 @@
 package ru.rutube.RutubeApp.ctrl;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -14,6 +15,7 @@ import com.android.volley.toolbox.Volley;
 
 import ru.rutube.RutubeAPI.HttpTransport;
 import ru.rutube.RutubeAPI.RutubeApp;
+import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.models.NaviItem;
 import ru.rutube.RutubeAPI.models.User;
 import ru.rutube.RutubeAPI.requests.RequestListener;
@@ -33,9 +35,37 @@ public class SplashScreenController implements Parcelable, RequestListener {
     private int mRequestsDone;
     private static final int TOTAL_REQUESTS = 2;
     private boolean mAttached;
+    private RequestListener mRequestListener = new RequestListener() {
+        @Override
+        public void onResult(int tag, Bundle result) {
+            moveToDefaultShowCase();
+        }
+
+        @Override
+        public void onVolleyError(VolleyError error) {
+            moveToDefaultShowCase();
+        }
+
+        @Override
+        public void onRequestError(int tag, RequestError error) {
+            moveToDefaultShowCase();
+        }
+    };
+
+    protected void moveToDefaultShowCase() {
+        Context context = RutubeApp.getInstance();
+        Cursor c = context.getContentResolver().query(
+                FeedContract.Navigation.CONTENT_URI, null, null, null, null);
+        assert c != null;
+        c.moveToFirst();
+        NaviItem item = NaviItem.fromCursor(c);
+        c.close();
+        mView.openShowCase(item.getLink());
+    }
 
     public interface SplashScreenView {
         public void setBannerUrl(String url);
+        public void openShowCase(String url);
     }
     @Override
     public int describeContents() {
@@ -76,7 +106,7 @@ public class SplashScreenController implements Parcelable, RequestListener {
 
     private void startRequests() {
         initBanner();
-        JsonObjectRequest naviLinksRequest = NaviItem.getNaviLinksRequest(null);
+        JsonObjectRequest naviLinksRequest = NaviItem.getNaviLinksRequest(mRequestListener);
         mRequestQueue.add(naviLinksRequest);
     }
 

@@ -13,4 +13,6 @@
     <string name="view1">%,d просмотр</string>
     <string name="views21">%,d просмотр</string>
     <string name="views4">%,d просмотра</string>
+    <string name="navi_main_name">Main</string>
+    <string name="navi_main_title" />
 </resources>

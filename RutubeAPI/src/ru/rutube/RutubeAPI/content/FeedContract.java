@@ -77,6 +77,17 @@ public final class FeedContract {
         public static final String UPDATED = "updated";
     }
 
+    public static final class Navigation implements BaseColumns {
+        public static final String CONTENT_PATH = "navigation";
+        public static final Uri CONTENT_URI = Uri.withAppendedPath(FEED_URI, CONTENT_PATH);
+        public static final String CONTENT_TYPE = VND + FEED + "." + CONTENT_PATH;
+
+        public static final String NAME = "name";
+        public static final String TITLE = "title";
+        public static final String LINK = "link";
+        public static final String POSITION = "position";
+    }
+
     public static final class RelatedVideo implements BaseColumns, FeedColumns {
         public static final String CONTENT_PATH = "related_video";
         public static final Uri CONTENT_URI = Uri.withAppendedPath(FEED_URI, CONTENT_PATH);

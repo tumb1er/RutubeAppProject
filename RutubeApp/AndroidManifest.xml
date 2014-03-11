@@ -21,7 +21,7 @@
                    android:value="ru.rutube.RutubeApp.ui.SearchFeedActivity" />
         <activity android:name=".ui.SplashScreenActivity"
             android:label="@string/app_name"
-            android:theme="@style/Theme.AppCompat.Light">
+            android:theme="@style/Theme.Rutube.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

@@ -13,4 +13,6 @@
     <string name="view1">%,d revue</string>
     <string name="views21">%,d revues</string>
     <string name="views4">%,d revues</string>
+    <string name="navi_main_name">Main</string>
+    <string name="navi_main_title" />
 </resources>

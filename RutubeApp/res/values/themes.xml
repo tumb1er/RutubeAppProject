@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools"  tools:ignore="NewApi">
+
+    <style name="Theme.Rutube.SplashScreen" parent="@style/Theme.AppCompat.Light">
+        <item name="android:windowNoTitle">true</item>
+
+    </style>
+
     <style name="Theme.Rutube.Base" parent="Theme.AppCompat.Light">
         <!-- иконка поиска в элементе поиска -->
         <item name="searchViewSearchIcon">@drawable/ic_action_search</item>

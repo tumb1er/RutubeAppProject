@@ -18,6 +18,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 import ru.rutube.RutubeAPI.BuildConfig;
+import ru.rutube.RutubeAPI.R;
+import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.models.FeedItem;
 
 /**
@@ -46,6 +48,8 @@ public class FeedContentProvider extends ContentProvider {
     private static final int AUTHOR_VIDEO_FEEDITEM = 14;
     private static final int TAGS_VIDEO = 15;
     private static final int TAGS_VIDEO_FEEDITEM = 16;
+    private static final int NAVIGATION = 17;
+    private static final int NAVIGATION_ITEM = 18;
 
     private static final String LOG_TAG = FeedContentProvider.class.getName();
     private static final boolean D = BuildConfig.DEBUG;
@@ -69,6 +73,8 @@ public class FeedContentProvider extends ContentProvider {
         sUriMatcher.addURI(AUTHORITY, FeedContract.AuthorVideo.CONTENT_PATH + "/#/#", AUTHOR_VIDEO_FEEDITEM);
         sUriMatcher.addURI(AUTHORITY, FeedContract.TagsVideo.CONTENT_PATH + "/#", TAGS_VIDEO);
         sUriMatcher.addURI(AUTHORITY, FeedContract.TagsVideo.CONTENT_PATH + "/#/#", TAGS_VIDEO_FEEDITEM);
+        sUriMatcher.addURI(AUTHORITY, FeedContract.Navigation.CONTENT_PATH, NAVIGATION);
+        sUriMatcher.addURI(AUTHORITY, FeedContract.Navigation.CONTENT_PATH + "/#", NAVIGATION_ITEM);
     }
 
     private MainDatabaseHelper dbHelper;
@@ -196,6 +202,14 @@ public class FeedContentProvider extends ContentProvider {
                 queryBuilder.appendWhere(FeedContract.FeedColumns._ID + "="
                         + uri.getLastPathSegment());
                 break;
+            case NAVIGATION:
+                queryBuilder.setTables(FeedContract.Navigation.CONTENT_PATH);
+                break;
+            case NAVIGATION_ITEM:
+                queryBuilder.setTables(FeedContract.Navigation.CONTENT_PATH);
+                queryBuilder.appendWhere(BaseColumns._ID + "="
+                        + uri.getLastPathSegment());
+                break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
@@ -204,6 +218,8 @@ public class FeedContentProvider extends ContentProvider {
         if (sortOrder == null) {
             if (uriType == SEARCH_RESULTS)
                 sortOrder = FeedContract.SearchResults.POSITION;
+            else if (uriType == NAVIGATION)
+                sortOrder = FeedContract.Navigation.POSITION;
             else
                 sortOrder = FeedContract.FeedColumns.CREATED + " DESC";
         }
@@ -242,6 +258,8 @@ public class FeedContentProvider extends ContentProvider {
                 return FeedContract.AuthorVideo.CONTENT_TYPE;
             case TAGS_VIDEO:
                 return FeedContract.TagsVideo.CONTENT_TYPE;
+            case NAVIGATION:
+                return FeedContract.Navigation.CONTENT_TYPE;
             default:
                 return null;
         }
@@ -280,6 +298,9 @@ public class FeedContentProvider extends ContentProvider {
             case TAGS_VIDEO:
                 rowId = sqlDB.replace(FeedContract.TagsVideo.CONTENT_PATH, null, contentValues);
                 break;
+            case NAVIGATION:
+                rowId = sqlDB.replace(FeedContract.Navigation.CONTENT_PATH, null, contentValues);
+                break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
@@ -313,6 +334,9 @@ public class FeedContentProvider extends ContentProvider {
                         String.valueOf(rowId));
             case TAGS_VIDEO:
                 return Uri.withAppendedPath(FeedContract.TagsVideo.CONTENT_URI,
+                        String.valueOf(rowId));
+            case NAVIGATION:
+                return Uri.withAppendedPath(FeedContract.Navigation.CONTENT_URI,
                         String.valueOf(rowId));
             default:
                 throw new IllegalArgumentException("Unknown URI");
@@ -355,6 +379,9 @@ public class FeedContentProvider extends ContentProvider {
                 break;
             case TAGS_VIDEO:
                 table = FeedContract.TagsVideo.CONTENT_PATH;
+                break;
+            case NAVIGATION:
+                table = FeedContract.Navigation.CONTENT_PATH;
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
@@ -410,6 +437,9 @@ public class FeedContentProvider extends ContentProvider {
             case TAGS_VIDEO:
                 table = FeedContract.TagsVideo.CONTENT_PATH;
                 break;
+            case NAVIGATION:
+                table = FeedContract.Navigation.CONTENT_PATH;
+                break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
@@ -445,7 +475,7 @@ public class FeedContentProvider extends ContentProvider {
 
     @Override
     public int update(Uri uri, ContentValues contentValues, String s, String[] strings) {
-        return 0;
+        throw new NullPointerException();
     }
 
     private void checkColumns(ContentValues values, int uriType) {
@@ -479,6 +509,15 @@ public class FeedContentProvider extends ContentProvider {
                     BaseColumns._ID,
                     FeedContract.SearchQuery.QUERY,
                     FeedContract.SearchQuery.UPDATED
+            };
+        }
+        if (uriType == NAVIGATION || uriType == NAVIGATION_ITEM) {
+            return new String[]{
+                    BaseColumns._ID,
+                    FeedContract.Navigation.NAME,
+                    FeedContract.Navigation.TITLE,
+                    FeedContract.Navigation.LINK,
+                    FeedContract.Navigation.POSITION
             };
         }
         String[] available = {
@@ -561,6 +600,16 @@ public class FeedContentProvider extends ContentProvider {
                     " query_id INTEGER NOT NULL," +
                     " position INTEGER NOT NULL";
 
+    private static final String NAVIGATION_COLUMNS_SQL =
+            " _id INTEGER PRIMARY KEY AUTOINCREMENT," +
+            " name VARCHAR(50)," +
+            " title VARCHAR(200)," +
+            " link VARCHAR(200)," +
+            " position INTEGER DEFAULT 0";
+
+    private static final String NAVIGATION_FIXTURE_QUERY = "INSERT INTO " +
+            FeedContract.Navigation.CONTENT_PATH + " (name, title, link, position) ";
+
     private static final String RELATED_VIDEO_COLUMNS_SQL =
             FEED_COLUMNS_SQL + "," +
                     " related_video_id INTEGER NOT NULL," +
@@ -587,6 +636,10 @@ public class FeedContentProvider extends ContentProvider {
             FeedContract.SearchQuery.CONTENT_PATH + " (" +
             SEARCH_QUERY_COLUMNS_SQL + ")";
 
+    private static final String SQL_CREATE_NAVIGATION = "CREATE TABLE " +
+            FeedContract.Navigation.CONTENT_PATH + " (" +
+            NAVIGATION_COLUMNS_SQL + ")";
+
     private static final String SQL_CREATE_AUTHOR_QUERY = "CREATE TABLE " +
             FeedContract.AuthorVideo.CONTENT_PATH + " (" +
             FEED_COLUMNS_SQL + ")";
@@ -601,7 +654,15 @@ public class FeedContentProvider extends ContentProvider {
 
     private static final String SQL_DROP_TABLE = "DROP TABLE %s";
 
-    private static final int DB_VERSION = 7;
+    private static final int DB_VERSION = 8;
+
+    private static final String getNaviFixture() {
+        Context context = RutubeApp.getContext();
+        String name = context.getString(R.string.navi_main_name);
+        String title = context.getString(R.string.navi_main_title);
+        String link = context.getString(R.string.navi_main_link);
+        return String.format("VALUES('%s', '%s', '%s', 0)", name, title, link);
+    }
 
     protected static final class MainDatabaseHelper extends SQLiteOpenHelper {
 
@@ -624,6 +685,7 @@ public class FeedContentProvider extends ContentProvider {
             db.execSQL(SQL_CREATE_RELATED_VIDEO);
             db.execSQL(SQL_CREATE_AUTHOR_QUERY);
             db.execSQL(SQL_CREATE_TAGS_VIDEO_QUERY);
+            db.execSQL(SQL_CREATE_NAVIGATION);
         }
 
         @Override
@@ -682,6 +744,10 @@ public class FeedContentProvider extends ContentProvider {
                                     dt);
                             db.execSQL(query);
                         }
+                        break;
+                    case 7:
+                        db.execSQL(SQL_CREATE_NAVIGATION);
+                        db.execSQL(NAVIGATION_FIXTURE_QUERY + getNaviFixture());
                         break;
 
                     default:
