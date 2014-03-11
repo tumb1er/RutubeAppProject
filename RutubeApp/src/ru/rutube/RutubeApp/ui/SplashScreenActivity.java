@@ -26,8 +26,9 @@ public class SplashScreenActivity extends ActionBarActivity implements SplashScr
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null)
+        try {
             actionBar.hide();
+        } catch (NullPointerException ignored) {}
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.splash_screen);
@@ -55,7 +56,7 @@ public class SplashScreenActivity extends ActionBarActivity implements SplashScr
     public void openShowCase(String url) {
         if (D) Log.d(LOG_TAG, "Open showcase: " + url);
         Intent i = new Intent(this, StartActivity.class); // Your list's Intent
-        i.setFlags(i.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY); // Adds the FLAG_ACTIVITY_NO_HISTORY flag
+        //i.setFlags(i.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY); // Adds the FLAG_ACTIVITY_NO_HISTORY flag
         startActivity(i);
     }
 }

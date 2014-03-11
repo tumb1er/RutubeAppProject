@@ -112,6 +112,7 @@ public class NaviItem implements Parcelable {
         }
         Context context = RutubeApp.getInstance();
         try {
+            context.getContentResolver().delete(FeedContract.Navigation.CONTENT_URI, null, null);
             context.getContentResolver().bulkInsert(FeedContract.Navigation.CONTENT_URI, naviItems);
         } catch (Exception e) {
             // TODO: обработать ошибку вставки в БД.

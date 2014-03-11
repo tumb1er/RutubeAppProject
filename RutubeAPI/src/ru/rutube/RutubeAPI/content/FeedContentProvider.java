@@ -203,6 +203,7 @@ public class FeedContentProvider extends ContentProvider {
                         + uri.getLastPathSegment());
                 break;
             case NAVIGATION:
+                if (D) Log.d(LOG_TAG, "query nav:" + selection);
                 queryBuilder.setTables(FeedContract.Navigation.CONTENT_PATH);
                 break;
             case NAVIGATION_ITEM:
@@ -234,7 +235,7 @@ public class FeedContentProvider extends ContentProvider {
 
         // Make sure that potential listeners are getting notified
         cursor.setNotificationUri(context.getContentResolver(), uri);
-
+        if (D && uriType == NAVIGATION) Log.d(LOG_TAG, "query results: " + String.valueOf(cursor.getCount()));
         return cursor;
     }
 

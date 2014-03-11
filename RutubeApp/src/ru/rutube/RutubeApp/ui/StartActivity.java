@@ -2,10 +2,15 @@ package ru.rutube.RutubeApp.ui;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -16,12 +21,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.RutubeApp;
+import ru.rutube.RutubeAPI.content.FeedContentProvider;
+import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeAPI.models.User;
 import ru.rutube.RutubeApp.MainApplication;
@@ -40,6 +48,7 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
     private static final String CONTROLLER = "controller";
     private static final int LOGIN_REQUEST_CODE = 1;
     private static final boolean D = BuildConfig.DEBUG;
+    private static final int NAVI_LOADER = 0;
 
     private static final HashMap<String, Integer> sFragmentClassMap = new HashMap<String, Integer>();
     private static final HashMap<String, Integer> sFeedUriResourceIdMap = new HashMap<String, Integer>();
@@ -63,6 +72,36 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
     private ActionBarDrawerToggle mDrawerToggle;
     private ScrollingTabContainerView mTabBar;
     private ListView mDrawerList;
+    private NavAdapter mNaviAdapter;
+    private View mDrawerMenu;
+    private LoaderManager.LoaderCallbacks<Cursor> loaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
+
+        @Override
+        public Loader<Cursor> onCreateLoader(int loaderId, Bundle arg1) {
+            return new CursorLoader(
+                    StartActivity.this,
+                    FeedContract.Navigation.CONTENT_URI,
+                    FeedContentProvider.getProjection(FeedContract.Navigation.CONTENT_URI),
+                    null,
+                    null,
+                    null
+            );
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+            CursorAdapter adapter = (CursorAdapter)mDrawerList.getAdapter();
+            if (adapter != null)
+                adapter.swapCursor(cursor);
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+            CursorAdapter adapter = (CursorAdapter)mDrawerList.getAdapter();
+            if (adapter != null)
+                adapter.swapCursor(null);
+        }
+    };
 
 
     @Override
@@ -161,6 +200,7 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
         mTabsAdapter = new MainTabsAdapter(this, mViewPager);
         mController.initTabs();
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerMenu = findViewById(R.id.left_drawer);
         mDrawerToggle = new ActionBarDrawerToggle(
                 this,                  /* host Activity */
                 mDrawerLayout,         /* DrawerLayout object */
@@ -178,18 +218,27 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
+//                mNaviAdapter.notifyDataSetChanged();
+//                mDrawerList.setAdapter(null);
+//                mDrawerList.setAdapter(mNaviAdapter);
+                if (D) Log.d(LOG_TAG, "onDrawerOpened: " + String.valueOf(mDrawerList.getCount()));
                 getSupportActionBar().setTitle("mDrawerTitle");
             }
         };
 
+        getSupportLoaderManager().initLoader(NAVI_LOADER, null, loaderCallbacks);
+
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
-        String[] items = {};
-        mDrawerList.setAdapter(new NavAdapter(RutubeApp.getContext(), R.layout.drawer_list_item, items));
-        TextView tv = (TextView)getLayoutInflater().inflate(R.layout.drawer_list_item, null);
-        assert tv != null;
-        tv.setText("Настройки");
-        mDrawerList.addFooterView(tv);
+        if (D) Log.d(LOG_TAG, "Set nav adapter");
+        mNaviAdapter = new NavAdapter(this, R.layout.drawer_list_item, null, new String[]{}, new int[]{}, 0);
+        mDrawerList.setAdapter(mNaviAdapter);
+        mNaviAdapter.notifyDataSetChanged();
+
+//        TextView tv = (TextView)getLayoutInflater().inflate(R.layout.drawer_list_item, null);
+//        assert tv != null;
+//        tv.setText("Настройки");
+//        mDrawerList.addFooterView(tv);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
     }
