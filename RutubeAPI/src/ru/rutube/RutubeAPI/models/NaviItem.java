@@ -1,15 +1,33 @@
 package ru.rutube.RutubeAPI.models;
 
+import android.content.ContentValues;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import ru.rutube.RutubeAPI.BuildConfig;
+import ru.rutube.RutubeAPI.R;
+import ru.rutube.RutubeAPI.RutubeApp;
+import ru.rutube.RutubeAPI.requests.AuthJsonObjectRequest;
+import ru.rutube.RutubeAPI.requests.RequestListener;
+import ru.rutube.RutubeAPI.requests.Requests;
 
 /**
  * Created by tumbler on 11.03.14.
  */
 public class NaviItem implements Parcelable {
+    private static final String LOG_TAG = NaviItem.class.getName();
+    private static final boolean D = BuildConfig.DEBUG;
+    private static final String JSON_LINKS = "links";
     private static final String JSON_NAME = "name";
     private static final String JSON_TITLE = "title";
     private static final String JSON_LINK = "link";
@@ -42,6 +60,64 @@ public class NaviItem implements Parcelable {
         return new NaviItem(name, title, link, position);
     }
 
+    public static JsonObjectRequest getNaviLinksRequest(RequestListener requestListener) {
+        String uri = RutubeApp.getUrl(R.string.menu_links);
+        assert uri!= null;
+        if (D) Log.d(LOG_TAG, "Fetching: " + uri.toString());
+        JsonObjectRequest request = new JsonObjectRequest(uri, null,
+                getNaviLinksListener(requestListener),
+                getErrorListener(requestListener));
+        request.setShouldCache(true);
+        request.setTag(Requests.MENU_LINKS);
+        return request;
+    }
+
+    private static Response.Listener<JSONObject> getNaviLinksListener(final RequestListener listener) {
+        return new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    parseJSONResponse(response);
+                } catch (JSONException e) {
+                    if (listener != null)
+                        listener.onRequestError(Requests.MENU_LINKS,
+                                new RequestListener.RequestError(e.getMessage()));
+                }
+            }
+        };
+    }
+
+    protected static void parseJSONResponse(JSONObject response) throws JSONException {
+        JSONArray links = response.getJSONArray(JSON_LINKS);
+        ContentValues[] feedItems = new ContentValues[links.length()];
+        for (int i=0; i<links.length(); i++) {
+            JSONObject data = links.getJSONObject(i);
+            NaviItem item = fromJSON(data);
+            ContentValues row = fillRow(item);
+            if (D) Log.d(LOG_TAG, "NAVI: " + data.toString());
+        }
+    }
+
+    private static ContentValues fillRow(NaviItem item) {
+        ContentValues row = new ContentValues();
+        item.fillRow(row);
+        return row;
+    }
+
+    private void fillRow(ContentValues row) {
+    }
+
+    private static Response.ErrorListener getErrorListener(final RequestListener listener)
+    {
+        return new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                if (listener != null)
+                    listener.onVolleyError(error);
+            }
+        };
+    }
 
     /**
      * Parcelable implementation

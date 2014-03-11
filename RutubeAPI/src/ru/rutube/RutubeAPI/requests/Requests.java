@@ -14,4 +14,5 @@ public class Requests {
     public static final int BALANCER_JSON = 6;
     public static final int VISITOR = 7;
     public static final int VIDEO = 8;
+    public static final int MENU_LINKS = 9;
 }

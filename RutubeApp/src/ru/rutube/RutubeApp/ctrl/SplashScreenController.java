@@ -14,6 +14,7 @@ import com.android.volley.toolbox.Volley;
 
 import ru.rutube.RutubeAPI.HttpTransport;
 import ru.rutube.RutubeAPI.RutubeApp;
+import ru.rutube.RutubeAPI.models.NaviItem;
 import ru.rutube.RutubeAPI.models.User;
 import ru.rutube.RutubeAPI.requests.RequestListener;
 import ru.rutube.RutubeAPI.requests.Requests;
@@ -75,6 +76,8 @@ public class SplashScreenController implements Parcelable, RequestListener {
 
     private void startRequests() {
         initBanner();
+        JsonObjectRequest naviLinksRequest = NaviItem.getNaviLinksRequest(null);
+        mRequestQueue.add(naviLinksRequest);
     }
 
     private void initBanner() {
@@ -86,6 +89,7 @@ public class SplashScreenController implements Parcelable, RequestListener {
     public void detach() {
         mContext = null;
         mRequestQueue.cancelAll(Requests.VISITOR);
+        mRequestQueue.cancelAll(Requests.MENU_LINKS);
         mRequestQueue.stop();
         mAttached = false;
     }
