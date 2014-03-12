@@ -50,6 +50,8 @@ public class FeedContentProvider extends ContentProvider {
     private static final int TAGS_VIDEO_FEEDITEM = 16;
     private static final int NAVIGATION = 17;
     private static final int NAVIGATION_ITEM = 18;
+    private static final int SHOWCASE_TABS = 19;
+    private static final int SHOWCASE_TABITEM = 20;
 
     private static final String LOG_TAG = FeedContentProvider.class.getName();
     private static final boolean D = BuildConfig.DEBUG;
@@ -75,6 +77,8 @@ public class FeedContentProvider extends ContentProvider {
         sUriMatcher.addURI(AUTHORITY, FeedContract.TagsVideo.CONTENT_PATH + "/#/#", TAGS_VIDEO_FEEDITEM);
         sUriMatcher.addURI(AUTHORITY, FeedContract.Navigation.CONTENT_PATH, NAVIGATION);
         sUriMatcher.addURI(AUTHORITY, FeedContract.Navigation.CONTENT_PATH + "/#", NAVIGATION_ITEM);
+        sUriMatcher.addURI(AUTHORITY, FeedContract.ShowcaseTabs.CONTENT_PATH + "/#", SHOWCASE_TABS);
+        sUriMatcher.addURI(AUTHORITY, FeedContract.ShowcaseTabs.CONTENT_PATH + "/#/#", SHOWCASE_TABITEM);
     }
 
     private MainDatabaseHelper dbHelper;
@@ -89,143 +93,69 @@ public class FeedContentProvider extends ContentProvider {
         return true;
     }
 
+    public String getTable(int uriType) {
+        String table;
+        switch (uriType) {
+            case EDITORS:
+                table = FeedContract.Editors.CONTENT_PATH;
+                break;
+            case MY_VIDEO:
+                table = FeedContract.MyVideo.CONTENT_PATH;
+                break;
+            case SUBSCRIPTION:
+                table = FeedContract.Subscriptions.CONTENT_PATH;
+                break;
+            case SEARCH_RESULTS:
+                table = FeedContract.SearchResults.CONTENT_PATH;
+                break;
+            case SEARCH_QUERY:
+                table = FeedContract.SearchQuery.CONTENT_PATH;
+                break;
+            case RELATED_VIDEO:
+                table = FeedContract.RelatedVideo.CONTENT_PATH;
+                break;
+            case AUTHOR_VIDEO:
+                table = FeedContract.AuthorVideo.CONTENT_PATH;
+                break;
+            case TAGS_VIDEO:
+                table = FeedContract.TagsVideo.CONTENT_PATH;
+                break;
+            case NAVIGATION:
+                table = FeedContract.Navigation.CONTENT_PATH;
+                break;
+            case SHOWCASE_TABS:
+                table = FeedContract.ShowcaseTabs.CONTENT_PATH;
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown UriType: " + uriType);
+        }
+        return table;
+    }
+
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         // Using SQLiteQueryBuilder instead of query() method
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-
-
-
         int uriType = sUriMatcher.match(uri);
         // Check if the caller has requested a column which does not exists
         checkColumns(projection, uriType);
-        switch (uriType) {
-            case EDITORS:
-                queryBuilder.setTables(FeedContract.Editors.CONTENT_PATH);
-                break;
-            case EDITORS_FEEDITEM:
-                queryBuilder.setTables(FeedContract.Editors.CONTENT_PATH);
-                queryBuilder.appendWhere(FeedContract.FeedColumns._ID + "="
-                        + uri.getLastPathSegment());
-                break;
-            case MY_VIDEO:
-                queryBuilder.setTables(FeedContract.MyVideo.CONTENT_PATH);
-                break;
-            case MY_VIDEO_FEEDITEM:
-                queryBuilder.setTables(FeedContract.MyVideo.CONTENT_PATH);
-                queryBuilder.appendWhere(FeedContract.FeedColumns._ID + "="
-                        + uri.getLastPathSegment());
-                break;
-            case AUTHOR_VIDEO:
-                queryBuilder.setTables(FeedContract.AuthorVideo.CONTENT_PATH);
-                List<String> authorPathSegments = uri.getPathSegments();
-                assert authorPathSegments != null;
-                if (D) Log.d(LOG_TAG, String.valueOf(authorPathSegments));
-                // путь выглядит так: /author_video/1
-                // соответственно, нужен 2 сегмент
-                String authorId = authorPathSegments.get(1);
-                assert authorId != null;
-                queryBuilder.appendWhere(FeedContract.AuthorVideo.AUTHOR_ID + "="
-                        + authorId);
+        String table = getTable(uriType);
+        queryBuilder.setTables(table);
 
-                break;
-            case AUTHOR_VIDEO_FEEDITEM:
-                queryBuilder.setTables(FeedContract.AuthorVideo.CONTENT_PATH);
-                queryBuilder.appendWhere(FeedContract.FeedColumns._ID + "="
-                        + uri.getLastPathSegment());
-                break;
-            case TAGS_VIDEO:
-                queryBuilder.setTables(FeedContract.TagsVideo.CONTENT_PATH);
-                List<String> tagsPathSegments = uri.getPathSegments();
-                assert tagsPathSegments != null;
-                if (D) Log.d(LOG_TAG, String.valueOf(tagsPathSegments));
-                // путь выглядит так: /tags_video/1
-                // соответственно, нужен 2 сегмент
-                String tagId = tagsPathSegments.get(1);
-                assert tagId != null;
-                queryBuilder.appendWhere(FeedContract.TagsVideo.TAG_ID + "="
-                        + tagId);
-
-                break;
-            case TAGS_VIDEO_FEEDITEM:
-                queryBuilder.setTables(FeedContract.TagsVideo.CONTENT_PATH);
-                queryBuilder.appendWhere(FeedContract.FeedColumns._ID + "="
-                        + uri.getLastPathSegment());
-                break;
-            case SUBSCRIPTION:
-                queryBuilder.setTables(FeedContract.Subscriptions.CONTENT_PATH);
-                break;
-            case SUBSCRIPTION_FEEDITEM:
-                queryBuilder.setTables(FeedContract.Subscriptions.CONTENT_PATH);
-                queryBuilder.appendWhere(FeedContract.FeedColumns._ID + "="
-                        + uri.getLastPathSegment());
-                break;
-            case SEARCH_RESULTS:
-                queryBuilder.setTables(FeedContract.SearchResults.CONTENT_PATH);
-                List<String> searchPathSegments = uri.getPathSegments();
-                assert searchPathSegments != null;
-                if (D) Log.d(LOG_TAG, String.valueOf(searchPathSegments));
-                // путь выглядит так: /search_results/1
-                // соответственно, нужен 2 сегмент
-                String searchQueryId = searchPathSegments.get(1);
-                assert searchQueryId != null;
-                queryBuilder.appendWhere(FeedContract.SearchResults.QUERY_ID + "="
-                        + searchQueryId);
-                break;
-            case SEARCH_RESULTS_FEEDITEM:
-                queryBuilder.setTables(FeedContract.SearchResults.CONTENT_PATH);
-                queryBuilder.appendWhere(FeedContract.FeedColumns._ID + "="
-                        + uri.getLastPathSegment());
-                break;
-            case SEARCH_QUERY:
-                queryBuilder.setTables(FeedContract.SearchQuery.CONTENT_PATH);
-                break;
-            case SEARCH_QUERY_ITEM:
-                queryBuilder.setTables(FeedContract.SearchQuery.CONTENT_PATH);
-                queryBuilder.appendWhere(BaseColumns._ID + "="
-                        + uri.getLastPathSegment());
-                break;
-            case RELATED_VIDEO:
-                queryBuilder.setTables(FeedContract.RelatedVideo.CONTENT_PATH);
-                List<String> relatedPathSegments = uri.getPathSegments();
-                assert relatedPathSegments != null;
-                if (D) Log.d(LOG_TAG, String.valueOf(relatedPathSegments));
-                // путь выглядит так: /related/<video_id>
-                // соответственно, нужен 2 сегмент
-                String relatedVideId = relatedPathSegments.get(1);
-                assert relatedVideId != null;
-                queryBuilder.appendWhere(FeedContract.RelatedVideo.RELATED_VIDEO_ID + "= '"
-                        + relatedVideId + "'");
-                break;
-            case RELATED_VIDEO_ITEM:
-                queryBuilder.setTables(FeedContract.RelatedVideo.CONTENT_PATH);
-                queryBuilder.appendWhere(FeedContract.FeedColumns._ID + "="
-                        + uri.getLastPathSegment());
-                break;
-            case NAVIGATION:
-                if (D) Log.d(LOG_TAG, "query nav:" + selection);
-                queryBuilder.setTables(FeedContract.Navigation.CONTENT_PATH);
-                break;
-            case NAVIGATION_ITEM:
-                queryBuilder.setTables(FeedContract.Navigation.CONTENT_PATH);
-                queryBuilder.appendWhere(BaseColumns._ID + "="
-                        + uri.getLastPathSegment());
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown URI: " + uri);
+        String where = computeWhere(uri, uriType);
+        if (where != null) {
+            queryBuilder.appendWhere(where);
         }
+
 
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        if (sortOrder == null) {
-            if (uriType == SEARCH_RESULTS)
-                sortOrder = FeedContract.SearchResults.POSITION;
-            else if (uriType == NAVIGATION)
-                sortOrder = FeedContract.Navigation.POSITION;
-            else
-                sortOrder = FeedContract.FeedColumns.CREATED + " DESC";
-        }
+        if (sortOrder == null)
+
+            sortOrder = computeSortOrder(uriType);
+
         if (D) Log.d(LOG_TAG, "ORDER BY: " + sortOrder);
         assert db != null;
+
         Cursor cursor = queryBuilder.query(db, projection, selection,
                 selectionArgs, null, null, sortOrder);
 
@@ -237,6 +167,74 @@ public class FeedContentProvider extends ContentProvider {
         cursor.setNotificationUri(context.getContentResolver(), uri);
         if (D && uriType == NAVIGATION) Log.d(LOG_TAG, "query results: " + String.valueOf(cursor.getCount()));
         return cursor;
+    }
+
+    public String computeSortOrder(int uriType) {
+        switch(uriType) {
+            case SEARCH_RESULTS:
+                return FeedContract.SearchResults.POSITION;
+            case NAVIGATION:
+                return FeedContract.Navigation.POSITION;
+            case SHOWCASE_TABS:
+                return FeedContract.ShowcaseTabs.ORDER_NUMBER;
+            default:
+                return FeedContract.FeedColumns.CREATED + " DESC";
+        }
+    }
+
+    public String computeWhere(Uri uri, int uriType) {
+        String where = null;
+        String fk_field = null;
+
+        switch (uriType) {
+            case EDITORS:
+            case SUBSCRIPTION:
+            case MY_VIDEO:
+            case NAVIGATION:
+            case SEARCH_QUERY:
+                return null;
+            // Получение одной строки по значению первичного ключа
+            case EDITORS_FEEDITEM:
+            case MY_VIDEO_FEEDITEM:
+            case AUTHOR_VIDEO_FEEDITEM:
+            case TAGS_VIDEO_FEEDITEM:
+            case SUBSCRIPTION_FEEDITEM:
+            case SEARCH_RESULTS_FEEDITEM:
+            case SEARCH_QUERY_ITEM:
+            case RELATED_VIDEO_ITEM:
+            case SHOWCASE_TABITEM:
+            case NAVIGATION_ITEM:
+                where = BaseColumns._ID + "=" + uri.getLastPathSegment();
+                break;
+            // Получение списка строк отфильтрованных по значению внешнего ключа
+            case AUTHOR_VIDEO:
+                fk_field = FeedContract.AuthorVideo.AUTHOR_ID;
+                break;
+            case TAGS_VIDEO:
+                fk_field = FeedContract.TagsVideo.TAG_ID;
+                break;
+            case SEARCH_RESULTS:
+                fk_field = FeedContract.SearchResults.QUERY_ID;
+                break;
+            case RELATED_VIDEO:
+                fk_field = FeedContract.RelatedVideo.RELATED_VIDEO_ID;
+                break;
+            case SHOWCASE_TABS:
+                fk_field = FeedContract.ShowcaseTabs.SHOWCASE_ID;
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI: " + uri);
+        }
+
+        if (fk_field != null) {
+            List<String> segments = uri.getPathSegments();
+            assert segments != null;
+            if (D) Log.d(LOG_TAG, String.valueOf(segments));
+            // путь выглядит так: /content_path/1
+            // соответственно, нужен 2 сегмент
+            where = fk_field + "=" + segments.get(1);
+        }
+        return where;
     }
 
     @Override
@@ -261,6 +259,8 @@ public class FeedContentProvider extends ContentProvider {
                 return FeedContract.TagsVideo.CONTENT_TYPE;
             case NAVIGATION:
                 return FeedContract.Navigation.CONTENT_TYPE;
+            case SHOWCASE_TABS:
+                return FeedContract.ShowcaseTabs.CONTENT_TYPE;
             default:
                 return null;
         }
@@ -272,76 +272,47 @@ public class FeedContentProvider extends ContentProvider {
         int uriType = sUriMatcher.match(uri);
         if (D) Log.d(LOG_TAG, "Type: " + String.valueOf(uriType));
         SQLiteDatabase sqlDB = dbHelper.getWritableDatabase();
-        long rowId;
+        String table = getTable(uriType);
         assert sqlDB != null;
-        switch (uriType) {
-            case EDITORS:
-                rowId = sqlDB.replace(FeedContract.Editors.CONTENT_PATH, null, contentValues);
-                break;
-            case MY_VIDEO:
-                rowId = sqlDB.replace(FeedContract.MyVideo.CONTENT_PATH, null, contentValues);
-                break;
-            case SUBSCRIPTION:
-                rowId = sqlDB.replace(FeedContract.Subscriptions.CONTENT_PATH, null, contentValues);
-                break;
-            case SEARCH_RESULTS:
-                rowId = sqlDB.replace(FeedContract.SearchResults.CONTENT_PATH, null, contentValues);
-                break;
-            case SEARCH_QUERY:
-                rowId = sqlDB.replace(FeedContract.SearchQuery.CONTENT_PATH, null, contentValues);
-                break;
-            case RELATED_VIDEO:
-                rowId = sqlDB.replace(FeedContract.RelatedVideo.CONTENT_PATH, null, contentValues);
-                break;
-            case AUTHOR_VIDEO:
-                rowId = sqlDB.replace(FeedContract.AuthorVideo.CONTENT_PATH, null, contentValues);
-                break;
-            case TAGS_VIDEO:
-                rowId = sqlDB.replace(FeedContract.TagsVideo.CONTENT_PATH, null, contentValues);
-                break;
-            case NAVIGATION:
-                rowId = sqlDB.replace(FeedContract.Navigation.CONTENT_PATH, null, contentValues);
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown URI: " + uri);
-        }
+        long rowId = sqlDB.replace(table, null, contentValues);
         Context context = getContext();
         assert context != null;
         context.getContentResolver().notifyChange(uri, null);
-
-        switch (uriType) {
-            case SEARCH_RESULTS:
-                return FeedContract.SearchResults.CONTENT_URI.buildUpon()
-                        .appendEncodedPath(contentValues.getAsString(FeedContract.SearchResults.QUERY_ID))
-                        .appendEncodedPath(String.valueOf(rowId)).build();
-            case SEARCH_QUERY:
-                return Uri.withAppendedPath(FeedContract.SearchQuery.CONTENT_URI,
-                        String.valueOf(rowId));
-            case EDITORS:
-                return Uri.withAppendedPath(FeedContract.Editors.CONTENT_URI,
-                        String.valueOf(rowId));
-            case MY_VIDEO:
-                return Uri.withAppendedPath(FeedContract.MyVideo.CONTENT_URI,
-                        String.valueOf(rowId));
-            case SUBSCRIPTION:
-                return Uri.withAppendedPath(FeedContract.Subscriptions.CONTENT_URI,
-                        String.valueOf(rowId));
-            case RELATED_VIDEO:
-                return FeedContract.RelatedVideo.CONTENT_URI.buildUpon()
-                        .appendEncodedPath(contentValues.getAsString(FeedContract.RelatedVideo.RELATED_VIDEO_ID))
-                        .appendEncodedPath(String.valueOf(rowId)).build();
-            case AUTHOR_VIDEO:
-                return Uri.withAppendedPath(FeedContract.AuthorVideo.CONTENT_URI,
-                        String.valueOf(rowId));
-            case TAGS_VIDEO:
-                return Uri.withAppendedPath(FeedContract.TagsVideo.CONTENT_URI,
-                        String.valueOf(rowId));
-            case NAVIGATION:
-                return Uri.withAppendedPath(FeedContract.Navigation.CONTENT_URI,
-                        String.valueOf(rowId));
-            default:
-                throw new IllegalArgumentException("Unknown URI");
-        }
+        return uri.buildUpon().appendPath(String.valueOf(rowId)).build();
+//
+//        switch (uriType) {
+//            case SEARCH_RESULTS:
+//                return FeedContract.SearchResults.CONTENT_URI.buildUpon()
+//                        .appendEncodedPath(contentValues.getAsString(FeedContract.SearchResults.QUERY_ID))
+//                        .appendEncodedPath(String.valueOf(rowId)).build();
+//            case SEARCH_QUERY:
+//                return Uri.withAppendedPath(FeedContract.SearchQuery.CONTENT_URI,
+//                        String.valueOf(rowId));
+//            case EDITORS:
+//                return Uri.withAppendedPath(FeedContract.Editors.CONTENT_URI,
+//                        String.valueOf(rowId));
+//            case MY_VIDEO:
+//                return Uri.withAppendedPath(FeedContract.MyVideo.CONTENT_URI,
+//                        String.valueOf(rowId));
+//            case SUBSCRIPTION:
+//                return Uri.withAppendedPath(FeedContract.Subscriptions.CONTENT_URI,
+//                        String.valueOf(rowId));
+//            case RELATED_VIDEO:
+//                return FeedContract.RelatedVideo.CONTENT_URI.buildUpon()
+//                        .appendEncodedPath(contentValues.getAsString(FeedContract.RelatedVideo.RELATED_VIDEO_ID))
+//                        .appendEncodedPath(String.valueOf(rowId)).build();
+//            case AUTHOR_VIDEO:
+//                return Uri.withAppendedPath(FeedContract.AuthorVideo.CONTENT_URI,
+//                        String.valueOf(rowId));
+//            case TAGS_VIDEO:
+//                return Uri.withAppendedPath(FeedContract.TagsVideo.CONTENT_URI,
+//                        String.valueOf(rowId));
+//            case NAVIGATION:
+//                return Uri.withAppendedPath(FeedContract.Navigation.CONTENT_URI,
+//                        String.valueOf(rowId));
+//            default:
+//                throw new IllegalArgumentException("Unknown URI");
+//        }
     }
 
     @Override
@@ -352,41 +323,10 @@ public class FeedContentProvider extends ContentProvider {
             if (D) Log.d(LOG_TAG, "empty bulk insert");
             return 0;
         }
-        String table;
         int uriType = sUriMatcher.match(uri);
         checkColumns(values[0], uriType);
+        String table = getTable(uriType);
 
-        switch (uriType) {
-            case EDITORS:
-                table = FeedContract.Editors.CONTENT_PATH;
-                break;
-            case MY_VIDEO:
-                table = FeedContract.MyVideo.CONTENT_PATH;
-                break;
-            case SUBSCRIPTION:
-                table = FeedContract.Subscriptions.CONTENT_PATH;
-                break;
-            case SEARCH_RESULTS:
-                table = FeedContract.SearchResults.CONTENT_PATH;
-                break;
-            case SEARCH_QUERY:
-                table = FeedContract.SearchQuery.CONTENT_PATH;
-                break;
-            case RELATED_VIDEO:
-                table = FeedContract.RelatedVideo.CONTENT_PATH;
-                break;
-            case AUTHOR_VIDEO:
-                table = FeedContract.AuthorVideo.CONTENT_PATH;
-                break;
-            case TAGS_VIDEO:
-                table = FeedContract.TagsVideo.CONTENT_PATH;
-                break;
-            case NAVIGATION:
-                table = FeedContract.Navigation.CONTENT_PATH;
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown URI: " + uri);
-        }
         SQLiteDatabase sqlDB = dbHelper.getWritableDatabase();
         assert sqlDB != null;
         sqlDB.beginTransaction();
@@ -410,40 +350,9 @@ public class FeedContentProvider extends ContentProvider {
     public int delete(Uri uri, String where, String[] whereArgs) {
         Context context = getContext();
         assert context != null;
-        String table;
         int uriType = sUriMatcher.match(uri);
         if (D) Log.d(LOG_TAG, "Delete: " + String.valueOf(uri));
-        switch (uriType) {
-            case EDITORS:
-                table = FeedContract.Editors.CONTENT_PATH;
-                break;
-            case MY_VIDEO:
-                table = FeedContract.MyVideo.CONTENT_PATH;
-                break;
-            case SUBSCRIPTION:
-                table = FeedContract.Subscriptions.CONTENT_PATH;
-                break;
-            case SEARCH_RESULTS:
-                table = FeedContract.SearchResults.CONTENT_PATH;
-                break;
-            case SEARCH_QUERY:
-                table = FeedContract.SearchQuery.CONTENT_PATH;
-                break;
-            case RELATED_VIDEO:
-                table = FeedContract.RelatedVideo.CONTENT_PATH;
-                break;
-            case AUTHOR_VIDEO:
-                table = FeedContract.AuthorVideo.CONTENT_PATH;
-                break;
-            case TAGS_VIDEO:
-                table = FeedContract.TagsVideo.CONTENT_PATH;
-                break;
-            case NAVIGATION:
-                table = FeedContract.Navigation.CONTENT_PATH;
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown URI: " + uri);
-        }
+        String table = getTable(uriType);
         SQLiteDatabase sqlDB = dbHelper.getWritableDatabase();
         assert sqlDB != null;
         final String base_query = "SELECT COUNT(*) as cnt FROM " + table;
@@ -497,7 +406,6 @@ public class FeedContentProvider extends ContentProvider {
         if (!availableColumns.containsAll(requestedColumns)) {
             throw new IllegalArgumentException("Unknown columns in projection");
         }
-
     }
 
     public static String[] getProjection(Uri contentUri) {
@@ -505,23 +413,9 @@ public class FeedContentProvider extends ContentProvider {
         return getProjection(uriType);
     }
     public static String[] getProjection(int uriType) {
-        if (uriType == SEARCH_QUERY || uriType == SEARCH_QUERY_ITEM) {
-            return new String[]{
-                    BaseColumns._ID,
-                    FeedContract.SearchQuery.QUERY,
-                    FeedContract.SearchQuery.UPDATED
-            };
-        }
-        if (uriType == NAVIGATION || uriType == NAVIGATION_ITEM) {
-            return new String[]{
-                    BaseColumns._ID,
-                    FeedContract.Navigation.NAME,
-                    FeedContract.Navigation.TITLE,
-                    FeedContract.Navigation.LINK,
-                    FeedContract.Navigation.POSITION
-            };
-        }
-        String[] available = {
+        // Всякие разные ленты со стандартным набором колонок и дополнительными колонками,
+        // уникальными для разных типов лент.
+        final String[] available = {
                 FeedContract.FeedColumns._ID,
                 FeedContract.FeedColumns.TITLE,
                 FeedContract.FeedColumns.DESCRIPTION,
@@ -533,28 +427,61 @@ public class FeedContentProvider extends ContentProvider {
                 FeedContract.FeedColumns.DURATION,
                 FeedContract.FeedColumns.CACHED
         };
-
         ArrayList<String> columnList = new ArrayList<String>(Arrays.asList(available));
-        if (uriType == MY_VIDEO || uriType == MY_VIDEO_FEEDITEM)
-            columnList.add(FeedContract.MyVideo.SIGNATURE);
-        if (uriType == SEARCH_RESULTS || uriType == SEARCH_RESULTS_FEEDITEM) {
-            columnList.add(FeedContract.SearchResults.QUERY_ID);
-            columnList.add(FeedContract.SearchResults.POSITION);
-        }
-        if (uriType == RELATED_VIDEO || uriType == RELATED_VIDEO_ITEM) {
-            columnList.add(FeedContract.RelatedVideo.RELATED_VIDEO_ID);
-            columnList.add(FeedContract.RelatedVideo.POSITION);
-            columnList.add(FeedContract.RelatedVideo.HITS);
-        }
 
-        if (uriType == SUBSCRIPTION || uriType == SUBSCRIPTION_FEEDITEM ||
-                uriType == TAGS_VIDEO || uriType == TAGS_VIDEO_FEEDITEM) {
-            columnList.add(FeedContract.Subscriptions.TAGS_JSON);
-        }
-        if (uriType == TAGS_VIDEO || uriType == TAGS_VIDEO_FEEDITEM) {
-            columnList.add(FeedContract.TagsVideo.TAG_ID);
-        }
+        switch (uriType) {
+            case SEARCH_QUERY:
+            case SEARCH_QUERY_ITEM:
+                return new String[]{
+                        BaseColumns._ID,
+                        FeedContract.SearchQuery.QUERY,
+                        FeedContract.SearchQuery.UPDATED
+                };
+            case NAVIGATION:
+            case NAVIGATION_ITEM:
+                return new String[]{
+                        BaseColumns._ID,
+                        FeedContract.Navigation.NAME,
+                        FeedContract.Navigation.TITLE,
+                        FeedContract.Navigation.LINK,
+                        FeedContract.Navigation.POSITION
+                };
+            case SHOWCASE_TABS:
+            case SHOWCASE_TABITEM:
+                return new String[]{
+                        BaseColumns._ID,
+                        FeedContract.ShowcaseTabs.NAME,
+                        FeedContract.ShowcaseTabs.SORT,
+                        FeedContract.ShowcaseTabs.ORDER_NUMBER,
+                        FeedContract.ShowcaseTabs.SHOWCASE_ID,
+                };
+            case MY_VIDEO:
+            case MY_VIDEO_FEEDITEM:
+                columnList.add(FeedContract.MyVideo.SIGNATURE);
+                break;
+            case SEARCH_RESULTS:
+            case SEARCH_RESULTS_FEEDITEM:
+                columnList.add(FeedContract.SearchResults.QUERY_ID);
+                columnList.add(FeedContract.SearchResults.POSITION);
+                break;
+            case RELATED_VIDEO:
+            case RELATED_VIDEO_ITEM:
+                columnList.add(FeedContract.RelatedVideo.RELATED_VIDEO_ID);
+                columnList.add(FeedContract.RelatedVideo.POSITION);
+                columnList.add(FeedContract.RelatedVideo.HITS);
+                break;
+            case SUBSCRIPTION:
+            case SUBSCRIPTION_FEEDITEM:
+                columnList.add(FeedContract.Subscriptions.TAGS_JSON);
+                break;
+            case TAGS_VIDEO:
+            case TAGS_VIDEO_FEEDITEM:
+                columnList.add(FeedContract.Subscriptions.TAGS_JSON);
+                columnList.add(FeedContract.TagsVideo.TAG_ID);
+            default:
+                break;
 
+        }
         String[] result = new String[columnList.size()];
         return columnList.toArray(result);
     }
@@ -603,13 +530,23 @@ public class FeedContentProvider extends ContentProvider {
 
     private static final String NAVIGATION_COLUMNS_SQL =
             " _id INTEGER PRIMARY KEY AUTOINCREMENT," +
-            " name VARCHAR(50)," +
-            " title VARCHAR(200)," +
-            " link VARCHAR(200)," +
-            " position INTEGER DEFAULT 0";
+                    " name VARCHAR(50)," +
+                    " title VARCHAR(200)," +
+                    " link VARCHAR(200)," +
+                    " position INTEGER DEFAULT 0";
+
+    private static final String SHOWCASE_TABS_COLUMNS_SQL =
+            " _id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    " name VARCHAR(50)," +
+                    " sort VARCHAR(200)," +
+                    " showcase_id INTEGER NULL," +
+                    " order_number INTEGER DEFAULT 0";
 
     private static final String NAVIGATION_FIXTURE_QUERY = "INSERT INTO " +
             FeedContract.Navigation.CONTENT_PATH + " (name, title, link, position) ";
+
+    private static final String SHOWCASE_FIXTURE_QUERY = "INSERT INTO " +
+            FeedContract.ShowcaseTabs.CONTENT_PATH + " (showcase_id, name, sort, order_number) ";
 
     private static final String RELATED_VIDEO_COLUMNS_SQL =
             FEED_COLUMNS_SQL + "," +
@@ -641,6 +578,10 @@ public class FeedContentProvider extends ContentProvider {
             FeedContract.Navigation.CONTENT_PATH + " (" +
             NAVIGATION_COLUMNS_SQL + ")";
 
+    private static final String SQL_CREATE_SHOWCASE_TABS = "CREATE TABLE " +
+            FeedContract.ShowcaseTabs.CONTENT_PATH + " (" +
+            SHOWCASE_TABS_COLUMNS_SQL + ")";
+
     private static final String SQL_CREATE_AUTHOR_QUERY = "CREATE TABLE " +
             FeedContract.AuthorVideo.CONTENT_PATH + " (" +
             FEED_COLUMNS_SQL + ")";
@@ -655,15 +596,33 @@ public class FeedContentProvider extends ContentProvider {
 
     private static final String SQL_DROP_TABLE = "DROP TABLE %s";
 
-    private static final int DB_VERSION = 8;
+    private static final int DB_VERSION = 9;
 
-    private static final String getNaviFixture() {
+    private static String getNaviFixture() {
         Context context = RutubeApp.getContext();
         String name = context.getString(R.string.navi_main_name);
         String title = context.getString(R.string.navi_main_title);
         String link = context.getString(R.string.navi_main_link);
         return String.format("VALUES('%s', '%s', '%s', 0)", name, title, link);
     }
+
+    private static String getShowcaseTabsFixture(int showcaseId) {
+        Context context = RutubeApp.getContext();
+        // получаем витрину "андроид"
+        String[] tab_names = context.getResources().getStringArray(R.array.showcase_tabs_names);
+        String result = "VALUES";
+        int i = 0;
+        for (String tabName: tab_names) {
+            String row = String.format(" (%d, '%s', 'created_date', %d)", showcaseId, tabName, i);
+            if (i == 0)
+                result += row;
+            else
+                result += "," + row;
+            i += 1;
+        }
+        return result;
+    }
+
 
     protected static final class MainDatabaseHelper extends SQLiteOpenHelper {
 
@@ -687,6 +646,10 @@ public class FeedContentProvider extends ContentProvider {
             db.execSQL(SQL_CREATE_AUTHOR_QUERY);
             db.execSQL(SQL_CREATE_TAGS_VIDEO_QUERY);
             db.execSQL(SQL_CREATE_NAVIGATION);
+            db.execSQL(SQL_CREATE_SHOWCASE_TABS);
+            db.execSQL(NAVIGATION_FIXTURE_QUERY + getNaviFixture());
+            int showcaseId = getAndroidShowcaseId(db);
+            db.execSQL(SHOWCASE_FIXTURE_QUERY + getShowcaseTabsFixture(showcaseId));
         }
 
         @Override
@@ -750,11 +713,42 @@ public class FeedContentProvider extends ContentProvider {
                         db.execSQL(SQL_CREATE_NAVIGATION);
                         db.execSQL(NAVIGATION_FIXTURE_QUERY + getNaviFixture());
                         break;
+                    case 8:
+                        db.execSQL(SQL_CREATE_SHOWCASE_TABS);
+                        int showcaseId = getAndroidShowcaseId(db);
 
+                        db.execSQL(SHOWCASE_FIXTURE_QUERY + getShowcaseTabsFixture(showcaseId));
                     default:
                         break;
                 }
             }
+        }
+
+        public int getAndroidShowcaseId(SQLiteDatabase db) {
+            String androidFeedUri = RutubeApp.getContext().getString(R.string.navi_main_link);
+            Cursor c = db.query(
+                    FeedContract.Navigation.CONTENT_PATH,
+                    new String[]{BaseColumns._ID},
+                    "link = ?",
+                    new String[]{androidFeedUri},
+                    null, null, null
+            );
+            assert c!= null;
+            c.moveToFirst();
+            if (c.getCount() == 0) {
+                if (D) Log.d(LOG_TAG, "android showcase: " + androidFeedUri + " not in db");
+                c.close();
+                c = db.query(
+                        FeedContract.Navigation.CONTENT_PATH,
+                        new String[]{BaseColumns._ID},
+                        null,
+                        null,
+                        null, null, null);
+                c.moveToFirst();
+            }
+            int showcaseId = c.getInt(0);
+            c.close();
+            return showcaseId;
         }
     }
 

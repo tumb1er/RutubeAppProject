@@ -15,4 +15,9 @@
     <string name="views4">%,d views</string>
     <string name="navi_main_name">Main</string>
     <string name="navi_main_title" />
+    <string-array name="showcase_tabs_names">
+        <item>Editors</item>
+        <item>Subscriptions</item>
+        <item>Best cats</item>
+    </string-array>
 </resources>

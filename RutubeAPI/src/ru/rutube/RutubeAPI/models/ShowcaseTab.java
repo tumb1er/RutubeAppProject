@@ -34,16 +34,18 @@ public class ShowcaseTab implements Parcelable {
     private static final String JSON_SORT = "sort";
     private static final String JSON_ORDER_NUMBER = "order_number";
     private static final String JSON_TABS = "tabs";
+    private final int mShowcaseId;
     private int mId;
     private int mOrderNumber;
     private String mName;
     private String mSort;
 
-    public ShowcaseTab(int id, String name, String sort, int orderNumber) {
+    public ShowcaseTab(int id, String name, String sort, int orderNumber, int showcaseId) {
         mId = id;
         mName = name;
         mSort = sort;
         mOrderNumber = orderNumber;
+        mShowcaseId = showcaseId;
     }
 
     public static ShowcaseTab fromParcel(Parcel p) {
@@ -51,39 +53,46 @@ public class ShowcaseTab implements Parcelable {
         String name = p.readString();
         String sort = p.readString();
         int orderNumber = p.readInt();
-        return new ShowcaseTab(id, name, sort, orderNumber);
+        int showcaseId = p.readInt();
+        return new ShowcaseTab(id, name, sort, orderNumber, showcaseId);
     }
 
-    public static ShowcaseTab fromJSON(JSONObject data) throws JSONException {
+    public static ShowcaseTab fromJSON(JSONObject data, int showcaseId) throws JSONException {
         int id = data.getInt(JSON_TAB_ID);
         String name = data.getString(JSON_NAME);
         String sort = data.getString(JSON_SORT);
         int orderNumber = data.getInt(JSON_ORDER_NUMBER);
-        return new ShowcaseTab(id, name, sort, orderNumber);
+        return new ShowcaseTab(id, name, sort, orderNumber, showcaseId);
     }
 
     public static ShowcaseTab fromCursor(Cursor c) {
-        // fixme
-        return new ShowcaseTab(0, "", "", 0);
+        int showcaseID = c.getInt(c.getColumnIndex(FeedContract.ShowcaseTabs.SHOWCASE_ID));
+        int id = c.getInt(c.getColumnIndex(FeedContract.ShowcaseTabs._ID));
+        int orderNumber = c.getInt(c.getColumnIndex(FeedContract.ShowcaseTabs.ORDER_NUMBER));
+        String name = c.getString(c.getColumnIndex(FeedContract.ShowcaseTabs.NAME));
+        String sort = c.getString(c.getColumnIndex(FeedContract.ShowcaseTabs.SORT));
+
+        return new ShowcaseTab(id, name, sort, orderNumber, showcaseID);
     }
 
-    public static JsonObjectRequest getShowcaseRequest(Uri uri, RequestListener requestListener) {
+    public static JsonObjectRequest getShowcaseRequest(Uri uri, int showcaseId, RequestListener requestListener) {
         assert uri!= null;
         if (D) Log.d(LOG_TAG, "Fetching: " + uri.toString());
         JsonObjectRequest request = new JsonObjectRequest(uri.toString(), null,
-                getShowcaseListener(requestListener),
+                getShowcaseListener(showcaseId, requestListener),
                 getErrorListener(requestListener));
         request.setShouldCache(true);
         request.setTag(Requests.SHOWCASE);
         return request;
     }
 
-    private static Response.Listener<JSONObject> getShowcaseListener(final RequestListener listener) {
+    private static Response.Listener<JSONObject> getShowcaseListener(final int showcaseId,
+                                                                     final RequestListener listener) {
         return new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    parseJSONResponse(response);
+                    parseJSONResponse(response, showcaseId);
                     if (listener != null)
                         listener.onResult(Requests.SHOWCASE, null);
                 } catch (JSONException e) {
@@ -95,25 +104,28 @@ public class ShowcaseTab implements Parcelable {
         };
     }
 
-    protected static void parseJSONResponse(JSONObject response) throws JSONException {
+    protected static void parseJSONResponse(JSONObject response, int showcaseId) throws JSONException {
         JSONArray tabs = response.getJSONArray(JSON_TABS);
         ContentValues[] tabsItems = new ContentValues[tabs.length()];
         for (int i=0; i<tabs.length(); i++) {
             JSONObject data = tabs.getJSONObject(i);
-            ShowcaseTab item = fromJSON(data);
+            ShowcaseTab item = fromJSON(data, showcaseId);
             ContentValues row = fillRow(item);
             if (D) Log.d(LOG_TAG, "TAB: " + data.toString());
             tabsItems[i] = row;
         }
         Context context = RutubeApp.getInstance();
         try {
-            // FIXME:
-            //context.getContentResolver().delete(FeedContract.Navigation.CONTENT_URI, null, null);
-            //context.getContentResolver().bulkInsert(FeedContract.Navigation.CONTENT_URI, tabsItems);
+            Uri uri = FeedContract.ShowcaseTabs.CONTENT_URI.buildUpon()
+                    .appendPath(String.valueOf(showcaseId))
+                    .build();
+            assert uri != null;
+            context.getContentResolver().delete(uri, null, null);
+            context.getContentResolver().bulkInsert(uri, tabsItems);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        context.getContentResolver().notifyChange(FeedContract.Navigation.CONTENT_URI, null);
+        context.getContentResolver().notifyChange(FeedContract.ShowcaseTabs.CONTENT_URI, null);
         if (D) Log.d(LOG_TAG, "Operation finished");
     }
 
@@ -124,10 +136,11 @@ public class ShowcaseTab implements Parcelable {
     }
 
     private void fillRow(ContentValues row) {
-//        row.put(FeedContract.Navigation.NAME, mName);
-//        row.put(FeedContract.Navigation.TITLE, mTitle);
-//        row.put(FeedContract.Navigation.LINK, mLink);
-//        row.put(FeedContract.Navigation.POSITION, mPosition);
+        row.put(FeedContract.ShowcaseTabs.SHOWCASE_ID, mShowcaseId);
+        row.put(FeedContract.ShowcaseTabs._ID, mId);
+        row.put(FeedContract.ShowcaseTabs.NAME, mName);
+        row.put(FeedContract.ShowcaseTabs.SORT, mSort);
+        row.put(FeedContract.ShowcaseTabs.ORDER_NUMBER, mOrderNumber);
     }
 
     private static Response.ErrorListener getErrorListener(final RequestListener listener)
@@ -157,6 +170,7 @@ public class ShowcaseTab implements Parcelable {
         parcel.writeString(mName);
         parcel.writeString(mSort);
         parcel.writeInt(mOrderNumber);
+        parcel.writeInt(mShowcaseId);
     }
 
     @SuppressWarnings("UnusedDeclaration")
