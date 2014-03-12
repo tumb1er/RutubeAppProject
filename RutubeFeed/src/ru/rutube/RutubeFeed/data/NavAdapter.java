@@ -21,14 +21,19 @@ import ru.rutube.RutubeFeed.R;
 public class NavAdapter extends SimpleCursorAdapter {
     private static final boolean D = BuildConfig.DEBUG;
     private static final String LOG_TAG = NavAdapter.class.getName();
+    private int mCurrentItemPosition;
     public NavAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
         super(context, layout, c, from, to, flags);
     }
 
-    private class ViewHolder{
-        TextView title;
-        TextView name;
-        Uri showcaseUri;
+    public void setCurrentItemPosition(int pos) {
+        mCurrentItemPosition = pos;
+    }
+
+    public class ViewHolder {
+        public TextView title;
+        public TextView name;
+        public Uri showcaseUri;
     }
 
     @Override
@@ -39,6 +44,18 @@ public class NavAdapter extends SimpleCursorAdapter {
         ViewHolder holder = initHolder(view);
         assert view != null;
         view.setTag(holder);
+        return view;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View view = super.getView(position, convertView, parent);
+        assert view != null;
+        if (position == mCurrentItemPosition) {
+            view.setBackgroundResource(R.color.current_nav_item);
+        } else {
+            view.setBackgroundResource(R.color.nav_item_background);
+        }
         return view;
     }
 

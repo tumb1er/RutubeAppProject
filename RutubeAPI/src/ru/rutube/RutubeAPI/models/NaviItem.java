@@ -43,6 +43,9 @@ public class NaviItem implements Parcelable {
     public NaviItem(String name, String title, String link, int position) {
         mName = name;
         mTitle = title;
+        if (link.startsWith("/")) {
+            link = link.substring(1);
+        }
         mLink = link;
         mPosition = position;
     }

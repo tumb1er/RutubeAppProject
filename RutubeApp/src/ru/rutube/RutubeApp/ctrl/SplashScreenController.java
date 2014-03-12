@@ -2,6 +2,7 @@ package ru.rutube.RutubeApp.ctrl;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -60,12 +61,12 @@ public class SplashScreenController implements Parcelable, RequestListener {
         c.moveToFirst();
         NaviItem item = NaviItem.fromCursor(c);
         c.close();
-        mView.openShowCase(item.getLink());
+        mView.openShowCase(item.getUri());
     }
 
     public interface SplashScreenView {
         public void setBannerUrl(String url);
-        public void openShowCase(String url);
+        public void openShowCase(Uri url);
     }
     @Override
     public int describeContents() {

@@ -2,6 +2,7 @@ package ru.rutube.RutubeFeed.ui;
 
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.LoaderManager;
@@ -12,7 +13,10 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.RutubeApp;
@@ -34,7 +38,17 @@ public class ShowcaseActivity extends ActionBarActivity {
     private DrawerLayout mDrawerLayout;
     private NaviLoaderCallbacks loaderCallbacks;
     private NavAdapter mNaviAdapter;
-
+    private AdapterView.OnItemClickListener mOnNavigationClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            TextView tv = (TextView)findViewById(R.id.uriTextView);
+            NavAdapter.ViewHolder holder = (NavAdapter.ViewHolder)view.getTag();
+            tv.setText(holder.showcaseUri.toString());
+            mNaviAdapter.setCurrentItemPosition(i);
+            mDrawerLayout.closeDrawers();
+            mNaviAdapter.notifyDataSetChanged();
+        }
+    };
 
     /**
      * Обработчик событий загрузки данных в адаптер навигационного меню
@@ -100,6 +114,16 @@ public class ShowcaseActivity extends ActionBarActivity {
         initNavigationAdapter();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+
+        Uri uri = getIntent().getData();
+        TextView tv = (TextView)findViewById(R.id.uriTextView);
+        tv.setText(uri.toString());
+
+        initCurrentNavItem();
+    }
+
+    public void initCurrentNavItem() {
+        mNaviAdapter.setCurrentItemPosition(0);
     }
 
     protected void initNavigationToggle() {
@@ -127,6 +151,7 @@ public class ShowcaseActivity extends ActionBarActivity {
                 new String[]{},
                 new int[]{}, 0);
         mDrawerList.setAdapter(mNaviAdapter);
+        mDrawerList.setOnItemClickListener(mOnNavigationClickListener);
     }
 
 

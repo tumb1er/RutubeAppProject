@@ -56,10 +56,10 @@ public class SplashScreenActivity extends ActionBarActivity
     }
 
     @Override
-    public void openShowCase(String url) {
-        if (D) Log.d(LOG_TAG, "Open showcase: " + url);
+    public void openShowCase(Uri url) {
+        if (D) Log.d(LOG_TAG, "Open showcase: " + url.toString());
         Intent i = new Intent(this, ShowcaseActivity.class);
-        i.setData(Uri.parse(url));
+        i.setData(url);
         startActivity(i);
     }
 }
