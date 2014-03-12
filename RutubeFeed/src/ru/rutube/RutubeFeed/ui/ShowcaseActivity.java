@@ -48,13 +48,18 @@ public class ShowcaseActivity extends ActionBarActivity {
 
     private class ShowcaseFragmentCache {
         Map<Uri, Fragment> mFragmentMap = new HashMap<Uri, Fragment>();
-        public Fragment getShowcaseFragment(Uri uri) {
+        public Fragment getShowcaseFragment(Uri uri, int showcaseId) {
+            if (D) Log.d(LOG_TAG, "get fragment for " + uri.toString());
             Fragment f = mFragmentMap.get(uri);
-            if (f != null)
+            if (f != null) {
+                if (D)Log.d(LOG_TAG, "got from cache");
                 return f;
+            }
+            if (D) Log.d(LOG_TAG, "creating new fragment");
             f = new ShowcaseFragment();
             Bundle args = new Bundle();
             args.putParcelable(Constants.Params.SHOWCASE_URI, uri);
+            args.putInt(Constants.Params.SHOWCASE_ID, showcaseId);
             f.setArguments(args);
             mFragmentMap.put(uri, f);
             return f;
@@ -67,21 +72,22 @@ public class ShowcaseActivity extends ActionBarActivity {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             NavAdapter.ViewHolder holder = (NavAdapter.ViewHolder)view.getTag();
-            Uri showcaseUri = holder.showcaseUri;
-            navigateToShowcase(showcaseUri);
+            Uri showcaseUri = holder.naviItem.getUri();
+            int showcaseId = holder.naviItem.getId();
+            navigateToShowcase(showcaseUri, showcaseId);
             mNaviAdapter.setCurrentItemPosition(i);
             mDrawerLayout.closeDrawers();
             mNaviAdapter.notifyDataSetChanged();
         }
     };
 
-    public void navigateToShowcase(Uri showcaseUri) {
+    public void navigateToShowcase(Uri showcaseUri, int showcaseId) {
         if (D) Log.d(LOG_TAG, "Navigating to " + String.valueOf(showcaseUri));
         TextView tv = (TextView)findViewById(R.id.uriTextView);
         tv.setText(showcaseUri.toString());
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        Fragment f = mFragmentCache.getShowcaseFragment(showcaseUri);
+        Fragment f = mFragmentCache.getShowcaseFragment(showcaseUri, showcaseId);
         ft.replace(R.id.content_placeholder, f);
         ft.commit();
     }
@@ -150,7 +156,7 @@ public class ShowcaseActivity extends ActionBarActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
 
         Uri uri = getIntent().getData();
-        navigateToShowcase(uri);
+        navigateToShowcase(uri, 0);
 
         initCurrentNavItem();
     }

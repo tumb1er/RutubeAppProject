@@ -33,7 +33,7 @@ public class NavAdapter extends SimpleCursorAdapter {
     public class ViewHolder {
         public TextView title;
         public TextView name;
-        public Uri showcaseUri;
+        public NaviItem naviItem;
     }
 
     @Override
@@ -73,6 +73,6 @@ public class NavAdapter extends SimpleCursorAdapter {
         NaviItem item = NaviItem.fromCursor(cursor);
         holder.name.setText(item.getName());
         holder.title.setText(item.getTitle());
-        holder.showcaseUri = item.getUri();
+        holder.naviItem = item;
     }
 }

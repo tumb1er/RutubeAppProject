@@ -188,4 +188,8 @@ public class ShowcaseTab implements Parcelable {
     public String getName() {
         return mName;
     }
+
+    public int getId() {
+        return mId;
+    }
 }

@@ -39,6 +39,7 @@ public class NaviItem implements Parcelable {
     private String mTitle;
     private String mLink;
     private int mPosition;
+    private int mId;
 
     public NaviItem(String name, String title, String link, int position) {
         mName = name;
@@ -116,6 +117,15 @@ public class NaviItem implements Parcelable {
         Context context = RutubeApp.getInstance();
         try {
             context.getContentResolver().delete(FeedContract.Navigation.CONTENT_URI, null, null);
+            for (ContentValues cv: naviItems) {
+                int updated = context.getContentResolver().update(FeedContract.Navigation.CONTENT_URI,
+                        cv,
+                        FeedContract.Navigation.LINK + " = ?",
+                        new String[]{cv.getAsString(FeedContract.Navigation.LINK)});
+                if (updated == 0) {
+                    context.getContentResolver().insert(FeedContract.Navigation.CONTENT_URI, cv);
+                }
+            }
             context.getContentResolver().bulkInsert(FeedContract.Navigation.CONTENT_URI, naviItems);
         } catch (Exception e) {
             // TODO: обработать ошибку вставки в БД.
@@ -196,5 +206,17 @@ public class NaviItem implements Parcelable {
 
     public String getTitle() {
         return mTitle;
+    }
+
+    public int getId() {
+        return mId;
+    }
+
+    public int getmId() {
+        return mId;
+    }
+
+    public void setmId(int mId) {
+        this.mId = mId;
     }
 }

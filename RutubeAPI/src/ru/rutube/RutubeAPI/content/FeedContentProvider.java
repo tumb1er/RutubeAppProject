@@ -385,7 +385,14 @@ public class FeedContentProvider extends ContentProvider {
 
     @Override
     public int update(Uri uri, ContentValues contentValues, String s, String[] strings) {
-        throw new NullPointerException();
+        Context context = getContext();
+        assert context != null;
+        int uriType = sUriMatcher.match(uri);
+        if (D) Log.d(LOG_TAG, "Delete: " + String.valueOf(uri));
+        String table = getTable(uriType);
+        SQLiteDatabase sqlDB = dbHelper.getWritableDatabase();
+        assert sqlDB != null;
+        return sqlDB.update(table, contentValues, s, strings);
     }
 
     private void checkColumns(ContentValues values, int uriType) {
@@ -412,6 +419,7 @@ public class FeedContentProvider extends ContentProvider {
         int uriType = sUriMatcher.match(contentUri);
         return getProjection(uriType);
     }
+
     public static String[] getProjection(int uriType) {
         // Всякие разные ленты со стандартным набором колонок и дополнительными колонками,
         // уникальными для разных типов лент.
@@ -594,9 +602,12 @@ public class FeedContentProvider extends ContentProvider {
             FeedContract.RelatedVideo.CONTENT_PATH + " (" +
             RELATED_VIDEO_COLUMNS_SQL + ")";
 
+    private static final String SQL_CREATE_INDEX_NAVIGATION = "CREATE UNIQUE INDEX idx_navigation_link " +
+            "ON " + FeedContract.Navigation.CONTENT_PATH + " (" + FeedContract.Navigation.LINK  + ")";
+
     private static final String SQL_DROP_TABLE = "DROP TABLE %s";
 
-    private static final int DB_VERSION = 9;
+    private static final int DB_VERSION = 10;
 
     private static String getNaviFixture() {
         Context context = RutubeApp.getContext();
@@ -650,6 +661,7 @@ public class FeedContentProvider extends ContentProvider {
             db.execSQL(NAVIGATION_FIXTURE_QUERY + getNaviFixture());
             int showcaseId = getAndroidShowcaseId(db);
             db.execSQL(SHOWCASE_FIXTURE_QUERY + getShowcaseTabsFixture(showcaseId));
+            db.execSQL(SQL_CREATE_INDEX_NAVIGATION);
         }
 
         @Override
@@ -716,8 +728,11 @@ public class FeedContentProvider extends ContentProvider {
                     case 8:
                         db.execSQL(SQL_CREATE_SHOWCASE_TABS);
                         int showcaseId = getAndroidShowcaseId(db);
-
                         db.execSQL(SHOWCASE_FIXTURE_QUERY + getShowcaseTabsFixture(showcaseId));
+                        break;
+                    case 9:
+                        db.execSQL(SQL_CREATE_INDEX_NAVIGATION);
+                        break;
                     default:
                         break;
                 }
