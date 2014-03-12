@@ -5,7 +5,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.CursorAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.internal.widget.ScrollingTabContainerView;
@@ -21,6 +23,7 @@ import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeAPI.models.ShowcaseTab;
 import ru.rutube.RutubeFeed.R;
 import ru.rutube.RutubeFeed.ctrl.ShowcaseController;
+import ru.rutube.RutubeFeed.data.ShowcaseTabsViewPagerAdapter;
 
 /**
  * Created by tumbler on 12.03.14.
@@ -52,7 +55,6 @@ public class ShowcaseFragment extends Fragment implements ShowcaseController.Sho
                 mController = savedInstanceState.getParcelable(CONTROLLER);
             }
         }
-
     }
 
     @Override
@@ -117,6 +119,20 @@ public class ShowcaseFragment extends Fragment implements ShowcaseController.Sho
             mTabBar.addTab(tab, false);
         }
         mTabBar.setTabSelected(0);
+    }
+
+    @Override
+    public PagerAdapter getPagerAdapter() {
+        return mViewPager.getAdapter();
+    }
+
+
+    @Override
+    public void initAdapter() {
+        if (D)Log.d(LOG_TAG, "initAdapter");
+        ShowcaseTabsViewPagerAdapter adapter = new ShowcaseTabsViewPagerAdapter(getActivity(),
+                getFragmentManager(), null);
+        mViewPager.setAdapter(adapter);
     }
 
     private ActionBar.Tab createTab(ShowcaseTab item) {

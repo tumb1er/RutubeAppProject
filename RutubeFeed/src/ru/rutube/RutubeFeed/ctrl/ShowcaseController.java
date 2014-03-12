@@ -1,5 +1,6 @@
 package ru.rutube.RutubeFeed.ctrl;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -7,6 +8,12 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.BaseColumns;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.widget.CursorAdapter;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 
 import com.android.volley.RequestQueue;
@@ -27,6 +34,7 @@ import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.models.ShowcaseTab;
 import ru.rutube.RutubeAPI.requests.RequestListener;
 import ru.rutube.RutubeAPI.requests.Requests;
+import ru.rutube.RutubeFeed.data.ShowcaseTabsViewPagerAdapter;
 
 /**
  * Created by tumbler on 12.03.14.
@@ -34,6 +42,7 @@ import ru.rutube.RutubeAPI.requests.Requests;
 public class ShowcaseController implements Parcelable {
     private static final boolean D = BuildConfig.DEBUG;
     private static final String LOG_TAG = ShowcaseController.class.getName();
+    private static final int PAGER_LOADER = 0;
     private final Uri mShowcaseUri;
     private Context mContext;
     private RequestQueue mRequestQueue;
@@ -95,6 +104,10 @@ public class ShowcaseController implements Parcelable {
     public interface ShowcaseView {
 
         void initTabs(ShowcaseTab[] tabs);
+
+        PagerAdapter getPagerAdapter();
+
+        void initAdapter();
     }
 
     public ShowcaseController(Uri showcaseUri, int showcaseId) {
@@ -109,8 +122,35 @@ public class ShowcaseController implements Parcelable {
         this(showcaseUri, showcaseId);
         mTabIds = tabIds;
     }
-    public ShowcaseController(Uri showcaseUri) {
-        this(showcaseUri, 0);
+    protected class TabLoaderCallbacks implements LoaderManager.LoaderCallbacks<Cursor> {
+
+        @Override
+        public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
+            // Возвращает курсор для данных меню навигации
+            return new CursorLoader(
+                    RutubeApp.getContext(),
+                    FeedContract.Navigation.CONTENT_URI,
+                    FeedContentProvider.getProjection(FeedContract.Navigation.CONTENT_URI),
+                    null,
+                    null,
+                    null
+            );
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+            ShowcaseTabsViewPagerAdapter adapter = (ShowcaseTabsViewPagerAdapter)mView.getPagerAdapter();
+            if (adapter != null)
+                adapter.swapCursor(cursor);
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> cursorLoader) {
+            ShowcaseTabsViewPagerAdapter adapter = (ShowcaseTabsViewPagerAdapter)mView.getPagerAdapter();
+            if (adapter != null)
+                adapter.swapCursor(null);
+
+        }
     }
 
     public void attach(Context context, ShowcaseView view){
@@ -120,8 +160,15 @@ public class ShowcaseController implements Parcelable {
         mRequestQueue = Volley.newRequestQueue(context,
                 new HttpClientStack(HttpTransport.getHttpClient()));
         mAttached = true;
+        initAdapter();
+
         refreshTabs();
         startRequests();
+    }
+
+    public void initAdapter() {
+        mView.initAdapter();
+        ((ActionBarActivity)mContext).getSupportLoaderManager().initLoader(PAGER_LOADER, null, new TabLoaderCallbacks());
     }
 
     private void startRequests() {
