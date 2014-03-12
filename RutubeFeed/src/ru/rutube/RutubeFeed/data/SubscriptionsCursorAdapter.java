@@ -174,7 +174,7 @@ public class SubscriptionsCursorAdapter extends FeedCursorAdapter {
         Uri feedUri;
         ClickTag feedTag;
         if (tag_id > 0){
-            feedUri = RutubeApp.getFeedUri(R.string.video_by_tag_uri, tag_id);
+            feedUri = RutubeApp.formatUrl(R.string.video_by_tag_uri, tag_id);
             feedTag = new ClickTag(position, feedUri, title);
         } else {
             feedTag = new ClickTag(position, null, null);

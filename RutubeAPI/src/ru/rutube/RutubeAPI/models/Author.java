@@ -91,7 +91,7 @@ public class Author implements Parcelable {
     }
 
     public Uri getFeedUrl() {
-        return RutubeApp.getFeedUri(R.string.authors_uri, id);
+        return RutubeApp.formatUrl(R.string.authors_uri, id);
 
     }
 }

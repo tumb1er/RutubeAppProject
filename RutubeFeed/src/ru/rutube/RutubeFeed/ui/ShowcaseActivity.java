@@ -76,6 +76,7 @@ public class ShowcaseActivity extends ActionBarActivity {
     };
 
     public void navigateToShowcase(Uri showcaseUri) {
+        if (D) Log.d(LOG_TAG, "Navigating to " + String.valueOf(showcaseUri));
         TextView tv = (TextView)findViewById(R.id.uriTextView);
         tv.setText(showcaseUri.toString());
         FragmentManager fm = getSupportFragmentManager();

@@ -15,4 +15,5 @@ public class Requests {
     public static final int VISITOR = 7;
     public static final int VIDEO = 8;
     public static final int MENU_LINKS = 9;
+    public static final int SHOWCASE = 10;
 }

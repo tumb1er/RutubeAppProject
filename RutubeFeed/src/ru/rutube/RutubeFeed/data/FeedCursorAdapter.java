@@ -335,7 +335,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
 
         Uri authorFeedUri = null;
         if (holder.authorId > 0) {
-            authorFeedUri = RutubeApp.getFeedUri(R.string.authors_uri, holder.authorId);
+            authorFeedUri = RutubeApp.formatUrl(R.string.authors_uri, holder.authorId);
         }
 
         String authorName = "@" + String.valueOf(holder.author.getText());

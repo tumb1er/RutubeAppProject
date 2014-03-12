@@ -117,9 +117,17 @@ public class RutubeApp extends Application {
         return resultUri.toString();
     }
 
-    public static Uri getFeedUri(int stringId, int param) {
+    public static Uri formatUrl(int stringId, Object param) {
         Uri baseUri = Uri.parse(getContext().getString(R.string.base_uri));
         String path = getContext().getString(stringId).replace("api/", "");
+        return baseUri.buildUpon()
+                .appendEncodedPath(String.format(path, param))
+                .build();
+    }
+
+    public static Uri formatApiUrl(int stringId, Object param) {
+        Uri baseUri = Uri.parse(getContext().getString(R.string.base_uri));
+        String path = getContext().getString(stringId);
         return baseUri.buildUpon()
                 .appendEncodedPath(String.format(path, param))
                 .build();
@@ -206,5 +214,4 @@ public class RutubeApp extends Application {
         }
         return "";
     }
-
 }

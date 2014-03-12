@@ -22,6 +22,7 @@
     <string name="referer">http://android.rutube.ru/</string>
     <string name="yastUri">http://yast.rutube.ru/track/%d/viewed/</string>
     <string name="related_video_uri">api/search/related/</string>
+    <string name="showcase_api">api/feeds/%s/</string>
     <string name="menu_links">api/mainpage/linksgroup/15/</string>
     <string name="navi_main_link">/feeds/android/</string>
 </resources>
