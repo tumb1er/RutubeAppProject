@@ -147,4 +147,6 @@
         <item name="android:paddingRight">12dp</item>
         <item name="android:contentDescription">@string/refresh</item>
     </style>
+
+
 </resources>

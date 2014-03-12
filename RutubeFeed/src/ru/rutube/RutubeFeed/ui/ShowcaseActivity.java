@@ -1,6 +1,7 @@
 package ru.rutube.RutubeFeed.ui;
 
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,10 +14,14 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.internal.view.ActionBarPolicy;
+import android.support.v7.internal.widget.ActionBarContainer;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -36,7 +41,7 @@ import ru.rutube.RutubeFeed.data.NavAdapter;
  * Created by tumbler on 12.03.14.
  */
 public class ShowcaseActivity extends ActionBarActivity {
-    private final String LOG_TAG = getClass().getName();
+    private static final String LOG_TAG = ShowcaseActivity.class.getName();
     private static final boolean D = BuildConfig.DEBUG;
     private static final int NAVI_LOADER = 0;
 
@@ -152,8 +157,9 @@ public class ShowcaseActivity extends ActionBarActivity {
         setContentView(R.layout.showcase_activity);
         initNavigationToggle();
         initNavigationAdapter();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+        ActionBar bar = getSupportActionBar();
+        bar.setDisplayHomeAsUpEnabled(true);
+        bar.setHomeButtonEnabled(true);
 
         Uri uri = getIntent().getData();
         navigateToShowcase(uri, 0);

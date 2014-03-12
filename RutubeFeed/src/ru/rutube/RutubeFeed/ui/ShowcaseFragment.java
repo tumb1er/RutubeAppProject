@@ -1,13 +1,11 @@
 package ru.rutube.RutubeFeed.ui;
 
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.CursorAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.internal.widget.ScrollingTabContainerView;
@@ -17,6 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.viewpagerindicator.TabPageIndicator;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.models.Constants;
@@ -28,9 +28,10 @@ import ru.rutube.RutubeFeed.data.ShowcaseTabsViewPagerAdapter;
 /**
  * Created by tumbler on 12.03.14.
  */
-public class ShowcaseFragment extends Fragment implements ShowcaseController.ShowcaseView {
+public class ShowcaseFragment extends Fragment implements ShowcaseController.ShowcaseView,
+        ActionBar.TabListener, ViewPager.OnPageChangeListener{
     private static final String CONTROLLER = "controller";
-    private final String LOG_TAG = getClass().getName();
+    private static final String LOG_TAG = ShowcaseFragment.class.getName();
     private static final boolean D = BuildConfig.DEBUG;
 
     private ViewPager mViewPager;
@@ -38,6 +39,7 @@ public class ShowcaseFragment extends Fragment implements ShowcaseController.Sho
     private ShowcaseController mController;
     private ActionBar mActionBar;
     private ShowcaseTab[] mTabs;
+    private TabPageIndicator mTabPageIndicator;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -92,33 +94,28 @@ public class ShowcaseFragment extends Fragment implements ShowcaseController.Sho
         assert view != null;
         mViewPager = (ViewPager)view.findViewById(R.id.view_pager);
         initTabBar(view);
-        TextView tv = (TextView)view.findViewById(R.id.uriTextView);
-        Uri uri = getArguments().getParcelable(Constants.Params.SHOWCASE_URI);
-        tv.setText(String.valueOf(uri));
         return view;
     }
 
     public void initTabBar(View view) {
         LinearLayout rootView = (LinearLayout)view.findViewById(R.id.showcase_root);
-        mTabBar = new ScrollingTabContainerView(getActivity());
-        mTabBar.setVisibility(View.VISIBLE);
-        int height = getResources().getDimensionPixelSize(R.dimen.abc_action_bar_stacked_max_height);
-        mTabBar.setContentHeight(height);
-        rootView.addView(mTabBar, 0);
-        if (mTabs != null)
-            initTabs(mTabs);
+
+        mTabPageIndicator = (TabPageIndicator)view.findViewById(R.id.titles);
+//        if (mTabs != null)
+//            initTabs(mTabs);
     }
 
     @Override
     public void initTabs(ShowcaseTab[] tabs) {
-        mTabs = tabs;
-        if (D) Log.d(LOG_TAG, "init tabs");
-        mTabBar.removeAllTabs();
-        for (ShowcaseTab item: tabs) {
-            ActionBar.Tab tab = createTab(item);
-            mTabBar.addTab(tab, false);
-        }
-        mTabBar.setTabSelected(0);
+//        mTabs = tabs;
+//        if (D) Log.d(LOG_TAG, "init tabs");
+//        mTabBar.removeAllTabs();
+//        int pos = 0;
+//        for (ShowcaseTab item: tabs) {
+//            ActionBar.Tab tab = createTab(item, pos);
+//            mTabBar.addTab(tab, pos == 0);
+//            pos += 1;
+//        }
     }
 
     @Override
@@ -126,19 +123,72 @@ public class ShowcaseFragment extends Fragment implements ShowcaseController.Sho
         return mViewPager.getAdapter();
     }
 
-
     @Override
     public void initAdapter() {
         if (D)Log.d(LOG_TAG, "initAdapter");
         ShowcaseTabsViewPagerAdapter adapter = new ShowcaseTabsViewPagerAdapter(getActivity(),
                 getFragmentManager(), null);
         mViewPager.setAdapter(adapter);
+        mViewPager.setOnPageChangeListener(this);
+        mTabPageIndicator.setViewPager(mViewPager);
     }
 
-    private ActionBar.Tab createTab(ShowcaseTab item) {
+    @Override
+    public void notifyPagerIndicator() {
+        mTabPageIndicator.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onPageScrolled(int i, float v, int i2) {
+
+    }
+
+    @Override
+    public void onPageSelected(int i) {
+
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int i) {
+
+    }
+
+    private class TabInfo{
+        public int id;
+        public int pos;
+    }
+
+    private ActionBar.Tab createTab(ShowcaseTab item, int pos) {
+        if (D)Log.d(LOG_TAG, "Create tab");
         ActionBar.Tab tab = mActionBar.newTab();
         tab.setText(item.getName());
-        tab.setTag(item.getId());
+        TabInfo info = new TabInfo();
+        info.id = item.getId();
+        info.pos = pos;
+        tab.setTag(info);
+        tab.setTabListener(this);
         return tab;
+    }
+
+    @Override
+    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+        if (D) Log.d(LOG_TAG, "onTabSelected");
+        TabInfo info = (TabInfo)tab.getTag();
+        if (D) Log.d(LOG_TAG, "onTabSelected: " + String.valueOf(info.pos));
+        mViewPager.setCurrentItem(info.pos);
+    }
+
+    @Override
+    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+        if (D) Log.d(LOG_TAG, "onTabUnselected: ");
+
+    }
+
+    @Override
+    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+        if (D) Log.d(LOG_TAG, "onTabReselected");
+        TabInfo info = (TabInfo)tab.getTag();
+        if (D) Log.d(LOG_TAG, "onTabReselected: " + String.valueOf(info.pos));
+        mViewPager.setCurrentItem(info.pos);
     }
 }

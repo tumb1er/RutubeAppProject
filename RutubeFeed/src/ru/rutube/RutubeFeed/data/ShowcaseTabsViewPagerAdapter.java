@@ -2,6 +2,8 @@ package ru.rutube.RutubeFeed.data;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -15,6 +17,9 @@ import android.view.ViewGroup;
 import java.util.HashMap;
 
 import ru.rutube.RutubeAPI.BuildConfig;
+import ru.rutube.RutubeAPI.models.Constants;
+import ru.rutube.RutubeFeed.feed.FeedFragmentFactory;
+import ru.rutube.RutubeFeed.ui.FeedFragment;
 
 /**
  * Created by tumbler on 12.03.14.
@@ -23,7 +28,7 @@ public class ShowcaseTabsViewPagerAdapter extends FragmentStatePagerAdapter
         implements ActionBar.TabListener, ViewPager.OnPageChangeListener {
     private static final boolean D = BuildConfig.DEBUG;
     private static final String LOG_TAG = ShowcaseTabsViewPagerAdapter.class.getName();
-
+    protected final FeedFragmentFactory mFragmentFactory = new FeedFragmentFactory();
     protected boolean mDataValid;
     protected Cursor mCursor;
     protected Context mContext;
@@ -109,7 +114,11 @@ public class ShowcaseTabsViewPagerAdapter extends FragmentStatePagerAdapter
     }
 
     public Fragment getItem(Context context, Cursor cursor) {
-        return new Fragment();
+        FeedFragment f = mFragmentFactory.getFeedFragment(FeedFragmentFactory.EDITORS);
+        Bundle b = new Bundle();
+        b.putParcelable(Constants.Params.FEED_URI, Uri.parse("http://rutube.ru/video/editors/"));
+        f.setArguments(b);
+        return f;
     }
 
     @Override
@@ -120,6 +129,11 @@ public class ShowcaseTabsViewPagerAdapter extends FragmentStatePagerAdapter
         } else {
             return 0;
         }
+    }
+
+    @Override
+    public CharSequence getPageTitle(int position) {
+        return "TIT sdf sdf sdf dsf dLE";
     }
 
     public Cursor swapCursor(Cursor newCursor) {

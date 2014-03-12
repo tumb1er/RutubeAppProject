@@ -42,7 +42,7 @@ import ru.rutube.RutubeFeed.data.ShowcaseTabsViewPagerAdapter;
 public class ShowcaseController implements Parcelable {
     private static final boolean D = BuildConfig.DEBUG;
     private static final String LOG_TAG = ShowcaseController.class.getName();
-    private static final int PAGER_LOADER = 0;
+    private static final int PAGER_LOADER = 1;
     private final Uri mShowcaseUri;
     private Context mContext;
     private RequestQueue mRequestQueue;
@@ -106,7 +106,7 @@ public class ShowcaseController implements Parcelable {
         void initTabs(ShowcaseTab[] tabs);
 
         PagerAdapter getPagerAdapter();
-
+        void notifyPagerIndicator();
         void initAdapter();
     }
 
@@ -142,6 +142,7 @@ public class ShowcaseController implements Parcelable {
             ShowcaseTabsViewPagerAdapter adapter = (ShowcaseTabsViewPagerAdapter)mView.getPagerAdapter();
             if (adapter != null)
                 adapter.swapCursor(cursor);
+            mView.notifyPagerIndicator();
         }
 
         @Override
