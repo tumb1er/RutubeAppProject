@@ -40,6 +40,7 @@ public final class Constants {
         public static final String VIDEO_URI = "ru.rutube.api.upload.video";
         public static final String THUMBNAIL_URI = "ru.rutube.api.video.thumbnail_url";
         public static final String FEED_TITLE = "ru.rutube.feed.title";
+        public static final String SHOWCASE_URI = "ru.rutube.showcase.uri";
     }
 
     public final class Actions {

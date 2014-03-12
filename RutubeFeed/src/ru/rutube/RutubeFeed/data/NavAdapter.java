@@ -1,7 +1,8 @@
-package ru.rutube.RutubeApp.data;
+package ru.rutube.RutubeFeed.data;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +12,8 @@ import android.widget.TextView;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.content.FeedContract;
-import ru.rutube.RutubeApp.R;
+import ru.rutube.RutubeAPI.models.NaviItem;
+import ru.rutube.RutubeFeed.R;
 
 /**
  * Created by tumbler on 11.03.14.
@@ -23,24 +25,37 @@ public class NavAdapter extends SimpleCursorAdapter {
         super(context, layout, c, from, to, flags);
     }
 
+    private class ViewHolder{
+        TextView title;
+        TextView name;
+        Uri showcaseUri;
+    }
+
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        TextView view = (TextView)inflater.inflate(R.layout.drawer_list_item, null);
+        ViewGroup view = (ViewGroup)inflater.inflate(R.layout.drawer_list_item, null);
+        ViewHolder holder = initHolder(view);
+        assert view != null;
+        view.setTag(holder);
         return view;
+    }
+
+    private ViewHolder initHolder(ViewGroup view) {
+        ViewHolder holder = new ViewHolder();
+        holder.name = (TextView)view.findViewById(R.id.nameTextView);
+        holder.title = (TextView)view.findViewById(R.id.titleTextView);
+        return holder;
     }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         super.bindView(view, context, cursor);
-        TextView tv = (TextView)view;
-        int name_pos = cursor.getColumnIndex(FeedContract.Navigation.NAME);
-        String name = cursor.getString(name_pos);
-        int link_pos = cursor.getColumnIndex(FeedContract.Navigation.LINK);
-        String link = cursor.getString(link_pos);
-        if (D) Log.d(LOG_TAG, "Bind Nav: " + name);
-        tv.setText(name);
-        tv.setTag(link);
+        ViewHolder holder = (ViewHolder)view.getTag();
+        NaviItem item = NaviItem.fromCursor(cursor);
+        holder.name.setText(item.getName());
+        holder.title.setText(item.getTitle());
+        holder.showcaseUri = item.getUri();
     }
 }

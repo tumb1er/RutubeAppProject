@@ -112,10 +112,7 @@ public class RutubeApp extends Application {
     }
 
     public static String getUrl(int stringId) {
-        Uri baseUri = Uri.parse(getContext().getString(R.string.base_uri));
-        Uri resultUri = baseUri.buildUpon()
-                .appendEncodedPath(getContext().getString(stringId))
-                .build();
+        Uri resultUri = getUri(getContext().getString(stringId));
         assert resultUri != null;
         return resultUri.toString();
     }
@@ -139,12 +136,16 @@ public class RutubeApp extends Application {
 
     public static String getUrl(String path) {
         assert getContext() != null;
-        Uri baseUri = Uri.parse(getContext().getString(R.string.base_uri));
-        Uri resultUri = baseUri.buildUpon()
-                .appendEncodedPath(path)
-                .build();
+        Uri resultUri = getUri(path);
         assert resultUri != null;
         return resultUri.toString();
+    }
+
+    public static Uri getUri(String path) {
+        Uri baseUri = Uri.parse(getContext().getString(R.string.base_uri));
+        return baseUri.buildUpon()
+                .appendEncodedPath(path)
+                .build();
     }
 
 
@@ -172,13 +173,13 @@ public class RutubeApp extends Application {
         if (seconds < 2 * 24 * 3600)
             return getResources().getString(R.string.yesterday);
         if (seconds < 5 * 24 * 3600)
-            return String.format(getResources().getString(R.string.days_ago_24, seconds / (24 * 3600)));
+            return getResources().getString(R.string.days_ago_24, seconds / (24 * 3600));
         if (seconds < 7 * 24 * 3600)
-            return String.format(getResources().getString(R.string.days_ago_59, seconds / (24 * 3600)));
+            return getResources().getString(R.string.days_ago_59, seconds / (24 * 3600));
         if (seconds < 14 * 24 * 3600)
-            return String.format(getResources().getString(R.string.week_ago, seconds / (7 * 24 * 3600)));
+            return getResources().getString(R.string.week_ago);
         if (seconds < 31 * 24 * 3600)
-            return String.format(getResources().getString(R.string.weeks_ago, seconds / (7 * 24 * 3600)));
+            return getResources().getString(R.string.weeks_ago, seconds / (7 * 24 * 3600));
         return reprDateFormat.format(created);
     }
 

@@ -6,7 +6,7 @@
     <string name="yesterday">вчера</string>
     <string name="days_ago_24">%d дня назад</string>
     <string name="days_ago_59">%d дней назад</string>
-    <string name="week_ago">%d неделю назад</string>
+    <string name="week_ago">неделю назад</string>
     <string name="weeks_ago">%d недели назад</string>
     <string name="failed_to_load_data">Не удалось загрузить данные</string>
     <string name="views5">%,d просмотров</string>

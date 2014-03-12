@@ -180,4 +180,18 @@ public class NaviItem implements Parcelable {
     public String getLink() {
         return mLink;
     }
+    public Uri getUri() {
+        if (mLink.startsWith("http")) {
+            return Uri.parse(mLink);
+        }
+        return Uri.parse(RutubeApp.getUrl(mLink));
+    }
+
+    public String getName() {
+        return mName;
+    }
+
+    public String getTitle() {
+        return mTitle;
+    }
 }

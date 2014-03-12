@@ -19,11 +19,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import ru.rutube.RutubeAPI.BuildConfig;
@@ -36,7 +33,7 @@ import ru.rutube.RutubeApp.MainApplication;
 import ru.rutube.RutubeApp.R;
 import ru.rutube.RutubeApp.ctrl.MainPageController;
 import ru.rutube.RutubeApp.data.MainTabsAdapter;
-import ru.rutube.RutubeApp.data.NavAdapter;
+import ru.rutube.RutubeFeed.data.NavAdapter;
 import ru.rutube.RutubeApp.ui.dialog.LoginDialogFragment;
 import ru.rutube.RutubeFeed.feed.FeedFragmentFactory;
 import ru.rutube.RutubeFeed.ui.FeedFragment;
@@ -48,7 +45,7 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
     private static final String CONTROLLER = "controller";
     private static final int LOGIN_REQUEST_CODE = 1;
     private static final boolean D = BuildConfig.DEBUG;
-    private static final int NAVI_LOADER = 0;
+
 
     private static final HashMap<String, Integer> sFragmentClassMap = new HashMap<String, Integer>();
     private static final HashMap<String, Integer> sFeedUriResourceIdMap = new HashMap<String, Integer>();
@@ -225,8 +222,6 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
                 getSupportActionBar().setTitle("mDrawerTitle");
             }
         };
-
-        getSupportLoaderManager().initLoader(NAVI_LOADER, null, loaderCallbacks);
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);

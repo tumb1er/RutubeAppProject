@@ -19,4 +19,6 @@
     <string name="editors_choice">Editors choice</string>
     <string name="author">Author</string>
     <string name="created">Created</string>
+    <string name="drawer_open">open</string>
+    <string name="drawer_closed">Close</string>
 </resources>
