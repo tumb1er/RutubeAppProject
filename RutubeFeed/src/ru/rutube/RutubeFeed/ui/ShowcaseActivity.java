@@ -5,6 +5,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -18,10 +21,14 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.content.FeedContentProvider;
 import ru.rutube.RutubeAPI.content.FeedContract;
+import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeFeed.R;
 import ru.rutube.RutubeFeed.data.NavAdapter;
 
@@ -38,17 +45,45 @@ public class ShowcaseActivity extends ActionBarActivity {
     private DrawerLayout mDrawerLayout;
     private NaviLoaderCallbacks loaderCallbacks;
     private NavAdapter mNaviAdapter;
+
+    private class ShowcaseFragmentCache {
+        Map<Uri, Fragment> mFragmentMap = new HashMap<Uri, Fragment>();
+        public Fragment getShowcaseFragment(Uri uri) {
+            Fragment f = mFragmentMap.get(uri);
+            if (f != null)
+                return f;
+            f = new ShowcaseFragment();
+            Bundle args = new Bundle();
+            args.putParcelable(Constants.Params.SHOWCASE_URI, uri);
+            f.setArguments(args);
+            mFragmentMap.put(uri, f);
+            return f;
+        }
+    }
+
+    private ShowcaseFragmentCache mFragmentCache = new ShowcaseFragmentCache();
+
     private AdapterView.OnItemClickListener mOnNavigationClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            TextView tv = (TextView)findViewById(R.id.uriTextView);
             NavAdapter.ViewHolder holder = (NavAdapter.ViewHolder)view.getTag();
-            tv.setText(holder.showcaseUri.toString());
+            Uri showcaseUri = holder.showcaseUri;
+            navigateToShowcase(showcaseUri);
             mNaviAdapter.setCurrentItemPosition(i);
             mDrawerLayout.closeDrawers();
             mNaviAdapter.notifyDataSetChanged();
         }
     };
+
+    public void navigateToShowcase(Uri showcaseUri) {
+        TextView tv = (TextView)findViewById(R.id.uriTextView);
+        tv.setText(showcaseUri.toString());
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        Fragment f = mFragmentCache.getShowcaseFragment(showcaseUri);
+        ft.replace(R.id.content_placeholder, f);
+        ft.commit();
+    }
 
     /**
      * Обработчик событий загрузки данных в адаптер навигационного меню
@@ -96,7 +131,6 @@ public class ShowcaseActivity extends ActionBarActivity {
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (mDrawerToggle.onOptionsItemSelected(item)) {
@@ -104,7 +138,6 @@ public class ShowcaseActivity extends ActionBarActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -116,8 +149,7 @@ public class ShowcaseActivity extends ActionBarActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
 
         Uri uri = getIntent().getData();
-        TextView tv = (TextView)findViewById(R.id.uriTextView);
-        tv.setText(uri.toString());
+        navigateToShowcase(uri);
 
         initCurrentNavItem();
     }
