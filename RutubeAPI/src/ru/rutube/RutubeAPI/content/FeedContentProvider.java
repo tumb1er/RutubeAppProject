@@ -52,6 +52,9 @@ public class FeedContentProvider extends ContentProvider {
     private static final int NAVIGATION_ITEM = 18;
     private static final int SHOWCASE_TABS = 19;
     private static final int SHOWCASE_TABITEM = 20;
+    private static final int TABSOURCE = 21;
+    private static final int TABSOURCE_ITEM = 22;
+    private static final int TABSOURCE_ALL = 23;
 
     private static final String LOG_TAG = FeedContentProvider.class.getName();
     private static final boolean D = BuildConfig.DEBUG;
@@ -79,6 +82,9 @@ public class FeedContentProvider extends ContentProvider {
         sUriMatcher.addURI(AUTHORITY, FeedContract.Navigation.CONTENT_PATH + "/#", NAVIGATION_ITEM);
         sUriMatcher.addURI(AUTHORITY, FeedContract.ShowcaseTabs.CONTENT_PATH + "/#", SHOWCASE_TABS);
         sUriMatcher.addURI(AUTHORITY, FeedContract.ShowcaseTabs.CONTENT_PATH + "/#/#", SHOWCASE_TABITEM);
+        sUriMatcher.addURI(AUTHORITY, FeedContract.TabSources.CONTENT_PATH, TABSOURCE_ALL);
+        sUriMatcher.addURI(AUTHORITY, FeedContract.TabSources.CONTENT_PATH + "/#", TABSOURCE);
+        sUriMatcher.addURI(AUTHORITY, FeedContract.TabSources.CONTENT_PATH + "/#/#", TABSOURCE_ITEM);
     }
 
     private MainDatabaseHelper dbHelper;
@@ -125,6 +131,10 @@ public class FeedContentProvider extends ContentProvider {
                 break;
             case SHOWCASE_TABS:
                 table = FeedContract.ShowcaseTabs.CONTENT_PATH;
+                break;
+            case TABSOURCE_ALL:
+            case TABSOURCE:
+                table = FeedContract.TabSources.CONTENT_PATH;
                 break;
             default:
                 throw new IllegalArgumentException("Unknown UriType: " + uriType);
@@ -177,6 +187,9 @@ public class FeedContentProvider extends ContentProvider {
                 return FeedContract.Navigation.POSITION;
             case SHOWCASE_TABS:
                 return FeedContract.ShowcaseTabs.ORDER_NUMBER;
+            case TABSOURCE:
+            case TABSOURCE_ALL:
+                return FeedContract.TabSources.ORDER_NUMBER;
             default:
                 return FeedContract.FeedColumns.CREATED + " DESC";
         }
@@ -192,6 +205,7 @@ public class FeedContentProvider extends ContentProvider {
             case MY_VIDEO:
             case NAVIGATION:
             case SEARCH_QUERY:
+            case TABSOURCE_ALL:
                 return null;
             // Получение одной строки по значению первичного ключа
             case EDITORS_FEEDITEM:
@@ -204,6 +218,7 @@ public class FeedContentProvider extends ContentProvider {
             case RELATED_VIDEO_ITEM:
             case SHOWCASE_TABITEM:
             case NAVIGATION_ITEM:
+            case TABSOURCE_ITEM:
                 where = String.format("%s = '%s'", BaseColumns._ID, uri.getLastPathSegment());
                 break;
             // Получение списка строк отфильтрованных по значению внешнего ключа
@@ -221,6 +236,9 @@ public class FeedContentProvider extends ContentProvider {
                 break;
             case SHOWCASE_TABS:
                 fk_field = FeedContract.ShowcaseTabs.SHOWCASE_ID;
+                break;
+            case TABSOURCE:
+                fk_field = FeedContract.TabSources.TAB_ID;
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
@@ -261,6 +279,9 @@ public class FeedContentProvider extends ContentProvider {
                 return FeedContract.Navigation.CONTENT_TYPE;
             case SHOWCASE_TABS:
                 return FeedContract.ShowcaseTabs.CONTENT_TYPE;
+            case TABSOURCE_ALL:
+            case TABSOURCE:
+                return FeedContract.TabSources.CONTENT_TYPE;
             default:
                 return null;
         }
@@ -463,6 +484,16 @@ public class FeedContentProvider extends ContentProvider {
                         FeedContract.ShowcaseTabs.ORDER_NUMBER,
                         FeedContract.ShowcaseTabs.SHOWCASE_ID,
                 };
+            case TABSOURCE:
+            case TABSOURCE_ALL:
+            case TABSOURCE_ITEM:
+                return new String[]{
+                        BaseColumns._ID,
+                        FeedContract.TabSources.TAB_ID,
+                        FeedContract.TabSources.CONTENT_TYPE_ID,
+                        FeedContract.TabSources.ORDER_NUMBER,
+                        FeedContract.TabSources.LINK,
+                };
             case MY_VIDEO:
             case MY_VIDEO_FEEDITEM:
                 columnList.add(FeedContract.MyVideo.SIGNATURE);
@@ -553,6 +584,12 @@ public class FeedContentProvider extends ContentProvider {
                     " showcase_id INTEGER NULL," +
                     " order_number INTEGER DEFAULT 0";
 
+    private static final String TABSOURCE_COLUMNS_SQL =
+            " _id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    " link VARCHAR(200)," +
+                    " content_type_id INTEGER NULL," +
+                    " tab_id INTEGER NULL," +
+                    " order_number INTEGER DEFAULT 0";
     private static final String NAVIGATION_FIXTURE_QUERY = "INSERT INTO " +
             FeedContract.Navigation.CONTENT_PATH + " (name, title, link, position) ";
 
@@ -593,6 +630,10 @@ public class FeedContentProvider extends ContentProvider {
             FeedContract.ShowcaseTabs.CONTENT_PATH + " (" +
             SHOWCASE_TABS_COLUMNS_SQL + ")";
 
+    private static final String SQL_CREATE_TABSOURCE = "CREATE TABLE " +
+            FeedContract.TabSources.CONTENT_PATH + " (" +
+            TABSOURCE_COLUMNS_SQL + ")";
+
     private static final String SQL_CREATE_AUTHOR_QUERY = "CREATE TABLE " +
             FeedContract.AuthorVideo.CONTENT_PATH + " (" +
             FEED_COLUMNS_SQL + ")";
@@ -610,7 +651,7 @@ public class FeedContentProvider extends ContentProvider {
 
     private static final String SQL_DROP_TABLE = "DROP TABLE %s";
 
-    private static final int DB_VERSION = 10;
+    private static final int DB_VERSION = 11;
 
     private static String getNaviFixture() {
         Context context = RutubeApp.getContext();
@@ -657,6 +698,7 @@ public class FeedContentProvider extends ContentProvider {
             db.execSQL(SQL_CREATE_TAGS_VIDEO_QUERY);
             db.execSQL(SQL_CREATE_NAVIGATION);
             db.execSQL(SQL_CREATE_SHOWCASE_TABS);
+            db.execSQL(SQL_CREATE_TABSOURCE);
             db.execSQL(NAVIGATION_FIXTURE_QUERY + getNaviFixture());
             int showcaseId = getAndroidShowcaseId(db);
             for (String fix: getShowcaseTabsFixture(showcaseId))
@@ -734,6 +776,8 @@ public class FeedContentProvider extends ContentProvider {
                     case 9:
                         db.execSQL(SQL_CREATE_INDEX_NAVIGATION);
                         break;
+                    case 10:
+                        db.execSQL(SQL_CREATE_TABSOURCE);
                     default:
                         break;
                 }

@@ -99,6 +99,17 @@ public final class FeedContract {
         public static final String SHOWCASE_ID = "showcase_id";
     }
 
+    public static final class TabSources implements BaseColumns {
+        public static final String CONTENT_PATH = "tab_sources";
+        public static final Uri CONTENT_URI = Uri.withAppendedPath(FEED_URI, CONTENT_PATH);
+        public static final String CONTENT_TYPE = VND + FEED + "." + CONTENT_PATH;
+        public static final String LINK = "link";
+        public static final String CONTENT_TYPE_ID = "content_type_id";
+        public static final String ORDER_NUMBER = "order_number";
+        public static final String TAB_ID = "tab_id";
+
+    }
+
     public static final class RelatedVideo implements BaseColumns, FeedColumns {
         public static final String CONTENT_PATH = "related_video";
         public static final Uri CONTENT_URI = Uri.withAppendedPath(FEED_URI, CONTENT_PATH);

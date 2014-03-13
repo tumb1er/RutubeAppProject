@@ -16,6 +16,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.R;
 import ru.rutube.RutubeAPI.RutubeApp;
@@ -34,6 +36,7 @@ public class ShowcaseTab implements Parcelable {
     private static final String JSON_SORT = "sort";
     private static final String JSON_ORDER_NUMBER = "order_number";
     private static final String JSON_TABS = "tabs";
+    private static final String JSON_RESOURCES = "resources";
     private final int mShowcaseId;
     private int mId;
     private int mOrderNumber;
@@ -105,11 +108,18 @@ public class ShowcaseTab implements Parcelable {
     }
 
     protected static void parseJSONResponse(JSONObject response, int showcaseId) throws JSONException {
-        JSONArray tabs = response.getJSONArray(JSON_TABS);
-        ContentValues[] tabsItems = new ContentValues[tabs.length()];
-        for (int i=0; i<tabs.length(); i++) {
-            JSONObject data = tabs.getJSONObject(i);
+        JSONArray tabsJson = response.getJSONArray(JSON_TABS);
+        ContentValues[] tabsItems = new ContentValues[tabsJson.length()];
+        HashMap<ShowcaseTab, TabSource[]> tabSources = new HashMap<ShowcaseTab, TabSource[]>();
+        ShowcaseTab[] tabs = new ShowcaseTab[tabsJson.length()];
+        int sourcesCount = 0;
+        for (int i=0; i<tabsJson.length(); i++) {
+            JSONObject data = tabsJson.getJSONObject(i);
             ShowcaseTab item = fromJSON(data, showcaseId);
+            tabs[i] = item;
+            JSONArray resources = data.getJSONArray(JSON_RESOURCES);
+            sourcesCount += resources.length();
+            tabSources.put(item, parseResourcesJSON(resources));
             ContentValues row = fillRow(item);
             if (D) Log.d(LOG_TAG, "TAB: " + data.toString());
             tabsItems[i] = row;
@@ -121,12 +131,39 @@ public class ShowcaseTab implements Parcelable {
                     .build();
             assert uri != null;
             context.getContentResolver().delete(uri, null, null);
-            context.getContentResolver().bulkInsert(uri, tabsItems);
+            ContentValues[] srcCV = new ContentValues[sourcesCount];
+            int j=0;
+            for (int i=0;i<tabsJson.length();i++) {
+                ContentValues tabCV = tabsItems[i];
+                Uri resultUri = context.getContentResolver().insert(uri, tabCV);
+                int tabId = Integer.parseInt(resultUri.getLastPathSegment());
+                ShowcaseTab tab = tabs[i];
+                if (D)Log.d(LOG_TAG, String.format("Tab %s has id %d", tab.getName(), tabId));
+                for (TabSource src: tabSources.get(tab)) {
+                    ContentValues row = new ContentValues();
+                    src.setTabId(tabId);
+                    src.fillRow(row);
+                    srcCV[j++] = row;
+                }
+            }
+            uri = FeedContract.TabSources.CONTENT_URI;
+            context.getContentResolver().bulkInsert(uri, srcCV);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
         context.getContentResolver().notifyChange(FeedContract.ShowcaseTabs.CONTENT_URI, null);
         if (D) Log.d(LOG_TAG, "Operation finished");
+    }
+
+    private static TabSource[] parseResourcesJSON(JSONArray resources) throws JSONException {
+        TabSource[] sources = new TabSource[resources.length()];
+        for (int i=0;i<resources.length(); i++) {
+            JSONObject src = resources.getJSONObject(i);
+            sources[i] = TabSource.fromJSON(src, 0);
+            if (D) Log.d(LOG_TAG, "RES:" + String.valueOf(sources[i].getLink()));
+        }
+        return sources;
     }
 
     private static ContentValues fillRow(ShowcaseTab item) {
