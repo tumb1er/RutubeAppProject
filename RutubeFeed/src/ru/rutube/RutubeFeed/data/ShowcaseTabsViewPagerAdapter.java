@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import java.util.HashMap;
 
 import ru.rutube.RutubeAPI.BuildConfig;
+import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeFeed.feed.FeedFragmentFactory;
 import ru.rutube.RutubeFeed.ui.FeedFragment;
@@ -118,6 +119,8 @@ public class ShowcaseTabsViewPagerAdapter extends FragmentStatePagerAdapter
         Bundle b = new Bundle();
         b.putParcelable(Constants.Params.FEED_URI, Uri.parse("http://rutube.ru/video/editors/"));
         f.setArguments(b);
+        int i = cursor.getColumnIndex(FeedContract.ShowcaseTabs.NAME);
+        f.setTitle(cursor.getString(i));
         return f;
     }
 
@@ -133,10 +136,16 @@ public class ShowcaseTabsViewPagerAdapter extends FragmentStatePagerAdapter
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return "TIT sdf sdf sdf dsf dLE";
+        if (mDataValid) {
+            FeedFragment f = (FeedFragment)getItem(position);
+            return f.getTitle();
+        } else {
+            return "";
+        }
     }
 
     public Cursor swapCursor(Cursor newCursor) {
+        if (D) Log.d(LOG_TAG, "Swap cursor to: " + String.valueOf(newCursor));
         if (newCursor == mCursor) {
             return null;
         }

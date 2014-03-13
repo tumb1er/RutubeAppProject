@@ -98,25 +98,9 @@ public class ShowcaseFragment extends Fragment implements ShowcaseController.Sho
     }
 
     public void initTabBar(View view) {
-        LinearLayout rootView = (LinearLayout)view.findViewById(R.id.showcase_root);
-
         mTabPageIndicator = (TabPageIndicator)view.findViewById(R.id.titles);
-//        if (mTabs != null)
-//            initTabs(mTabs);
     }
 
-    @Override
-    public void initTabs(ShowcaseTab[] tabs) {
-//        mTabs = tabs;
-//        if (D) Log.d(LOG_TAG, "init tabs");
-//        mTabBar.removeAllTabs();
-//        int pos = 0;
-//        for (ShowcaseTab item: tabs) {
-//            ActionBar.Tab tab = createTab(item, pos);
-//            mTabBar.addTab(tab, pos == 0);
-//            pos += 1;
-//        }
-    }
 
     @Override
     public PagerAdapter getPagerAdapter() {
@@ -127,7 +111,7 @@ public class ShowcaseFragment extends Fragment implements ShowcaseController.Sho
     public void initAdapter() {
         if (D)Log.d(LOG_TAG, "initAdapter");
         ShowcaseTabsViewPagerAdapter adapter = new ShowcaseTabsViewPagerAdapter(getActivity(),
-                getFragmentManager(), null);
+                getChildFragmentManager(), null);
         mViewPager.setAdapter(adapter);
         mViewPager.setOnPageChangeListener(this);
         mTabPageIndicator.setViewPager(mViewPager);

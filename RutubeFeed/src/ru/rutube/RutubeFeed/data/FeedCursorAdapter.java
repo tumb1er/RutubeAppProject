@@ -47,7 +47,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
     protected Typeface mLightFont;
     protected int item_layout_id = R.layout.feed_item;
     protected ImageLoader imageLoader;
-    private final String LOG_TAG = getClass().getName();
+    private final String LOG_TAG = ((Object)this).getClass().getName();
     private int mPerPage;
     private boolean mHasMore;
     private LoadMoreListener loadMoreListener = null;
@@ -263,7 +263,7 @@ public class FeedCursorAdapter extends SimpleCursorAdapter {
             String created_str = cursor.getString(createdIndex);
             created = sqlDateFormat.parse(created_str);
         } catch (ParseException ignored) {
-            if (D) Log.e(getClass().getName(), "CR Parse error");
+            if (D) Log.e(LOG_TAG, "CR Parse error");
         }
         if (created != null)
             holder.created.setText(RutubeApp.getInstance().getCreatedText(created));

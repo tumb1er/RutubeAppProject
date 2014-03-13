@@ -1,6 +1,5 @@
 package ru.rutube.RutubeFeed.ctrl;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -12,7 +11,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.PagerAdapter;
-import android.support.v4.widget.CursorAdapter;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 
@@ -23,7 +21,6 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.HttpTransport;
@@ -42,7 +39,7 @@ import ru.rutube.RutubeFeed.data.ShowcaseTabsViewPagerAdapter;
 public class ShowcaseController implements Parcelable {
     private static final boolean D = BuildConfig.DEBUG;
     private static final String LOG_TAG = ShowcaseController.class.getName();
-    private static final int PAGER_LOADER = 1;
+    private static final int PAGER_LOADER = 2;
     private final Uri mShowcaseUri;
     private Context mContext;
     private RequestQueue mRequestQueue;
@@ -66,48 +63,50 @@ public class ShowcaseController implements Parcelable {
 
         }
     };
+    private LoaderManager.LoaderCallbacks<Cursor> mLoaderCallbacks = new TabLoaderCallbacks();
 
     private void refreshTabs() {
         Uri contentUri = FeedContract.ShowcaseTabs.CONTENT_URI.buildUpon()
                 .appendPath(String.valueOf(mShowcaseId))
                 .build();
         assert contentUri != null;
-        String[] projection = FeedContentProvider.getProjection(contentUri);
-        Cursor c = mContext.getContentResolver().query(contentUri, projection, null, null, null);
-        assert c != null;
-        c.moveToFirst();
-        ArrayList<Integer> newTabs = new ArrayList<Integer>();
-        ShowcaseTab[] tabs = new ShowcaseTab[c.getCount()];
-        for (int i=0;i<c.getCount(); i++) {
-            ShowcaseTab tab = ShowcaseTab.fromCursor(c);
-            c.moveToNext();
-            tabs[i] = tab;
-            newTabs.add(tab.getId());
-        }
-        if (mAttached) {
-            // Проверяем, если список вкладок изменился, то обновляем его.
-            List<Integer> common = new ArrayList<Integer>(newTabs);
-            common.removeAll(mTabIds);
-            if (D) Log.d(LOG_TAG, "New - old " + String.valueOf(common));
-            boolean changed = common.size() > 0;
-            common = new ArrayList<Integer>(mTabIds);
-            common.removeAll(newTabs);
-            if (D) Log.d(LOG_TAG, "Old - new" + String.valueOf(common));
-            if (D) Log.d(LOG_TAG, "Tabs: " + String.valueOf(mTabIds) + " vs " + String.valueOf(newTabs));
-            if (newTabs.size() > 0 && (changed || common.size() > 0)) {
-                mTabIds = newTabs;
-                mView.initTabs(tabs);
-            }
-        }
+        mContext.getContentResolver().notifyChange(contentUri, null);
+//        String[] projection = FeedContentProvider.getProjection(contentUri);
+//        Cursor c = mContext.getContentResolver().query(contentUri, projection, null, null, null);
+//        assert c != null;
+//        c.moveToFirst();
+//        ArrayList<Integer> newTabs = new ArrayList<Integer>();
+//        ShowcaseTab[] tabs = new ShowcaseTab[c.getCount()];
+//        for (int i=0;i<c.getCount(); i++) {
+//            ShowcaseTab tab = ShowcaseTab.fromCursor(c);
+//            c.moveToNext();
+//            tabs[i] = tab;
+//            newTabs.add(tab.getId());
+//        }
+//        if (mAttached) {
+//            // Проверяем, если список вкладок изменился, то обновляем его.
+//            List<Integer> common = new ArrayList<Integer>(newTabs);
+//            common.removeAll(mTabIds);
+//            if (D) Log.d(LOG_TAG, "New - old " + String.valueOf(common));
+//            boolean changed = common.size() > 0;
+//            common = new ArrayList<Integer>(mTabIds);
+//            common.removeAll(newTabs);
+//            if (D) Log.d(LOG_TAG, "Old - new" + String.valueOf(common));
+//            if (D) Log.d(LOG_TAG, "Tabs: " + String.valueOf(mTabIds) + " vs " + String.valueOf(newTabs));
+//            if (newTabs.size() > 0 && (changed || common.size() > 0)) {
+//                mTabIds = newTabs;
+//                mView.initTabs(tabs);
+//                mView.notifyPagerIndicator();
+//            }
+//        }
     }
 
     public interface ShowcaseView {
 
-        void initTabs(ShowcaseTab[] tabs);
-
         PagerAdapter getPagerAdapter();
         void notifyPagerIndicator();
         void initAdapter();
+        LoaderManager getLoaderManager();
     }
 
     public ShowcaseController(Uri showcaseUri, int showcaseId) {
@@ -127,10 +126,14 @@ public class ShowcaseController implements Parcelable {
         @Override
         public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
             // Возвращает курсор для данных меню навигации
+            if (mShowcaseId == 0)
+                queryShowcaseId();
+            Uri contentUri = FeedContract.ShowcaseTabs.CONTENT_URI.buildUpon().appendPath(String.valueOf(mShowcaseId)).build();
+            if (D)Log.d(LOG_TAG, "Showcase Content Uri: " + contentUri.toString());
             return new CursorLoader(
                     RutubeApp.getContext(),
-                    FeedContract.Navigation.CONTENT_URI,
-                    FeedContentProvider.getProjection(FeedContract.Navigation.CONTENT_URI),
+                    contentUri,
+                    FeedContentProvider.getProjection(contentUri),
                     null,
                     null,
                     null
@@ -140,17 +143,23 @@ public class ShowcaseController implements Parcelable {
         @Override
         public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
             ShowcaseTabsViewPagerAdapter adapter = (ShowcaseTabsViewPagerAdapter)mView.getPagerAdapter();
-            if (adapter != null)
-                adapter.swapCursor(cursor);
+            if (adapter != null) {
+                cursor = adapter.swapCursor(cursor);
+                if (cursor!= null && !cursor.isClosed()) cursor.close();
+            }
             mView.notifyPagerIndicator();
         }
 
         @Override
         public void onLoaderReset(Loader<Cursor> cursorLoader) {
+            if (!mAttached)
+                return;
             ShowcaseTabsViewPagerAdapter adapter = (ShowcaseTabsViewPagerAdapter)mView.getPagerAdapter();
-            if (adapter != null)
-                adapter.swapCursor(null);
-
+            if (adapter != null) {
+                Cursor cursor = adapter.swapCursor(null);
+                if (cursor != null && !cursor.isClosed()) cursor.close();
+            }
+            mView.notifyPagerIndicator();
         }
     }
 
@@ -161,15 +170,14 @@ public class ShowcaseController implements Parcelable {
         mRequestQueue = Volley.newRequestQueue(context,
                 new HttpClientStack(HttpTransport.getHttpClient()));
         mAttached = true;
-        initAdapter();
-
-        refreshTabs();
         startRequests();
+        initAdapter();
+        refreshTabs();
     }
 
     public void initAdapter() {
         mView.initAdapter();
-        ((ActionBarActivity)mContext).getSupportLoaderManager().initLoader(PAGER_LOADER, null, new TabLoaderCallbacks());
+        mView.getLoaderManager().initLoader(PAGER_LOADER, null, mLoaderCallbacks);
     }
 
     private void startRequests() {
@@ -195,10 +203,10 @@ public class ShowcaseController implements Parcelable {
         if (c.getCount() == 0)
             return 0;
         c.moveToFirst();
-        int showcaseId = c.getInt(0);
-        if (D) Log.d(LOG_TAG, "Got showcase id: " + String.valueOf(showcaseId));
+        mShowcaseId = c.getInt(0);
+        if (D) Log.d(LOG_TAG, "Got showcase id: " + String.valueOf(mShowcaseId));
         c.close();
-        return showcaseId;
+        return mShowcaseId;
 
     }
 

@@ -55,6 +55,7 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
     private SearchView mSearchView;
     private Menu mMenu;
     private Animation mRotateAnimation;
+    private String mTitle;
 
     private View.OnClickListener mRefreshClickListener = new View.OnClickListener() {
         // Обработчик клика по ImageView для кнопки "обновить"
@@ -101,6 +102,14 @@ public class FeedFragment extends Fragment implements FeedController.FeedView, A
 
     public FeedFragment() {
         mFeedImpl = new BasicFeedImpl();
+    }
+
+    public void setTitle(String title) {
+        mTitle = title;
+    }
+
+    public String getTitle() {
+        return mTitle;
     }
 
     @Override

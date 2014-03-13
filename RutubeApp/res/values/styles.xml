@@ -193,4 +193,11 @@
         <item name="android:background">@color/feed_background</item>
     </style>
 
+    <style name="Rutube.TabView.Custom" >
+        <item name="android:textAllCaps">true</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+
 </resources>

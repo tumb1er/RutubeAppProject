@@ -486,6 +486,9 @@ public class FeedContentProvider extends ContentProvider {
             case TAGS_VIDEO_FEEDITEM:
                 columnList.add(FeedContract.Subscriptions.TAGS_JSON);
                 columnList.add(FeedContract.TagsVideo.TAG_ID);
+                break;
+            case -1:
+                throw new IllegalArgumentException("Invalid uri type");
             default:
                 break;
 

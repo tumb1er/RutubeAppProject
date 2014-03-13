@@ -22,6 +22,4 @@
         <item name="FeedRefreshButtonStyle">@style/Rutube.Feed.RefreshButton</item>
 
     </style>
-
-
 </resources>

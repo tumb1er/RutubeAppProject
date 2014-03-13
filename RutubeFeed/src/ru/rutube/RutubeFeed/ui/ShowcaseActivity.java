@@ -56,17 +56,17 @@ public class ShowcaseActivity extends ActionBarActivity {
         public Fragment getShowcaseFragment(Uri uri, int showcaseId) {
             if (D) Log.d(LOG_TAG, "get fragment for " + uri.toString());
             Fragment f = mFragmentMap.get(uri);
-            if (f != null) {
-                if (D)Log.d(LOG_TAG, "got from cache");
-                return f;
-            }
+//            if (f != null) {
+//                if (D)Log.d(LOG_TAG, "got from cache");
+//                return f;
+//            }
             if (D) Log.d(LOG_TAG, "creating new fragment");
             f = new ShowcaseFragment();
             Bundle args = new Bundle();
             args.putParcelable(Constants.Params.SHOWCASE_URI, uri);
             args.putInt(Constants.Params.SHOWCASE_ID, showcaseId);
             f.setArguments(args);
-            mFragmentMap.put(uri, f);
+//            mFragmentMap.put(uri, f);
             return f;
         }
     }
@@ -79,6 +79,7 @@ public class ShowcaseActivity extends ActionBarActivity {
             NavAdapter.ViewHolder holder = (NavAdapter.ViewHolder)view.getTag();
             Uri showcaseUri = holder.naviItem.getUri();
             int showcaseId = holder.naviItem.getId();
+            if (D)Log.d(LOG_TAG, "On Nav Click: " + String.valueOf(showcaseId));
             navigateToShowcase(showcaseUri, showcaseId);
             mNaviAdapter.setCurrentItemPosition(i);
             mDrawerLayout.closeDrawers();
@@ -93,7 +94,11 @@ public class ShowcaseActivity extends ActionBarActivity {
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         Fragment f = mFragmentCache.getShowcaseFragment(showcaseUri, showcaseId);
-        ft.replace(R.id.content_placeholder, f);
+        Fragment old = fm.findFragmentById(R.id.content_placeholder);
+        if (old != null) {
+            ft.remove(old);
+        }
+        ft.add(R.id.content_placeholder, f);
         ft.commit();
     }
 

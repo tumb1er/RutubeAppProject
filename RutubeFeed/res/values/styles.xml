@@ -148,5 +148,4 @@
         <item name="android:contentDescription">@string/refresh</item>
     </style>
 
-
 </resources>

@@ -41,7 +41,7 @@ public class NaviItem implements Parcelable {
     private int mPosition;
     private int mId;
 
-    public NaviItem(String name, String title, String link, int position) {
+    public NaviItem(String name, String title, String link, int position, int id) {
         mName = name;
         mTitle = title;
         if (link.startsWith("/")) {
@@ -49,8 +49,11 @@ public class NaviItem implements Parcelable {
         }
         mLink = link;
         mPosition = position;
+        mId = id;
     }
-
+    public NaviItem(String name, String title, String link, int position) {
+        this(name, title, link, position, 0);
+    }
     public static NaviItem fromParcel(Parcel p) {
         String name = p.readString();
         String title = p.readString();
@@ -72,7 +75,8 @@ public class NaviItem implements Parcelable {
         String title = c.getString(c.getColumnIndex(FeedContract.Navigation.TITLE));
         String link = c.getString(c.getColumnIndex(FeedContract.Navigation.LINK));
         int position = c.getInt(c.getColumnIndex(FeedContract.Navigation.POSITION));
-        return new NaviItem(name, title, link, position);
+        int id = c.getInt(c.getColumnIndex(FeedContract.Navigation._ID));
+        return new NaviItem(name, title, link, position, id);
     }
 
     public static JsonObjectRequest getNaviLinksRequest(RequestListener requestListener) {

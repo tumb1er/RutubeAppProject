@@ -97,9 +97,8 @@
 
         <item name="VideoInfoScrollerStyle">@style/Rutube.Player.Info.ScrollContainer</item>
     </style>
-
     <style name="Theme.Rutube.CustomTabs" parent="@style/Theme.Rutube.Feed">
-        <item name="vpiTabPageIndicatorStyle">@style/Rutube.TabView</item>
+        <item name="vpiTabPageIndicatorStyle">@style/Rutube.TabView.Custom</item>
     </style>
 
 </resources>
