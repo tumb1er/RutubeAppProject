@@ -204,7 +204,7 @@ public class FeedContentProvider extends ContentProvider {
             case RELATED_VIDEO_ITEM:
             case SHOWCASE_TABITEM:
             case NAVIGATION_ITEM:
-                where = BaseColumns._ID + "=" + uri.getLastPathSegment();
+                where = String.format("%s = '%s'", BaseColumns._ID, uri.getLastPathSegment());
                 break;
             // Получение списка строк отфильтрованных по значению внешнего ключа
             case AUTHOR_VIDEO:
@@ -232,7 +232,7 @@ public class FeedContentProvider extends ContentProvider {
             if (D) Log.d(LOG_TAG, String.valueOf(segments));
             // путь выглядит так: /content_path/1
             // соответственно, нужен 2 сегмент
-            where = fk_field + "=" + segments.get(1);
+            where = String.format("%s = '%s'", fk_field , segments.get(1));
         }
         return where;
     }
@@ -620,18 +620,14 @@ public class FeedContentProvider extends ContentProvider {
         return String.format("VALUES('%s', '%s', '%s', 0)", name, title, link);
     }
 
-    private static String getShowcaseTabsFixture(int showcaseId) {
+    private static String[] getShowcaseTabsFixture(int showcaseId) {
         Context context = RutubeApp.getContext();
         // получаем витрину "андроид"
         String[] tab_names = context.getResources().getStringArray(R.array.showcase_tabs_names);
-        String result = "VALUES";
+        String[] result = new String[tab_names.length];
         int i = 0;
         for (String tabName: tab_names) {
-            String row = String.format(" (%d, '%s', 'created_date', %d)", showcaseId, tabName, i);
-            if (i == 0)
-                result += row;
-            else
-                result += "," + row;
+            result[i] = String.format("VALUES (%d, '%s', 'created_date', %d)", showcaseId, tabName, i);
             i += 1;
         }
         return result;
@@ -663,7 +659,8 @@ public class FeedContentProvider extends ContentProvider {
             db.execSQL(SQL_CREATE_SHOWCASE_TABS);
             db.execSQL(NAVIGATION_FIXTURE_QUERY + getNaviFixture());
             int showcaseId = getAndroidShowcaseId(db);
-            db.execSQL(SHOWCASE_FIXTURE_QUERY + getShowcaseTabsFixture(showcaseId));
+            for (String fix: getShowcaseTabsFixture(showcaseId))
+                db.execSQL(SHOWCASE_FIXTURE_QUERY + fix);
             db.execSQL(SQL_CREATE_INDEX_NAVIGATION);
         }
 
@@ -731,7 +728,8 @@ public class FeedContentProvider extends ContentProvider {
                     case 8:
                         db.execSQL(SQL_CREATE_SHOWCASE_TABS);
                         int showcaseId = getAndroidShowcaseId(db);
-                        db.execSQL(SHOWCASE_FIXTURE_QUERY + getShowcaseTabsFixture(showcaseId));
+                        for (String fix: getShowcaseTabsFixture(showcaseId))
+                            db.execSQL(SHOWCASE_FIXTURE_QUERY + fix);
                         break;
                     case 9:
                         db.execSQL(SQL_CREATE_INDEX_NAVIGATION);
