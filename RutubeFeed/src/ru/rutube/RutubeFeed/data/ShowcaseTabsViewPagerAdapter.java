@@ -17,8 +17,10 @@ import android.view.ViewGroup;
 import java.util.HashMap;
 
 import ru.rutube.RutubeAPI.BuildConfig;
+import ru.rutube.RutubeAPI.content.FeedContentProvider;
 import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.models.Constants;
+import ru.rutube.RutubeAPI.models.TabSource;
 import ru.rutube.RutubeFeed.feed.FeedFragmentFactory;
 import ru.rutube.RutubeFeed.ui.FeedFragment;
 
@@ -115,9 +117,26 @@ public class ShowcaseTabsViewPagerAdapter extends FragmentStatePagerAdapter
     }
 
     public Fragment getItem(Context context, Cursor cursor) {
-        FeedFragment f = mFragmentFactory.getFeedFragment(FeedFragmentFactory.EDITORS);
+        int tabId = cursor.getInt(cursor.getColumnIndex(FeedContract.ShowcaseTabs._ID));
+        Uri sourcesUri = FeedContract.TabSources.CONTENT_URI.buildUpon()
+                .appendEncodedPath(String.valueOf(tabId))
+                .build();
+        assert sourcesUri != null;
+        Cursor c = context.getContentResolver().query(
+                sourcesUri,
+                FeedContentProvider.getProjection(sourcesUri),
+                null,
+                null,
+                null);
+        assert c!= null;
+        c.moveToFirst();
+        TabSource src = TabSource.fromCursor(c);
+        c.close();
+
+
+        FeedFragment f = mFragmentFactory.getFeedFragment(src.getLink());
         Bundle b = new Bundle();
-        b.putParcelable(Constants.Params.FEED_URI, Uri.parse("http://rutube.ru/video/editors/"));
+        b.putParcelable(Constants.Params.FEED_URI, Uri.parse(src.getLink()));
         f.setArguments(b);
         int i = cursor.getColumnIndex(FeedContract.ShowcaseTabs.NAME);
         f.setTitle(cursor.getString(i));

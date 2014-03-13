@@ -1,5 +1,8 @@
 package ru.rutube.RutubeFeed.feed;
 
+import android.net.Uri;
+
+import ru.rutube.RutubeAPI.content.ContentMatcher;
 import ru.rutube.RutubeFeed.ui.FeedFragment;
 
 /**
@@ -7,13 +10,17 @@ import ru.rutube.RutubeFeed.ui.FeedFragment;
  */
 public class FeedFragmentFactory {
 
-    public static final int COMMON = 0;
-    public static final int EDITORS = 1;
-    public static final int SUBSCRIPTIONS = 2;
-
     public FeedFragment getFeedFragment(int fragmentType) {
         FeedFragment.FeedImpl feedImpl = getFeedImplementation(fragmentType);
         return instantiateFragment(feedImpl);
+    }
+
+    public FeedFragment getFeedFragment(String url) {
+        Uri uri = Uri.parse(url);
+        int feedType = ContentMatcher.getInstance().getFeedType(uri);
+        if (feedType == ContentMatcher.COMMON)
+            feedType = ContentMatcher.getInstance().getFeedTypeWithParams(uri);
+        return getFeedFragment(feedType);
     }
 
     protected FeedFragment instantiateFragment(FeedFragment.FeedImpl feedImpl) {
@@ -23,11 +30,11 @@ public class FeedFragmentFactory {
     protected FeedFragment.FeedImpl getFeedImplementation(int fragmentType) {
         switch(fragmentType)
         {
-            case EDITORS:
+            case ContentMatcher.EDITORS:
                 return new EditorsFeedImpl();
-            case SUBSCRIPTIONS:
+            case ContentMatcher.SUBSCRIPTIONS:
                 return new SubscriptionsFeedImpl();
-            case COMMON:
+            case ContentMatcher.COMMON:
             default:
                 return new BasicFeedImpl();
         }

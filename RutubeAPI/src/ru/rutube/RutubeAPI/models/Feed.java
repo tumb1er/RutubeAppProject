@@ -74,6 +74,8 @@ public class Feed<FeedItemT extends FeedItem> {
         if (result == null) {
             result = contentMatcher.getSearchContentUri(feedUri);
         }
+        if (result == null)
+            throw new IllegalArgumentException("Invalid feed uri: " + String.valueOf(feedUri));
         return result;
     }
 

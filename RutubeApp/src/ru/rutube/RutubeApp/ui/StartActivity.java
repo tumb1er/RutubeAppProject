@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.RutubeApp;
+import ru.rutube.RutubeAPI.content.ContentMatcher;
 import ru.rutube.RutubeAPI.content.FeedContentProvider;
 import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.models.Constants;
@@ -50,9 +51,9 @@ public class StartActivity extends ActionBarActivity implements MainPageControll
     private static final HashMap<String, Integer> sFragmentClassMap = new HashMap<String, Integer>();
     private static final HashMap<String, Integer> sFeedUriResourceIdMap = new HashMap<String, Integer>();
     static {
-        sFragmentClassMap.put(MainPageController.TAB_EDITORS, FeedFragmentFactory.EDITORS);
-        sFragmentClassMap.put(MainPageController.TAB_MY_VIDEO, FeedFragmentFactory.COMMON);
-        sFragmentClassMap.put(MainPageController.TAB_SUBSCRIPTIONS, FeedFragmentFactory.SUBSCRIPTIONS);
+        sFragmentClassMap.put(MainPageController.TAB_EDITORS, ContentMatcher.EDITORS);
+        sFragmentClassMap.put(MainPageController.TAB_MY_VIDEO, ContentMatcher.COMMON);
+        sFragmentClassMap.put(MainPageController.TAB_SUBSCRIPTIONS, ContentMatcher.SUBSCRIPTIONS);
 
         sFeedUriResourceIdMap.put(MainPageController.TAB_EDITORS, R.string.editors_uri);
         sFeedUriResourceIdMap.put(MainPageController.TAB_MY_VIDEO, R.string.my_video_uri);

@@ -20,7 +20,7 @@ import ru.rutube.RutubeFeed.R;
  * To change this template use File | Settings | File Templates.
  */
 public class FeedActivity extends ActionBarActivity {
-    private final String LOG_TAG = getClass().getName();
+    private final String LOG_TAG = ((Object)this).getClass().getName();
     private static final boolean D = BuildConfig.DEBUG;
     protected Uri feedUri;
 

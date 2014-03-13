@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.SparseArray;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.R;
@@ -25,10 +26,19 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class ContentMatcher {
+    public static final int COMMON = 0;
+    public static final int EDITORS = 1;
+    public static final int MYVIDEO = 2;
+    public static final int SUBSCRIPTIONS = 3;
+    public static final int RELATED = 4;
+    public static final int AUTHOR = 5;
+    public static final int TAGVIDEO = 6;
+
     private static final String PARAM_QUERY = "query";
     private static final String LOG_TAG = ContentMatcher.class.getName();
     private static final boolean D = BuildConfig.DEBUG;
-    private HashMap<String, Uri> uriMap = null;
+    private HashMap<String, Integer> feedTypeMap;
+    private SparseArray<Uri> contentUriMap;
     private static ContentMatcher instance;
 
     public static synchronized ContentMatcher from(Context context) {
@@ -39,27 +49,42 @@ public class ContentMatcher {
     }
 
     private ContentMatcher(Context context) {
-        uriMap = new HashMap<String, Uri>();
-        uriMap.put("/" + context.getString(R.string.editors_uri), FeedContract.Editors.CONTENT_URI);
-        uriMap.put("/" + context.getString(R.string.my_video_uri), FeedContract.MyVideo.CONTENT_URI);
-        uriMap.put("/" + context.getString(R.string.subscription_uri), FeedContract.Subscriptions.CONTENT_URI);
-        uriMap.put("/" + context.getString(R.string.related_video_uri), FeedContract.RelatedVideo.CONTENT_URI);
-        uriMap.put("/" + context.getString(R.string.authors_uri), FeedContract.AuthorVideo.CONTENT_URI);
-        uriMap.put("/" + context.getString(R.string.video_by_tag_uri), FeedContract.TagsVideo.CONTENT_URI);
+        feedTypeMap = new HashMap<String, Integer>();
+        feedTypeMap.put("/" + context.getString(R.string.editors_uri), EDITORS);
+        feedTypeMap.put("/" + context.getString(R.string.my_video_uri), MYVIDEO);
+        feedTypeMap.put("/" + context.getString(R.string.subscription_uri), SUBSCRIPTIONS);
+        feedTypeMap.put("/" + context.getString(R.string.related_video_uri), RELATED);
+        feedTypeMap.put("/" + context.getString(R.string.authors_uri), AUTHOR);
+        feedTypeMap.put("/" + context.getString(R.string.video_by_tag_uri), TAGVIDEO);
+
+        contentUriMap = new SparseArray<Uri>();
+        contentUriMap.put(EDITORS, FeedContract.Editors.CONTENT_URI);
+        contentUriMap.put(MYVIDEO, FeedContract.MyVideo.CONTENT_URI);
+        contentUriMap.put(SUBSCRIPTIONS, FeedContract.Subscriptions.CONTENT_URI);
+        contentUriMap.put(RELATED, FeedContract.RelatedVideo.CONTENT_URI);
+        contentUriMap.put(AUTHOR, FeedContract.AuthorVideo.CONTENT_URI);
+        contentUriMap.put(TAGVIDEO, FeedContract.TagsVideo.CONTENT_URI);
     }
 
     public Uri getContentUri(Uri rutube_uri) {
-        if (D) Log.d(LOG_TAG, "Matching " + rutube_uri.toString());
-        String path = rutube_uri.getPath();
-        assert path != null;
-        path = normalize(path);
-        if (D) Log.d(LOG_TAG, "Path: " + path);
-        Uri result = uriMap.get(path);
+        Integer feedType = getFeedType(rutube_uri);
+
+        Uri result = contentUriMap.get(feedType);
         if (result == null) {
             result = matchWithParams(rutube_uri);
         }
         if (D) Log.d(LOG_TAG, "Matched: " + String.valueOf(result));
         return result;
+    }
+
+    public int getFeedType(Uri rutube_uri) {
+        if (D) Log.d(LOG_TAG, "Matching " + rutube_uri.toString());
+        String path = rutube_uri.getPath();
+        assert path != null;
+        path = normalize(path);
+        if (D) Log.d(LOG_TAG, "Path: " + path);
+
+        return feedTypeMap.containsKey(path)? feedTypeMap.get(path): COMMON;
     }
 
     public String normalize(String path) {
@@ -72,6 +97,23 @@ public class ContentMatcher {
         return path;
     }
 
+    public int getFeedTypeWithParams(Uri rutube_uri){
+        List<String> segments = rutube_uri.getPathSegments();
+        assert segments != null;
+        String last = segments.get(segments.size() - 1);
+        if (!last.matches("^[\\d]+"))
+            return COMMON;
+        String path = TextUtils.join("/", segments).replace(last, "%d");
+        path = normalize(path);
+        if (D) Log.d(LOG_TAG, "Matching with params: " + path);
+        Integer feedType = feedTypeMap.get(path);
+        if (feedType == null){
+            if (D) Log.d(LOG_TAG, "Not matched URL: " + path);
+            return COMMON;
+        }
+        return feedType;
+    }
+
     /**
      * Выбирает из урла последний сегмент, и если он числовой, осуществляет поиск соответствующего
      * contentUri
@@ -79,20 +121,32 @@ public class ContentMatcher {
      * @return
      */
     private Uri matchWithParams(Uri rutube_uri) {
+//
+//        List<String> segments = rutube_uri.getPathSegments();
+//        assert segments != null;
+//        String last = segments.get(segments.size() - 1);
+//        if (!last.matches("^[\\d]+")) return null;
+//        int id = Integer.parseInt(last);
+//        String path = TextUtils.join("/", segments).replace(last, "%d");
+//        path = normalize(path);
+//        if (D) Log.d(LOG_TAG, "Matching with params: " + path);
+//        Integer feedType = feedTypeMap.get(path);
+//        if (feedType == COMMON){
+//            if (D) Log.d(LOG_TAG, "Not matched URL: " + path);
+//            return null;
+//        }
+
+        int feedType = getFeedTypeWithParams(rutube_uri);
 
         List<String> segments = rutube_uri.getPathSegments();
         assert segments != null;
         String last = segments.get(segments.size() - 1);
         if (!last.matches("^[\\d]+")) return null;
         int id = Integer.parseInt(last);
-        String path = TextUtils.join("/", segments).replace(last, "%d");
-        path = normalize(path);
-        if (D) Log.d(LOG_TAG, "Matching with params: " + path);
-        Uri result = uriMap.get(path);
-        if (result == null){
-            if (D) Log.d(LOG_TAG, "Not matched URL: " + path);
-            return null;
-        }
+
+        Uri result = contentUriMap.get(feedType);
+        if (result == null)
+            throw new IllegalArgumentException("Invalid url: " + String.valueOf(rutube_uri));
         result = result.buildUpon().appendPath(String.valueOf(id)).build();
         if (D) Log.d(LOG_TAG, "Matched: " + String.valueOf(result));
         return result;
