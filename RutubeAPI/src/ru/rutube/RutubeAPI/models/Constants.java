@@ -23,6 +23,7 @@ public final class Constants {
         public static final String MP4_URL = "ru.rutube.bl.mp4_url";
         public static final String VIDEO = "ru.rutube.api.video";
         public static final String PLAY_OPTIONS = "ru.rutube.api.play.options";
+        public static final String USER = "ru.rutube.api.user";
     }
 
     public final class Params {

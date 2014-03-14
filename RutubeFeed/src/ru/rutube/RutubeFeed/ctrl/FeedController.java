@@ -66,7 +66,7 @@ public class FeedController implements Parcelable {
     }
 
     public void logout() {
-        User.load().deleteToken();
+        User.fromContext().deleteToken();
         mFeed = null;
     }
 

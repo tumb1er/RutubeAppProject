@@ -25,4 +25,7 @@
     <string name="showcase_api">api/feeds/%s/</string>
     <string name="menu_links">api/mainpage/linksgroup/15/</string>
     <string name="navi_main_link">feeds/android/</string>
+    <string name="user_profile_uri">/api/profile/user/%d/</string>
+    <string name="register_url"><![CDATA[<a href=\"http://rutube.ru/accounts/register/\">%s</a>]]></string>
+    <string name="remind_url"><![CDATA[<a href=\"http://rutube.ru/accounts/remind/\">%s</a>]]></string>
 </resources>

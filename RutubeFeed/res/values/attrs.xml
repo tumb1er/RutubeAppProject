@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <attr name="LoginClearButtonStyle" format="reference"/>
+    <attr name="LoginLoginTextEditStyle" format="reference"/>
+    <attr name="LoginPasswordTextEditStyle" format="reference"/>
+    <attr name="LoginRemindLinkStyle" format="reference"/>
+    <attr name="LoginRegistrationLinkStyle" format="reference"/>
+
     <declare-styleable name="Feed">
         <attr name="FeedListStyle" format="reference"/>
         <attr name="FeedContainerStyle" format="reference"/>

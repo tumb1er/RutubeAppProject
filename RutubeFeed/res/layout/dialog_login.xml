@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="fill_parent"
+              android:padding="4dp">
+
+    <ImageView
+            android:id="@+id/btnClear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|center_vertical"
+            android:contentDescription="@string/clear"
+        style="?attr/LoginClearButtonStyle" />
+
+    <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/email"
+            style="?attr/LoginLoginTextEditStyle" />
+
+    <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+        android:id="@+id/password"
+        style="?attr/LoginPasswordTextEditStyle" />
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/remindUrl"
+        android:text="@string/remind_password"
+        android:layout_gravity="center_horizontal"
+        style="?attr/LoginRemindLinkStyle" />
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/registerUrl"
+        android:text="@string/registration"
+        android:layout_gravity="center_horizontal"
+        style="?attr/LoginRegistrationLinkStyle" />
+
+</LinearLayout>

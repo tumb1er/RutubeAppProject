@@ -100,7 +100,7 @@ public class SplashScreenController implements Parcelable, RequestListener {
         mRequestQueue = Volley.newRequestQueue(context,
                 new HttpClientStack(HttpTransport.getHttpClient()));
         mImageLoader = new ImageLoader(mRequestQueue, RutubeApp.getBitmapCache());
-        mUser = User.load();
+        mUser = User.fromContext();
         mAttached = true;
         startRequests();
     }

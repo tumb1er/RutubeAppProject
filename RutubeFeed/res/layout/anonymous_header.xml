@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content">
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="fill_parent"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:background="#FF232323"
+    android:id="@+id/loginMenu"
     android:padding="20dp">
 
     <ImageView
@@ -17,10 +23,11 @@
         android:layout_height="match_parent"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="Login"
-        android:id="@+id/textView"
+        android:id="@+id/loginTextView"
         android:gravity="center_vertical"
         android:paddingLeft="12dp"
         android:textStyle="bold"
         android:textSize="16dp"
         android:textColor="#FFe4e4e4" />
+</LinearLayout>
 </LinearLayout>

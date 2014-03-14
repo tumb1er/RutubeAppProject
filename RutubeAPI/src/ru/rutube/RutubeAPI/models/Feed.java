@@ -45,7 +45,8 @@ public class Feed<FeedItemT extends FeedItem> {
      * @param feedUri ссылка на API ленты
      */
     public Feed(Uri feedUri) {
-        String token = User.loadToken();
+        User user = User.fromContext();
+        String token = user.getToken();
         Uri contentUri = getContentUri(feedUri);
         mToken = token;
         mFeedUri = normalizeFeedUri(feedUri);

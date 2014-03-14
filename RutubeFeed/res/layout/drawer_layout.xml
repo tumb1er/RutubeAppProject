@@ -6,7 +6,6 @@
     android:background="#ff121212"
     android:layout_gravity="start"
     android:id="@+id/left_drawer"
-    android:paddingTop="10dp"
     >
 
     <com.android.volley.toolbox.NetworkImageView
@@ -28,5 +27,7 @@
         android:layout_height="fill_parent"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
+        android:divider="#FF000000"
+        android:dividerHeight="1dp"
         android:layout_centerHorizontal="true" />
 </RelativeLayout>

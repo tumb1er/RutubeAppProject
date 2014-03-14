@@ -21,4 +21,7 @@
     <string name="created">Created</string>
     <string name="drawer_open">open</string>
     <string name="drawer_closed">Close</string>
+    <string name="registration">Registration</string>
+    <string name="remind_password">Remind password</string>
+    <string name="clear">clear</string>
 </resources>

@@ -1,23 +1,17 @@
 package ru.rutube.RutubeFeed.ui;
 
 import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.database.Cursor;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.internal.view.ActionBarPolicy;
-import android.support.v7.internal.widget.ActionBarContainer;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,40 +22,38 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.HttpClientStack;
-import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
-import com.android.volley.toolbox.Volley;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import ru.rutube.RutubeAPI.BuildConfig;
-import ru.rutube.RutubeAPI.HttpTransport;
-import ru.rutube.RutubeAPI.RutubeApp;
-import ru.rutube.RutubeAPI.content.FeedContentProvider;
-import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.models.Constants;
+import ru.rutube.RutubeAPI.models.User;
 import ru.rutube.RutubeFeed.R;
+import ru.rutube.RutubeFeed.ctrl.NavigationController;
 import ru.rutube.RutubeFeed.data.NavAdapter;
+import ru.rutube.RutubeFeed.helpers.Typefaces;
 
 /**
  * Created by tumbler on 12.03.14.
  */
-public class ShowcaseActivity extends ActionBarActivity {
+public class ShowcaseActivity extends ActionBarActivity implements NavigationController.NavigationView {
     private static final String LOG_TAG = ShowcaseActivity.class.getName();
     private static final boolean D = BuildConfig.DEBUG;
-    private static final int NAVI_LOADER = 0;
 
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
-    private NaviLoaderCallbacks loaderCallbacks;
     private NavAdapter mNaviAdapter;
 
-    private RequestQueue mRequestQueue;
-    private ImageLoader mImageLoader;
+    private NavigationController mController;
+    private NetworkImageView mAvatarView;
+    private View mAnonymousView;
+    private View mAuthUserView;
+    private NetworkImageView mBackgroundView;
+    private TextView mUsernameView;
+    private Typeface mNormalFont;
 
 
     private class ShowcaseFragmentCache {
@@ -86,19 +78,36 @@ public class ShowcaseActivity extends ActionBarActivity {
 
     private ShowcaseFragmentCache mFragmentCache = new ShowcaseFragmentCache();
 
+    private User mUser;
     private AdapterView.OnItemClickListener mOnNavigationClickListener = new AdapterView.OnItemClickListener() {
         @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        public void onItemClick(AdapterView<?> adapterView, View view, int pos, long rowId) {
+            if (D) Log.d(LOG_TAG, "onItemClick: " + String.valueOf(pos));
+            if (pos == 1) {
+                if (mUser.isAnonymous())
+                    showLoginDialog();
+                return;
+            }
             NavAdapter.ViewHolder holder = (NavAdapter.ViewHolder)view.getTag();
             Uri showcaseUri = holder.naviItem.getUri();
             int showcaseId = holder.naviItem.getId();
             if (D)Log.d(LOG_TAG, "On Nav Click: " + String.valueOf(showcaseId));
             navigateToShowcase(showcaseUri, showcaseId);
-            mNaviAdapter.setCurrentItemPosition(i);
+            mNaviAdapter.setCurrentItemPosition(pos - mDrawerList.getHeaderViewsCount());
             mDrawerLayout.closeDrawers();
             mNaviAdapter.notifyDataSetChanged();
         }
     };
+
+    private void showLoginDialog() {
+        LoginDialogFragment.InputDialogFragmentBuilder builder = new LoginDialogFragment.InputDialogFragmentBuilder(this);
+        builder.setOnDoneListener(new LoginDialogFragment.OnDoneListener() {
+            @Override
+            public void onFinishInputDialog(String emailText, String passwordText) {
+                mController.requestToken(emailText, passwordText);
+            }
+        }).show();
+    }
 
     public void navigateToShowcase(Uri showcaseUri, int showcaseId) {
         if (D) Log.d(LOG_TAG, "Navigating to " + String.valueOf(showcaseUri));
@@ -115,46 +124,35 @@ public class ShowcaseActivity extends ActionBarActivity {
         ft.commit();
     }
 
-    /**
-     * Обработчик событий загрузки данных в адаптер навигационного меню
-     */
-    protected class NaviLoaderCallbacks implements LoaderManager.LoaderCallbacks<Cursor> {
 
-        @Override
-        public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
-            // Возвращает курсор для данных меню навигации
-            return new CursorLoader(
-                    RutubeApp.getContext(),
-                    FeedContract.Navigation.CONTENT_URI,
-                    FeedContentProvider.getProjection(FeedContract.Navigation.CONTENT_URI),
-                    null,
-                    null,
-                    null
-            );
-        }
-
-        @Override
-        public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-            CursorAdapter adapter = (CursorAdapter) getNavAdapter();
-            if (adapter != null)
-                adapter.swapCursor(cursor);
-        }
-
-        @Override
-        public void onLoaderReset(Loader<Cursor> cursorLoader) {
-            CursorAdapter adapter = getNavAdapter();
-            if (adapter != null)
-                adapter.swapCursor(null);
-
-        }
-    }
-
+    @Override
     public CursorAdapter getNavAdapter() {
         ListAdapter adapter = mDrawerList.getAdapter();
         if (adapter instanceof HeaderViewListAdapter) {
             adapter = ((HeaderViewListAdapter)adapter).getWrappedAdapter();
         }
         return (CursorAdapter)adapter;
+    }
+
+    @Override
+    public void showHeader(User user) {
+        mUser = user;
+        if (user.isAnonymous()) {
+            mAnonymousView.setVisibility(View.VISIBLE);
+            mBackgroundView.setVisibility(View.GONE);
+            mAuthUserView.setVisibility(View.GONE);
+
+        } else {
+            mAnonymousView.setVisibility(View.GONE);
+            String backgroundUrl = user.getBackgroundUrl();
+            String avatarUrl = user.getAvatarUrl();
+            mBackgroundView.setVisibility(View.VISIBLE);
+            mBackgroundView.setImageUrl(backgroundUrl, mController.getImageLoader());
+            mAvatarView.setImageUrl(avatarUrl, mController.getImageLoader());
+            mUsernameView.setText(user.getName());
+            mAuthUserView.setVisibility(View.VISIBLE);
+        }
+        findViewById(R.id.left_drawer).forceLayout();
     }
 
     @Override
@@ -181,11 +179,11 @@ public class ShowcaseActivity extends ActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.showcase_activity);
+        mController = new NavigationController();
+        initViews();
+        mUser = User.fromContext();
+        showHeader(mUser);
         initNavigationToggle();
-
-        mRequestQueue = Volley.newRequestQueue(this,
-                new HttpClientStack(HttpTransport.getHttpClient()));
-        mImageLoader = new ImageLoader(mRequestQueue, RutubeApp.getBitmapCache());
 
         initNavigationAdapter();
         ActionBar bar = getSupportActionBar();
@@ -199,12 +197,51 @@ public class ShowcaseActivity extends ActionBarActivity {
         initCurrentNavItem();
     }
 
+    private void initViews() {
+        mNormalFont = Typefaces.get(this, "fonts/opensansregular.ttf");
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.nav_list_view);
+        ViewGroup v;
+        mBackgroundView = (NetworkImageView) findViewById(R.id.nav_background);
+
+        v = (ViewGroup)getLayoutInflater().inflate(R.layout.authorized_header, null);
+        assert v != null;
+        mDrawerList.addHeaderView(v);
+
+        mAuthUserView = v.findViewById(R.id.headerContent);
+        mAuthUserView.setVisibility(View.GONE);
+
+        v = (ViewGroup)getLayoutInflater().inflate(R.layout.anonymous_header, null);
+        assert v != null;
+        mDrawerList.addHeaderView(v);
+
+        mAnonymousView = v.findViewById(R.id.loginMenu);
+        mAnonymousView.setVisibility(View.GONE);
+        ((TextView)v.findViewById(R.id.loginTextView)).setTypeface(mNormalFont);
+
+        mAvatarView = (NetworkImageView)mAuthUserView.findViewById(R.id.avatarImageView);
+        mUsernameView = (TextView) mAuthUserView.findViewById(R.id.authorTextView);
+        mUsernameView.setTypeface(mNormalFont);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mController.attach(this, this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mController.detach();
+    }
+
     public void initCurrentNavItem() {
         mNaviAdapter.setCurrentItemPosition(0);
     }
 
     protected void initNavigationToggle() {
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(
                 this,
                 mDrawerLayout,
@@ -216,18 +253,6 @@ public class ShowcaseActivity extends ActionBarActivity {
     }
 
     protected void initNavigationAdapter() {
-        loaderCallbacks = new NaviLoaderCallbacks();
-        getSupportLoaderManager().initLoader(NAVI_LOADER, null, loaderCallbacks);
-        mDrawerList = (ListView) findViewById(R.id.nav_list_view);
-        if (D) Log.d(LOG_TAG, "Set nav adapter");
-
-        View v = getLayoutInflater().inflate(R.layout.authorized_header, null);
-        NetworkImageView av = (NetworkImageView)v.findViewById(R.id.avatarImageView);
-        av.setImageUrl("http://pic.rutube.ru/user/38/c6/38c686faf55899a177fd01b954888b8d.jpg?size=s", mImageLoader);
-        mDrawerList.addHeaderView(v);
-        NetworkImageView bg = (NetworkImageView)findViewById(R.id.nav_background);
-        bg.setImageUrl("http://pic.rutube.ru/userappearance/2b/d9/2bd961be163a0648f66c52776647ea2f.jpeg", mImageLoader);
-        bg.setVisibility(View.VISIBLE);
         // Пустые массивы в аргументах нужны чтобы не было NPE в swapCursor.
         mNaviAdapter = new NavAdapter(
                 this,

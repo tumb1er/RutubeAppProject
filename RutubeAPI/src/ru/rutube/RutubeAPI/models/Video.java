@@ -260,9 +260,10 @@ public class Video implements Parcelable {
                 .appendQueryParameter("referer", context.getString(R.string.referer))
                 .build();
         assert uri != null;
+        User user = User.fromContext();
         JsonObjectRequest request = new AuthJsonObjectRequest(uri.toString(),
                 null, getPlayOptionsListener(listener), getErrorListener(Requests.PLAY_OPTIONS, listener),
-                User.loadToken());
+                user.getToken());
         request.setShouldCache(true);
         request.setTag(Requests.PLAY_OPTIONS);
         if (D) Log.d(LOG_TAG, "Play Options URL: " + uri.toString());

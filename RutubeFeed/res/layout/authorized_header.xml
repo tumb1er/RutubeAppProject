@@ -1,38 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content">
-
-    <View
+    <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="100dp"
-        android:background="#ff232323"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="75dp" />
-
-    <ru.rutube.RutubeFeed.views.RoundAvatarView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:id="@+id/avatarImageView"
-        android:src="@drawable/_thumb_default_06"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="25dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Silvio Belusconi"
-        android:layout_below="@+id/avatarImageView"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="40dp"
-        android:textSize="16dp"
-        android:textStyle="bold"
-        android:id="@+id/authorTextView"
-        android:textColor="#FFFFFFFF" />
-</RelativeLayout>
+        android:id="@+id/headerContent"
+        >
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="100dp"
+            android:background="#ff232323"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="75dp" />
+
+        <ru.rutube.RutubeFeed.views.RoundAvatarView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:id="@+id/avatarImageView"
+            android:src="@drawable/_thumb_default_06"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="25dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Silvio Belusconi"
+            android:layout_below="@+id/avatarImageView"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="40dp"
+            android:textSize="16dp"
+            android:textStyle="bold"
+            android:id="@+id/authorTextView"
+            android:textColor="#FFFFFFFF" />
+    </RelativeLayout>
+</LinearLayout>

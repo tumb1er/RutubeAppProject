@@ -14,11 +14,6 @@
     <string name="mediacontroller_play_pause">Play/Pause</string>
     <string name="email">E-mail</string>
     <string name="password">Password</string>
-    <string name="clear">clear</string>
-    <string name="register_url"><![CDATA[<a href=\"http://rutube.ru/accounts/register/\">%s</a>]]></string>
-    <string name="remind_url"><![CDATA[<a href=\"http://rutube.ru/accounts/remind/\">%s</a>]]></string>
-    <string name="registration">Registration</string>
-    <string name="remind_password">Remind password</string>
     <string name="nothing_found">Nothing found</string>
     <string name="logouted">Logout successful</string>
     <string name="no_author">No Author</string>

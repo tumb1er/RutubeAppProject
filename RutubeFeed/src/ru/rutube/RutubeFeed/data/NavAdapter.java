@@ -15,6 +15,7 @@ import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.models.NaviItem;
 import ru.rutube.RutubeFeed.R;
+import ru.rutube.RutubeFeed.helpers.Typefaces;
 
 /**
  * Created by tumbler on 11.03.14.
@@ -22,9 +23,13 @@ import ru.rutube.RutubeFeed.R;
 public class NavAdapter extends SimpleCursorAdapter {
     private static final boolean D = BuildConfig.DEBUG;
     private static final String LOG_TAG = NavAdapter.class.getName();
+    private final Typeface mNormalFont;
+    private final Typeface mLightFont;
     private int mCurrentItemPosition;
     public NavAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
         super(context, layout, c, from, to, flags);
+        mNormalFont = Typefaces.get(context, "fonts/opensansregular.ttf");
+        mLightFont = Typefaces.get(context, "fonts/opensanslight.ttf");
     }
 
     public void setCurrentItemPosition(int pos) {
@@ -55,10 +60,10 @@ public class NavAdapter extends SimpleCursorAdapter {
         ViewHolder h = (ViewHolder)view.getTag();
         if (position == mCurrentItemPosition) {
             h.name.setTextColor(mContext.getResources().getColor(R.color.active_nav_text));
-            h.name.setTypeface(null, Typeface.BOLD);
+            h.name.setTypeface(mNormalFont, Typeface.BOLD);
         } else {
             h.name.setTextColor(mContext.getResources().getColor(R.color.inactive_nav_text));
-            h.name.setTypeface(null, Typeface.NORMAL);
+            h.name.setTypeface(mLightFont, Typeface.NORMAL);
         }
         return view;
     }
