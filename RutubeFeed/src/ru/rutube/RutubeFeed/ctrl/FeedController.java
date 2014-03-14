@@ -343,10 +343,14 @@ public class FeedController implements Parcelable {
 
         @Override
         public Loader<Cursor> onCreateLoader(int loaderId, Bundle arg1) {
+            Uri contentUri = getFeedModel().getContentUri();
+            if (D) Log.d(LOG_TAG, "Init loader for: " + String.valueOf(contentUri));
+            String[] projection = FeedContentProvider.getProjection(contentUri);
+            if (D) Log.d(LOG_TAG, "Projection; " + String.valueOf(projection));
             return new CursorLoader(
                     mContext,
-                    getFeedModel().getContentUri(),
-                    FeedContentProvider.getProjection(getFeedModel().getContentUri()),
+                    contentUri,
+                    projection,
                     null,
                     null,
                     null

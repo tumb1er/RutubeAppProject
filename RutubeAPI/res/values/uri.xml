@@ -13,7 +13,7 @@
     <string name="search_uri">api/search/video/</string>
     <string name="video_page_uri">video/%s/</string>
     <string name="video_private_uri">video/private/%s/</string>
-    <string name="person_video_uri">video/person/%d/</string>
+    <string name="author_video_uri">video/person/%d/</string>
     <string name="token_uri">api/accounts/token_auth/</string>
     <string name="login_uri">api/accounts/login/</string>
     <string name="upload_session_uri">api/uploader/upload_session/</string>
@@ -28,4 +28,6 @@
     <string name="user_profile_uri">/api/profile/user/%d/</string>
     <string name="register_url"><![CDATA[<a href=\"http://rutube.ru/accounts/register/\">%s</a>]]></string>
     <string name="remind_url"><![CDATA[<a href=\"http://rutube.ru/accounts/remind/\">%s</a>]]></string>
+    <string name="tvshow_video_uri">api/metainfo/tv/%d/video/</string>
+    <string name="person_video_uri">api/metainfo/person/%d/video/</string>
 </resources>

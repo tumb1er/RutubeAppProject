@@ -174,6 +174,12 @@ public class Feed<FeedItemT extends FeedItem> {
                 FeedContract.TagsVideo.CONTENT_URI.getEncodedPath())) {
             return TagsFeedItem.fromJSON(data_item);
         }
+        if (contentUriPath.startsWith(
+                FeedContract.TVShowVideo.CONTENT_URI.getEncodedPath())) {
+            TVShowFeedItem item = TVShowFeedItem.fromJSON(data_item);
+            item.setTVShowId(mIntForeignKeyId);
+            return item;
+        }
         return FeedItem.fromJSON(data_item);
     }
 

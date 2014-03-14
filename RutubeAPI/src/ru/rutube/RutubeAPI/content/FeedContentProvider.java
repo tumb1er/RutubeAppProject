@@ -55,6 +55,8 @@ public class FeedContentProvider extends ContentProvider {
     private static final int TABSOURCE = 21;
     private static final int TABSOURCE_ITEM = 22;
     private static final int TABSOURCE_ALL = 23;
+    private static final int TVSHOW_VIDEO = 24;
+    private static final int TVSHOW_VIDEOITEM = 25;
 
     private static final String LOG_TAG = FeedContentProvider.class.getName();
     private static final boolean D = BuildConfig.DEBUG;
@@ -85,6 +87,8 @@ public class FeedContentProvider extends ContentProvider {
         sUriMatcher.addURI(AUTHORITY, FeedContract.TabSources.CONTENT_PATH, TABSOURCE_ALL);
         sUriMatcher.addURI(AUTHORITY, FeedContract.TabSources.CONTENT_PATH + "/#", TABSOURCE);
         sUriMatcher.addURI(AUTHORITY, FeedContract.TabSources.CONTENT_PATH + "/#/#", TABSOURCE_ITEM);
+        sUriMatcher.addURI(AUTHORITY, FeedContract.TVShowVideo.CONTENT_PATH + "/#", TVSHOW_VIDEO);
+        sUriMatcher.addURI(AUTHORITY, FeedContract.TVShowVideo.CONTENT_PATH + "/#/#", TVSHOW_VIDEOITEM);
     }
 
     private MainDatabaseHelper dbHelper;
@@ -135,6 +139,9 @@ public class FeedContentProvider extends ContentProvider {
             case TABSOURCE_ALL:
             case TABSOURCE:
                 table = FeedContract.TabSources.CONTENT_PATH;
+                break;
+            case TVSHOW_VIDEO:
+                table = FeedContract.TVShowVideo.CONTENT_PATH;
                 break;
             default:
                 throw new IllegalArgumentException("Unknown UriType: " + uriType);
@@ -219,6 +226,7 @@ public class FeedContentProvider extends ContentProvider {
             case SHOWCASE_TABITEM:
             case NAVIGATION_ITEM:
             case TABSOURCE_ITEM:
+            case TVSHOW_VIDEOITEM:
                 where = String.format("%s = '%s'", BaseColumns._ID, uri.getLastPathSegment());
                 break;
             // Получение списка строк отфильтрованных по значению внешнего ключа
@@ -239,6 +247,9 @@ public class FeedContentProvider extends ContentProvider {
                 break;
             case TABSOURCE:
                 fk_field = FeedContract.TabSources.TAB_ID;
+                break;
+            case TVSHOW_VIDEO:
+                fk_field = FeedContract.TVShowVideo.TVSHOW_ID;
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
@@ -282,6 +293,8 @@ public class FeedContentProvider extends ContentProvider {
             case TABSOURCE_ALL:
             case TABSOURCE:
                 return FeedContract.TabSources.CONTENT_TYPE;
+            case TVSHOW_VIDEO:
+                return FeedContract.TVShowVideo.CONTENT_TYPE;
             default:
                 return null;
         }
@@ -432,6 +445,9 @@ public class FeedContentProvider extends ContentProvider {
 
         HashSet<String> availableColumns = new HashSet<String>(Arrays.asList(columnList));
         if (!availableColumns.containsAll(requestedColumns)) {
+            if (D) Log.d(LOG_TAG, "checkColumns");
+            if (D) Log.d(LOG_TAG, String.valueOf(availableColumns));
+            if (D) Log.d(LOG_TAG, String.valueOf(requestedColumns));
             throw new IllegalArgumentException("Unknown columns in projection");
         }
     }
@@ -457,7 +473,7 @@ public class FeedContentProvider extends ContentProvider {
                 FeedContract.FeedColumns.CACHED
         };
         ArrayList<String> columnList = new ArrayList<String>(Arrays.asList(available));
-
+        if (D) Log.d(LOG_TAG, "Get projection for " + String.valueOf(uriType));
         switch (uriType) {
             case SEARCH_QUERY:
             case SEARCH_QUERY_ITEM:
@@ -502,6 +518,14 @@ public class FeedContentProvider extends ContentProvider {
             case SEARCH_RESULTS_FEEDITEM:
                 columnList.add(FeedContract.SearchResults.QUERY_ID);
                 columnList.add(FeedContract.SearchResults.POSITION);
+                break;
+            case TVSHOW_VIDEO:
+            case TVSHOW_VIDEOITEM:
+                columnList.add(FeedContract.TVShowVideo.TVSHOW_ID);
+                columnList.add(FeedContract.TVShowVideo.METAINFO);
+                columnList.add(FeedContract.TVShowVideo.SEASON);
+                columnList.add(FeedContract.TVShowVideo.EPISODE);
+                columnList.add(FeedContract.TVShowVideo.TYPE);
                 break;
             case RELATED_VIDEO:
             case RELATED_VIDEO_ITEM:
@@ -590,6 +614,15 @@ public class FeedContentProvider extends ContentProvider {
                     " content_type_id INTEGER NULL," +
                     " tab_id INTEGER NULL," +
                     " order_number INTEGER DEFAULT 0";
+
+    private static final String TVSHOW_VIDEO_COLUMNS_SQL =
+            FEED_COLUMNS_SQL + "," +
+                    " tvshow_id INTEGER NULL," +
+                    " metainfo TEXT null, " +
+                    " season INTEGER DEFAULT 0," +
+                    " episode INTEGER DEFAULT 0," +
+                    " type INTEGER DEFAULT 0";
+
     private static final String NAVIGATION_FIXTURE_QUERY = "INSERT INTO " +
             FeedContract.Navigation.CONTENT_PATH + " (name, title, link, position) ";
 
@@ -646,12 +679,16 @@ public class FeedContentProvider extends ContentProvider {
             FeedContract.RelatedVideo.CONTENT_PATH + " (" +
             RELATED_VIDEO_COLUMNS_SQL + ")";
 
+    private static final String SQL_CREATE_TVSHOW_VIDEO_QUERY = "CREATE TABLE " +
+            FeedContract.TVShowVideo.CONTENT_PATH + " (" +
+            TVSHOW_VIDEO_COLUMNS_SQL + ")";
+
     private static final String SQL_CREATE_INDEX_NAVIGATION = "CREATE UNIQUE INDEX idx_navigation_link " +
             "ON " + FeedContract.Navigation.CONTENT_PATH + " (" + FeedContract.Navigation.LINK  + ")";
 
     private static final String SQL_DROP_TABLE = "DROP TABLE %s";
 
-    private static final int DB_VERSION = 11;
+    private static final int DB_VERSION = 12;
 
     private static String getNaviFixture() {
         Context context = RutubeApp.getContext();
@@ -704,6 +741,8 @@ public class FeedContentProvider extends ContentProvider {
             for (String fix: getShowcaseTabsFixture(showcaseId))
                 db.execSQL(SHOWCASE_FIXTURE_QUERY + fix);
             db.execSQL(SQL_CREATE_INDEX_NAVIGATION);
+            if (D)Log.d(LOG_TAG, SQL_CREATE_TVSHOW_VIDEO_QUERY);
+            db.execSQL(SQL_CREATE_TVSHOW_VIDEO_QUERY);
         }
 
         @Override
@@ -778,6 +817,10 @@ public class FeedContentProvider extends ContentProvider {
                         break;
                     case 10:
                         db.execSQL(SQL_CREATE_TABSOURCE);
+                        break;
+                    case 11:
+                        db.execSQL(SQL_CREATE_TVSHOW_VIDEO_QUERY);
+                        break;
                     default:
                         break;
                 }

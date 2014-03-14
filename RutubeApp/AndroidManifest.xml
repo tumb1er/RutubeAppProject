@@ -91,6 +91,17 @@
             <!--</intent-filter>-->
         </activity>
         <activity
+            android:name="ru.rutube.RutubeFeed.ui.FeedActivity"
+            android:theme="@style/Theme.Rutube.Feed">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="ru.rutube.feed.open"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" android:host="rutube.ru" android:pathPrefix="/metainfo/tv/" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name="ru.rutube.RutubeApp.ui.AuthorFeedActivity"
             android:theme="@style/Theme.Rutube.Feed">
             <intent-filter>

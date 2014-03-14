@@ -107,7 +107,6 @@ public final class FeedContract {
         public static final String CONTENT_TYPE_ID = "content_type_id";
         public static final String ORDER_NUMBER = "order_number";
         public static final String TAB_ID = "tab_id";
-
     }
 
     public static final class RelatedVideo implements BaseColumns, FeedColumns {
@@ -127,5 +126,17 @@ public final class FeedContract {
         public static final String CONTENT_TYPE = VND + FEED + "." + CONTENT_PATH;
 
         public static final String TAG_ID = "tag_id";
+    }
+
+    public static final class TVShowVideo implements  BaseColumns, FeedColumns{
+        public static final String CONTENT_PATH = "tvshow_video";
+        public static final Uri CONTENT_URI = Uri.withAppendedPath(FEED_URI, CONTENT_PATH);
+        public static final String CONTENT_TYPE = VND + FEED + "." + CONTENT_PATH;
+
+        public static final String METAINFO = "metainfo";
+        public static final String TVSHOW_ID = "tvshow_id";
+        public static final String SEASON = "season";
+        public static final String EPISODE = "episode";
+        public static final String TYPE = "type";
     }
 }
