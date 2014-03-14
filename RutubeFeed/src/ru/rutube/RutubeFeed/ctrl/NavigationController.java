@@ -44,6 +44,11 @@ public class NavigationController implements Parcelable, RequestListener {
     private boolean mAttached;
     private NaviLoaderCallbacks loaderCallbacks;
 
+    public User logout() {
+        mUser.logout();
+        return mUser;
+    }
+
 
     /**
      * Обработчик событий загрузки данных в адаптер навигационного меню

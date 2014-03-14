@@ -321,4 +321,13 @@ public class User implements Parcelable {
     public String getName() {
         return mName;
     }
+
+    public void logout() {
+        mUserId = 0;
+        mName = null;
+        mAvatarUrl = null;
+        mBackgroundUrl = null;
+        mToken = null;
+        saveUser();
+    }
 }

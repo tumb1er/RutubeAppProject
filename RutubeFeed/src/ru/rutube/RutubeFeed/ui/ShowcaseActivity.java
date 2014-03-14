@@ -54,6 +54,7 @@ public class ShowcaseActivity extends ActionBarActivity implements NavigationCon
     private NetworkImageView mBackgroundView;
     private TextView mUsernameView;
     private Typeface mNormalFont;
+    private View mLogoutView;
 
 
     private class ShowcaseFragmentCache {
@@ -84,8 +85,21 @@ public class ShowcaseActivity extends ActionBarActivity implements NavigationCon
         public void onItemClick(AdapterView<?> adapterView, View view, int pos, long rowId) {
             if (D) Log.d(LOG_TAG, "onItemClick: " + String.valueOf(pos));
             if (pos == 1) {
+                // Login click
                 if (mUser.isAnonymous())
                     showLoginDialog();
+                return;
+            }
+            if (pos == 0) {
+                // Authorized header click
+                return;
+            }
+            if (D)Log.d(LOG_TAG, String.format("Count: %d Headers: %d Footers %d", mDrawerList.getCount(),
+                    mDrawerList.getHeaderViewsCount(), mDrawerList.getFooterViewsCount()));
+            if (pos == mDrawerList.getCount() - 1) {
+                // Logout click
+                mUser = mController.logout();
+                showHeader(mUser);
                 return;
             }
             NavAdapter.ViewHolder holder = (NavAdapter.ViewHolder)view.getTag();
@@ -141,6 +155,7 @@ public class ShowcaseActivity extends ActionBarActivity implements NavigationCon
             mAnonymousView.setVisibility(View.VISIBLE);
             mBackgroundView.setVisibility(View.GONE);
             mAuthUserView.setVisibility(View.GONE);
+            mLogoutView.setVisibility(View.GONE);
 
         } else {
             mAnonymousView.setVisibility(View.GONE);
@@ -150,6 +165,7 @@ public class ShowcaseActivity extends ActionBarActivity implements NavigationCon
             mBackgroundView.setImageUrl(backgroundUrl, mController.getImageLoader());
             mAvatarView.setImageUrl(avatarUrl, mController.getImageLoader());
             mUsernameView.setText(user.getName());
+            mLogoutView.setVisibility(View.VISIBLE);
             mAuthUserView.setVisibility(View.VISIBLE);
         }
         findViewById(R.id.left_drawer).forceLayout();
@@ -220,6 +236,19 @@ public class ShowcaseActivity extends ActionBarActivity implements NavigationCon
         mAnonymousView.setVisibility(View.GONE);
         ((TextView)v.findViewById(R.id.loginTextView)).setTypeface(mNormalFont);
 
+        v = (ViewGroup)getLayoutInflater().inflate(R.layout.logout_footer, null);
+        assert v != null;
+        mDrawerList.addFooterView(v);
+        mLogoutView = v.findViewById(R.id.logoutView);
+        ((TextView)v.findViewById(R.id.logoutTextView)).setTypeface(mNormalFont);
+
+        findViewById(R.id.list_footer).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // иначе клик попадает на карточку видео
+            }
+        });
+
         mAvatarView = (NetworkImageView)mAuthUserView.findViewById(R.id.avatarImageView);
         mUsernameView = (TextView) mAuthUserView.findViewById(R.id.authorTextView);
         mUsernameView.setTypeface(mNormalFont);
@@ -248,7 +277,13 @@ public class ShowcaseActivity extends ActionBarActivity implements NavigationCon
                 R.drawable.ic_drawer,
                 R.string.drawer_open,
                 R.string.drawer_closed
-        );
+        ) {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                showHeader(mUser);
+                super.onDrawerOpened(drawerView);
+            }
+        };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 

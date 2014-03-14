@@ -24,10 +24,20 @@
     <ListView
         android:id="@+id/nav_list_view"
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
+        android:listSelector="@android:color/transparent"
         android:divider="#FF000000"
         android:dividerHeight="1dp"
         android:layout_centerHorizontal="true" />
+
+    <View android:layout_below="@id/nav_list_view"
+        android:id="@+id/list_footer"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_centerHorizontal="true"
+        android:background="#ff232323"/>
 </RelativeLayout>
