@@ -194,6 +194,10 @@ public class FeedContentProvider extends ContentProvider {
                 return FeedContract.Navigation.POSITION;
             case SHOWCASE_TABS:
                 return FeedContract.ShowcaseTabs.ORDER_NUMBER;
+            case TVSHOW_VIDEO:
+                return String.format("%s ASC, %s ASC",
+                        FeedContract.TVShowVideo.SEASON,
+                        FeedContract.TVShowVideo.EPISODE);
             case TABSOURCE:
             case TABSOURCE_ALL:
                 return FeedContract.TabSources.ORDER_NUMBER;
