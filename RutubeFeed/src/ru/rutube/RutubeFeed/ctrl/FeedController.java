@@ -387,7 +387,8 @@ public class FeedController implements Parcelable {
             if (D) Log.d(LOG_TAG, "setPosition: " + String.valueOf(mItemRequested));
             // Грузим следующую страницу только если кэш в БД невалидный
             if ((cursor.getCount() < mPerPage) && mHasNext) {
-                if (D) Log.d(LOG_TAG, "load more from olf");
+                if (D) Log.d(LOG_TAG, String.format("load more from olf: count=%d perpage=%d hasnext=%s",
+                        cursor.getCount(), mPerPage, String.valueOf(mHasNext)));
                 loadPage((cursor.getCount() + mPerPage) / mPerPage);
             }
         }

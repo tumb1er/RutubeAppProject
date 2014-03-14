@@ -34,6 +34,7 @@ public class ContentMatcher {
     public static final int AUTHOR = 5;
     public static final int TAGVIDEO = 6;
     public static final int TVSHOWVIDEO = 7;
+    public static final int PERSONVIDEO = 8;
 
     private static final String PARAM_QUERY = "query";
     private static final String LOG_TAG = ContentMatcher.class.getName();
@@ -58,6 +59,7 @@ public class ContentMatcher {
         feedTypeMap.put("/" + context.getString(R.string.authors_uri), AUTHOR);
         feedTypeMap.put("/" + context.getString(R.string.video_by_tag_uri), TAGVIDEO);
         feedTypeMap.put("/" + context.getString(R.string.tvshow_video_uri), TVSHOWVIDEO);
+        feedTypeMap.put("/" + context.getString(R.string.person_video_uri), PERSONVIDEO);
 
         contentUriMap = new SparseArray<Uri>();
         contentUriMap.put(EDITORS, FeedContract.Editors.CONTENT_URI);
@@ -67,6 +69,7 @@ public class ContentMatcher {
         contentUriMap.put(AUTHOR, FeedContract.AuthorVideo.CONTENT_URI);
         contentUriMap.put(TAGVIDEO, FeedContract.TagsVideo.CONTENT_URI);
         contentUriMap.put(TVSHOWVIDEO, FeedContract.TVShowVideo.CONTENT_URI);
+        contentUriMap.put(PERSONVIDEO, FeedContract.PersonVideo.CONTENT_URI);
     }
 
     public Uri getContentUri(Uri rutube_uri) {
@@ -151,21 +154,6 @@ public class ContentMatcher {
      * @return
      */
     private Uri matchWithParams(Uri rutube_uri) {
-//
-//        List<String> segments = rutube_uri.getPathSegments();
-//        assert segments != null;
-//        String last = segments.get(segments.size() - 1);
-//        if (!last.matches("^[\\d]+")) return null;
-//        int id = Integer.parseInt(last);
-//        String path = TextUtils.join("/", segments).replace(last, "%d");
-//        path = normalize(path);
-//        if (D) Log.d(LOG_TAG, "Matching with params: " + path);
-//        Integer feedType = feedTypeMap.get(path);
-//        if (feedType == COMMON){
-//            if (D) Log.d(LOG_TAG, "Not matched URL: " + path);
-//            return null;
-//        }
-
         int feedType = getFeedTypeWithParams(rutube_uri);
         if (feedType == COMMON)
             return null;

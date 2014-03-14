@@ -34,8 +34,6 @@ public class FeedFragmentFactory {
                 return new EditorsFeedImpl();
             case ContentMatcher.SUBSCRIPTIONS:
                 return new SubscriptionsFeedImpl();
-            case ContentMatcher.TVSHOWVIDEO:
-                return new TVShowFeedImpl();
             case ContentMatcher.COMMON:
             default:
                 return new BasicFeedImpl();

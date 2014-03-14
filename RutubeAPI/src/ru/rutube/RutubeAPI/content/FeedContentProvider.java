@@ -58,6 +58,8 @@ public class FeedContentProvider extends ContentProvider {
     private static final int TABSOURCE_ALL = 23;
     private static final int TVSHOW_VIDEO = 24;
     private static final int TVSHOW_VIDEOITEM = 25;
+    private static final int PERSON_VIDEO = 26;
+    private static final int PERSON_VIDEOITEM = 27;
 
     private static final String LOG_TAG = FeedContentProvider.class.getName();
     private static final boolean D = BuildConfig.DEBUG;
@@ -90,6 +92,8 @@ public class FeedContentProvider extends ContentProvider {
         sUriMatcher.addURI(AUTHORITY, FeedContract.TabSources.CONTENT_PATH + "/#/#", TABSOURCE_ITEM);
         sUriMatcher.addURI(AUTHORITY, FeedContract.TVShowVideo.CONTENT_PATH + "/#", TVSHOW_VIDEO);
         sUriMatcher.addURI(AUTHORITY, FeedContract.TVShowVideo.CONTENT_PATH + "/#/#", TVSHOW_VIDEOITEM);
+        sUriMatcher.addURI(AUTHORITY, FeedContract.PersonVideo.CONTENT_PATH + "/#", PERSON_VIDEO);
+        sUriMatcher.addURI(AUTHORITY, FeedContract.PersonVideo.CONTENT_PATH + "/#/#", PERSON_VIDEOITEM);
     }
 
     private MainDatabaseHelper dbHelper;
@@ -143,6 +147,9 @@ public class FeedContentProvider extends ContentProvider {
                 break;
             case TVSHOW_VIDEO:
                 table = FeedContract.TVShowVideo.CONTENT_PATH;
+                break;
+            case PERSON_VIDEO:
+                table = FeedContract.PersonVideo.CONTENT_PATH;
                 break;
             default:
                 throw new IllegalArgumentException("Unknown UriType: " + uriType);
@@ -232,6 +239,7 @@ public class FeedContentProvider extends ContentProvider {
             case NAVIGATION_ITEM:
             case TABSOURCE_ITEM:
             case TVSHOW_VIDEOITEM:
+            case PERSON_VIDEOITEM:
                 where = String.format("%s = '%s'", BaseColumns._ID, uri.getLastPathSegment());
                 break;
             // Получение списка строк отфильтрованных по значению внешнего ключа
@@ -255,6 +263,9 @@ public class FeedContentProvider extends ContentProvider {
                 break;
             case TVSHOW_VIDEO:
                 fk_field = FeedContract.TVShowVideo.TVSHOW_ID;
+                break;
+            case PERSON_VIDEO:
+                fk_field = FeedContract.PersonVideo.PERSON_ID;
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
@@ -300,6 +311,8 @@ public class FeedContentProvider extends ContentProvider {
                 return FeedContract.TabSources.CONTENT_TYPE;
             case TVSHOW_VIDEO:
                 return FeedContract.TVShowVideo.CONTENT_TYPE;
+            case PERSON_VIDEO:
+                return FeedContract.PersonVideo.CONTENT_TYPE;
             default:
                 return null;
         }
@@ -318,40 +331,6 @@ public class FeedContentProvider extends ContentProvider {
         assert context != null;
         context.getContentResolver().notifyChange(uri, null);
         return uri.buildUpon().appendPath(String.valueOf(rowId)).build();
-//
-//        switch (uriType) {
-//            case SEARCH_RESULTS:
-//                return FeedContract.SearchResults.CONTENT_URI.buildUpon()
-//                        .appendEncodedPath(contentValues.getAsString(FeedContract.SearchResults.QUERY_ID))
-//                        .appendEncodedPath(String.valueOf(rowId)).build();
-//            case SEARCH_QUERY:
-//                return Uri.withAppendedPath(FeedContract.SearchQuery.CONTENT_URI,
-//                        String.valueOf(rowId));
-//            case EDITORS:
-//                return Uri.withAppendedPath(FeedContract.Editors.CONTENT_URI,
-//                        String.valueOf(rowId));
-//            case MY_VIDEO:
-//                return Uri.withAppendedPath(FeedContract.MyVideo.CONTENT_URI,
-//                        String.valueOf(rowId));
-//            case SUBSCRIPTION:
-//                return Uri.withAppendedPath(FeedContract.Subscriptions.CONTENT_URI,
-//                        String.valueOf(rowId));
-//            case RELATED_VIDEO:
-//                return FeedContract.RelatedVideo.CONTENT_URI.buildUpon()
-//                        .appendEncodedPath(contentValues.getAsString(FeedContract.RelatedVideo.RELATED_VIDEO_ID))
-//                        .appendEncodedPath(String.valueOf(rowId)).build();
-//            case AUTHOR_VIDEO:
-//                return Uri.withAppendedPath(FeedContract.AuthorVideo.CONTENT_URI,
-//                        String.valueOf(rowId));
-//            case TAGS_VIDEO:
-//                return Uri.withAppendedPath(FeedContract.TagsVideo.CONTENT_URI,
-//                        String.valueOf(rowId));
-//            case NAVIGATION:
-//                return Uri.withAppendedPath(FeedContract.Navigation.CONTENT_URI,
-//                        String.valueOf(rowId));
-//            default:
-//                throw new IllegalArgumentException("Unknown URI");
-//        }
     }
 
     @Override
@@ -547,6 +526,10 @@ public class FeedContentProvider extends ContentProvider {
                 columnList.add(FeedContract.Subscriptions.TAGS_JSON);
                 columnList.add(FeedContract.TagsVideo.TAG_ID);
                 break;
+            case PERSON_VIDEO:
+            case PERSON_VIDEOITEM:
+                columnList.add(FeedContract.PersonVideo.PERSON_ID);
+                break;
             case -1:
                 throw new IllegalArgumentException("Invalid uri type");
             default:
@@ -628,6 +611,10 @@ public class FeedContentProvider extends ContentProvider {
                     " episode INTEGER DEFAULT 0," +
                     " type INTEGER DEFAULT 0";
 
+    private static final String PERSON_VIDEO_COLUMNS_SQL =
+            FEED_COLUMNS_SQL + "," +
+                    " person_id INTEGER NULL";
+
     private static final String NAVIGATION_FIXTURE_QUERY = "INSERT INTO " +
             FeedContract.Navigation.CONTENT_PATH + " (name, title, link, position) ";
 
@@ -688,12 +675,16 @@ public class FeedContentProvider extends ContentProvider {
             FeedContract.TVShowVideo.CONTENT_PATH + " (" +
             TVSHOW_VIDEO_COLUMNS_SQL + ")";
 
+    private static final String SQL_CREATE_PERSON_VIDEO_QUERY = "CREATE TABLE " +
+            FeedContract.PersonVideo.CONTENT_PATH + " (" +
+            PERSON_VIDEO_COLUMNS_SQL + ")";
+
     private static final String SQL_CREATE_INDEX_NAVIGATION = "CREATE UNIQUE INDEX idx_navigation_link " +
             "ON " + FeedContract.Navigation.CONTENT_PATH + " (" + FeedContract.Navigation.LINK  + ")";
 
     private static final String SQL_DROP_TABLE = "DROP TABLE %s";
 
-    private static final int DB_VERSION = 12;
+    private static final int DB_VERSION = 13;
 
     private static String getNaviFixture() {
         Context context = RutubeApp.getContext();
@@ -771,10 +762,7 @@ public class FeedContentProvider extends ContentProvider {
         }
     }
 
-
     protected static final class MainDatabaseHelper extends SQLiteOpenHelper {
-
-
         /**
          * Instantiates an open helper for the provider's SQLite data repository
          * Do not do database creation and upgrade here.
@@ -803,6 +791,7 @@ public class FeedContentProvider extends ContentProvider {
             db.execSQL(SQL_CREATE_INDEX_NAVIGATION);
             if (D)Log.d(LOG_TAG, SQL_CREATE_TVSHOW_VIDEO_QUERY);
             db.execSQL(SQL_CREATE_TVSHOW_VIDEO_QUERY);
+            db.execSQL(SQL_CREATE_PERSON_VIDEO_QUERY);
         }
 
         @Override
@@ -881,6 +870,8 @@ public class FeedContentProvider extends ContentProvider {
                     case 11:
                         db.execSQL(SQL_CREATE_TVSHOW_VIDEO_QUERY);
                         break;
+                    case 12:
+                        db.execSQL(SQL_CREATE_PERSON_VIDEO_QUERY);
                     default:
                         break;
                 }

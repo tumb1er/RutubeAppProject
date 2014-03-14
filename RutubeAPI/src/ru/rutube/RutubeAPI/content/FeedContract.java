@@ -139,4 +139,13 @@ public final class FeedContract {
         public static final String EPISODE = "episode";
         public static final String TYPE = "type";
     }
+
+    public static final class PersonVideo implements  BaseColumns, FeedColumns{
+        public static final String CONTENT_PATH = "person_video";
+        public static final Uri CONTENT_URI = Uri.withAppendedPath(FEED_URI, CONTENT_PATH);
+        public static final String CONTENT_TYPE = VND + FEED + "." + CONTENT_PATH;
+
+        public static final String PERSON_ID = "person_id";
+
+    }
 }

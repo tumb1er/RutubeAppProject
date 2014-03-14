@@ -17,10 +17,12 @@ import android.view.ViewGroup;
 import java.util.HashMap;
 
 import ru.rutube.RutubeAPI.BuildConfig;
+import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.content.FeedContentProvider;
 import ru.rutube.RutubeAPI.content.FeedContract;
 import ru.rutube.RutubeAPI.models.Constants;
 import ru.rutube.RutubeAPI.models.TabSource;
+import ru.rutube.RutubeFeed.R;
 import ru.rutube.RutubeFeed.feed.FeedFragmentFactory;
 import ru.rutube.RutubeFeed.ui.FeedFragment;
 
@@ -129,14 +131,17 @@ public class ShowcaseTabsViewPagerAdapter extends FragmentStatePagerAdapter
                 null,
                 null);
         assert c!= null;
+
         c.moveToFirst();
-        TabSource src = TabSource.fromCursor(c);
+        TabSource src = null;
+        if (c.getCount() > 0)
+             src = TabSource.fromCursor(c);
         c.close();
+        String feedUrl = (src == null)? RutubeApp.getUrl(R.string.editors_uri): src.getLink();
 
-
-        FeedFragment f = mFragmentFactory.getFeedFragment(src.getLink());
+        FeedFragment f = mFragmentFactory.getFeedFragment(feedUrl);
         Bundle b = new Bundle();
-        b.putParcelable(Constants.Params.FEED_URI, Uri.parse(src.getLink()));
+        b.putParcelable(Constants.Params.FEED_URI, Uri.parse(feedUrl));
         f.setArguments(b);
         int i = cursor.getColumnIndex(FeedContract.ShowcaseTabs.NAME);
         f.setTitle(cursor.getString(i));

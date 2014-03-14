@@ -180,6 +180,12 @@ public class Feed<FeedItemT extends FeedItem> {
             item.setTVShowId(mIntForeignKeyId);
             return item;
         }
+        if (contentUriPath.startsWith(
+                FeedContract.PersonVideo.CONTENT_URI.getEncodedPath())) {
+            PersonFeedItem item = PersonFeedItem.fromJSON(data_item);
+            item.setPersonId(mIntForeignKeyId);
+            return item;
+        }
         return FeedItem.fromJSON(data_item);
     }
 
