@@ -30,12 +30,13 @@
     </RelativeLayout>
 
     <!-- The navigation drawer -->
-    <ListView android:id="@+id/left_drawer"
-        android:layout_width="240dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:choiceMode="singleChoice"
-        android:divider="#666"
-        android:dividerHeight="1dp"
-        android:background="#111"/>
+    <!--<ListView android:id="@+id/left_drawer"-->
+        <!--android:layout_width="240dp"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_gravity="start"-->
+        <!--android:choiceMode="singleChoice"-->
+        <!--android:divider="#666"-->
+        <!--android:dividerHeight="1dp"-->
+        <!--android:background="#111"/>-->
+    <include layout="@layout/drawer_layout"/>
 </android.support.v4.widget.DrawerLayout>

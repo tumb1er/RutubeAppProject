@@ -2,6 +2,7 @@ package ru.rutube.RutubeFeed.data;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -51,10 +52,13 @@ public class NavAdapter extends SimpleCursorAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = super.getView(position, convertView, parent);
         assert view != null;
+        ViewHolder h = (ViewHolder)view.getTag();
         if (position == mCurrentItemPosition) {
-            view.setBackgroundResource(R.color.current_nav_item);
+            h.name.setTextColor(mContext.getResources().getColor(R.color.active_nav_text));
+            h.name.setTypeface(null, Typeface.BOLD);
         } else {
-            view.setBackgroundResource(R.color.nav_item_background);
+            h.name.setTextColor(mContext.getResources().getColor(R.color.inactive_nav_text));
+            h.name.setTypeface(null, Typeface.NORMAL);
         }
         return view;
     }
@@ -62,7 +66,6 @@ public class NavAdapter extends SimpleCursorAdapter {
     private ViewHolder initHolder(ViewGroup view) {
         ViewHolder holder = new ViewHolder();
         holder.name = (TextView)view.findViewById(R.id.nameTextView);
-        holder.title = (TextView)view.findViewById(R.id.titleTextView);
         return holder;
     }
 
@@ -72,7 +75,6 @@ public class NavAdapter extends SimpleCursorAdapter {
         ViewHolder holder = (ViewHolder)view.getTag();
         NaviItem item = NaviItem.fromCursor(cursor);
         holder.name.setText(item.getName());
-        holder.title.setText(item.getTitle());
         holder.naviItem = item;
     }
 }

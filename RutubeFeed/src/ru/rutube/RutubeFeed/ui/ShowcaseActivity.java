@@ -23,13 +23,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.HeaderViewListAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.HttpClientStack;
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
+import com.android.volley.toolbox.Volley;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import ru.rutube.RutubeAPI.BuildConfig;
+import ru.rutube.RutubeAPI.HttpTransport;
 import ru.rutube.RutubeAPI.RutubeApp;
 import ru.rutube.RutubeAPI.content.FeedContentProvider;
 import ru.rutube.RutubeAPI.content.FeedContract;
@@ -50,6 +59,10 @@ public class ShowcaseActivity extends ActionBarActivity {
     private DrawerLayout mDrawerLayout;
     private NaviLoaderCallbacks loaderCallbacks;
     private NavAdapter mNaviAdapter;
+
+    private RequestQueue mRequestQueue;
+    private ImageLoader mImageLoader;
+
 
     private class ShowcaseFragmentCache {
         Map<Uri, Fragment> mFragmentMap = new HashMap<Uri, Fragment>();
@@ -122,18 +135,26 @@ public class ShowcaseActivity extends ActionBarActivity {
 
         @Override
         public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-            CursorAdapter adapter = (CursorAdapter)mDrawerList.getAdapter();
+            CursorAdapter adapter = (CursorAdapter) getNavAdapter();
             if (adapter != null)
                 adapter.swapCursor(cursor);
         }
 
         @Override
         public void onLoaderReset(Loader<Cursor> cursorLoader) {
-            CursorAdapter adapter = (CursorAdapter)mDrawerList.getAdapter();
+            CursorAdapter adapter = getNavAdapter();
             if (adapter != null)
                 adapter.swapCursor(null);
 
         }
+    }
+
+    public CursorAdapter getNavAdapter() {
+        ListAdapter adapter = mDrawerList.getAdapter();
+        if (adapter instanceof HeaderViewListAdapter) {
+            adapter = ((HeaderViewListAdapter)adapter).getWrappedAdapter();
+        }
+        return (CursorAdapter)adapter;
     }
 
     @Override
@@ -161,6 +182,11 @@ public class ShowcaseActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.showcase_activity);
         initNavigationToggle();
+
+        mRequestQueue = Volley.newRequestQueue(this,
+                new HttpClientStack(HttpTransport.getHttpClient()));
+        mImageLoader = new ImageLoader(mRequestQueue, RutubeApp.getBitmapCache());
+
         initNavigationAdapter();
         ActionBar bar = getSupportActionBar();
         bar.setDisplayHomeAsUpEnabled(true);
@@ -168,6 +194,7 @@ public class ShowcaseActivity extends ActionBarActivity {
 
         Uri uri = getIntent().getData();
         navigateToShowcase(uri, 0);
+
 
         initCurrentNavItem();
     }
@@ -191,8 +218,16 @@ public class ShowcaseActivity extends ActionBarActivity {
     protected void initNavigationAdapter() {
         loaderCallbacks = new NaviLoaderCallbacks();
         getSupportLoaderManager().initLoader(NAVI_LOADER, null, loaderCallbacks);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        mDrawerList = (ListView) findViewById(R.id.nav_list_view);
         if (D) Log.d(LOG_TAG, "Set nav adapter");
+
+        View v = getLayoutInflater().inflate(R.layout.authorized_header, null);
+        NetworkImageView av = (NetworkImageView)v.findViewById(R.id.avatarImageView);
+        av.setImageUrl("http://pic.rutube.ru/user/38/c6/38c686faf55899a177fd01b954888b8d.jpg?size=s", mImageLoader);
+        mDrawerList.addHeaderView(v);
+        NetworkImageView bg = (NetworkImageView)findViewById(R.id.nav_background);
+        bg.setImageUrl("http://pic.rutube.ru/userappearance/2b/d9/2bd961be163a0648f66c52776647ea2f.jpeg", mImageLoader);
+        bg.setVisibility(View.VISIBLE);
         // Пустые массивы в аргументах нужны чтобы не было NPE в swapCursor.
         mNaviAdapter = new NavAdapter(
                 this,
