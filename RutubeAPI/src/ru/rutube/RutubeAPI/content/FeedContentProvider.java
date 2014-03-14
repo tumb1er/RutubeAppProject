@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.jetbrains.annotations.NotNull;
@@ -713,6 +714,61 @@ public class FeedContentProvider extends ContentProvider {
             i += 1;
         }
         return result;
+    }
+
+    public static String[] computeWhere(int feedType, Uri feedUri) {
+        List<String> parts = new ArrayList<String>();
+        String where;
+        List<String> args = new ArrayList<String>();
+        switch(feedType){
+            case ContentMatcher.TVSHOWVIDEO:
+                String show_all = feedUri.getQueryParameter("show_all");
+                boolean zero_episode = "1".equals(show_all);
+
+                String season = feedUri.getQueryParameter("season");
+                if (season != null) {
+                    parts.add(zero_episode ? "(season = ? OR season = 0)" : "season = ?");
+                    args.add(season);
+                }
+                String episode = feedUri.getQueryParameter("episode");
+                if (episode != null) {
+                    parts.add(zero_episode ? "(episode = ? OR episode = 0)" : "episode = ?");
+                    args.add(episode);
+                }
+                String type = feedUri.getQueryParameter("type");
+                if (type != null) {
+                    parts.add("type = ?");
+                    args.add(type);
+                }
+                where = TextUtils.join(" AND ", parts);
+                args.add(0, where);
+                if (D) Log.d(LOG_TAG, "ARGS: " + String.valueOf(args));
+                String[] result = new String[args.size()];
+                return args.toArray(result);
+            default:
+                return null;
+        }
+    }
+
+    public static String computeSortOrder(int feedType, Uri feedUri) {
+        String sort = feedUri.getQueryParameter("sort");
+        if (sort == null)
+            return null;
+        String[] parts = sort.split("_");
+        if (parts.length != 2)
+            return null;
+        String order = (parts[1].equals("d"))?" DESC":" ASC";
+        String field = parts[0];
+        switch(feedType) {
+            case ContentMatcher.TVSHOWVIDEO:
+                if ("series".equals(field))
+                    return String.format("season %s, episode %s", order, order);
+                if ("created".equals(field))
+                    return String.format("created %s", order);
+                return null;
+            default:
+                return null;
+        }
     }
 
 

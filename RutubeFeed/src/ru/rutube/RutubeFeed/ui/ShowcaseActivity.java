@@ -60,7 +60,7 @@ public class ShowcaseActivity extends ActionBarActivity implements NavigationCon
     private class ShowcaseFragmentCache {
         Map<Uri, Fragment> mFragmentMap = new HashMap<Uri, Fragment>();
         public Fragment getShowcaseFragment(Uri uri, int showcaseId) {
-            if (D) Log.d(LOG_TAG, "get fragment for " + uri.toString());
+            if (D) Log.d(LOG_TAG, "get fragment for " + String.valueOf(uri));
             Fragment f = mFragmentMap.get(uri);
 //            if (f != null) {
 //                if (D)Log.d(LOG_TAG, "got from cache");
@@ -125,8 +125,6 @@ public class ShowcaseActivity extends ActionBarActivity implements NavigationCon
 
     public void navigateToShowcase(Uri showcaseUri, int showcaseId) {
         if (D) Log.d(LOG_TAG, "Navigating to " + String.valueOf(showcaseUri));
-        TextView tv = (TextView)findViewById(R.id.uriTextView);
-        tv.setText(showcaseUri.toString());
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         Fragment f = mFragmentCache.getShowcaseFragment(showcaseUri, showcaseId);

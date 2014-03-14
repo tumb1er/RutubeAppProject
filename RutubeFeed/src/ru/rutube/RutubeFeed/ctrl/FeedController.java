@@ -19,8 +19,12 @@ import com.android.volley.toolbox.HttpClientStack;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeAPI.HttpTransport;
@@ -344,16 +348,33 @@ public class FeedController implements Parcelable {
         @Override
         public Loader<Cursor> onCreateLoader(int loaderId, Bundle arg1) {
             Uri contentUri = getFeedModel().getContentUri();
-            if (D) Log.d(LOG_TAG, "Init loader for: " + String.valueOf(contentUri));
+            if (D) Log.d(LOG_TAG, "Init loader for: " + String.valueOf(contentUri) + " feed Uri: " + mFeedUri);
             String[] projection = FeedContentProvider.getProjection(contentUri);
-            if (D) Log.d(LOG_TAG, "Projection; " + String.valueOf(projection));
+            ContentMatcher cm = ContentMatcher.getInstance();
+            int feedType = cm.getFeedType(mFeedUri);
+            if (feedType == ContentMatcher.COMMON)
+                feedType = cm.getFeedTypeWithParams(mFeedUri);
+            if (feedType == ContentMatcher.COMMON)
+                feedType = cm.getMetainfoFeedType(mFeedUri);
+            String[] whereAndArgs = FeedContentProvider.computeWhere(feedType, mFeedUri);
+            String sortOrder = FeedContentProvider.computeSortOrder(feedType, mFeedUri);
+            String selection = null;
+            String[] args = null;
+            if (whereAndArgs != null) {
+                List<String> tmp = new LinkedList<String>(Arrays.asList(whereAndArgs));
+                selection = tmp.remove(0);
+                args = new String[tmp.size()];
+                tmp.toArray(args);
+            }
+            if (D) Log.d(LOG_TAG, "where: " + String.valueOf(selection));
+            if (D) Log.d(LOG_TAG, "order by: " + String.valueOf(sortOrder));
             return new CursorLoader(
                     mContext,
                     contentUri,
                     projection,
-                    null,
-                    null,
-                    null
+                    selection,
+                    args,
+                    sortOrder
             );
         }
 
