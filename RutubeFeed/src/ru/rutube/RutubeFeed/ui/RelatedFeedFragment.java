@@ -55,8 +55,7 @@ public class RelatedFeedFragment extends FeedFragment {
                 }
             }
             if (videoId != null)
-                setFeedUri(Uri.parse(RutubeApp.getUrl(R.string.related_video_uri)).buildUpon()
-                        .appendEncodedPath(videoId).build());
+                setFeedUri(RutubeApp.formatApiUrl(R.string.related_video_uri, videoId));
             else
                 setFeedUri(Uri.parse(RutubeApp.getUrl(R.string.editors_uri)));
         } else

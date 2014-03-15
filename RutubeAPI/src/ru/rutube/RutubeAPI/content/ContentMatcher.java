@@ -110,17 +110,26 @@ public class ContentMatcher {
         List<String> segments = rutube_uri.getPathSegments();
         assert segments != null;
         String last = segments.get(segments.size() - 1);
-        if (!last.matches("^[\\d]+"))
-            return COMMON;
-        String path = TextUtils.join("/", segments).replace(last, "%d");
-        path = normalize(path);
-        if (D) Log.d(LOG_TAG, "Matching with params: " + path);
-        Integer feedType = feedTypeMap.get(path);
-        if (feedType == null){
-            if (D) Log.d(LOG_TAG, "Not matched URL: " + path);
-            return COMMON;
+        Integer feedType;
+        if (last.matches("^[\\d]+$")) {
+            String path = TextUtils.join("/", segments).replace(last, "%d");
+            path = normalize(path);
+            if (D) Log.d(LOG_TAG, "Matching with params: " + path);
+            feedType = feedTypeMap.get(path);
+            if (feedType != null)
+                return feedType;
+
         }
-        return feedType;
+        if (last.matches("^[\\da-f]{32}$")) {
+            String path = TextUtils.join("/", segments).replace(last, "%s");
+            path = normalize(path);
+            if (D) Log.d(LOG_TAG, "Matching with params: " + path);
+            feedType = feedTypeMap.get(path);
+            if (feedType != null)
+                return feedType;
+        }
+        if (D) Log.d(LOG_TAG, "Not matched URL: " + String.valueOf(rutube_uri));
+        return COMMON;
     }
 
     public int getMetainfoFeedType(Uri rutube_uri) {
