@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
 
-import com.etsy.android.grid.StaggeredGridView;
+import com.origamilabs.library.views.StaggeredGridView;
 
 import ru.rutube.RutubeAPI.BuildConfig;
 import ru.rutube.RutubeApp.MainApplication;
@@ -28,9 +28,9 @@ public class PlaFeedFragment extends ru.rutube.RutubeFeed.ui.FeedFragment {
 
     protected String mStatsFeedTag = "feed_fragment";
 
-    private AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
+    private StaggeredGridView.OnItemClickListener onItemClickListener = new StaggeredGridView.OnItemClickListener() {
         @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        public void onItemClick(StaggeredGridView parent, View view, int position, long id) {
             MainApplication.cardClick(getActivity());
             mController.onListItemClick(position);
         }
@@ -99,27 +99,28 @@ public class PlaFeedFragment extends ru.rutube.RutubeFeed.ui.FeedFragment {
 
     @Override
     public void setSelectedItem(final int position) {
-        try {
-            sgView.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    sgView.setSelection(position);
-                    View v = sgView.getChildAt(position);
-                    if (v != null)
-                        v.requestFocus();
-                }
-            }, 1);
-
-
-        } catch (NullPointerException ignored) {}
+//        try {
+//            sgView.postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    sgView.setSelection(position);
+//                    View v = sgView.getChildAt(position);
+//                    if (v != null)
+//                        v.requestFocus();
+//                }
+//            }, 1);
+//
+//
+//        } catch (NullPointerException ignored) {}
     }
 
     @Override
     public int getCurrentPosition() {
-        try{
-            return sgView.getFirstVisiblePosition();
-        } catch (NullPointerException ignored) {
-            return 0;
-        }
+//        try{
+//            return sgView.getFirstVisiblePosition();
+//        } catch (NullPointerException ignored) {
+//            return 0;
+//        }
+        return 0;
     }
 }

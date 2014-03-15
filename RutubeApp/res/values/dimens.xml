@@ -15,4 +15,5 @@
     <integer name="video_player_weight">7</integer>
     <integer name="video_info_weight">5</integer>
     <integer name="video_info_player_weight_sum">12</integer>
+    <integer name="num_columns">1</integer>
 </resources>
