@@ -38,6 +38,7 @@ public class ShowcaseFragment extends Fragment implements ShowcaseController.Sho
     private ActionBar mActionBar;
     private ShowcaseTab[] mTabs;
     private TabPageIndicator mTabPageIndicator;
+    protected ShowcaseTabsViewPagerAdapter mViewPagerAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -108,9 +109,17 @@ public class ShowcaseFragment extends Fragment implements ShowcaseController.Sho
     @Override
     public void initAdapter() {
         if (D)Log.d(LOG_TAG, "initAdapter");
-        ShowcaseTabsViewPagerAdapter adapter = new ShowcaseTabsViewPagerAdapter(getActivity(),
+        initViewPagerAdapter();
+        initViewPager();
+    }
+
+    protected void initViewPagerAdapter() {
+        mViewPagerAdapter = new ShowcaseTabsViewPagerAdapter(getActivity(),
                 getChildFragmentManager(), null);
-        mViewPager.setAdapter(adapter);
+    }
+
+    protected void initViewPager() {
+        mViewPager.setAdapter(mViewPagerAdapter);
         mViewPager.setOnPageChangeListener(this);
         mTabPageIndicator.setViewPager(mViewPager);
     }

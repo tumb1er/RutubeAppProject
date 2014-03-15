@@ -67,7 +67,7 @@ public class ShowcaseActivity extends ActionBarActivity implements NavigationCon
 //                return f;
 //            }
             if (D) Log.d(LOG_TAG, "creating new fragment");
-            f = new ShowcaseFragment();
+            f = initShowcaseFragment();
             Bundle args = new Bundle();
             args.putParcelable(Constants.Params.SHOWCASE_URI, uri);
             args.putInt(Constants.Params.SHOWCASE_ID, showcaseId);
@@ -75,6 +75,10 @@ public class ShowcaseActivity extends ActionBarActivity implements NavigationCon
 //            mFragmentMap.put(uri, f);
             return f;
         }
+    }
+
+    protected ShowcaseFragment initShowcaseFragment() {
+        return new ShowcaseFragment();
     }
 
     private ShowcaseFragmentCache mFragmentCache = new ShowcaseFragmentCache();
@@ -200,6 +204,10 @@ public class ShowcaseActivity extends ActionBarActivity implements NavigationCon
         initNavigationToggle();
 
         initNavigationAdapter();
+
+        mDrawerList.setAdapter(mNaviAdapter);
+        mDrawerList.setOnItemClickListener(mOnNavigationClickListener);
+
         ActionBar bar = getSupportActionBar();
         bar.setDisplayHomeAsUpEnabled(true);
         bar.setHomeButtonEnabled(true);
@@ -293,8 +301,6 @@ public class ShowcaseActivity extends ActionBarActivity implements NavigationCon
                 null,
                 new String[]{},
                 new int[]{}, 0);
-        mDrawerList.setAdapter(mNaviAdapter);
-        mDrawerList.setOnItemClickListener(mOnNavigationClickListener);
     }
 
 

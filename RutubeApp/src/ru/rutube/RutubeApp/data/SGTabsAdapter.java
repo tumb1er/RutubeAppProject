@@ -1,0 +1,142 @@
+package ru.rutube.RutubeApp.data;
+
+import android.content.Context;
+import android.database.Cursor;
+import android.support.v4.app.FragmentManager;
+import android.util.Log;
+
+import ru.rutube.RutubeApp.BuildConfig;
+import ru.rutube.RutubeApp.ui.feed.PlaFeedFragmentFactory;
+import ru.rutube.RutubeFeed.data.ShowcaseTabsViewPagerAdapter;
+public class SGTabsAdapter extends ShowcaseTabsViewPagerAdapter {
+    private static final String LOG_TAG = SGTabsAdapter.class.getName();
+    private static final boolean D = BuildConfig.DEBUG;
+
+    public SGTabsAdapter(Context context, FragmentManager fm, Cursor cursor) {
+        super(context, fm, cursor);
+        mFragmentFactory = new PlaFeedFragmentFactory();
+        if (D) Log.d(LOG_TAG, "PLA ADAPTER");
+    }
+
+}
+
+/**
+ * Created by tumbler on 30.12.13.
+ */
+//public class MainTabsAdapter extends FragmentStatePagerAdapter
+//    implements ActionBar.TabListener, ViewPager.OnPageChangeListener {
+//    private static final boolean D = BuildConfig.DEBUG;
+//    private static final String LOG_TAG = MainTabsAdapter.class.getName();
+//    private final StartActivity mActivity;
+//    private final ViewPager mViewPager;
+//    private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
+//    private final HashMap<String, FeedFragment> mFragments = new HashMap<String, FeedFragment>();
+//    private final FeedFragmentFactory mFragmentFactory = new PlaFeedFragmentFactory();
+//    private final ScrollingTabContainerView mTabBar;
+//
+//    @Override
+//    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+//        Object tag = tab.getTag();
+//        for (int i=0; i<mTabs.size(); i++) {
+//            if (mTabs.get(i) == tag) {
+//                mViewPager.setCurrentItem(i);
+//            }
+//        }
+//
+//    }
+//
+//    @Override
+//    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+//
+//    }
+//
+//    @Override
+//    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+//
+//    }
+//
+//    public void setCurrentItem(String current_tag) {
+//        for (int i=0; i<mTabs.size(); i++) {
+//            TabInfo info = mTabs.get(i);
+//            String tag = info.args.getString(Constants.Params.FEED_TITLE);
+//            if (current_tag.equals(tag)) {
+//                mViewPager.setCurrentItem(i);
+//            }
+//        }
+//    }
+//
+//    static final class TabInfo {
+//        private final int feedType;
+//        private final Bundle args;
+//
+//        TabInfo(int _feedType, Bundle _args) {
+//            feedType = _feedType;
+//            args = _args;
+//        }
+//    }
+//
+//    @Override
+//    public CharSequence getPageTitle(int position) {
+//        return "title";
+//    }
+//
+//    public MainTabsAdapter(StartActivity activity, ViewPager pager) {
+//        super(activity.getSupportFragmentManager());
+//        mActivity = activity;
+//        mTabBar = activity.getTabBar();
+//        mViewPager = pager;
+//        mViewPager.setAdapter(this);
+//        mViewPager.setOnPageChangeListener(this);
+//    }
+//
+//    public void addTab(ActionBar.Tab tab, int feedType, Bundle args) {
+//        TabInfo info = new TabInfo(feedType, args);
+//        tab.setTag(info);
+//        tab.setTabListener(this);
+//        mTabs.add(info);
+//        // FIXME:
+//        mTabBar.addTab(tab, false);
+//       // mActionBar.addTab(tab);
+//        notifyDataSetChanged();
+//    }
+//
+//    @Override
+//    public int getCount() {
+//        return mTabs.size();
+//    }
+//
+//    @Override
+//    public Fragment getItem(int position) {
+//        TabInfo info = mTabs.get(position);
+//        FeedFragment f = mFragmentFactory.getFeedFragment(info.feedType);
+//        f.setArguments(info.args);
+//        String tag = info.args.getString(Constants.Params.FEED_TITLE);
+//        mFragments.put(tag, f);
+//        return f;
+//    }
+//
+//    public FeedFragment getItem(String tag) {
+//        return mFragments.get(tag);
+//    }
+//
+//    @Override
+//    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+//    }
+//
+//    @Override
+//    public void onPageSelected(int position) {
+//        if (D) Log.d(LOG_TAG, "onPageSelected: " + String.valueOf(position));
+//        TabInfo info = mTabs.get(position);
+//        String tag = info.args.getString(Constants.Params.FEED_TITLE);
+//        if (D) Log.d(LOG_TAG, "onPageSelected: " + tag);
+//        mActivity.onTabSelected(tag);
+////        mActionBar.setSelectedNavigationItem(position);
+//        // FIXME:
+//        mTabBar.setTabSelected(position);
+//    }
+//
+//    @Override
+//    public void onPageScrollStateChanged(int state) {
+//    }
+//}
+

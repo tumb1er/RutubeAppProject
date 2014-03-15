@@ -33,7 +33,7 @@ public class ShowcaseTabsViewPagerAdapter extends FragmentStatePagerAdapter
         implements ActionBar.TabListener, ViewPager.OnPageChangeListener {
     private static final boolean D = BuildConfig.DEBUG;
     private static final String LOG_TAG = ShowcaseTabsViewPagerAdapter.class.getName();
-    protected final FeedFragmentFactory mFragmentFactory = new FeedFragmentFactory();
+    protected FeedFragmentFactory mFragmentFactory;
     protected boolean mDataValid;
     protected Cursor mCursor;
     protected Context mContext;
@@ -43,8 +43,8 @@ public class ShowcaseTabsViewPagerAdapter extends FragmentStatePagerAdapter
 
     public ShowcaseTabsViewPagerAdapter(Context context, FragmentManager fm, Cursor cursor) {
         super(fm);
-
         init(context, cursor);
+        mFragmentFactory = new FeedFragmentFactory();
     }
 
     void init(Context context, Cursor c) {
@@ -139,13 +139,17 @@ public class ShowcaseTabsViewPagerAdapter extends FragmentStatePagerAdapter
         c.close();
         String feedUrl = (src == null)? RutubeApp.getUrl(R.string.editors_uri): src.getLink();
 
-        FeedFragment f = mFragmentFactory.getFeedFragment(feedUrl);
+        FeedFragment f = initFeedFragment(feedUrl);
         Bundle b = new Bundle();
         b.putParcelable(Constants.Params.FEED_URI, Uri.parse(feedUrl));
         f.setArguments(b);
         int i = cursor.getColumnIndex(FeedContract.ShowcaseTabs.NAME);
         f.setTitle(cursor.getString(i));
         return f;
+    }
+
+    protected FeedFragment initFeedFragment(String feedUrl) {
+        return mFragmentFactory.getFeedFragment(feedUrl);
     }
 
     @Override
