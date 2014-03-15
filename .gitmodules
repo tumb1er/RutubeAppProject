@@ -7,3 +7,6 @@
 [submodule "RutubeApp/libs/AndroidStaggeredGrid"]
 	path = RutubeApp/libs/AndroidStaggeredGrid
 	url = git@github.com:rutube/AndroidStaggeredGrid.git
+[submodule "RutubeFeed/libs/ViewPagerIndicator"]
+	path = RutubeFeed/libs/ViewPagerIndicator
+	url = git@github.com:tumb1er/Android-ViewPagerIndicator.git
